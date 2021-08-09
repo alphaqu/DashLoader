@@ -1,0 +1,8 @@
+plugins {
+    id 'dashloader.common'
+}
+
+final minecraftVersion = "1.17"
+
+group "net.oskarstrom.dashloader"
+version "${project.definitionVersion}+$minecraftVersion"

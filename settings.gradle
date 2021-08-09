@@ -1,0 +1,23 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "Quilt"
+            url = "https://maven.quiltmc.org/repository/release"
+        }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'dashLoader-definition'
+includeBuild("common-logic")
+
+enableFeaturePreview("VERSION_CATALOGS")
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            from(files("libs.versions.toml"))
+        }
+    }
+}

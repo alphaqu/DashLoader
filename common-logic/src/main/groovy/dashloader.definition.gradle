@@ -1,0 +1,66 @@
+plugins {
+    id 'org.quiltmc.loom'
+    id 'dashloader.common'
+}
+
+repositories {
+    maven {
+        name "TerraformersMC"
+        url getTerraformersMCMaven()
+    }
+}
+
+dependencies {
+    println(libs)
+    minecraft libs.minecraft
+    mappings libs.fabric.yarn
+    modImplementation libs.bundles.fabric
+
+    modImplementation libs.modmenu
+}
+
+processResources {
+    inputs.property("version", rootProject.version)
+
+    filesMatching("fabric.mod.json") {
+        expand "version": rootProject.version
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                classifier = null
+            }
+            artifact(sourcesJar) {
+                classifier = "sources"
+                builtBy remapSourcesJar
+            }
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
+
+// Temporary hack since TerraformersMC's maven is straight up cursed
+// courtesy to LambdAurora
+String getTerraformersMCMaven() {
+    def terraformersUrl = 'https://maven.terraformersmc.com/'
+    if (pingUrl(terraformersUrl))
+        return terraformersUrl
+    else
+        return 'https://maven.kotlindiscord.com/repository/terraformers/'
+}
+
+boolean pingUrl(String address) {
+    try {
+        def conn = (HttpURLConnection) new URL(address).openConnection()
+        int responseCode = conn.getResponseCode()
+        return (200 <= responseCode && responseCode <= 399)
+    } catch (IOException ignored) {
+        return false
+    }
+}
