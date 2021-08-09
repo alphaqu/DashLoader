@@ -1,0 +1,17 @@
+plugins {
+    id 'dashloader.definition'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    // Minecraft 1.17 (21w19a) upwards uses Java 16.
+    options.release.set(16)
+}
+
+processResources {
+
+}
+
+task copyFabricModJson(Copy) {
+
+}
+

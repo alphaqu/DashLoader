@@ -1,9 +1,16 @@
 plugins {
-    id 'org.quiltmc.loom'
+    id 'fabric-loom'
     id 'dashloader.common'
 }
 
+group "net.oskarstrom.dashloader"
+version "${project.definitionVersion}"
+
 repositories {
+    maven {
+        name "Fabric"
+        url "https://maven.fabricmc.net"
+    }
     maven {
         name "TerraformersMC"
         url getTerraformersMCMaven()
@@ -11,7 +18,6 @@ repositories {
 }
 
 dependencies {
-    println(libs)
     minecraft libs.minecraft
     mappings libs.fabric.yarn
     modImplementation libs.bundles.fabric

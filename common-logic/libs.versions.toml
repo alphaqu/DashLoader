@@ -1,6 +1,6 @@
 [libraries.loom]
-module = "org.quiltmc:loom"
-version = "0.7.+"
+module = "fabric-loom:fabric-loom.gradle.plugin"
+version = "0.8-SNAPSHOT"
 
 [libraries.nexus-publish]
 module = "io.github.gradle-nexus:publish-plugin"
