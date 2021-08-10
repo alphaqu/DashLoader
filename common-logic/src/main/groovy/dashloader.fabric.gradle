@@ -26,14 +26,15 @@ repositories {
 }
 
 dependencies {
-    minecraft libs.minecraft
-    mappings libs.fabric.yarn
-    modImplementation libs.bundles.fabric
+    minecraft "com.mojang:minecraft:$project.minecraft_version"
+    mappings("net.fabricmc:yarn:$project.yarn_version:v2")
+    modImplementation "net.fabricmc:fabric-loader:$project.fabric_loader_version"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:$project.fabric_api_version"
 
-    modImplementation libs.modmenu
+    modImplementation "com.terraformersmc:modmenu:$project.modmenu_version"
 
-    api libs.dashloader.core
-    include libs.dashloader.core
+    api "net.oskarstrom.dashloader:dashloader-core:$project.dashloader_core_version"
+    include "net.oskarstrom.dashloader:dashloader-core:$project.dashloader_core_version"
 
     api project(":def-fabric-common")
     //TODO: do we need to JiJ it as well? if so we need to rethink the template thing
@@ -142,5 +143,19 @@ class MergeJson extends DefaultTask {
             }
             writer.write(JsonOutput.prettyPrint(JsonOutput.toJson(json)))
         }
+    }
+}
+
+
+abstract class FabricDefinitionExtension {
+    abstract boolean useJava16 = false
+}
+
+extensions.create("fabricDefinition", FabricDefinitionExtension)
+
+if (fabricDefinition.useJava16) {
+    tasks.withType(JavaCompile).configureEach {
+        // Minecraft 1.17 (21w19a) upwards uses Java 16.
+        options.release.set(16)
     }
 }

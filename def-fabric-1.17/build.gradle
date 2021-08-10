@@ -2,7 +2,6 @@ plugins {
     id 'dashloader.fabric'
 }
 
-tasks.withType(JavaCompile).configureEach {
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    options.release.set(16)
+fabricDefinition {
+    useJava16 true
 }
