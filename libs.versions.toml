@@ -28,3 +28,7 @@ version = "1.6.3+kotlin.1.5.21"
 [libraries.modmenu]
 module = "com.terraformersmc:modmenu"
 version = "2.0.2"
+
+[libraries.dashloader-core]
+module = "net.oskarstrom.dashloader:dashloader-core"
+version = "3.0-SNAPSHOT"

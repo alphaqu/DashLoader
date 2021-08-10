@@ -18,6 +18,11 @@ repositories {
         name "TerraformersMC"
         url getTerraformersMCMaven()
     }
+    mavenCentral()
+    maven {
+        name "Sonatype Snapshots"
+        url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+    }
 }
 
 dependencies {
@@ -26,6 +31,12 @@ dependencies {
     modImplementation libs.bundles.fabric
 
     modImplementation libs.modmenu
+
+    api libs.dashloader.core
+    include libs.dashloader.core
+
+    api project(":def-fabric-common")
+    //TODO: do we need to JiJ it as well? if so we need to rethink the template thing
 }
 
 processResources {
