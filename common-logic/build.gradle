@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-gradle-plugin'
     id 'groovy-gradle-plugin'
 }
 
@@ -21,4 +22,13 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
     it.options.release.set(16) // Minecraft is Java 16
+}
+
+gradlePlugin {
+    plugins {
+        myPlugins {
+            id = 'fabric-definition'
+            implementationClass = 'net.oskarstrom.dashloader.gradle.fabric.FabricDefinitionPlugin'
+        }
+    }
 }
