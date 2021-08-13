@@ -3,6 +3,7 @@ import groovy.json.JsonSlurper
 
 plugins {
     id 'fabric-loom'
+    id 'java-library'
     id 'dashloader.definition'
 }
 

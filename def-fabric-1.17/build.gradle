@@ -2,6 +2,11 @@ plugins {
     id 'dashloader.fabric'
 }
 
+configurations.all {
+    resolutionStrategy.cacheDynamicVersionsFor 10, 'seconds'
+    resolutionStrategy.cacheChangingModulesFor 10, 'seconds'
+}
+
 fabricDefinition {
     useJava16 true
 }
