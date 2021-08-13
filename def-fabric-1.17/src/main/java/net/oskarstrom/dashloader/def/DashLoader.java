@@ -5,6 +5,7 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.text.Text;
 import net.oskarstrom.dashloader.core.DashLoaderManager;
 import net.oskarstrom.dashloader.core.util.ClassLoaderHelper;
+import net.oskarstrom.dashloader.def.data.DashSerializers;
 import net.oskarstrom.dashloader.def.data.VanillaData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
