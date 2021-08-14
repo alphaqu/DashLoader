@@ -1,13 +1,13 @@
 package net.oskarstrom.dashloader.def.api;
 
-import io.activej.serializer.SerializerBuilder;
+import it.unimi.dsi.fastutil.objects.*;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.oskarstrom.dashloader.api.Dashable;
-import net.oskarstrom.dashloader.api.registry.FactoryConstructor;
-import net.oskarstrom.dashloader.core.registry.FactoryConstructorImpl;
-import net.oskarstrom.dashloader.def.DashLoader;
+import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.api.registry.RegistryStorage;
+import net.oskarstrom.dashloader.core.DashLoaderManager;
 import net.oskarstrom.dashloader.def.blockstate.property.DashBooleanProperty;
 import net.oskarstrom.dashloader.def.blockstate.property.DashDirectionProperty;
 import net.oskarstrom.dashloader.def.blockstate.property.DashEnumProperty;
@@ -16,6 +16,7 @@ import net.oskarstrom.dashloader.def.blockstate.property.value.DashBooleanValue;
 import net.oskarstrom.dashloader.def.blockstate.property.value.DashDirectionValue;
 import net.oskarstrom.dashloader.def.blockstate.property.value.DashEnumValue;
 import net.oskarstrom.dashloader.def.blockstate.property.value.DashIntValue;
+import net.oskarstrom.dashloader.def.data.DashSerializers;
 import net.oskarstrom.dashloader.def.font.DashBitmapFont;
 import net.oskarstrom.dashloader.def.font.DashBlankFont;
 import net.oskarstrom.dashloader.def.font.DashTrueTypeFont;
@@ -37,16 +38,18 @@ import java.time.Instant;
 import java.util.*;
 import java.util.function.Consumer;
 
-@SuppressWarnings("removal")
 public class DashLoaderAPI {
 	public static final Logger LOGGER = LogManager.getLogger();
-	public final Map<DashDataType, Map<Class<?>, FactoryConstructor<?,?>>> mappings;
+	public final Map<DashDataType, MappingMap<?, ?>> mappings;
+	public final Object2ByteMap<DashDataType> storageMappings;
 	public final List<DashDataClass> dataClasses;
-
+	private final DashLoaderManager manager;
 	private boolean initialized = false;
 	private boolean failed = false;
 
-	public DashLoaderAPI() {
+	public DashLoaderAPI(DashLoaderManager manager) {
+		this.manager = manager;
+		storageMappings = Object2ByteMaps.synchronize(new Object2ByteOpenHashMap<>());
 		mappings = Collections.synchronizedMap(new HashMap<>());
 		dataClasses = Collections.synchronizedList(new ArrayList<>());
 	}
@@ -54,16 +57,19 @@ public class DashLoaderAPI {
 
 	private void clearAPI() {
 		mappings.clear();
+		storageMappings.clear();
 		dataClasses.clear();
 	}
 
 	private void addType(DashDataType type, Class<?> dashClass) {
-		DashLoader.getInstance().getCoreManager().getSerializerManager().addSubclass(type.internalName, dashClass);
+		manager.getSerializerManager().addSubclass(type.internalName, dashClass);
 	}
 
-	private void addFactoryToType(DashDataType type, Class<?> dashClass, Class<?> targetClass, FactoryConstructor<?,?> constructor) {
+	private <F, D extends Dashable<F>> void addFactoryToType(DashDataType type, Class<F> targetClass, Class<D> dashClass) {
 		addType(type, dashClass);
-		mappings.computeIfAbsent(type, type1 -> Collections.synchronizedMap(new HashMap<>())).put(targetClass, constructor);
+		//noinspection unchecked
+		final MappingMap<F, D> mappingMap = (MappingMap<F, D>) mappings.computeIfAbsent(type, type1 -> new MappingMap<>(new Object2ObjectOpenHashMap<>()));
+		mappingMap.put(targetClass, dashClass);
 		LOGGER.info("Added custom DashObject: {} {}", type, dashClass.getSimpleName());
 	}
 
@@ -85,7 +91,7 @@ public class DashLoaderAPI {
 		return null;
 	}
 
-	public <F,D extends Dashable<F>> void registerDashObject(Class<D> dashClass) {
+	public <F, D extends Dashable<F>> void registerDashObject(Class<D> dashClass) {
 		final Class<?>[] interfaces = dashClass.getInterfaces();
 		if (interfaces.length == 0) {
 			LOGGER.error("No Interfaces found. Class: {}", dashClass.getSimpleName());
@@ -114,15 +120,7 @@ public class DashLoaderAPI {
 		}
 		if (type != DashDataType.DATA) {
 			final Class<F> rawClass = (Class<F>) annotation.value();
-			try {
-				addFactoryToType(type, dashClass, rawClass, FactoryConstructorImpl.createConstructor(rawClass,dashClass));
-			} catch (NoSuchMethodException e) {
-				LOGGER.error("Constructor not matching/found. Expected: {}", e.getMessage());
-				failed = true;
-			} catch (IllegalAccessException e) {
-				LOGGER.error("Constructor not accessible in {}", dashClass.getSimpleName());
-				failed = true;
-			}
+			addFactoryToType(type, rawClass, dashClass);
 		} else {
 			try {
 				addDataObjectToType(type, dashClass);
@@ -173,15 +171,31 @@ public class DashLoaderAPI {
 					applyForClassesInValue(metadata, "dashloader:customobject", this::registerDashObject);
 				}
 			});
-			if (failed) {
+
+			if (failed)
 				throw new RuntimeException("Failed to initialize the API");
-			}
+			DashSerializers.initSerializers();
+			mappings.forEach(this::addRegistryStorage);
 			LOGGER.info("[" + Duration.between(start, Instant.now()).toMillis() + "ms] Initialized api.");
 			initialized = true;
 		}
 	}
 
-	private <F,D extends Dashable<F>> void applyForClassesInValue(ModMetadata modMetadata, String valueName, Consumer<Class<D>> func) {
+	private <F, D extends Dashable<F>> void addRegistryStorage(DashDataType data, MappingMap<F, D> map) {
+		final DashRegistry registry = manager.getRegistry();
+		final RegistryStorage<F> multiRegistry = manager.getStorageManager().createMultiRegistry(map, registry);
+
+		//add registry storage to the registry
+		final byte storagePointer = registry.addStorage(multiRegistry);
+
+		//create all pointers to that registry
+		map.keySet().forEach(fClass -> registry.addMapping(fClass, storagePointer));
+
+		//save that registry for future use
+		storageMappings.put(data, storagePointer);
+	}
+
+	private <F, D extends Dashable<F>> void applyForClassesInValue(ModMetadata modMetadata, String valueName, Consumer<Class<D>> func) {
 		CustomValue value = modMetadata.getCustomValue(valueName);
 		if (value != null) {
 			for (CustomValue customValue : value.getAsArray()) {
@@ -194,6 +208,37 @@ public class DashLoaderAPI {
 					failed = true;
 				}
 			}
+		}
+	}
+
+	private static class MappingMap<T, D extends Dashable<T>> extends AbstractObject2ObjectMap<Class<T>, Class<D>> {
+
+		private final Object2ObjectMap<Class<T>, Class<D>> delegate;
+
+		private MappingMap(Object2ObjectMap<Class<T>, Class<D>> delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public int size() {
+			return delegate.size();
+		}
+
+		@Override
+		public ObjectSet<Entry<Class<T>, Class<D>>> object2ObjectEntrySet() {
+			return delegate.object2ObjectEntrySet();
+		}
+
+
+		@Override
+		public Class<D> get(Object key) {
+			return delegate.get(key);
+		}
+
+		@Override
+		public Class<D> put(Class<T> key, Class<D> value) {
+			return super.put(key, value);
+
 		}
 	}
 
