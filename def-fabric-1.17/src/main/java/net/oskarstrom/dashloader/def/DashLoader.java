@@ -11,6 +11,7 @@ import net.oskarstrom.dashloader.def.api.DashLoaderAPI;
 import net.oskarstrom.dashloader.def.data.DashSerializers;
 import net.oskarstrom.dashloader.def.data.VanillaData;
 import net.oskarstrom.dashloader.def.data.serialize.MappingData;
+import net.oskarstrom.dashloader.def.data.serialize.RegistryData;
 import net.oskarstrom.dashloader.def.util.enums.DashCachePaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,10 +113,11 @@ public class DashLoader {
 		mappings.loadVanillaData(VANILLA_DATA, registry, TASK_HANDLER);
 
 
+
 		try {
-			DashSerializers.REGISTRY_SERIALIZER.serialize("", new DashRegistryData(registry), "Cache");
+			DashSerializers.REGISTRY_SERIALIZER.serialize("",new RegistryData(registry));
 			DashSerializers.IMAGE_SERIALIZER.serialize("", new RegistryImageData(registry.images));
-			DashSerializers.MODEL_SERIALIZER.serialize("", new RegistryModelData(registry.models), "Model Cache");
+			DashSerializers.MODEL_SERIALIZER.serialize("", new RegistryModelData(registry.models));
 			DashSerializers.MAPPING_SERIALIZER.serialize("", mappings);
 		} catch (IOException e) {
 			e.printStackTrace();
