@@ -3,7 +3,7 @@ package net.oskarstrom.dashloader.def;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.text.Text;
-
+import net.minecraft.util.TimeHelper;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.DashLoaderManager;
 import net.oskarstrom.dashloader.core.util.ClassLoaderHelper;
@@ -11,6 +11,7 @@ import net.oskarstrom.dashloader.def.api.DashLoaderAPI;
 import net.oskarstrom.dashloader.def.data.DashSerializers;
 import net.oskarstrom.dashloader.def.data.VanillaData;
 import net.oskarstrom.dashloader.def.data.serialize.MappingData;
+import net.oskarstrom.dashloader.def.util.enums.DashCachePaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,6 +48,10 @@ public class DashLoader {
 
 	public static Path getConfig() {
 		return CONFIG;
+	}
+
+	public DashLoaderAPI getApi() {
+		return api;
 	}
 
 	public static DashLoader getInstance() {
@@ -95,7 +100,7 @@ public class DashLoader {
 		}
 	}
 
-	public void saveDashCache() {
+	public void saveDashCache()  {
 		Instant start = Instant.now();
 		TASK_HANDLER.reset();
 
@@ -105,12 +110,16 @@ public class DashLoader {
 		DashRegistry registry = coreManager.getRegistry();
 		MappingData mappings = new MappingData();
 		mappings.loadVanillaData(VANILLA_DATA, registry, TASK_HANDLER);
-		final Map<Class<?>, DashDataType> apiFailed = registry.apiFailed;
 
-		DashSerializers.REGISTRY_SERIALIZER.serialize("",new DashRegistryData(registry), "Cache");
-		DashSerializers.IMAGE_SERIALIZER.serialize("",new RegistryImageData(registry.images));
-		DashSerializers.MODEL_SERIALIZER.serialize("",new RegistryModelData(registry.models), "Model Cache");
-		DashSerializers.MAPPING_SERIALIZER.serialize("",mappings, "Mapping");
+
+		try {
+			DashSerializers.REGISTRY_SERIALIZER.serialize("", new DashRegistryData(registry), "Cache");
+			DashSerializers.IMAGE_SERIALIZER.serialize("", new RegistryImageData(registry.images));
+			DashSerializers.MODEL_SERIALIZER.serialize("", new RegistryModelData(registry.models), "Model Cache");
+			DashSerializers.MAPPING_SERIALIZER.serialize("", mappings);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		shutdownThreadPool();
 		TASK_HANDLER.setCurrentTask("Caching is now complete.");
 		LOGGER.info("Created cache in " + TimeHelper.getDecimalS(start, Instant.now()) + "s");
@@ -151,7 +160,6 @@ public class DashLoader {
 			}
 		}
 	}
-
 
 
 	private void initThreadPool() {

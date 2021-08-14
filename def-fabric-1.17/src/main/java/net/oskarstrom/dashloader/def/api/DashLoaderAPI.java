@@ -82,7 +82,7 @@ public class DashLoaderAPI {
 
 	private DashDataType getTypeFromFactoryInterface(Class<?> closs) {
 		for (DashDataType value : DashDataType.values()) {
-			if (value.factoryInterface == closs) {
+			if (value.clazz == closs) {
 				return value;
 			}
 		}
