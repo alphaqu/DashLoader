@@ -79,8 +79,7 @@ public class DashBasicBakedModel implements DashModel {
 		usesAo = access.getUsesAo();
 		hasDepth = access.getHasDepth();
 		isSideLit = access.getIsSideLit();
-		final ModelTransformation transformation = access.getTransformation();
-		this.transformation = transformation == ModelTransformation.NONE ? null : DashModelTransformation.createDashModelTransformation(transformation);
+		this.transformation = DashModelTransformation.createDashOrReturnNullIfDefault(access.getTransformation());
 		spritePointer = registry.add(access.getSprite());
 	}
 
@@ -92,7 +91,7 @@ public class DashBasicBakedModel implements DashModel {
 		final Map<Direction, List<BakedQuad>> faceQuadsOut = DashHelper.convertCollectionToMap(faceQuads, (entry) ->
 				Pair.of(entry.getKey().toUndash(registry), DashHelper.convertCollection(entry.getValue(), registry::get)));
 
-		return new BasicBakedModel(quadsOut, faceQuadsOut, usesAo, isSideLit, hasDepth, sprite, transformation == null ? ModelTransformation.NONE : transformation.toUndash(), itemPropertyOverrides.toUndash(registry));
+		return new BasicBakedModel(quadsOut, faceQuadsOut, usesAo, isSideLit, hasDepth, sprite, DashModelTransformation.toUndashOrDefault(transformation), itemPropertyOverrides.toUndash(registry));
 	}
 
 	@Override

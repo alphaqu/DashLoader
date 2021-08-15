@@ -40,7 +40,7 @@ public class DashBuiltinBakedModel implements DashModel {
 	public DashBuiltinBakedModel(BuiltinBakedModel builtinBakedModel, DashRegistry registry) {
 		BuiltinBakedModelAccessor access = ((BuiltinBakedModelAccessor) builtinBakedModel);
 		final ModelTransformation transformation = access.getTransformation();
-		this.transformation = transformation == ModelTransformation.NONE ? null : DashModelTransformation.createDashModelTransformation(transformation);
+		this.transformation = DashModelTransformation.createDashOrReturnNullIfDefault(transformation);
 		itemPropertyOverrides = new DashModelOverrideList(access.getItemPropertyOverrides(), registry);
 		spritePointer = registry.add(access.getSprite());
 		sideLit = access.getSideLit();
@@ -50,7 +50,7 @@ public class DashBuiltinBakedModel implements DashModel {
 	@Override
 	public BuiltinBakedModel toUndash(DashRegistry registry) {
 		Sprite sprite = registry.get(spritePointer);
-		return new BuiltinBakedModel(transformation == null ? ModelTransformation.NONE : transformation.toUndash(), itemPropertyOverrides.toUndash(registry), sprite, sideLit);
+		return new BuiltinBakedModel(DashModelTransformation.toUndashOrDefault(transformation), itemPropertyOverrides.toUndash(registry), sprite, sideLit);
 	}
 
 	@Override

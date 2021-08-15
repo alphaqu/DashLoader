@@ -3,8 +3,13 @@ plugins {
 }
 
 configurations.all {
+    //DashLoader Code snapshot versions.
     resolutionStrategy.cacheDynamicVersionsFor 10, 'seconds'
     resolutionStrategy.cacheChangingModulesFor 10, 'seconds'
+}
+
+minecraft {
+    accessWidener = file("src/main/resources/dashloader.accesswidener")
 }
 
 fabricDefinition {

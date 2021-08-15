@@ -76,20 +76,34 @@ public class DashModelTransformation {
 		this.fixed = createTransformation(other.fixed);
 	}
 
-	public static DashModelTransformation createDashModelTransformation(ModelTransformation other) {
-		DashModelTransformation out = new DashModelTransformation(other);
-		if (out.nullTransformations == 8) {
+	@Nullable
+	public static DashModelTransformation createDashOrReturnNullIfDefault(ModelTransformation other) {
+		if (other == ModelTransformation.NONE)
 			return null;
-		}
+
+		DashModelTransformation out = new DashModelTransformation(other);
+
+		if (out.nullTransformations == 8)
+			return null;
+
 		return out;
 	}
 
+	@Nullable
+	public static ModelTransformation toUndashOrDefault(@Nullable DashModelTransformation other) {
+		if (other == null)
+			return ModelTransformation.NONE;
+
+		return other.toUndash();
+	}
+
 	private DashTransformation createTransformation(Transformation transformation) {
-		final DashTransformation dashTransformation = transformation == Transformation.IDENTITY ? null : new DashTransformation(transformation);
-		if (dashTransformation == null) {
+		if (transformation == Transformation.IDENTITY) {
 			nullTransformations++;
+			return null;
+		} else {
+			return new DashTransformation(transformation);
 		}
-		return dashTransformation;
 	}
 
 	private Transformation unDashTransformation(DashTransformation transformation) {

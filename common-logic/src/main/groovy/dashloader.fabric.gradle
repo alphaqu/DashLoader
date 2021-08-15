@@ -2,13 +2,16 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 plugins {
-    id 'fabric-loom'
+    id 'fabric-loom' apply true;
     id 'java-library'
     id 'dashloader.definition'
 }
 
 group "net.oskarstrom.dashloader"
 version "${project.definitionVersion}"
+
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 repositories {
     maven {

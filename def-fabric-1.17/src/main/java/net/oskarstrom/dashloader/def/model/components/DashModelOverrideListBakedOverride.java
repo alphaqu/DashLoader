@@ -6,6 +6,8 @@ import io.activej.serializer.annotations.SerializeNullable;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.mixin.accessor.ModelOverrideListBakedOverrideAccessor;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,30 +17,25 @@ public class DashModelOverrideListBakedOverride {
 	@Nullable
 	@Serialize(order = 1)
 	@SerializeNullable
-	public final Integer model; // temp
+	public final Pointer model; // temp
 
 	public DashModelOverrideListBakedOverride(@Deserialize("conditions") DashModelOverrideListInlinedCondition[] conditions,
-											  @Deserialize("model") @Nullable Integer model) {
+											  @Deserialize("model") @Nullable Pointer model) {
 		this.conditions = conditions;
 		this.model = model;
 	}
 
 
 	public DashModelOverrideListBakedOverride(ModelOverrideList.BakedOverride override, DashRegistry registry) {
-		final ModelOverrideList.InlinedCondition[] conditions = ((ModelOverrideListBakedOverrideAccessor) override).getConditions();
-		this.conditions = new DashModelOverrideListInlinedCondition[conditions.length];
-		for (int i = 0; i < conditions.length; i++) {
-			this.conditions[i] = new DashModelOverrideListInlinedCondition(conditions[i]);
-		}
-		final BakedModel model = ((ModelOverrideListBakedOverrideAccessor) override).getModel();
-		this.model = model == null ? null : registry.models.register(model);
+		final ModelOverrideListBakedOverrideAccessor access = (ModelOverrideListBakedOverrideAccessor) override;
+
+		this.conditions = DashHelper.convertArrays(access.getConditions(), DashModelOverrideListInlinedCondition::new);
+		this.model = DashHelper.nullable(access.getModel(), registry::add);
+
 	}
 
 	public ModelOverrideList.BakedOverride toUndash(DashRegistry registry) {
-		final ModelOverrideList.InlinedCondition[] conditions = new ModelOverrideList.InlinedCondition[this.conditions.length];
-		for (int i = 0; i < this.conditions.length; i++) {
-			conditions[i] = this.conditions[i].toUndash();
-		}
-		return ModelOverrideListBakedOverrideAccessor.newModelOverrideListBakedOverride(conditions, model == null ? null : registry.models.getObject(model));
+		final var conditions = DashHelper.convertArrays(this.conditions, DashModelOverrideListInlinedCondition::toUndash);
+		return ModelOverrideListBakedOverrideAccessor.newModelOverrideListBakedOverride(conditions, DashHelper.nullable(model, registry::get));
 	}
 }
