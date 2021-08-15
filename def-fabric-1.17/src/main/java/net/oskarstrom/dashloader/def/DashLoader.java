@@ -28,7 +28,13 @@ import java.util.concurrent.ForkJoinWorkerThread;
 
 public class DashLoader {
 	public static final Logger LOGGER = LogManager.getLogger("DashLoader");
-	public static final String VERSION = FabricLoader.getInstance().getModContainer("dashloader").get().getMetadata().getVersion().getFriendlyString();
+	public static final String VERSION = FabricLoader.getInstance()
+		.getModContainer("dashloader")
+		.orElseThrow(() -> new IllegalStateException("DashLoader not found... apparently! WTF?"))
+		.getMetadata()
+		.getVersion()
+		.getFriendlyString();
+
 	public static final TaskHandler TASK_HANDLER = new TaskHandler(LOGGER);
 	private static final Path CONFIG = FabricLoader.getInstance().getConfigDir().normalize();
 	private static final VanillaData VANILLA_DATA = new VanillaData();
