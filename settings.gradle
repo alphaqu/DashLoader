@@ -10,6 +10,3 @@ pluginManagement {
 }
 
 rootProject.name = 'dashloader-definitions'
-includeBuild 'common-logic'
-
-include 'def-fabric-common', 'def-fabric-1.17', 'def-fabric-1.16'

@@ -1,7 +1,0 @@
-plugins {
-    id 'dashloader.common'
-}
-
-group "net.oskarstrom.dashloader"
-version "${project.definitionVersion}"
-
