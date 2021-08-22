@@ -9,6 +9,8 @@ import net.oskarstrom.dashloader.def.util.enums.DashCachePaths;
 import net.oskarstrom.dashloader.api.serializer.DashSerializer;
 import net.oskarstrom.dashloader.api.serializer.DashSerializerManager;
 
+import java.nio.file.Path;
+
 public class DashSerializers {
 	public static DashSerializer<ModelData> MODEL_SERIALIZER;
 	public static DashSerializer<RegistryData> REGISTRY_SERIALIZER;
@@ -16,11 +18,12 @@ public class DashSerializers {
 	public static DashSerializer<ImageData> IMAGE_SERIALIZER;
 
 	public static void initSerializers() {
-		final DashSerializerManager serializerManager = DashLoader.getInstance().getCoreManager().getSerializerManager();
-		serializerManager.loadOrCreateSerializer("model",    ModelData.class,    DashCachePaths.REGISTRY_MODEL_CACHE.getPath(), "models");
-		serializerManager.loadOrCreateSerializer("registry", RegistryData.class, DashCachePaths.REGISTRY_CACHE.getPath(), "predicates", "fonts", "properties", "values", "data");
-		serializerManager.loadOrCreateSerializer("mapping",  MappingData.class,  DashCachePaths.MAPPINGS_CACHE.getPath());
-		serializerManager.loadOrCreateSerializer("image",    ImageData.class,    DashCachePaths.REGISTRY_IMAGE_CACHE.getPath());
+		final DashSerializerManager serializerManager = DashLoader.getInstance().getSerializerManager();
+		final Path resourcePackBoundDir = DashLoader.getInstance().getResourcePackBoundDir();
+		serializerManager.loadOrCreateSerializer("model",    ModelData.class,    resourcePackBoundDir, "models");
+		serializerManager.loadOrCreateSerializer("registry", RegistryData.class, resourcePackBoundDir, "predicates", "fonts", "properties", "values", "data");
+		serializerManager.loadOrCreateSerializer("mapping",  MappingData.class,  resourcePackBoundDir);
+		serializerManager.loadOrCreateSerializer("image",    ImageData.class,    resourcePackBoundDir);
 
 		MODEL_SERIALIZER = serializerManager.getSerializer(ModelData.class);
 		REGISTRY_SERIALIZER = serializerManager.getSerializer(RegistryData.class);

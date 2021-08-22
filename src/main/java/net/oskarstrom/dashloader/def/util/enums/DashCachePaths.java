@@ -1,5 +1,6 @@
 package net.oskarstrom.dashloader.def.util.enums;
 
+import net.oskarstrom.dashloader.core.util.PathConstants;
 import net.oskarstrom.dashloader.def.DashLoader;
 
 import java.nio.file.Path;
@@ -17,8 +18,8 @@ public enum DashCachePaths {
 		this.path = path;
 	}
 
-	public Path getPath() {
-		return DashLoader.getInstance().getResourcePackBoundDir().resolve(path + ".activej");
+	public String getFileName(boolean data) {
+		return path + (data ? PathConstants.DATA_EXTENSION :  PathConstants.CACHE_EXTENSION);
 
 	}
 }

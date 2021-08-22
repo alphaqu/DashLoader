@@ -4,10 +4,9 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.oskarstrom.dashloader.DashLoader;
-import net.oskarstrom.dashloader.api.DashConfig;
-import net.oskarstrom.dashloader.api.feature.Feature;
-import net.oskarstrom.dashloader.api.feature.FeatureHandler;
+
+import net.oskarstrom.dashloader.def.DashLoader;
+import net.oskarstrom.dashloader.def.api.feature.FeatureHandler;
 import org.apache.commons.io.FileUtils;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -26,7 +25,8 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public void onLoad(String mixinPackage) {
-		FeatureHandler.init();
+		//TODO config
+/*		FeatureHandler.init();
 		for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
 			final ModMetadata metadata = mod.getMetadata();
 			if (metadata.containsCustomValue("dashloader:disablefeature")) {
@@ -62,7 +62,7 @@ public class MixinPlugin implements IMixinConfigPlugin {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 
 	}
 

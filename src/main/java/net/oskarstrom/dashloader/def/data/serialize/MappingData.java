@@ -1,10 +1,6 @@
 package net.oskarstrom.dashloader.def.data.serialize;
 
 import com.mojang.blaze3d.platform.TextureUtil;
-import def.data.serialize.mapping.*;
-import net.oskarstrom.dashloader.def.mixin.accessor.AbstractTextureAccessor;
-import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAccessor;
-import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAtlasTextureAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.render.model.SpriteAtlasManager;
@@ -19,8 +15,11 @@ import net.oskarstrom.dashloader.def.api.feature.Feature;
 import net.oskarstrom.dashloader.def.data.VanillaData;
 import net.oskarstrom.dashloader.def.data.serialize.mapping.*;
 import net.oskarstrom.dashloader.def.image.DashSpriteAtlasTextureData;
+import net.oskarstrom.dashloader.def.mixin.accessor.AbstractTextureAccessor;
+import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAccessor;
+import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAtlasTextureAccessor;
 import org.apache.commons.lang3.tuple.Pair;
-import org.benf.cfr.reader.util.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;

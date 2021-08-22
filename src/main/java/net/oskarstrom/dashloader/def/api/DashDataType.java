@@ -4,6 +4,7 @@ import net.oskarstrom.dashloader.def.blockstate.DashBlockState;
 import net.oskarstrom.dashloader.def.blockstate.property.DashProperty;
 import net.oskarstrom.dashloader.def.blockstate.property.value.DashPropertyValue;
 import net.oskarstrom.dashloader.def.font.DashFont;
+import net.oskarstrom.dashloader.def.image.DashImage;
 import net.oskarstrom.dashloader.def.model.DashModel;
 import net.oskarstrom.dashloader.def.model.predicates.DashPredicate;
 
@@ -20,6 +21,7 @@ public enum DashDataType {
 	BLOCKSTATE("Blockstate", "blockstate", DashBlockState.class, false),
 	IDENTIFIER("Blockstate", "blockstate", DashBlockState.class, false),
 	SPRITE("Blockstate", "blockstate", DashBlockState.class, false),
+	NATIVEIMAGE("Nativeimage", "nativeimage", DashImage.class, false),
 	BAKEDQUAD("Blockstate", "blockstate", DashBlockState.class, false),
 	//misc
 	DEFAULT("something went wrong", "omegakek", null, true);

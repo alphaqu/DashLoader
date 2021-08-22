@@ -10,6 +10,12 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
+configurations.all {
+    //DashLoader Code snapshot versions.
+    resolutionStrategy.cacheDynamicVersionsFor 1, 'minutes'
+    resolutionStrategy.cacheChangingModulesFor 1, 'minutes'
+}
+
 repositories {
     mavenCentral();
     maven {

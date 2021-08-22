@@ -1,4 +1,4 @@
-package net.oskarstrom.dashloader.def.data;
+package net.oskarstrom.dashloader.def.common;
 
 import net.minecraft.util.Identifier;
 import net.oskarstrom.dashloader.api.Dashable;

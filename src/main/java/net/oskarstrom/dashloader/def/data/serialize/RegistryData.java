@@ -4,9 +4,9 @@ import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import io.activej.serializer.annotations.SerializeSubclasses;
 import it.unimi.dsi.fastutil.objects.Object2ByteMap;
-import net.oskarstrom.dashloader.api.Dashable;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.RegistryStorageManager;
+import net.oskarstrom.dashloader.api.registry.RegistryStorage;
+import net.oskarstrom.dashloader.api.registry.RegistryStorageData;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.api.DashDataClass;
 import net.oskarstrom.dashloader.def.api.DashDataType;
@@ -14,7 +14,7 @@ import net.oskarstrom.dashloader.def.api.DashLoaderAPI;
 import net.oskarstrom.dashloader.def.blockstate.DashBlockState;
 import net.oskarstrom.dashloader.def.blockstate.property.DashProperty;
 import net.oskarstrom.dashloader.def.blockstate.property.value.DashPropertyValue;
-import net.oskarstrom.dashloader.def.data.DashIdentifierInterface;
+import net.oskarstrom.dashloader.def.common.DashIdentifierInterface;
 import net.oskarstrom.dashloader.def.font.DashFont;
 import net.oskarstrom.dashloader.def.image.DashSprite;
 import net.oskarstrom.dashloader.def.model.components.DashBakedQuad;
@@ -23,36 +23,36 @@ import net.oskarstrom.dashloader.def.model.predicates.DashPredicate;
 import java.util.List;
 import java.util.function.Function;
 
-public class RegistryData {
+public class RegistryData implements RegistryDataObject {
 	@Serialize(order = 0)
-	public final DashBlockState[] blockStateRegistryData;
+	public final RegistryStorageData<DashBlockState> blockStateRegistryData;
 	@Serialize(order = 1)
-	public final DashFont[] fontRegistryData;
+	public final RegistryStorageData<DashFont> fontRegistryData;
 	@Serialize(order = 2)
-	public final DashIdentifierInterface[] identifierRegistryData;
+	public final RegistryStorageData<DashIdentifierInterface> identifierRegistryData;
 	@Serialize(order = 3)
-	public final DashProperty[] propertyRegistryData;
+	public final RegistryStorageData<DashProperty> propertyRegistryData;
 	@Serialize(order = 4)
-	public final DashPropertyValue[] propertyValueRegistryData;
+	public final RegistryStorageData<DashPropertyValue> propertyValueRegistryData;
 	@Serialize(order = 5)
-	public final DashSprite[] spriteRegistryData;
+	public final RegistryStorageData<DashSprite> spriteRegistryData;
 	@Serialize(order = 6)
-	public final DashPredicate[] predicateRegistryData;
+	public final RegistryStorageData<DashPredicate> predicateRegistryData;
 	@Serialize(order = 7)
-	public final DashBakedQuad[] registryBakedQuadData;
+	public final RegistryStorageData<DashBakedQuad> registryBakedQuadData;
 	@Serialize(order = 8)
 	@SerializeSubclasses(extraSubclassesId = "data", path = {0})
 	public final List<DashDataClass> dataClassList;
 
 
-	public RegistryData(@Deserialize("blockStateRegistryData") DashBlockState[] blockStateRegistryData,
-						@Deserialize("fontRegistryData") DashFont[] fontRegistryData,
-						@Deserialize("identifierRegistryData") DashIdentifierInterface[] identifierRegistryData,
-						@Deserialize("propertyRegistryData") DashProperty[] propertyRegistryData,
-						@Deserialize("propertyValueRegistryData") DashPropertyValue[] propertyValueRegistryData,
-						@Deserialize("spriteRegistryData") DashSprite[] spriteRegistryData,
-						@Deserialize("predicateRegistryData") DashPredicate[] predicateRegistryData,
-						@Deserialize("registryBakedQuadData") DashBakedQuad[] registryBakedQuadData,
+	public RegistryData(@Deserialize("blockStateRegistryData") RegistryStorageData<DashBlockState> blockStateRegistryData,
+						@Deserialize("fontRegistryData") RegistryStorageData<DashFont> fontRegistryData,
+						@Deserialize("identifierRegistryData") RegistryStorageData<DashIdentifierInterface> identifierRegistryData,
+						@Deserialize("propertyRegistryData") RegistryStorageData<DashProperty> propertyRegistryData,
+						@Deserialize("propertyValueRegistryData") RegistryStorageData<DashPropertyValue> propertyValueRegistryData,
+						@Deserialize("spriteRegistryData") RegistryStorageData<DashSprite> spriteRegistryData,
+						@Deserialize("predicateRegistryData") RegistryStorageData<DashPredicate> predicateRegistryData,
+						@Deserialize("registryBakedQuadData") RegistryStorageData<DashBakedQuad> registryBakedQuadData,
 						@Deserialize("dataClassList") List<DashDataClass> dataClassList) {
 		this.blockStateRegistryData = blockStateRegistryData;
 		this.fontRegistryData = fontRegistryData;
@@ -65,33 +65,37 @@ public class RegistryData {
 		this.dataClassList = dataClassList;
 	}
 
+	@SuppressWarnings("unchecked")
 	public RegistryData(DashRegistry registry) {
 		final DashLoaderAPI api = DashLoader.getInstance().getApi();
 		final Object2ByteMap<DashDataType> mappings = api.storageMappings;
-		Function<DashDataType, Dashable<?>[]> getter = ((type) -> registry.getStorage(mappings.getByte(type)).getDashables());
-
-		this.blockStateRegistryData = (DashBlockState[]) getter.apply(DashDataType.BLOCKSTATE);
-		this.fontRegistryData = (DashFont[]) getter.apply(DashDataType.FONT);
-		this.identifierRegistryData = (DashIdentifierInterface[]) getter.apply(DashDataType.IDENTIFIER);
-		this.propertyRegistryData = (DashProperty[]) getter.apply(DashDataType.PROPERTY);
-		this.propertyValueRegistryData = (DashPropertyValue[]) getter.apply(DashDataType.PROPERTY_VALUE);
-		this.spriteRegistryData = (DashSprite[]) getter.apply(DashDataType.SPRITE);
-		this.predicateRegistryData = (DashPredicate[]) getter.apply(DashDataType.PREDICATE);
-		this.registryBakedQuadData = (DashBakedQuad[]) getter.apply(DashDataType.BAKEDQUAD);
+		Function<DashDataType, RegistryStorageData<?>> getter = ((type) -> registry.getStorageData(mappings.getByte(type)));
+		this.blockStateRegistryData = (RegistryStorageData<DashBlockState>) getter.apply(DashDataType.BLOCKSTATE);
+		this.fontRegistryData = (RegistryStorageData<DashFont>) getter.apply(DashDataType.FONT);
+		this.identifierRegistryData = (RegistryStorageData<DashIdentifierInterface>) getter.apply(DashDataType.IDENTIFIER);
+		this.propertyRegistryData = (RegistryStorageData<DashProperty>) getter.apply(DashDataType.PROPERTY);
+		this.propertyValueRegistryData = (RegistryStorageData<DashPropertyValue>) getter.apply(DashDataType.PROPERTY_VALUE);
+		this.spriteRegistryData = (RegistryStorageData<DashSprite>) getter.apply(DashDataType.SPRITE);
+		this.predicateRegistryData = (RegistryStorageData<DashPredicate>) getter.apply(DashDataType.PREDICATE);
+		this.registryBakedQuadData = (RegistryStorageData<DashBakedQuad>) getter.apply(DashDataType.BAKEDQUAD);
 
 		// TODO data classes
 		this.dataClassList = api.dataClasses;
 	}
 
 	public void dumpData(DashRegistry dashRegistry) {
-		final RegistryStorageManager storageManager = DashLoader.getInstance().getCoreManager().getStorageManager();
-		dashRegistry.addStorage(storageManager.createSupplierRegistry(blockStateRegistryData, dashRegistry));
-		dashRegistry.addStorage(storageManager.createSupplierRegistry(fontRegistryData, dashRegistry));
-		dashRegistry.addStorage(storageManager.createSupplierRegistry(identifierRegistryData, dashRegistry));
-		dashRegistry.addStorage(storageManager.createSupplierRegistry(propertyRegistryData, dashRegistry));
-		dashRegistry.addStorage(storageManager.createSupplierRegistry(propertyValueRegistryData, dashRegistry));
-		dashRegistry.addStorage(storageManager.createSupplierRegistry(spriteRegistryData, dashRegistry));
-		dashRegistry.addStorage(storageManager.createSupplierRegistry(predicateRegistryData, dashRegistry));
-		dashRegistry.addStorage(storageManager.createSupplierRegistry(registryBakedQuadData, dashRegistry));
+		dashRegistry.addStorage(blockStateRegistryData);
+		dashRegistry.addStorage(fontRegistryData);
+		dashRegistry.addStorage(identifierRegistryData);
+		dashRegistry.addStorage(propertyRegistryData);
+		dashRegistry.addStorage(propertyValueRegistryData);
+		dashRegistry.addStorage(spriteRegistryData);
+		dashRegistry.addStorage(predicateRegistryData);
+		dashRegistry.addStorage(registryBakedQuadData);
+	}
+
+	@Override
+	public int getSize() {
+		return 8;
 	}
 }

@@ -1,7 +1,7 @@
-package net.oskarstrom.dashloader.def.model;
+package net.oskarstrom.dashloader.def.common;
 
 
-import net.oskarstrom.dashloader.def.data.DashIdentifierInterface;
+import net.oskarstrom.dashloader.def.common.DashIdentifierInterface;
 import net.oskarstrom.dashloader.def.mixin.accessor.ModelIdentifierAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
