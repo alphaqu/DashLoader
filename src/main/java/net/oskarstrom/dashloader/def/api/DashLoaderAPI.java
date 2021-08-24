@@ -11,6 +11,8 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 import net.oskarstrom.dashloader.api.Dashable;
+import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.api.registry.RegistryStorageFactory;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.blockstate.DashBlockState;
 import net.oskarstrom.dashloader.def.blockstate.property.DashBooleanProperty;
@@ -82,6 +84,9 @@ public class DashLoaderAPI {
 		//noinspection unchecked
 		final MappingMap<F, D> mappingMap = (MappingMap<F, D>) mappings.computeIfAbsent(type, type1 -> new MappingMap<>(new Object2ObjectOpenHashMap<>()));
 		mappingMap.put(targetClass, dashClass);
+
+		//add subclasses to the serializer
+		DashLoader.getInstance().getSerializerManager().addSubclass(type.internalName, dashClass);
 		LOGGER.info("Added custom DashObject: {} {}", type, dashClass.getSimpleName());
 	}
 
@@ -153,7 +158,7 @@ public class DashLoaderAPI {
 		registerDashObject(DashAndPredicate.class);
 		registerDashObject(DashOrPredicate.class);
 		registerDashObject(DashSimplePredicate.class);
-		addType(DashDataType.PREDICATE, DashStaticPredicate.class); // still cursed
+		registerDashObject(DashStaticPredicate.class); // no longer cursed
 
 		registerDashObject(DashBooleanProperty.class);
 		registerDashObject(DashDirectionProperty.class);
@@ -172,7 +177,7 @@ public class DashLoaderAPI {
 	}
 
 
-	public void initAPI() {
+	public void initAPI(DashRegistry registry) {
 		if (!initialized) {
 			Instant start = Instant.now();
 			clearAPI();
@@ -187,13 +192,13 @@ public class DashLoaderAPI {
 			if (failed)
 				throw new RuntimeException("Failed to initialize the API");
 			DashSerializers.initSerializers();
-			addStorages();
+			addStorages(registry);
 			LOGGER.info("[" + Duration.between(start, Instant.now()).toMillis() + "ms] Initialized api.");
 			initialized = true;
 		}
 	}
 
-	private void addStorages() {
+	private void addStorages(DashRegistry registry) {
 
 
 		// TODO add data
@@ -203,36 +208,35 @@ public class DashLoaderAPI {
 		List<Map.Entry<Class<? extends Identifier>, Class<? extends DashIdentifierInterface>>> identifiers = new ArrayList<>();
 		identifiers.add(Pair.of(Identifier.class, DashIdentifier.class));
 		identifiers.add(Pair.of(ModelIdentifier.class, DashModelIdentifier.class));
-		addMultiRegistryStorage(DashDataType.IDENTIFIER, identifiers);
+		addMultiRegistryStorage(registry, DashDataType.IDENTIFIER, identifiers);
 
 		//stage 1.5 (images)
-		addSimpleRegistryStorage(DashDataType.NATIVEIMAGE, NativeImage.class, DashImage.class);
+		addSimpleRegistryStorage(registry, DashDataType.NATIVEIMAGE, NativeImage.class, DashImage.class);
 
 		//stage 2 (blockstate dependencies)
-		addMultiRegistryStorage(DashDataType.PROPERTY, mappings.get(DashDataType.PROPERTY).entrySet());
-		addMultiRegistryStorage(DashDataType.PROPERTY_VALUE, mappings.get(DashDataType.PROPERTY_VALUE).entrySet());
+		addMultiRegistryStorage(registry, DashDataType.PROPERTY, mappings.get(DashDataType.PROPERTY).entrySet());
+		addMultiRegistryStorage(registry, DashDataType.PROPERTY_VALUE, mappings.get(DashDataType.PROPERTY_VALUE).entrySet());
 
 		//stage 2.5 (blockstate)
-		addSimpleRegistryStorage(DashDataType.BLOCKSTATE, BlockState.class, DashBlockState.class);
+		addSimpleRegistryStorage(registry, DashDataType.BLOCKSTATE, BlockState.class, DashBlockState.class);
 
 		//stage 3 (model dependencies)
-		addMultiRegistryStorage(DashDataType.PREDICATE, mappings.get(DashDataType.PREDICATE).entrySet());
-		addSimpleRegistryStorage(DashDataType.SPRITE, Sprite.class, DashSprite.class);
-		addSimpleRegistryStorage(DashDataType.BAKEDQUAD, BakedQuad.class, DashBakedQuad.class);
+		addMultiRegistryStorage(registry, DashDataType.PREDICATE, mappings.get(DashDataType.PREDICATE).entrySet());
+		addSimpleRegistryStorage(registry, DashDataType.SPRITE, Sprite.class, DashSprite.class);
+		addSimpleRegistryStorage(registry, DashDataType.BAKEDQUAD, BakedQuad.class, DashBakedQuad.class);
 
 		//stage 3.5 (models)
-		addMultiRegistryStorage(DashDataType.MODEL, mappings.get(DashDataType.MODEL).entrySet());
+		addMultiRegistryStorage(registry, DashDataType.MODEL, mappings.get(DashDataType.MODEL).entrySet());
 
 
 		///stage 4 fonts
-		addMultiRegistryStorage(DashDataType.FONT, mappings.get(DashDataType.FONT).entrySet());
+		addMultiRegistryStorage(registry, DashDataType.FONT, mappings.get(DashDataType.FONT).entrySet());
 
 
 	}
 
-	private <F, D extends Dashable<F>> void addMultiRegistryStorage(DashDataType data, Collection<Map.Entry<Class<? extends F>, Class<? extends D>>> classes) {
-		var registry = manager.getRegistry();
-		var multiRegistry = manager.getStorageManager().createMultiRegistry(registry, classes);
+	private <F, D extends Dashable<F>> void addMultiRegistryStorage(DashRegistry registry, DashDataType data, Collection<Map.Entry<Class<? extends F>, Class<? extends D>>> classes) {
+		var multiRegistry = RegistryStorageFactory.createMultiRegistry(registry, classes);
 
 		//add registry storage to the registry
 		final byte storagePointer = registry.addStorage(multiRegistry);
@@ -244,9 +248,8 @@ public class DashLoaderAPI {
 		storageMappings.put(data, storagePointer);
 	}
 
-	private <F, D extends Dashable<F>> void addSimpleRegistryStorage(DashDataType data, Class<F> from, Class<D> to) {
-		var registry = manager.getRegistry();
-		var multiRegistry = manager.getStorageManager().createSimpleRegistry(registry, from, to);
+	private <F, D extends Dashable<F>> void addSimpleRegistryStorage(DashRegistry registry, DashDataType data, Class<F> from, Class<D> to) {
+		var multiRegistry = RegistryStorageFactory.createSimpleRegistry(registry, from, to);
 
 		//add registry storage to the registry
 		final byte storagePointer = registry.addStorage(multiRegistry);
@@ -275,7 +278,7 @@ public class DashLoaderAPI {
 		}
 	}
 
-	private static class MappingMap<T, D extends Dashable<T>> extends AbstractObject2ObjectMap<Class<? extends T>, Class<? extends D>> {
+	public static class MappingMap<T, D extends Dashable<T>> extends AbstractObject2ObjectMap<Class<? extends T>, Class<? extends D>> {
 
 		private final Object2ObjectMap<Class<? extends T>, Class<? extends D>> delegate;
 
@@ -301,7 +304,7 @@ public class DashLoaderAPI {
 
 		@Override
 		public Class<? extends D> put(Class<? extends T> key, Class<? extends D> value) {
-			return super.put(key, value);
+			return delegate.put(key, value);
 
 		}
 	}

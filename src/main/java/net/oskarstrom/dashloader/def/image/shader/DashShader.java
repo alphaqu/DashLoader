@@ -2,15 +2,16 @@ package net.oskarstrom.dashloader.def.image.shader;
 
 import com.google.common.collect.UnmodifiableIterator;
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.oskarstrom.dashloader.def.mixin.accessor.ShaderAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import io.activej.serializer.annotations.SerializeNullable;
+import io.activej.serializer.annotations.SerializeSubclasses;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.VertexFormat;
 import net.oskarstrom.dashloader.core.util.DashHelper;
+import net.oskarstrom.dashloader.def.mixin.accessor.ShaderAccessor;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
 
 import java.util.ArrayList;
@@ -21,17 +22,21 @@ import java.util.Map;
 public class DashShader {
 	@Serialize(order = 0)
 	@SerializeNullable(path = {1})
+	@SerializeSubclasses(path = {1}, value = {Integer.class, String.class})
 	public final Map<String, Object> samplers;
 
 	@Serialize(order = 1)
 	public final String name;
+
 	@Serialize(order = 2)
 	public final DashGlBlendState blendState;
+
 	@Serialize(order = 3)
-	@SerializeNullable
 	public final List<String> attributeNames;
+
 	@Serialize(order = 4)
 	public final DashProgram vertexShader;
+
 	@Serialize(order = 5)
 	public final DashProgram fragmentShader;
 

@@ -4,9 +4,8 @@ import net.minecraft.client.texture.SpriteAtlasHolder;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.profiler.Profiler;
-import net.oskarstrom.dashloader.DashLoader;
-import net.oskarstrom.dashloader.DashMappings;
-import net.oskarstrom.dashloader.util.enums.DashCacheState;
+import net.oskarstrom.dashloader.def.DashLoader;
+import net.oskarstrom.dashloader.def.data.serialize.MappingData;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -29,7 +28,7 @@ public class SpriteAtlasHolderMixin {
 			at = @At(value = "HEAD"), cancellable = true)
 	private void prepareOverride(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<SpriteAtlasTexture.Data> cir) {
 		final DashLoader loader = DashLoader.getInstance();
-		if (loader.state == DashCacheState.LOADED) {
+		if (loader.getStatus() == DashLoader.Status.LOADED) {
 			if (loader.getMappings().getAtlas(this.atlas.getId()) != null) {
 				cir.setReturnValue(null);
 			}
@@ -41,8 +40,8 @@ public class SpriteAtlasHolderMixin {
 			at = @At(value = "HEAD"), cancellable = true)
 	private void applyOverride(SpriteAtlasTexture.Data data, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
 		final DashLoader instance = DashLoader.getInstance();
-		if (instance.state == DashCacheState.LOADED) {
-			final DashMappings mappings = instance.getMappings();
+		if (instance.getStatus() == DashLoader.Status.LOADED) {
+			final MappingData mappings = instance.getMappings();
 			if (mappings != null) {
 				final SpriteAtlasTexture atlas = mappings.getAtlas(this.atlas.getId());
 				if (atlas != null) {
@@ -56,7 +55,7 @@ public class SpriteAtlasHolderMixin {
 	@Inject(method = "apply(Lnet/minecraft/client/texture/SpriteAtlasTexture$Data;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;)V",
 			at = @At(value = "TAIL"), cancellable = true)
 	private void applyCreate(SpriteAtlasTexture.Data data, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		if (DashLoader.getInstance().state == DashCacheState.LOADED) {
+		if (DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
 			ci.cancel();
 		} else {
 			DashLoader.getVanillaData().addExtraAtlasAssets(atlas);

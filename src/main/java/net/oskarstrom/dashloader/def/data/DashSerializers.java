@@ -18,10 +18,12 @@ public class DashSerializers {
 	public static DashSerializer<ImageData> IMAGE_SERIALIZER;
 
 	public static void initSerializers() {
-		final DashSerializerManager serializerManager = DashLoader.getInstance().getSerializerManager();
-		final Path resourcePackBoundDir = DashLoader.getInstance().getResourcePackBoundDir();
+		final DashLoader instance = DashLoader.getInstance();
+		final DashSerializerManager serializerManager = instance.getSerializerManager();
+		final Path resourcePackBoundDir = instance.getResourcePackBoundDir();
+
 		serializerManager.loadOrCreateSerializer("model",    ModelData.class,    resourcePackBoundDir, "models");
-		serializerManager.loadOrCreateSerializer("registry", RegistryData.class, resourcePackBoundDir, "predicates", "fonts", "properties", "values", "data");
+		serializerManager.loadOrCreateSerializer("registry", RegistryData.class, resourcePackBoundDir, "predicates", "fonts", "properties", "values");
 		serializerManager.loadOrCreateSerializer("mapping",  MappingData.class,  resourcePackBoundDir);
 		serializerManager.loadOrCreateSerializer("image",    ImageData.class,    resourcePackBoundDir);
 

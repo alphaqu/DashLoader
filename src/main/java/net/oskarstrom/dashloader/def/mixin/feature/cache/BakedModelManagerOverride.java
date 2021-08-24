@@ -12,11 +12,10 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
-import net.oskarstrom.dashloader.DashLoader;
-import net.oskarstrom.dashloader.DashMappings;
-import net.oskarstrom.dashloader.api.feature.Feature;
-import net.oskarstrom.dashloader.data.VanillaData;
-import net.oskarstrom.dashloader.util.enums.DashCacheState;
+import net.oskarstrom.dashloader.def.DashLoader;
+import net.oskarstrom.dashloader.def.api.feature.Feature;
+import net.oskarstrom.dashloader.def.data.VanillaData;
+import net.oskarstrom.dashloader.def.data.serialize.MappingData;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -61,7 +60,7 @@ public class BakedModelManagerOverride {
 	private void prepare(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<ModelLoader> cir) {
 		profiler.startTick();
 		ModelLoader modelLoader;
-		if (DashLoader.getInstance().state != DashCacheState.LOADED) {
+		if (DashLoader.getInstance().getStatus() != DashLoader.Status.LOADED) {
 			DashLoader.LOGGER.info("DashLoader not loaded, Initializing minecraft ModelLoader to create assets for caching.");
 			modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmapLevels);
 		} else {
@@ -80,7 +79,7 @@ public class BakedModelManagerOverride {
 		profiler.startTick();
 		profiler.push("upload");
 		DashLoader loader = DashLoader.getInstance();
-		if (loader.state != DashCacheState.LOADED) {
+		if (DashLoader.getInstance().getStatus() != DashLoader.Status.LOADED) {
 			//serialization
 			this.atlasManager = modelLoader.upload(this.textureManager, profiler);
 			this.models = modelLoader.getBakedModelMap();
@@ -92,7 +91,7 @@ public class BakedModelManagerOverride {
 			DashLoader.LOGGER.info("Starting apply stage.");
 			//register textures
 			profiler.push("atlas");
-			final DashMappings mappings = loader.getMappings();
+			final MappingData mappings = loader.getMappings();
 			if (mappings != null) {
 				mappings.registerAtlases(textureManager, Feature.MODEL_LOADER);
 			}

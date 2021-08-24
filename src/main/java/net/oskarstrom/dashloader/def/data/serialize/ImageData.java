@@ -1,5 +1,6 @@
 package net.oskarstrom.dashloader.def.data.serialize;
 
+import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
 import net.oskarstrom.dashloader.api.registry.RegistryStorageData;
@@ -12,7 +13,7 @@ public class ImageData implements RegistryDataObject{
 	@Serialize(order = 0)
 	public final RegistryStorageData<DashImage> imageData;
 
-	public ImageData(RegistryStorageData<DashImage> imageData) {
+	public ImageData(@Deserialize("imageData")  RegistryStorageData<DashImage> imageData) {
 		this.imageData = imageData;
 	}
 

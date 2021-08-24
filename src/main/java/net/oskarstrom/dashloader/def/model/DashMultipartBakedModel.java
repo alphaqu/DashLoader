@@ -1,7 +1,5 @@
 package net.oskarstrom.dashloader.def.model;
 
-import net.oskarstrom.dashloader.def.api.DashObject;
-import net.oskarstrom.dashloader.def.mixin.accessor.MultipartBakedModelAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
@@ -17,6 +15,9 @@ import net.oskarstrom.dashloader.api.data.Pointer2PointerMap;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.DashLoader;
+import net.oskarstrom.dashloader.def.api.DashObject;
+import net.oskarstrom.dashloader.def.mixin.accessor.MultipartBakedModelAccessor;
+import net.oskarstrom.dashloader.def.util.RegistryUtil;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -51,14 +52,17 @@ public class DashMultipartBakedModel implements DashModel {
 		this.components = new Pointer2PointerMap(size);
 		for (int i = 0; i < size; i++) {
 			final BakedModel right = accessComponents.get(i).getRight();
-			//TODO predicate registration
-			components.put(registry.predicates.register(selectors.getKey().get(i), selectors.getValue()), registry.add(right));
+
+			final MultipartModelSelector selector = selectors.getKey().get(i);
+			DashLoader.getVanillaData().stateManagers.put(selector, selectors.getValue());
+
+
+			components.add(Pointer2PointerMap.Entry.of(registry.add(RegistryUtil.preparePredicate(selector)), registry.add(right)));
 		}
 		final Map<BlockState, BitSet> stateCache = access.getStateCache();
-		this.stateCache = DashHelper.convertMapToCollection(
+		this.stateCache = new Pointer2ObjectMap<>(DashHelper.convertMapToCollection(
 				stateCache,
-				new Pointer2ObjectMap<>(stateCache.size()),
-				(entry) -> Pointer2ObjectMap.Entry.of(registry.add(entry.getKey()), entry.getValue().toByteArray()));
+				(entry) -> Pointer2ObjectMap.Entry.of(registry.add(entry.getKey()), entry.getValue().toByteArray())));
 	}
 
 	@Override

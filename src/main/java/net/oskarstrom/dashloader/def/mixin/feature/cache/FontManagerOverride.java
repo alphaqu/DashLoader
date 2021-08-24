@@ -11,12 +11,11 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
-import net.oskarstrom.dashloader.DashLoader;
-import net.oskarstrom.dashloader.mixin.accessor.FontManagerAccessor;
-import net.oskarstrom.dashloader.mixin.accessor.FontStorageAccessor;
-import net.oskarstrom.dashloader.mixin.accessor.UnicodeTextureFontAccessor;
-import net.oskarstrom.dashloader.util.duck.MixinValues;
-import net.oskarstrom.dashloader.util.enums.DashCacheState;
+import net.oskarstrom.dashloader.def.DashLoader;
+import net.oskarstrom.dashloader.def.mixin.accessor.FontManagerAccessor;
+import net.oskarstrom.dashloader.def.mixin.accessor.FontStorageAccessor;
+import net.oskarstrom.dashloader.def.mixin.accessor.UnicodeTextureFontAccessor;
+import net.oskarstrom.dashloader.def.util.mixins.MixinValues;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -38,7 +37,7 @@ public class FontManagerOverride {
 	)
 	private void overridePrepare(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<Map<Identifier, List<Font>>> cir) {
 		final Map<Identifier, List<Font>> fontsOut = DashLoader.getVanillaData().getFonts();
-		if (fontsOut != null && DashLoader.getInstance().state == DashCacheState.LOADED) {
+		if (fontsOut != null && DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
 			fontsOut.forEach((identifier, list) -> list.forEach(font -> {
 						if (font instanceof UnicodeTextureFont) {
 							((UnicodeTextureFontAccessor) font).setResourceManager(resourceManager);
@@ -56,7 +55,7 @@ public class FontManagerOverride {
 			cancellable = true
 	)
 	private void overrideApply(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		if (DashLoader.getVanillaData().getFonts() != null && DashLoader.getInstance().state == DashCacheState.LOADED) {
+		if (DashLoader.getVanillaData().getFonts() != null && DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
 			profiler.startTick();
 			profiler.push("closing");
 			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) MixinValues.fontManager;

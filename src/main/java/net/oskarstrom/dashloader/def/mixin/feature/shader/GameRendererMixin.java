@@ -3,10 +3,9 @@ package net.oskarstrom.dashloader.def.mixin.feature.shader;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Shader;
 import net.minecraft.resource.ResourceManager;
-import net.oskarstrom.dashloader.DashLoader;
-import net.oskarstrom.dashloader.data.VanillaData;
-import net.oskarstrom.dashloader.image.shader.DashShader;
-import net.oskarstrom.dashloader.util.enums.DashCacheState;
+import net.oskarstrom.dashloader.def.DashLoader;
+import net.oskarstrom.dashloader.def.data.VanillaData;
+import net.oskarstrom.dashloader.def.image.shader.DashShader;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -196,7 +195,7 @@ public abstract class GameRendererMixin {
 			cancellable = true
 	)
 	private void loadShaders(ResourceManager manager, CallbackInfo ci) {
-		if (DashLoader.getInstance().state == DashCacheState.LOADED) {
+		if (DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
 			dashReload();
 			ci.cancel();
 		}

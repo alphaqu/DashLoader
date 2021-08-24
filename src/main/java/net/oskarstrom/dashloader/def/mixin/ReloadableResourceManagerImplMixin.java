@@ -4,7 +4,7 @@ import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceReload;
 import net.minecraft.util.Unit;
-import net.oskarstrom.dashloader.DashLoader;
+import net.oskarstrom.dashloader.def.DashLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

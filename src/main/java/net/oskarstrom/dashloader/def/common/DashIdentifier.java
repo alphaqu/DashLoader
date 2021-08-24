@@ -9,7 +9,6 @@ import net.oskarstrom.dashloader.def.mixin.accessor.IdentifierAccessor;
 
 public class DashIdentifier implements DashIdentifierInterface {
 	@Serialize(order = 0)
-	@SerializeFixedSize(2)
 	public final String[] strings;
 
 	public DashIdentifier(@Deserialize("strings") String[] strings) {

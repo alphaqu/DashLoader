@@ -1,5 +1,6 @@
 package net.oskarstrom.dashloader.def.image;
 
+import net.oskarstrom.dashloader.api.Dashable;
 import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAnimationFrameAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;

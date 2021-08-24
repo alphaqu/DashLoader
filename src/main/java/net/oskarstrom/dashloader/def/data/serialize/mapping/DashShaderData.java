@@ -1,5 +1,6 @@
 package net.oskarstrom.dashloader.def.data.serialize.mapping;
 
+import net.oskarstrom.dashloader.api.ThreadManager;
 import net.oskarstrom.dashloader.def.image.shader.DashShader;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
@@ -35,7 +36,7 @@ public class DashShaderData {
 		List<Runnable> callables = new ArrayList<>();
 		shaders.forEach((key, value) -> callables.add(() -> out.put(key, value.toUndash())));
 		try {
-			DashLoader.getInstance().getCoreManager().getThreadManager().executeRunnables(callables);
+			ThreadManager.executeRunnables(callables);
 		} catch (ExecutionException | InterruptedException e) {
 			e.printStackTrace();
 		}

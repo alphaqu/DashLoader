@@ -1,12 +1,10 @@
 package net.oskarstrom.dashloader.def.image.shader;
 
-import net.oskarstrom.dashloader.def.mixin.accessor.GlUniformAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
-import io.activej.serializer.annotations.SerializeNullable;
 import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;
-import net.oskarstrom.dashloader.core.util.DashHelper;
+import net.oskarstrom.dashloader.def.mixin.accessor.GlUniformAccessor;
 import net.oskarstrom.dashloader.def.util.IOHelper;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
 import org.lwjgl.system.MemoryUtil;
@@ -21,12 +19,11 @@ public class DashGlUniform {
 	public final int count;
 	@Serialize(order = 1)
 	public final int dataType;
+
 	@Serialize(order = 2)
-	@SerializeNullable
 	public final int[] intData;
 
 	@Serialize(order = 3)
-	@SerializeNullable
 	public final float[] floatData;
 
 	@Serialize(order = 4)
@@ -48,8 +45,20 @@ public class DashGlUniform {
 	public DashGlUniform(GlUniform glUniform) {
 		this.count = glUniform.getCount();
 		this.dataType = glUniform.getDataType();
-		this.intData = DashHelper.nullable(glUniform.getIntData(), (i) -> IOHelper.toArray(i, count));
-		this.floatData = DashHelper.nullable(glUniform.getFloatData(), (f) -> IOHelper.toArray(f, count));
+		final IntBuffer intData = glUniform.getIntData();
+		if (intData != null) {
+			this.intData = IOHelper.toArray(intData, count);
+		} else {
+			this.intData = new int[0];
+		}
+
+		final FloatBuffer floatData = glUniform.getFloatData();
+		if (floatData != null) {
+			this.floatData = IOHelper.toArray(floatData, count);
+		} else {
+			this.floatData = new float[0];
+		}
+
 		this.name = glUniform.getName();
 	}
 
@@ -59,18 +68,25 @@ public class DashGlUniform {
 		glUniformAccess.setCount(this.count);
 		glUniformAccess.setDataType(this.dataType);
 		glUniformAccess.setProgram(shader);
-		glUniformAccess.setFloatData(DashHelper.nullable(floatData, floatData -> {
+
+		if (floatData.length == 0) {
+			glUniformAccess.setFloatData(null);
+		} else {
 			final FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(count);
 			floatBuffer.put(floatData);
 			floatBuffer.flip();
-			return floatBuffer;
-		}));
-		glUniformAccess.setIntData(DashHelper.nullable(intData, intData -> {
+			glUniformAccess.setFloatData(floatBuffer);
+		}
+
+		if (intData.length == 0) {
+			glUniformAccess.setIntData(null);
+		} else {
 			final IntBuffer intBuffer = MemoryUtil.memAllocInt(count);
 			intBuffer.put(intData);
 			intBuffer.flip();
-			return intBuffer;
-		}));
+			glUniformAccess.setIntData(intBuffer);
+		}
+
 		glUniformAccess.setName(this.name);
 		uniforms.add(glUniform);
 		return glUniform;

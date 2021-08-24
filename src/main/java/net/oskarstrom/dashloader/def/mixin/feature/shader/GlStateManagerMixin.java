@@ -1,7 +1,7 @@
 package net.oskarstrom.dashloader.def.mixin.feature.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.oskarstrom.dashloader.DashLoader;
+import net.oskarstrom.dashloader.def.DashLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

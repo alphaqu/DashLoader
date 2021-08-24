@@ -1,7 +1,5 @@
 package net.oskarstrom.dashloader.def.data;
 
-import net.oskarstrom.dashloader.def.image.DashSpriteAtlasTextureData;
-import net.oskarstrom.dashloader.def.mixin.accessor.ParticleManagerSimpleSpriteProviderAccessor;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -20,6 +18,8 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
+import net.oskarstrom.dashloader.def.image.DashSpriteAtlasTextureData;
+import net.oskarstrom.dashloader.def.mixin.accessor.ParticleManagerSimpleSpriteProviderAccessor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.stb.STBTTFontinfo;
 
@@ -29,11 +29,12 @@ import java.util.List;
 import java.util.Map;
 
 public class VanillaData {
-	private final List<SpriteAtlasTexture> extraAtlases = new ArrayList<>();
-	private final Map<SpriteAtlasTexture, DashSpriteAtlasTextureData> atlasData = new HashMap<>();
-	private final Map<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>> multipartData = new HashMap<>();
-	private final Int2ObjectMap<List<String>> programData = new Int2ObjectOpenHashMap<>();
-	private final Object2ObjectMap<STBTTFontinfo, Identifier> fontData = new Object2ObjectOpenHashMap<>();
+	public final List<SpriteAtlasTexture> extraAtlases = new ArrayList<>();
+	public final Map<SpriteAtlasTexture, DashSpriteAtlasTextureData> atlasData = new HashMap<>();
+	public final Map<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>> multipartData = new HashMap<>();
+	public final Int2ObjectMap<List<String>> programData = new Int2ObjectOpenHashMap<>();
+	public final Object2ObjectMap<STBTTFontinfo, Identifier> fontData = new Object2ObjectOpenHashMap<>();
+	public final Object2ObjectMap<MultipartModelSelector, StateManager<Block, BlockState>> stateManagers = new Object2ObjectOpenHashMap<>();
 
 	private SpriteAtlasManager atlasManager;
 	private Object2IntMap<BlockState> stateLookup;
@@ -54,6 +55,7 @@ public class VanillaData {
 		atlasData.clear();
 		multipartData.clear();
 		programData.clear();
+		stateManagers.clear();
 		atlasManager = null;
 		stateLookup = null;
 		models = null;
@@ -127,6 +129,10 @@ public class VanillaData {
 
 	public void addTypeFontAsset(STBTTFontinfo stbttFontinfo, Identifier path) {
 		fontData.put(stbttFontinfo, path);
+	}
+
+	public void addPredicateStateManager(MultipartModelSelector selector, StateManager<Block, BlockState> stateStateManager) {
+		stateManagers.put(selector, stateStateManager);
 	}
 
 	public Object2ObjectMap<STBTTFontinfo, Identifier> getFontData() {

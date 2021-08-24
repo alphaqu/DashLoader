@@ -1,6 +1,8 @@
 package net.oskarstrom.dashloader.def.data.serialize;
 
+import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
+import io.activej.serializer.annotations.SerializeSubclasses;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
 import net.oskarstrom.dashloader.api.registry.RegistryStorageData;
 import net.oskarstrom.dashloader.def.DashLoader;
@@ -9,9 +11,10 @@ import net.oskarstrom.dashloader.def.model.DashModel;
 
 public class ModelData implements RegistryDataObject {
 	@Serialize(order = 0)
+	@SerializeSubclasses(extraSubclassesId = "model", path = {0})
 	public final RegistryStorageData<DashModel> modelData;
 
-	public ModelData(RegistryStorageData<DashModel> modelData) {
+	public ModelData(@Deserialize("modelData") RegistryStorageData<DashModel> modelData) {
 		this.modelData = modelData;
 	}
 

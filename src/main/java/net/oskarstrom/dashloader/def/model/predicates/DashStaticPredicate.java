@@ -4,10 +4,14 @@ import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
+import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.def.api.DashObject;
+import net.oskarstrom.dashloader.def.util.BooleanSelector;
 
 import java.util.function.Predicate;
 
+@DashObject(BooleanSelector.class)
 public class DashStaticPredicate implements DashPredicate {
 
 	@Serialize(order = 0)
@@ -18,8 +22,8 @@ public class DashStaticPredicate implements DashPredicate {
 	}
 
 
-	public DashStaticPredicate(MultipartModelSelector multipartModelSelector) {
-		value = multipartModelSelector == MultipartModelSelector.TRUE;
+	public DashStaticPredicate(BooleanSelector multipartModelSelector) {
+		value = multipartModelSelector.selector;
 	}
 
 	@Override

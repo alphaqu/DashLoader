@@ -3,6 +3,7 @@ package net.oskarstrom.dashloader.def.data.serialize;
 import com.mojang.blaze3d.platform.TextureUtil;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
+import io.activej.serializer.annotations.SerializeNullable;
 import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -27,24 +28,31 @@ import java.util.Map;
 
 public class MappingData {
 	@Serialize(order = 0)
+	@SerializeNullable
 	public DashBlockStateData blockStateData;
 
 	@Serialize(order = 1)
+	@SerializeNullable
 	public DashFontManagerData fontManagerData;
 
 	@Serialize(order = 2)
+	@SerializeNullable
 	public DashModelData modelData;
 
 	@Serialize(order = 3)
+	@SerializeNullable
 	public DashParticleData predicateData;
 
 	@Serialize(order = 4)
+	@SerializeNullable
 	public DashSplashTextData splashTextData;
 
 	@Serialize(order = 5)
+	@SerializeNullable
 	public DashSpriteAtlasData spriteAtlasData;
 
 	@Serialize(order = 6)
+	@SerializeNullable
 	public DashShaderData shaderData;
 
 	private List<Pair<Feature, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>>> atlasesToRegister;
@@ -60,7 +68,8 @@ public class MappingData {
 						@Deserialize("predicateData") DashParticleData predicateData,
 						@Deserialize("splashTextData") DashSplashTextData splashTextData,
 						@Deserialize("spriteAtlasData") DashSpriteAtlasData spriteAtlasData,
-						@Deserialize("shaderData") DashShaderData shaderData) {
+						@Deserialize("shaderData") DashShaderData shaderData)
+	{
 		this.blockStateData = blockStateData;
 		this.fontManagerData = fontManagerData;
 		this.modelData = modelData;

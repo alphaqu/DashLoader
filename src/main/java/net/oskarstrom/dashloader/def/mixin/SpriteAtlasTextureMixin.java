@@ -1,8 +1,8 @@
 package net.oskarstrom.dashloader.def.mixin;
 
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.oskarstrom.dashloader.DashLoader;
-import net.oskarstrom.dashloader.image.DashSpriteAtlasTextureData;
+import net.oskarstrom.dashloader.def.DashLoader;
+import net.oskarstrom.dashloader.def.image.DashSpriteAtlasTextureData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

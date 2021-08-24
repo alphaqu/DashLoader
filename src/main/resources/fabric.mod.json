@@ -14,19 +14,16 @@
 		"sources" : "https://github.com/QuantumFusionMC/DashLoader-Definition"
 	},
 	"license" : "LGPL-3.0-only",
-	"icon" : "assets/dashloader/def/icon.png",
+	"icon" : "assets/dashloader/def/textures/icon.png",
 	"environment" : "*",
 	"entrypoints" : {
-		"main" : [
-			"net.fabricmc.example.ExampleMod"
-		]
+
 	},
 	"mixins" : [
 		"dashloader.mixins.json"
 	],
 	"depends" : {
 		"fabricloader" : ">=0.11.3",
-		"fabric" : "*",
 		"minecraft" : "1.17.x",
 		"java" : ">=16"
 	},

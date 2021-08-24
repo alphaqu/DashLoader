@@ -1,23 +1,9 @@
 package net.oskarstrom.dashloader.def.mixin;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.metadata.CustomValue;
-import net.fabricmc.loader.api.metadata.ModMetadata;
-
-import net.oskarstrom.dashloader.def.DashLoader;
-import net.oskarstrom.dashloader.def.api.feature.FeatureHandler;
-import org.apache.commons.io.FileUtils;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.nodes.Tag;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -73,7 +59,8 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return FeatureHandler.active(mixinClassName);
+		//TODO config / features
+		return true /*FeatureHandler.active(mixinClassName)*/;
 	}
 
 	@Override

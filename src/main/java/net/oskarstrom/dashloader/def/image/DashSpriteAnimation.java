@@ -33,7 +33,7 @@ public class DashSpriteAnimation {
 
 	public DashSpriteAnimation(Sprite.Animation animation, DashRegistry registry) {
 		SpriteAnimationAccessor access = ((SpriteAnimationAccessor) animation);
-		frames = convertList(access.getFrames(), DashSpriteAnimationFrame::new);
+		frames = DashHelper.convertCollection(access.getFrames(), DashSpriteAnimationFrame::new);
 		frameCount = access.getFrameCount();
 		interpolation = DashHelper.nullable(access.getInterpolation(), registry, DashSpriteInterpolation::new);
 	}
@@ -42,7 +42,7 @@ public class DashSpriteAnimation {
 	public Sprite.Animation toUndash(Sprite owner, DashRegistry registry) {
 		return SpriteAnimationAccessor.init(
 				owner,
-				(ArrayList<?>) DashHelper.convertCollection(frames, frame -> frame.toUndash(registry)),
+				DashHelper.convertCollection(frames, frame -> frame.toUndash(registry)),
 				frameCount,
 				DashHelper.nullable(interpolation, interpolation -> interpolation.toUndash(owner, registry))
 		);

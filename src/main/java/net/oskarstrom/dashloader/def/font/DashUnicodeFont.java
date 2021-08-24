@@ -1,5 +1,7 @@
 package net.oskarstrom.dashloader.def.font;
 
+import net.oskarstrom.dashloader.api.data.Pointer2PointerMap;
+import net.oskarstrom.dashloader.def.api.DashDataType;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
@@ -7,15 +9,13 @@ import net.minecraft.client.font.UnicodeTextureFont;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Identifier;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.enums.DashDataType;
-import net.oskarstrom.dashloader.data.serialization.Pointer2PointerMap;
-import net.oskarstrom.dashloader.mixin.accessor.UnicodeTextureFontAccessor;
-import net.oskarstrom.dashloader.util.UnsafeHelper;
+import net.oskarstrom.dashloader.def.mixin.accessor.UnicodeTextureFontAccessor;
+import net.oskarstrom.dashloader.def.util.UnsafeHelper;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@DashObject(value = UnicodeTextureFont.class, overrideType = DashDataType.FONT)
+@DashObject(value = UnicodeTextureFont.class)
 public class DashUnicodeFont implements DashFont {
 	@Serialize(order = 0)
 	public final Pointer2PointerMap images;
@@ -39,7 +39,7 @@ public class DashUnicodeFont implements DashFont {
 	public DashUnicodeFont(UnicodeTextureFont rawFont, DashRegistry registry) {
 		images = new Pointer2PointerMap();
 		UnicodeTextureFontAccessor font = ((UnicodeTextureFontAccessor) rawFont);
-		font.getImages().forEach((identifier, nativeImage) -> images.put(registry.add(identifier), registry.add(nativeImage)));
+		font.getImages().forEach((identifier, nativeImage) -> images.add(Pointer2PointerMap.Entry.of(registry.add(identifier), registry.add(nativeImage))));
 		this.sizes = font.getSizes();
 		this.template = font.getTemplate();
 	}

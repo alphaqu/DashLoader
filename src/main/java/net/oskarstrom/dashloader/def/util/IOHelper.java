@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class IOHelper {
 
@@ -29,6 +31,31 @@ public class IOHelper {
 		buffer.get(bufferOut);
 		return bufferOut;
 	}
+
+	public static Integer[] toBoxedArray(IntBuffer buffer, int size) {
+		int[] integers = toArray(buffer, size);
+		Integer[] out = new Integer[integers.length];
+
+		for (int i = 0; i < integers.length; i++) {
+			out[i] = integers[i];
+		}
+
+		return out;
+	}
+
+	public static Float[] toBoxedArray(FloatBuffer buffer, int size) {
+		float[] floats = toArray(buffer, size);
+		Float[] out = new Float[floats.length];
+
+		for (int i = 0; i < floats.length; i++) {
+			out[i] = floats[i];
+		}
+
+		return out;
+	}
+
+
+
 
 
 	public static byte[] streamToArray(InputStream inputStream) throws IOException {

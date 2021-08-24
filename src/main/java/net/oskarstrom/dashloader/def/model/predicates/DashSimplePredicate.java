@@ -1,8 +1,6 @@
 package net.oskarstrom.dashloader.def.model.predicates;
 
 import com.google.common.base.Splitter;
-import net.oskarstrom.dashloader.def.api.DashObject;
-import net.oskarstrom.dashloader.def.mixin.accessor.SimpleMultipartModelSelectorAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.block.Block;
@@ -12,10 +10,10 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.oskarstrom.dashloader.api.data.Pointer2PointerMap;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.ExtraVariables;
 import net.oskarstrom.dashloader.api.registry.Pointer;
-import net.oskarstrom.dashloader.data.serialization.Pointer2PointerMap;
-import net.oskarstrom.dashloader.mixin.accessor.SimpleMultipartModelSelectorAccessor;
+import net.oskarstrom.dashloader.def.DashLoader;
+import net.oskarstrom.dashloader.def.api.DashObject;
+import net.oskarstrom.dashloader.def.mixin.accessor.SimpleMultipartModelSelectorAccessor;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -42,9 +40,9 @@ public class DashSimplePredicate implements DashPredicate {
 	}
 
 
-	public DashSimplePredicate(SimpleMultipartModelSelector simpleMultipartModelSelector, DashRegistry registry, ExtraVariables extraVariables) {
+	public DashSimplePredicate(SimpleMultipartModelSelector simpleMultipartModelSelector, DashRegistry registry) {
 		//TODO statemanager
-		StateManager<Block, BlockState> stateManager = (StateManager<Block, BlockState>) extraVariables.getExtraVariable1();
+		StateManager<Block, BlockState> stateManager = DashLoader.getVanillaData().stateManagers.get(simpleMultipartModelSelector);
 		SimpleMultipartModelSelectorAccessor access = ((SimpleMultipartModelSelectorAccessor) simpleMultipartModelSelector);
 		Property<?> stateManagerProperty = stateManager.getProperty(access.getKey());
 		properties = new Pointer2PointerMap();
@@ -67,7 +65,7 @@ public class DashSimplePredicate implements DashPredicate {
 
 	private Pair<Pointer, Pointer> createPredicateInfo(StateManager<Block, BlockState> stateFactory, Property<?> property, String valueString, DashRegistry registry) {
 		Optional<?> optional = property.parse(valueString);
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			throw new RuntimeException(String.format("Unknown value '%s' '%s'", valueString, stateFactory.getOwner().toString()));
 		} else {
 			return Pair.of(registry.add(property), registry.add((Comparable<?>) optional.get()));

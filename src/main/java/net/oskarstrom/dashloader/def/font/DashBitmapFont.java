@@ -1,5 +1,6 @@
 package net.oskarstrom.dashloader.def.font;
 
+import net.oskarstrom.dashloader.api.data.PairMap;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import net.oskarstrom.dashloader.def.mixin.accessor.BitmapFontAccessor;
 import io.activej.serializer.annotations.Deserialize;
@@ -15,10 +16,10 @@ public class DashBitmapFont implements DashFont {
 	@Serialize(order = 0)
 	public final Pointer image;
 	@Serialize(order = 1)
-	public final Int2ObjectMap<DashBitmapFontGlyph> glyphs;
+	public final PairMap<Integer, DashBitmapFontGlyph> glyphs;
 
 	public DashBitmapFont(@Deserialize("image") Pointer image,
-						  @Deserialize("glyphs") Int2ObjectMap<DashBitmapFontGlyph> glyphs) {
+						  @Deserialize("glyphs") PairMap<Integer,DashBitmapFontGlyph> glyphs) {
 		this.image = image;
 		this.glyphs = glyphs;
 	}
@@ -26,13 +27,13 @@ public class DashBitmapFont implements DashFont {
 	public DashBitmapFont(BitmapFont bitmapFont, DashRegistry registry) {
 		BitmapFontAccessor font = ((BitmapFontAccessor) bitmapFont);
 		image = registry.add(font.getImage());
-		glyphs = new Int2ObjectOpenHashMap<>();
-		font.getGlyphs().forEach((integer, bitmapFontGlyph) -> glyphs.put(integer, new DashBitmapFontGlyph(bitmapFontGlyph, registry)));
+		glyphs = new PairMap<>();
+		font.getGlyphs().forEach((integer, bitmapFontGlyph) -> glyphs.add(new PairMap.Entry<>(integer, new DashBitmapFontGlyph(bitmapFontGlyph, registry))));
 	}
 
 	public BitmapFont toUndash(DashRegistry registry) {
 		Int2ObjectOpenHashMap<BitmapFont.BitmapFontGlyph> out = new Int2ObjectOpenHashMap<>();
-		glyphs.int2ObjectEntrySet().forEach((entry) -> out.put(entry.getIntKey(), entry.getValue().toUndash(registry)));
+		glyphs.forEach((entry) -> out.put(entry.getKey(), entry.getValue().toUndash(registry)));
 		return BitmapFontAccessor.init(registry.get(image), out);
 	}
 

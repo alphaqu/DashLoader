@@ -1,6 +1,7 @@
 package net.oskarstrom.dashloader.def.blockstate;
 
 import com.google.common.collect.ImmutableMap;
+import net.oskarstrom.dashloader.def.api.DashObject;
 import net.oskarstrom.dashloader.def.mixin.accessor.StateAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;

@@ -21,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,13 +42,14 @@ public class DashLoader implements ModInitializer {
 	private static final VanillaData VANILLA_DATA = new VanillaData();
 	private static boolean shouldReload = true;
 	private static DashLoader instance;
-	private final DashSerializerManager serializerManager;
 	private final DashLoaderAPI api;
+	private Status status;
+	private MappingData mappings;
+	private DashSerializerManager serializerManager;
 	private DashMetadata metadata;
 
 	public DashLoader(ClassLoader classLoader) {
 		instance = this;
-		this.serializerManager = DashLoaderFactory.createSerializationManager(MAIN_PATH);
 		this.api = new DashLoaderAPI(this);
 		ClassLoaderHelper.setAccessor(classLoader);
 		LOGGER.info("Created DashLoader with {} classloader.", classLoader.getClass().getSimpleName());
@@ -75,6 +75,10 @@ public class DashLoader implements ModInitializer {
 		}
 	}
 
+	public MappingData getMappings() {
+		return mappings;
+	}
+
 	public DashLoaderAPI getApi() {
 		return api;
 	}
@@ -84,7 +88,6 @@ public class DashLoader implements ModInitializer {
 	}
 
 	public void initialize() {
-		Instant start = Instant.now();
 		LOGGER.info("Initializing DashLoader " + VERSION + ".");
 		final FabricLoader instance = FabricLoader.getInstance();
 		if (instance.isDevelopmentEnvironment()) {
@@ -92,8 +95,8 @@ public class DashLoader implements ModInitializer {
 		}
 		metadata = new DashMetadata();
 		metadata.setModHash(instance);
+		serializerManager = DashLoaderFactory.createSerializationManager(getModBoundDir());
 		ThreadManager.init();
-		api.initAPI();
 		LOGGER.info("Initialized DashLoader");
 	}
 
@@ -101,9 +104,10 @@ public class DashLoader implements ModInitializer {
 		if (shouldReload) {
 			metadata.setResourcePackHash(resourcePacks);
 			LOGGER.info("Reloading DashLoader. [mod-hash: {}] [resource-hash: {}]", metadata.modInfo, metadata.resourcePacks);
-			DashSerializers.initSerializers();
 			if (Arrays.stream(DashCachePaths.values()).allMatch(dashCachePaths -> Files.exists(getResourcePackBoundDir().resolve(dashCachePaths.getFileName(true))))) {
 				loadDashCache();
+			} else {
+				status = Status.EMPTY;
 			}
 			LOGGER.info("Reloaded DashLoader");
 			shouldReload = false;
@@ -111,8 +115,8 @@ public class DashLoader implements ModInitializer {
 	}
 
 	public void saveDashCache() {
-		api.initAPI();
 		DashRegistry registry = DashLoaderFactory.createSerializationRegistry();
+		api.initAPI(registry);
 
 
 		MappingData mappings = new MappingData();
@@ -136,6 +140,7 @@ public class DashLoader implements ModInitializer {
 	public void loadDashCache() {
 		LOGGER.info("Starting DashLoader Deserialization");
 		try {
+			DashSerializers.initSerializers();
 			AtomicReference<MappingData> mappingsReference = new AtomicReference<>();
 			List<RegistryDataObject> registryDataObjects = new ArrayList<>();
 
@@ -144,8 +149,8 @@ public class DashLoader implements ModInitializer {
 					() -> registryDataObjects.add(deserialize(DashSerializers.MODEL_SERIALIZER, DashCachePaths.REGISTRY_MODEL_CACHE)),
 					() -> registryDataObjects.add(deserialize(DashSerializers.IMAGE_SERIALIZER, DashCachePaths.REGISTRY_IMAGE_CACHE)),
 					() -> mappingsReference.set(deserialize(DashSerializers.MAPPING_SERIALIZER, DashCachePaths.MAPPINGS_CACHE))
-					);
-			MappingData mappings = mappingsReference.get();
+			);
+			mappings = mappingsReference.get();
 			assert mappings != null;
 
 			LOGGER.info("      Creating Registry");
@@ -165,8 +170,10 @@ public class DashLoader implements ModInitializer {
 
 
 			LOGGER.info("    Loaded DashLoader");
+			status = Status.LOADED;
 		} catch (Exception e) {
 			LOGGER.error("DashLoader has devolved to CrashLoader???", e);
+			status = Status.CRASHLOADER;
 			if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
 				try {
 					Files.deleteIfExists(getModBoundDir());
@@ -206,6 +213,16 @@ public class DashLoader implements ModInitializer {
 		return serializerManager;
 	}
 
+	public Status getStatus() {
+		return status;
+	}
+
+
+	public enum Status {
+		LOADED,
+		CRASHLOADER,
+		EMPTY
+	}
 
 	public static class TaskHandler {
 		public static int TOTALTASKS = 9;
@@ -300,4 +317,5 @@ public class DashLoader implements ModInitializer {
 			this.resourcePacks = Long.toHexString(resourcePackData + 0x69);
 		}
 	}
+
 }

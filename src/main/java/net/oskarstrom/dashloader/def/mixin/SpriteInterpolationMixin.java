@@ -1,7 +1,7 @@
 package net.oskarstrom.dashloader.def.mixin;
 
 import net.minecraft.client.texture.Sprite;
-import net.oskarstrom.dashloader.util.duck.SpriteInterpolationDuck;
+import net.oskarstrom.dashloader.def.util.mixins.SpriteInterpolationDuck;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
