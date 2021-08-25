@@ -11,6 +11,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.mixin.accessor.MultipartModelComponentAccessor;
+import net.oskarstrom.dashloader.def.util.mixins.MixinThings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,12 +42,19 @@ public class MultipartUnbakedModelMixin {
 			locals = LocalCapture.CAPTURE_FAILSOFT,
 			cancellable = true)
 	private void addPredicateInfo(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId, CallbackInfoReturnable<BakedModel> cir, MultipartBakedModel.Builder builder) {
-		MultipartBakedModel bakedModel = (MultipartBakedModel) builder.build();
-		List<MultipartModelSelector> outSelectors = new ArrayList<>();
+		var bakedModel = (MultipartBakedModel) builder.build();
+		var outSelectors = new ArrayList<MultipartModelSelector>();
+		var vanillaData = DashLoader.getVanillaData();
+
 		components.forEach(multipartModelComponent -> outSelectors.add(((MultipartModelComponentAccessor) multipartModelComponent).getSelector()));
-		DashLoader.getVanillaData().addMultipartModelPredicate(bakedModel, Pair.of(outSelectors, stateFactory));
+		vanillaData.addMultipartModelPredicate(bakedModel, Pair.of(outSelectors, stateFactory));
+		MixinThings.addPredicates(outSelectors,stateFactory);
+
+
 		cir.setReturnValue(bakedModel);
 	}
+
+
 
 
 }

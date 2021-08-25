@@ -13,9 +13,4 @@ public interface StateAccessor<O, S> {
 	@Accessor
 	ImmutableMap<Property<?>, Comparable<?>> getEntries();
 
-	@Accessor
-	Table<Property<?>, Comparable<?>, S> getWithTable();
-
-	@Accessor
-	void setWithTable(Table<Property<?>, Comparable<?>, S> withTable);
 }

@@ -6,12 +6,14 @@ import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 import net.oskarstrom.dashloader.api.Dashable;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.api.registry.RegistryStorage;
 import net.oskarstrom.dashloader.api.registry.RegistryStorageFactory;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.blockstate.DashBlockState;
@@ -42,6 +44,7 @@ import net.oskarstrom.dashloader.def.model.predicates.DashAndPredicate;
 import net.oskarstrom.dashloader.def.model.predicates.DashOrPredicate;
 import net.oskarstrom.dashloader.def.model.predicates.DashSimplePredicate;
 import net.oskarstrom.dashloader.def.model.predicates.DashStaticPredicate;
+import net.oskarstrom.dashloader.def.registry.PropertyValueRegistryStorage;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -214,51 +217,59 @@ public class DashLoaderAPI {
 		addSimpleRegistryStorage(registry, DashDataType.NATIVEIMAGE, NativeImage.class, DashImage.class);
 
 		//stage 2 (blockstate dependencies)
-		addMultiRegistryStorage(registry, DashDataType.PROPERTY, mappings.get(DashDataType.PROPERTY).entrySet());
-		addMultiRegistryStorage(registry, DashDataType.PROPERTY_VALUE, mappings.get(DashDataType.PROPERTY_VALUE).entrySet());
+		addMultiRegistryStorage(registry, DashDataType.PROPERTY);
+		addPropertyValueRegistry(registry, DashDataType.PROPERTY_VALUE, mappings.get(DashDataType.PROPERTY_VALUE).entrySet());
+
 
 		//stage 2.5 (blockstate)
 		addSimpleRegistryStorage(registry, DashDataType.BLOCKSTATE, BlockState.class, DashBlockState.class);
 
 		//stage 3 (model dependencies)
-		addMultiRegistryStorage(registry, DashDataType.PREDICATE, mappings.get(DashDataType.PREDICATE).entrySet());
-		addSimpleRegistryStorage(registry, DashDataType.SPRITE, Sprite.class, DashSprite.class);
+		addMultiRegistryStorage(registry, DashDataType.PREDICATE);
+		final byte b = addSimpleRegistryStorage(registry, DashDataType.SPRITE, Sprite.class, DashSprite.class);
+		registry.addMapping(MissingSprite.class,b);
 		addSimpleRegistryStorage(registry, DashDataType.BAKEDQUAD, BakedQuad.class, DashBakedQuad.class);
 
 		//stage 3.5 (models)
-		addMultiRegistryStorage(registry, DashDataType.MODEL, mappings.get(DashDataType.MODEL).entrySet());
+		addMultiRegistryStorage(registry, DashDataType.MODEL);
 
 
 		///stage 4 fonts
-		addMultiRegistryStorage(registry, DashDataType.FONT, mappings.get(DashDataType.FONT).entrySet());
+		addMultiRegistryStorage(registry, DashDataType.FONT);
 
 
+	}
+
+	private <F, D extends Dashable<F>> void addMultiRegistryStorage(DashRegistry registry, DashDataType data) {
+		addMultiRegistryStorage(registry, data,mappings.get(data).entrySet());
 	}
 
 	private <F, D extends Dashable<F>> void addMultiRegistryStorage(DashRegistry registry, DashDataType data, Collection<Map.Entry<Class<? extends F>, Class<? extends D>>> classes) {
 		var multiRegistry = RegistryStorageFactory.createMultiRegistry(registry, classes);
-
-		//add registry storage to the registry
-		final byte storagePointer = registry.addStorage(multiRegistry);
-
-		//create all pointers to that registry
+		final byte storagePointer = addToRegistry(registry, data, multiRegistry);
 		classes.forEach(entry -> registry.addMapping(entry.getKey(), storagePointer));
-
-		//save that registry for future use
-		storageMappings.put(data, storagePointer);
 	}
 
-	private <F, D extends Dashable<F>> void addSimpleRegistryStorage(DashRegistry registry, DashDataType data, Class<F> from, Class<D> to) {
-		var multiRegistry = RegistryStorageFactory.createSimpleRegistry(registry, from, to);
+	private <F, D extends Dashable<F>> void addPropertyValueRegistry(DashRegistry registry, DashDataType data, Collection<Map.Entry<Class<? extends F>, Class<? extends D>>> classes) {
+		final byte storagePointer = addToRegistry(registry, data, PropertyValueRegistryStorage.create(registry, classes));
+		classes.forEach(entry -> registry.addMapping(entry.getKey(), storagePointer));
+	}
 
+	private <F, D extends Dashable<F>> byte addSimpleRegistryStorage(DashRegistry registry, DashDataType data, Class<F> from, Class<D> to) {
+		var simpleRegistry = RegistryStorageFactory.createSimpleRegistry(registry, from, to);
+		final byte registryPointer = addToRegistry(registry, data, simpleRegistry);
+		registry.addMapping(from, registryPointer);
+		return registryPointer;
+	}
+
+	private byte addToRegistry(DashRegistry registry, DashDataType data, RegistryStorage<?> registryStorage) {
 		//add registry storage to the registry
-		final byte storagePointer = registry.addStorage(multiRegistry);
-
-		//create a pointer to that registry
-		registry.addMapping(from, storagePointer);
+		final byte storagePointer = registry.addStorage(registryStorage);
 
 		//save that registry for future use
 		storageMappings.put(data, storagePointer);
+
+		return storagePointer;
 	}
 
 

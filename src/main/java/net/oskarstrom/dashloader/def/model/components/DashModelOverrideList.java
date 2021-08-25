@@ -27,22 +27,22 @@ public class DashModelOverrideList {
 		final ModelOverrideList.BakedOverride[] overrides = ((ModelOverrideListAccessor) modelOverrideList).getOverrides();
 		final Identifier[] conditionTypes = ((ModelOverrideListAccessor) modelOverrideList).getConditionTypes();
 
-		this.overrides = DashHelper.convertArrays(overrides, bakedOverride -> new DashModelOverrideListBakedOverride(bakedOverride, registry));
-		this.conditionTypes = DashHelper.convertArrays(conditionTypes, registry::add);
+		this.overrides = DashHelper.convertArrays(overrides, DashModelOverrideListBakedOverride[]::new, bakedOverride -> new DashModelOverrideListBakedOverride(bakedOverride, registry));
+		this.conditionTypes = DashHelper.convertArrays(conditionTypes,Pointer[]::new, registry::add);
 
 	}
 
 	public ModelOverrideList toUndash(DashRegistry registry) {
 		toApply = ModelOverrideListAccessor.newModelOverrideList();
 
-		final Identifier[] identifiers = DashHelper.convertArrays(conditionTypes, registry::get);
+		final Identifier[] identifiers = DashHelper.convertArrays(conditionTypes, Identifier[]::new, registry::get);
 		((ModelOverrideListAccessor) toApply).setConditionTypes(identifiers);
 
 		return toApply;
 	}
 
 	public void applyOverrides(DashRegistry registry) {
-		final var bakedOverrides = DashHelper.convertArrays(this.overrides, override -> override.toUndash(registry));
+		ModelOverrideList.BakedOverride[] bakedOverrides = DashHelper.convertArrays(this.overrides, ModelOverrideList.BakedOverride[]::new, override -> override.toUndash(registry));
 		((ModelOverrideListAccessor) toApply).setOverrides(bakedOverrides);
 	}
 }

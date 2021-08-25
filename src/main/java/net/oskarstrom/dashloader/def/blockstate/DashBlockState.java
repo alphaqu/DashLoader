@@ -1,7 +1,6 @@
 package net.oskarstrom.dashloader.def.blockstate;
 
 import com.google.common.collect.ImmutableMap;
-import net.oskarstrom.dashloader.def.api.DashObject;
 import net.oskarstrom.dashloader.def.mixin.accessor.StateAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
@@ -34,8 +33,9 @@ public class DashBlockState implements Dashable<BlockState> {
 	public DashBlockState(BlockState blockState, DashRegistry registry) {
 		StateAccessor<Block, BlockState> accessState = ((StateAccessor<Block, BlockState>) blockState);
 		entriesEncoded = new Pointer2PointerMap();
-		accessState.getEntries().forEach((property, comparable) -> {
-			entriesEncoded.add(Pointer2PointerMap.Entry.of(registry.add(property), registry.add(comparable)));
+		final ImmutableMap<Property<?>, Comparable<?>> entries = accessState.getEntries();
+		entries.forEach((property, comparable) -> {
+				entriesEncoded.add(Pointer2PointerMap.Entry.of(registry.add(property), registry.add(comparable)));
 		});
 		owner = registry.add(Registry.BLOCK.getId(blockState.getBlock()));
 	}

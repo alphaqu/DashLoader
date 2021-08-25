@@ -46,7 +46,7 @@ dependencies {
     include "net.oskarstrom.dashloader:dashloader-core:$project.dashloader_core_version"
 
     testImplementation(platform('org.junit:junit-bom:5.7.2'))
-    testImplementation('org.junit.jupiter:junit-jupiter')
+    testImplementation('org.junit.jupiter:junit-jupiter:5.7.2')
 
     modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.36.1+1.17");
 }

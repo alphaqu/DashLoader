@@ -7,13 +7,16 @@ import net.minecraft.text.Text;
 import net.oskarstrom.dashloader.api.DashLoaderFactory;
 import net.oskarstrom.dashloader.api.ThreadManager;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.api.registry.Pointer;
 import net.oskarstrom.dashloader.api.serializer.DashSerializer;
 import net.oskarstrom.dashloader.api.serializer.DashSerializerManager;
 import net.oskarstrom.dashloader.core.util.ClassLoaderHelper;
+import net.oskarstrom.dashloader.def.api.DashDataType;
 import net.oskarstrom.dashloader.def.api.DashLoaderAPI;
 import net.oskarstrom.dashloader.def.data.DashSerializers;
 import net.oskarstrom.dashloader.def.data.VanillaData;
 import net.oskarstrom.dashloader.def.data.serialize.*;
+import net.oskarstrom.dashloader.def.registry.PropertyValueRegistryStorage;
 import net.oskarstrom.dashloader.def.util.enums.DashCachePaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +54,7 @@ public class DashLoader implements ModInitializer {
 	public DashLoader(ClassLoader classLoader) {
 		instance = this;
 		this.api = new DashLoaderAPI(this);
-		ClassLoaderHelper.setAccessor(classLoader);
+		ClassLoaderHelper.accessor = new ClassLoaderHelper.Accessor(classLoader);
 		LOGGER.info("Created DashLoader with {} classloader.", classLoader.getClass().getSimpleName());
 	}
 
@@ -115,7 +118,13 @@ public class DashLoader implements ModInitializer {
 	}
 
 	public void saveDashCache() {
-		DashRegistry registry = DashLoaderFactory.createSerializationRegistry();
+		DashRegistry registry = DashLoaderFactory.createSerializationRegistry((o, registri) -> {
+			if (o instanceof Enum<?> enumObject) {
+				final byte storagePointer = api.storageMappings.getByte(DashDataType.PROPERTY_VALUE);
+				return new Pointer(((PropertyValueRegistryStorage) registri.getStorage(storagePointer)).add(enumObject), storagePointer);
+			}
+			return null;
+		});
 		api.initAPI(registry);
 
 
@@ -124,10 +133,10 @@ public class DashLoader implements ModInitializer {
 
 
 		try {
-			DashSerializers.REGISTRY_SERIALIZER.serialize("", new RegistryData(registry));
-			DashSerializers.IMAGE_SERIALIZER.serialize("", new ImageData(registry));
-			DashSerializers.MODEL_SERIALIZER.serialize("", new ModelData(registry));
-			DashSerializers.MAPPING_SERIALIZER.serialize("", mappings);
+			DashSerializers.REGISTRY_SERIALIZER.serialize(DashCachePaths.REGISTRY_CACHE.getFileName(true), new RegistryData(registry));
+			DashSerializers.IMAGE_SERIALIZER.serialize(DashCachePaths.REGISTRY_IMAGE_CACHE.getFileName(true), new ImageData(registry));
+			DashSerializers.MODEL_SERIALIZER.serialize(DashCachePaths.REGISTRY_MODEL_CACHE.getFileName(true), new ModelData(registry));
+			DashSerializers.MAPPING_SERIALIZER.serialize(DashCachePaths.MAPPINGS_CACHE.getFileName(true), mappings);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

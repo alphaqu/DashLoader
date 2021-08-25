@@ -15,7 +15,7 @@ import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.mixin.accessor.FontManagerAccessor;
 import net.oskarstrom.dashloader.def.mixin.accessor.FontStorageAccessor;
 import net.oskarstrom.dashloader.def.mixin.accessor.UnicodeTextureFontAccessor;
-import net.oskarstrom.dashloader.def.util.mixins.MixinValues;
+import net.oskarstrom.dashloader.def.util.mixins.MixinThings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -58,7 +58,7 @@ public class FontManagerOverride {
 		if (DashLoader.getVanillaData().getFonts() != null && DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
 			profiler.startTick();
 			profiler.push("closing");
-			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) MixinValues.fontManager;
+			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) MixinThings.fontManager;
 			fontManagerAccessor.getFontStorages().values().forEach(FontStorage::close);
 			fontManagerAccessor.getFontStorages().clear();
 			profiler.swap("reloading");
@@ -121,7 +121,7 @@ public class FontManagerOverride {
 	private static class LeoFontSolution {
 		@Inject(method = "<init>", at = @At(value = "TAIL"))
 		private void initInject(TextureManager manager, CallbackInfo ci) {
-			MixinValues.fontManager = ((FontManager) (Object) this);
+			MixinThings.fontManager = ((FontManager) (Object) this);
 		}
 	}
 
