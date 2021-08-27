@@ -44,15 +44,15 @@ public class DashSpriteAtlasData {
 	}
 
 
-	public Pair<SpriteAtlasManager, List<SpriteAtlasTexture>> toUndash(DashRegistry loader) {
+	public Pair<SpriteAtlasManager, List<SpriteAtlasTexture>> toUndash(DashRegistry registry) {
 		ArrayList<SpriteAtlasTexture> out = new ArrayList<>(atlases.size());
 		ArrayList<SpriteAtlasTexture> toRegister = new ArrayList<>(atlases.size());
 		atlases.forEach((entry) -> {
 			final DashSpriteAtlasTexture key = entry.key;
 			if (entry.value == 0) {
-				out.add(key.toUndash(loader));
+				out.add(key.toUndash(registry));
 			}
-			toRegister.add(key.toUndash(loader));
+			toRegister.add(key.toUndash(registry));
 		});
 		return Pair.of(new SpriteAtlasManager(out), toRegister);
 	}

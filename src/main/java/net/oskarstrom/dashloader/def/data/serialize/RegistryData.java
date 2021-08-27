@@ -27,22 +27,27 @@ public class RegistryData implements RegistryDataObject {
 	public final RegistryStorageData<DashBlockState> blockStateRegistryData;
 
 	@Serialize
-	public final RegistryStorageData<@SerializeSubclasses(extraSubclassesId = "fonts") DashFont> fontRegistryData;
+	@SerializeSubclasses(extraSubclassesId = "fonts", path = {0})
+	public final RegistryStorageData<DashFont> fontRegistryData;
 
 	@Serialize
-	public final RegistryStorageData<@SerializeSubclasses({DashIdentifier.class, DashModelIdentifier.class}) DashIdentifierInterface> identifierRegistryData;
+	@SerializeSubclasses(value = {DashIdentifier.class, DashModelIdentifier.class}, path = {0})
+	public final RegistryStorageData<DashIdentifierInterface> identifierRegistryData;
 
 	@Serialize
-	public final RegistryStorageData<@SerializeSubclasses(extraSubclassesId = "properties") DashProperty> propertyRegistryData;
+	@SerializeSubclasses(extraSubclassesId = "properties", path = {0})
+	public final RegistryStorageData<DashProperty> propertyRegistryData;
 
 	@Serialize
-	public final RegistryStorageData<@SerializeSubclasses(extraSubclassesId = "values") DashPropertyValue> propertyValueRegistryData;
+	@SerializeSubclasses(extraSubclassesId = "values", path = {0})
+	public final RegistryStorageData<DashPropertyValue> propertyValueRegistryData;
 
 	@Serialize
 	public final RegistryStorageData<DashSprite> spriteRegistryData;
 
 	@Serialize
-	public final RegistryStorageData<@SerializeSubclasses(extraSubclassesId = "predicate") DashPredicate> predicateRegistryData;
+	@SerializeSubclasses(extraSubclassesId = "predicates", path = {0})
+	public final RegistryStorageData<DashPredicate> predicateRegistryData;
 
 	@Serialize
 	public final RegistryStorageData<DashBakedQuad> registryBakedQuadData;
@@ -85,9 +90,6 @@ public class RegistryData implements RegistryDataObject {
 
 		for (DashFont dashable : fontRegistryData.dashables) {
 			final Class<? extends DashFont> aClass = dashable.getClass();
-			if (!(aClass == DashBitmapFont.class || aClass == DashBlankFont.class || aClass == DashTrueTypeFont.class || aClass == DashUnicodeFont.class)) {
-				System.out.println(aClass);
-			}
 		}
 		this.identifierRegistryData = (RegistryStorageData<DashIdentifierInterface>) getter.apply(DashDataType.IDENTIFIER);
 		this.propertyRegistryData = (RegistryStorageData<DashProperty>) getter.apply(DashDataType.PROPERTY);

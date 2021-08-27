@@ -168,11 +168,18 @@ public class DashLoader implements ModInitializer {
 			for (RegistryDataObject registryDataObject : registryDataObjects)
 				size += registryDataObject.getSize();
 
+			System.out.println(size);
 			//create the registry
 			DashRegistry registry = DashLoaderFactory.createDeserializationRegistry(size);
 
+			//add the storages
+			for (RegistryDataObject registryDataObject : registryDataObjects)
+				registryDataObject.dumpData(registry);
+
+
 			LOGGER.info("      Loading Registry");
 			registry.apply(registry);
+
 
 			LOGGER.info("      Loading Mappings");
 			mappings.toUndash(registry, VANILLA_DATA);
