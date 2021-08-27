@@ -23,33 +23,28 @@ import net.oskarstrom.dashloader.def.model.predicates.DashPredicate;
 import java.util.function.Function;
 
 public class RegistryData implements RegistryDataObject {
-	@Serialize(order = 0)
+	@Serialize
 	public final RegistryStorageData<DashBlockState> blockStateRegistryData;
 
-	@Serialize(order = 1)
-	@SerializeSubclasses(extraSubclassesId = "fonts", path = 0)
-	public final RegistryStorageData<DashFont> fontRegistryData;
+	@Serialize
+	public final RegistryStorageData<@SerializeSubclasses(extraSubclassesId = "fonts") DashFont> fontRegistryData;
 
-	@Serialize(order = 2)
-	@SerializeSubclasses(value = {DashIdentifier.class, DashModelIdentifier.class}, path = 0)
-	public final RegistryStorageData<DashIdentifierInterface> identifierRegistryData;
+	@Serialize
+	public final RegistryStorageData<@SerializeSubclasses({DashIdentifier.class, DashModelIdentifier.class}) DashIdentifierInterface> identifierRegistryData;
 
-	@Serialize(order = 3)
-	@SerializeSubclasses(extraSubclassesId = "properties", path = 0)
-	public final RegistryStorageData<DashProperty> propertyRegistryData;
+	@Serialize
+	public final RegistryStorageData<@SerializeSubclasses(extraSubclassesId = "properties") DashProperty> propertyRegistryData;
 
-	@Serialize(order = 4)
-	@SerializeSubclasses(extraSubclassesId = "values", path = 0)
-	public final RegistryStorageData<DashPropertyValue> propertyValueRegistryData;
+	@Serialize
+	public final RegistryStorageData<@SerializeSubclasses(extraSubclassesId = "values") DashPropertyValue> propertyValueRegistryData;
 
-	@Serialize(order = 5)
+	@Serialize
 	public final RegistryStorageData<DashSprite> spriteRegistryData;
 
-	@Serialize(order = 6)
-	@SerializeSubclasses(extraSubclassesId = "predicate", path = 0)
-	public final RegistryStorageData<DashPredicate> predicateRegistryData;
+	@Serialize
+	public final RegistryStorageData<@SerializeSubclasses(extraSubclassesId = "predicate") DashPredicate> predicateRegistryData;
 
-	@Serialize(order = 7)
+	@Serialize
 	public final RegistryStorageData<DashBakedQuad> registryBakedQuadData;
 /*	@Serialize(order = 8)
 	@SerializeSubclasses(extraSubclassesId = "data", path = {0})
@@ -80,7 +75,11 @@ public class RegistryData implements RegistryDataObject {
 	public RegistryData(DashRegistry registry) {
 		final DashLoaderAPI api = DashLoader.getInstance().getApi();
 		final Object2ByteMap<DashDataType> mappings = api.storageMappings;
-		Function<DashDataType, RegistryStorageData<?>> getter = ((type) -> registry.getStorageData(mappings.getByte(type)));
+		Function<DashDataType, RegistryStorageData<?>> getter = ((type) -> {
+			final RegistryStorageData<?> storageData = registry.getStorageData(mappings.getByte(type));
+			System.out.println(type.name + " / " + storageData.dashables.size());
+			return storageData;
+		});
 		this.blockStateRegistryData = (RegistryStorageData<DashBlockState>) getter.apply(DashDataType.BLOCKSTATE);
 		this.fontRegistryData = (RegistryStorageData<DashFont>) getter.apply(DashDataType.FONT);
 

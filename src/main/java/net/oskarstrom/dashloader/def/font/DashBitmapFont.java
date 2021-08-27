@@ -14,11 +14,11 @@ import net.oskarstrom.dashloader.api.registry.Pointer;
 @DashObject(BitmapFont.class)
 public class DashBitmapFont implements DashFont {
 	@Serialize(order = 0)
-	public final Pointer image;
+	public final int image;
 	@Serialize(order = 1)
 	public final PairMap<Integer, DashBitmapFontGlyph> glyphs;
 
-	public DashBitmapFont(@Deserialize("image") Pointer image,
+	public DashBitmapFont(@Deserialize("image") int image,
 						  @Deserialize("glyphs") PairMap<Integer,DashBitmapFontGlyph> glyphs) {
 		this.image = image;
 		this.glyphs = glyphs;

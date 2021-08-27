@@ -28,7 +28,7 @@ public class DashBasicBakedModel implements DashModel {
 	@Serialize(order = 0)
 	public final List<DashBakedQuad> quads;
 	@Serialize(order = 1)
-	public final PairMap<DashDirectionValue, Collection<Pointer>> faceQuads;
+	public final PairMap<DashDirectionValue, Collection<Integer>> faceQuads;
 	@Serialize(order = 2)
 	public final boolean usesAo;
 	@Serialize(order = 3)
@@ -41,17 +41,17 @@ public class DashBasicBakedModel implements DashModel {
 	@Serialize(order = 6)
 	public final DashModelOverrideList itemPropertyOverrides;
 	@Serialize(order = 7)
-	public final Pointer spritePointer;
+	public final int spritePointer;
 
 
 	public DashBasicBakedModel(@Deserialize("quads") List<DashBakedQuad> quads,
-							   @Deserialize("faceQuads") PairMap<DashDirectionValue, Collection<Pointer>> faceQuads,
+							   @Deserialize("faceQuads") PairMap<DashDirectionValue, Collection<Integer>> faceQuads,
 							   @Deserialize("usesAo") boolean usesAo,
 							   @Deserialize("hasDepth") boolean hasDepth,
 							   @Deserialize("isSideLit") boolean isSideLit,
 							   @Deserialize("transformation") DashModelTransformation transformation,
 							   @Deserialize("itemPropertyOverrides") DashModelOverrideList itemPropertyOverrides,
-							   @Deserialize("spritePointer") Pointer spritePointer) {
+							   @Deserialize("spritePointer") int spritePointer) {
 		this.quads = quads;
 		this.faceQuads = faceQuads;
 		this.usesAo = usesAo;
@@ -70,7 +70,7 @@ public class DashBasicBakedModel implements DashModel {
 				faceQuads,
 				(entry) -> {
 					final List<BakedQuad> value = entry.getValue();
-					final Collection<Pointer> right = DashHelper.convertCollection(value, registry::add);
+					final Collection<Integer> right = DashHelper.convertCollection(value, registry::add);
 					return PairMap.Entry.of(new DashDirectionValue(entry.getKey()), right);
 				}));
 		itemPropertyOverrides = new DashModelOverrideList(access.getItemPropertyOverrides(), registry);
@@ -86,7 +86,7 @@ public class DashBasicBakedModel implements DashModel {
 	public BasicBakedModel toUndash(final DashRegistry registry) {
 		final Sprite sprite = registry.get(spritePointer);
 		final List<BakedQuad> quadsOut = DashHelper.convertCollection(quads, bakedQuad -> bakedQuad.toUndash(registry));
-		final Map<Direction, List<BakedQuad>> faceQuadsOut = DashHelper.convertCollectionToMap(faceQuads.getData(), (entry) ->
+		final Map<Direction, List<BakedQuad>> faceQuadsOut = DashHelper.convertCollectionToMap(faceQuads.data, (entry) ->
 				Pair.of(entry.getKey().toUndash(registry), DashHelper.convertCollection(entry.getValue(), registry::get)));
 
 		return new BasicBakedModel(quadsOut, faceQuadsOut, usesAo, isSideLit, hasDepth, sprite, DashModelTransformation.toUndashOrDefault(transformation), itemPropertyOverrides.toUndash(registry));

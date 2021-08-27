@@ -21,14 +21,14 @@ public class DashBuiltinBakedModel implements DashModel {
 	@Serialize(order = 1)
 	public final DashModelOverrideList itemPropertyOverrides;
 	@Serialize(order = 2)
-	public final Pointer spritePointer;
+	public final int spritePointer;
 	@Serialize(order = 3)
 	public final boolean sideLit;
 
 	public DashBuiltinBakedModel(
 			@Deserialize("transformation") DashModelTransformation transformation,
 			@Deserialize("itemPropertyOverrides") DashModelOverrideList itemPropertyOverrides,
-			@Deserialize("spritePointer") Pointer spritePointer,
+			@Deserialize("spritePointer") int spritePointer,
 			@Deserialize("sideLit") boolean sideLit) {
 		this.transformation = transformation;
 		this.itemPropertyOverrides = itemPropertyOverrides;

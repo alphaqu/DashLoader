@@ -121,7 +121,7 @@ public class DashLoader implements ModInitializer {
 		DashRegistry registry = DashLoaderFactory.createSerializationRegistry((o, registri) -> {
 			if (o instanceof Enum<?> enumObject) {
 				final byte storagePointer = api.storageMappings.getByte(DashDataType.PROPERTY_VALUE);
-				return new Pointer(((PropertyValueRegistryStorage) registri.getStorage(storagePointer)).add(enumObject), storagePointer);
+				return Pointer.parsePointer(((PropertyValueRegistryStorage) registri.getStorage(storagePointer)).add(enumObject), storagePointer);
 			}
 			return null;
 		});

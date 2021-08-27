@@ -11,7 +11,7 @@ import net.oskarstrom.dashloader.def.model.DashModel;
 import net.oskarstrom.dashloader.def.model.components.DashBakedQuad;
 import net.oskarstrom.dashloader.def.model.predicates.DashPredicate;
 
-public enum DashDataType {
+public enum DashDataType{
 	//factories
 	MODEL("Model", "models", DashModel.class, true),
 	PROPERTY("Property", "properties", DashProperty.class, true),

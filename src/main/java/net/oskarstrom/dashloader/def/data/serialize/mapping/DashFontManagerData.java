@@ -19,9 +19,9 @@ import java.util.Map;
 public class DashFontManagerData implements Dashable<Map<Identifier, List<Font>>> {
 
 	@Serialize(order = 0)
-	public final Pointer2ObjectMap<List<Pointer>> fontMap;
+	public final Pointer2ObjectMap<List<Integer>> fontMap;
 
-	public DashFontManagerData(@Deserialize("fontMap") Pointer2ObjectMap<List<Pointer>> fontMap) {
+	public DashFontManagerData(@Deserialize("fontMap") Pointer2ObjectMap<List<Integer>> fontMap) {
 		this.fontMap = fontMap;
 	}
 
@@ -34,7 +34,7 @@ public class DashFontManagerData implements Dashable<Map<Identifier, List<Font>>
 		}
 		taskHandler.setSubtasks(amount);
 		fonts.forEach((identifier, fontList) -> {
-			List<Pointer> fontsOut = new ArrayList<>();
+			List<Integer> fontsOut = new ArrayList<>();
 			fontList.forEach(font -> {
 				fontsOut.add(registry.add(font));
 				taskHandler.completedSubTask();

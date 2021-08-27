@@ -18,13 +18,13 @@ import net.oskarstrom.dashloader.api.registry.Pointer;
 public class DashBlockState implements Dashable<BlockState> {
 
 	@Serialize(order = 0)
-	public final Pointer owner;
+	public final int owner;
 
 	@Serialize(order = 1)
 	public final Pointer2PointerMap entriesEncoded;
 
 
-	public DashBlockState(@Deserialize("owner") Pointer owner,
+	public DashBlockState(@Deserialize("owner") int owner,
 						  @Deserialize("entriesEncoded") Pointer2PointerMap entriesEncoded) {
 		this.owner = owner;
 		this.entriesEncoded = entriesEncoded;
@@ -33,8 +33,7 @@ public class DashBlockState implements Dashable<BlockState> {
 	public DashBlockState(BlockState blockState, DashRegistry registry) {
 		StateAccessor<Block, BlockState> accessState = ((StateAccessor<Block, BlockState>) blockState);
 		entriesEncoded = new Pointer2PointerMap();
-		final ImmutableMap<Property<?>, Comparable<?>> entries = accessState.getEntries();
-		entries.forEach((property, comparable) -> {
+		accessState.getEntries().forEach((property, comparable) -> {
 				entriesEncoded.add(Pointer2PointerMap.Entry.of(registry.add(property), registry.add(comparable)));
 		});
 		owner = registry.add(Registry.BLOCK.getId(blockState.getBlock()));

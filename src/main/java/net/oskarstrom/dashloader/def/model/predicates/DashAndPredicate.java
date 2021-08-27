@@ -21,9 +21,9 @@ import java.util.function.Predicate;
 @DashObject(AndMultipartModelSelector.class)
 public class DashAndPredicate implements DashPredicate {
 	@Serialize(order = 0)
-	public final List<Pointer> selectors;
+	public final List<Integer> selectors;
 
-	public DashAndPredicate(@Deserialize("selectors") List<Pointer> selectors) {
+	public DashAndPredicate(@Deserialize("selectors") List<Integer> selectors) {
 		this.selectors = selectors;
 	}
 

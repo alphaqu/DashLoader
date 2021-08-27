@@ -35,7 +35,7 @@ public class DashSprite implements Dashable<Sprite> {
 	@Serialize(order = 8)
 	public final float vMax;
 	@Serialize(order = 9)
-	public Pointer[] images;
+	public int[] images;
 
 
 	public DashSprite(@Deserialize("animation") DashSpriteAnimation animation,
@@ -47,7 +47,7 @@ public class DashSprite implements Dashable<Sprite> {
 					  @Deserialize("uMax") float uMax,
 					  @Deserialize("vMin") float vMin,
 					  @Deserialize("vMax") float vMax,
-					  @Deserialize("images") Pointer[] images
+					  @Deserialize("images") int[] images
 	) {
 		this.animation = animation;
 		this.images = images;
@@ -63,7 +63,7 @@ public class DashSprite implements Dashable<Sprite> {
 
 	public DashSprite(Sprite sprite, DashRegistry registry) {
 		final NativeImage[] images = ((SpriteAccessor) sprite).getImages();
-		this.images = new Pointer[images.length];
+		this.images = new int[images.length];
 		for (int i = 0; i < images.length; i++) {
 			this.images[i] = registry.add(images[i]);
 		}

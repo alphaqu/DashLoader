@@ -19,7 +19,7 @@ import java.util.*;
 
 public class DashSpriteAtlasTexture {
 	@Serialize(order = 0)
-	public final Pointer id;
+	public final int id;
 	@Serialize(order = 1)
 	public final int maxTextureSize;
 	@Serialize(order = 2)
@@ -32,7 +32,7 @@ public class DashSpriteAtlasTexture {
 	public DashSpriteAtlasTextureData data;
 
 
-	public DashSpriteAtlasTexture(@Deserialize("id") Pointer id,
+	public DashSpriteAtlasTexture(@Deserialize("id") int id,
 								  @Deserialize("maxTextureSize") int maxTextureSize,
 								  @Deserialize("sprites") Pointer2PointerMap sprites,
 								  @Deserialize("bilinear") boolean bilinear,
@@ -81,7 +81,7 @@ public class DashSpriteAtlasTexture {
 		return spriteAtlasTexture;
 	}
 
-	private Sprite loadSprite(Pointer spritePointer, DashRegistry registry, SpriteAtlasTexture spriteAtlasTexture) {
+	private Sprite loadSprite(int spritePointer, DashRegistry registry, SpriteAtlasTexture spriteAtlasTexture) {
 		Sprite sprite = registry.get(spritePointer);
 		((SpriteAccessor) sprite).setAtlas(spriteAtlasTexture);
 		return sprite;

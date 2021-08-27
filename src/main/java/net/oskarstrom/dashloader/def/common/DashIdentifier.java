@@ -1,8 +1,10 @@
 package net.oskarstrom.dashloader.def.common;
 
+import io.activej.serializer.StringFormat;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import io.activej.serializer.annotations.SerializeFixedSize;
+import io.activej.serializer.annotations.SerializeStringFormat;
 import net.minecraft.util.Identifier;
 import net.oskarstrom.dashloader.api.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.mixin.accessor.IdentifierAccessor;

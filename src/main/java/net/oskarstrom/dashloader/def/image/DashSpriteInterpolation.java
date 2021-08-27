@@ -12,15 +12,15 @@ import net.oskarstrom.dashloader.def.util.mixins.SpriteInterpolationDuck;
 
 public class DashSpriteInterpolation {
 	@Serialize(order = 0)
-	public final Pointer[] images;
+	public final int[] images;
 
-	public DashSpriteInterpolation(@Deserialize("images") Pointer[] images) {
+	public DashSpriteInterpolation(@Deserialize("images") int[] images) {
 		this.images = images;
 	}
 
 	public DashSpriteInterpolation(Sprite.Interpolation interpolation, DashRegistry registry) {
 		final NativeImage[] imagesIn = ((SpriteInterpolationAccessor) (Object) interpolation).getImages();
-		this.images = new Pointer[imagesIn.length];
+		this.images = new int[imagesIn.length];
 		for (int i = 0; i < imagesIn.length; i++) {
 			this.images[i] = registry.add(imagesIn[i]);
 		}

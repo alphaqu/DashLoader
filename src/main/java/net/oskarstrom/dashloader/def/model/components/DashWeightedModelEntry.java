@@ -11,12 +11,12 @@ import net.oskarstrom.dashloader.api.registry.Pointer;
 
 public class DashWeightedModelEntry {
 	@Serialize(order = 0)
-	public final Pointer model;
+	public final int model;
 
 	@Serialize(order = 1)
 	public final int weight;
 
-	public DashWeightedModelEntry(@Deserialize("model") Pointer model,
+	public DashWeightedModelEntry(@Deserialize("model") int model,
 								  @Deserialize("weight") int weight) {
 		this.model = model;
 		this.weight = weight;

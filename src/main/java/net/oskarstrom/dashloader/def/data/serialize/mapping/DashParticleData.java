@@ -22,12 +22,12 @@ import java.util.Map;
 public class DashParticleData implements Dashable<Pair<Map<Identifier, List<Sprite>>, SpriteAtlasTexture>> {
 
 	@Serialize(order = 0)
-	public final Pointer2ObjectMap<List<Pointer>> particles;
+	public final Pointer2ObjectMap<List<Integer>> particles;
 
 	@Serialize(order = 1)
 	public final DashSpriteAtlasTexture atlasTexture;
 
-	public DashParticleData(@Deserialize("particles") Pointer2ObjectMap<List<Pointer>> particles,
+	public DashParticleData(@Deserialize("particles") Pointer2ObjectMap<List<Integer>> particles,
 							@Deserialize("atlasTexture") DashSpriteAtlasTexture atlasTexture) {
 		this.particles = particles;
 		this.atlasTexture = atlasTexture;
@@ -38,7 +38,7 @@ public class DashParticleData implements Dashable<Pair<Map<Identifier, List<Spri
 		final Map<Identifier, List<Sprite>> particles = data.getParticles();
 		taskHandler.setSubtasks(particles.size() + 1);
 		particles.forEach((identifier, spriteList) -> {
-			List<Pointer> out = new ArrayList<>();
+			List<Integer> out = new ArrayList<>();
 			spriteList.forEach(sprite -> out.add(registry.add(sprite)));
 			this.particles.add(Pointer2ObjectMap.Entry.of(registry.add(identifier), out));
 			taskHandler.completedSubTask();

@@ -63,13 +63,12 @@ public class MappingData {
 
 	@SuppressWarnings("unused") //active j
 	public MappingData(@Deserialize("blockStateData") DashBlockStateData blockStateData,
-						@Deserialize("fontManagerData") DashFontManagerData fontManagerData,
-						@Deserialize("modelData") DashModelData modelData,
-						@Deserialize("predicateData") DashParticleData predicateData,
-						@Deserialize("splashTextData") DashSplashTextData splashTextData,
-						@Deserialize("spriteAtlasData") DashSpriteAtlasData spriteAtlasData,
-						@Deserialize("shaderData") DashShaderData shaderData)
-	{
+					   @Deserialize("fontManagerData") DashFontManagerData fontManagerData,
+					   @Deserialize("modelData") DashModelData modelData,
+					   @Deserialize("predicateData") DashParticleData predicateData,
+					   @Deserialize("splashTextData") DashSplashTextData splashTextData,
+					   @Deserialize("spriteAtlasData") DashSpriteAtlasData spriteAtlasData,
+					   @Deserialize("shaderData") DashShaderData shaderData) {
 		this.blockStateData = blockStateData;
 		this.fontManagerData = fontManagerData;
 		this.modelData = modelData;
@@ -81,23 +80,23 @@ public class MappingData {
 
 	public void loadVanillaData(VanillaData data, DashRegistry registry, DashLoader.TaskHandler taskHandler) {
 		if (Feature.MODEL_LOADER.active()) {
-			taskHandler.logAndTask("Mapping Blockstates");
+			taskHandler.logAndTask("Mapping " + data.getStateLookup().size() + " Blockstates");
 			blockStateData = new DashBlockStateData(data, registry, taskHandler);
 
-			taskHandler.logAndTask("Mapping Models");
+			taskHandler.logAndTask("Mapping " + data.getModels().size() + " Models");
 			modelData = new DashModelData(data, registry, taskHandler);
 
-			taskHandler.logAndTask("Mapping Atlas");
+			taskHandler.logAndTask("Mapping " + data.atlasData.size() + " Atlas's");
 			spriteAtlasData = new DashSpriteAtlasData(data, registry, taskHandler);
 		}
 
 		if (Feature.PARTICLES.active()) {
-			taskHandler.logAndTask("Mapping Particles");
+			taskHandler.logAndTask("Mapping " + data.getParticles().size() + " Particles");
 			predicateData = new DashParticleData(data, registry, taskHandler);
 		}
 
 		if (Feature.FONTS.active()) {
-			taskHandler.logAndTask("Mapping Fonts");
+			taskHandler.logAndTask("Mapping " + data.fontData.size() + " Fonts");
 			fontManagerData = new DashFontManagerData(data, registry, taskHandler);
 		}
 
@@ -187,4 +186,6 @@ public class MappingData {
 		}
 		return null;
 	}
+
+
 }

@@ -11,7 +11,7 @@ import net.oskarstrom.dashloader.def.model.DashModel;
 
 public class ModelData implements RegistryDataObject {
 	@Serialize(order = 0)
-	@SerializeSubclasses(extraSubclassesId = "model", path = {0})
+	@SerializeSubclasses(extraSubclassesId = "models", path = {0})
 	public final RegistryStorageData<DashModel> modelData;
 
 	public ModelData(@Deserialize("modelData") RegistryStorageData<DashModel> modelData) {

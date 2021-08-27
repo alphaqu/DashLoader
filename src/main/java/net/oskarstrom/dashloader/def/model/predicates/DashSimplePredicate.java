@@ -53,17 +53,17 @@ public class DashSimplePredicate implements DashPredicate {
 		}
 		List<String> list = VALUE_SPLITTER.splitToList(string);
 		if (list.size() == 1) {
-			Pair<Pointer, Pointer> predicateProperty = createPredicateInfo(stateManager, stateManagerProperty, string, registry);
+			Pair<Integer, Integer> predicateProperty = createPredicateInfo(stateManager, stateManagerProperty, string, registry);
 			properties.add(Pointer2PointerMap.Entry.of(predicateProperty.getLeft(), predicateProperty.getRight()));
 		} else {
-			List<Pair<Pointer, Pointer>> predicateProperties = list.stream().map((stringx) -> createPredicateInfo(stateManager, stateManagerProperty, stringx, registry)).collect(Collectors.toList());
+			List<Pair<Integer, Integer>> predicateProperties = list.stream().map((stringx) -> createPredicateInfo(stateManager, stateManagerProperty, stringx, registry)).collect(Collectors.toList());
 			predicateProperties.forEach(pair -> properties.add(Pointer2PointerMap.Entry.of(pair.getLeft(), pair.getRight())));
 		}
 
 	}
 
 
-	private Pair<Pointer, Pointer> createPredicateInfo(StateManager<Block, BlockState> stateFactory, Property<?> property, String valueString, DashRegistry registry) {
+	private Pair<Integer, Integer> createPredicateInfo(StateManager<Block, BlockState> stateFactory, Property<?> property, String valueString, DashRegistry registry) {
 		Optional<?> optional = property.parse(valueString);
 		if (optional.isEmpty()) {
 			throw new RuntimeException(String.format("Unknown value '%s' '%s'", valueString, stateFactory.getOwner().toString()));

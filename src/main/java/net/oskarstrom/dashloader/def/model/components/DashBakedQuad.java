@@ -19,13 +19,13 @@ public class DashBakedQuad implements Dashable<BakedQuad> {
 	@Serialize(order = 3)
 	public final boolean shade;
 	@Serialize(order = 4)
-	public final Pointer sprite;
+	public final int sprite;
 
 	public DashBakedQuad(@Deserialize("vertexData") int[] vertexData,
 						 @Deserialize("colorIndex") int colorIndex,
 						 @Deserialize("face") DashDirectionValue face,
 						 @Deserialize("shade") boolean shade,
-						 @Deserialize("sprite") Pointer sprite) {
+						 @Deserialize("sprite") int sprite) {
 		this.vertexData = vertexData;
 		this.colorIndex = colorIndex;
 		this.face = face;

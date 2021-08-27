@@ -23,9 +23,9 @@ import java.util.function.Predicate;
 public class DashOrPredicate implements DashPredicate {
 	@Serialize(order = 0)
 	@SerializeSubclasses(path = {0}, extraSubclassesId = "predicates")
-	public final List<Pointer> selectors;
+	public final List<Integer> selectors;
 
-	public DashOrPredicate(@Deserialize("selectors") List<Pointer> selectors) {
+	public DashOrPredicate(@Deserialize("selectors") List<Integer> selectors) {
 		this.selectors = selectors;
 	}
 
