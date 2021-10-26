@@ -1,11 +1,11 @@
 package net.oskarstrom.dashloader.def.image;
 
-import net.oskarstrom.dashloader.def.mixin.accessor.NativeImageAccessor;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.texture.NativeImage;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.Dashable;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.def.mixin.accessor.NativeImageAccessor;
 import net.oskarstrom.dashloader.def.util.IOHelper;
 import org.lwjgl.stb.STBIWriteCallback;
 import org.lwjgl.stb.STBImage;
@@ -16,21 +16,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+@Data
 public class DashImage implements Dashable<NativeImage> {
-
-	@Serialize(order = 0)
 	public final byte[] image;
-
-	@Serialize(order = 1)
 	public final NativeImage.Format format;
-
-	@Serialize(order = 2)
 	public final boolean useSTB;
-
-	@Serialize(order = 3)
 	public final int width;
-
-	@Serialize(order = 4)
 	public final int height;
 
 
@@ -47,11 +38,11 @@ public class DashImage implements Dashable<NativeImage> {
 		}
 	}
 
-	public DashImage(@Deserialize("image") byte[] image,
-					 @Deserialize("format") NativeImage.Format format,
-					 @Deserialize("useSTB") boolean useSTB,
-					 @Deserialize("width") int width,
-					 @Deserialize("height") int height) {
+	public DashImage(byte[] image,
+					 NativeImage.Format format,
+					 boolean useSTB,
+					 int width,
+					 int height) {
 		this.image = image;
 		this.format = format;
 		this.useSTB = useSTB;
@@ -80,7 +71,7 @@ public class DashImage implements Dashable<NativeImage> {
 	 * @return da image
 	 */
 	@Override
-	public final NativeImage toUndash(final DashRegistry registry) {
+	public final NativeImage toUndash(final DashExportHandler registry) {
 		final ByteBuffer buf = ByteBuffer.allocateDirect(image.length);
 		buf.put(image);
 		buf.flip();

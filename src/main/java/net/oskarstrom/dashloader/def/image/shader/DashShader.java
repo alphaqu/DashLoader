@@ -2,10 +2,10 @@ package net.oskarstrom.dashloader.def.image.shader;
 
 import com.google.common.collect.UnmodifiableIterator;
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
+import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
 import io.activej.serializer.annotations.SerializeNullable;
-import io.activej.serializer.annotations.SerializeSubclasses;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.render.Shader;
@@ -19,112 +19,68 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Data
 public class DashShader {
-	@Serialize(order = 0)
-	@SerializeNullable(path = {1})
-	@SerializeSubclasses(path = {1}, value = {Integer.class, String.class})
-	public final Map<String, Object> samplers;
-
-	@Serialize(order = 1)
+	public final Map<String, @DataNullable @DataSubclasses({Integer.class, String.class}) Object> samplers;
 	public final String name;
-
-	@Serialize(order = 2)
 	public final DashGlBlendState blendState;
-
-	@Serialize(order = 3)
 	public final List<String> attributeNames;
-
-	@Serialize(order = 4)
 	public final DashProgram vertexShader;
-
-	@Serialize(order = 5)
 	public final DashProgram fragmentShader;
-
-	@Serialize(order = 6)
 	public final VertexFormatsHelper.Value format;
-
-	@Serialize(order = 7)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform modelViewMat;
-
-	@Serialize(order = 8)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform projectionMat;
-
-	@Serialize(order = 9)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform textureMat;
-
-	@Serialize(order = 10)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform screenSize;
-
-	@Serialize(order = 11)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform colorModulator;
-
-	@Serialize(order = 12)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform light0Direction;
-
-	@Serialize(order = 13)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform light1Direction;
-
-	@Serialize(order = 14)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform fogStart;
-
-	@Serialize(order = 15)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform fogEnd;
-
-	@Serialize(order = 16)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform fogColor;
-
-
-	@Serialize(order = 17)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform lineWidth;
-
-	@Serialize(order = 18)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform gameTime;
-
-	@Serialize(order = 19)
-	@SerializeNullable
+	@DataNullable
 	public final DashGlUniform chunkOffset;
-
-
-	@Serialize(order = 20)
 	public final List<String> samplerNames;
 
 
-	Shader toApply;
+	transient Shader toApply;
 
 
-	public DashShader(@Deserialize("samplers") Map<String, Object> samplers,
-					  @Deserialize("name") String name,
-					  @Deserialize("blendState") DashGlBlendState blendState,
-					  @Deserialize("attributeNames") List<String> attributeNames,
-					  @Deserialize("vertexShader") DashProgram vertexShader,
-					  @Deserialize("fragmentShader") DashProgram fragmentShader,
-					  @Deserialize("format") VertexFormatsHelper.Value format,
-					  @Deserialize("modelViewMat") DashGlUniform modelViewMat,
-					  @Deserialize("projectionMat") DashGlUniform projectionMat,
-					  @Deserialize("textureMat") DashGlUniform textureMat,
-					  @Deserialize("screenSize") DashGlUniform screenSize,
-					  @Deserialize("colorModulator") DashGlUniform colorModulator,
-					  @Deserialize("light0Direction") DashGlUniform light0Direction,
-					  @Deserialize("light1Direction") DashGlUniform light1Direction,
-					  @Deserialize("fogStart") DashGlUniform fogStart,
-					  @Deserialize("fogEnd") DashGlUniform fogEnd,
-					  @Deserialize("fogColor") DashGlUniform fogColor,
-					  @Deserialize("lineWidth") DashGlUniform lineWidth,
-					  @Deserialize("gameTime") DashGlUniform gameTime,
-					  @Deserialize("chunkOffset") DashGlUniform chunkOffset,
-					  @Deserialize("samplerNames") List<String> samplerNames) {
+	public DashShader(Map<String, Object> samplers,
+					  String name,
+					  DashGlBlendState blendState,
+					  List<String> attributeNames,
+					  DashProgram vertexShader,
+					  DashProgram fragmentShader,
+					  VertexFormatsHelper.Value format,
+					  DashGlUniform modelViewMat,
+					  DashGlUniform projectionMat,
+					  DashGlUniform textureMat,
+					  DashGlUniform screenSize,
+					  DashGlUniform colorModulator,
+					  DashGlUniform light0Direction,
+					  DashGlUniform light1Direction,
+					  DashGlUniform fogStart,
+					  DashGlUniform fogEnd,
+					  DashGlUniform fogColor,
+					  DashGlUniform lineWidth,
+					  DashGlUniform gameTime,
+					  DashGlUniform chunkOffset,
+					  List<String> samplerNames) {
 		this.samplers = samplers;
 		this.name = name;
 		this.blendState = blendState;

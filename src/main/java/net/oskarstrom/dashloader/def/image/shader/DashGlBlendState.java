@@ -1,51 +1,28 @@
 package net.oskarstrom.dashloader.def.image.shader;
 
-import net.oskarstrom.dashloader.def.mixin.accessor.GlBlendStateAccessor;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
+import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.gl.GlBlendState;
+import net.oskarstrom.dashloader.def.mixin.accessor.GlBlendStateAccessor;
 
-public class DashGlBlendState {
-	@Serialize(order = 0)
-	public final int srcRgb;
-	@Serialize(order = 1)
-	public final int srcAlpha;
-	@Serialize(order = 2)
-	public final int dstRgb;
-	@Serialize(order = 3)
-	public final int dstAlpha;
-	@Serialize(order = 4)
-	public final int func;
-	@Serialize(order = 5)
-	public final boolean separateBlend;
-	@Serialize(order = 6)
-	public final boolean blendDisabled;
+@Data
+public record DashGlBlendState(
+		int srcRgb, int srcAlpha, int dstRgb, int dstAlpha, int func, boolean separateBlend, boolean blendDisabled) {
 
-	public DashGlBlendState(@Deserialize("srcRgb") int srcRgb,
-							@Deserialize("srcAlpha") int srcAlpha,
-							@Deserialize("dstRgb") int dstRgb,
-							@Deserialize("dstAlpha") int dstAlpha,
-							@Deserialize("func") int func,
-							@Deserialize("separateBlend") boolean separateBlend,
-							@Deserialize("blendDisabled") boolean blendDisabled) {
-		this.srcRgb = srcRgb;
-		this.srcAlpha = srcAlpha;
-		this.dstRgb = dstRgb;
-		this.dstAlpha = dstAlpha;
-		this.func = func;
-		this.separateBlend = separateBlend;
-		this.blendDisabled = blendDisabled;
+
+	public DashGlBlendState(GlBlendStateAccessor blendStateAccess) {
+		this(
+				blendStateAccess.getSrcRgb(),
+				blendStateAccess.getSrcAlpha(),
+				blendStateAccess.getDstRgb(),
+				blendStateAccess.getDstAlpha(),
+				blendStateAccess.getFunc(),
+				blendStateAccess.getSeparateBlend(),
+				blendStateAccess.getBlendDisabled());
 	}
 
 	public DashGlBlendState(GlBlendState blendState) {
-		GlBlendStateAccessor blendStateAccess = (GlBlendStateAccessor) blendState;
-		this.srcRgb = blendStateAccess.getSrcRgb();
-		this.srcAlpha = blendStateAccess.getSrcAlpha();
-		this.dstRgb = blendStateAccess.getDstRgb();
-		this.dstAlpha = blendStateAccess.getDstAlpha();
-		this.func = blendStateAccess.getFunc();
-		this.separateBlend = blendStateAccess.getSeparateBlend();
-		this.blendDisabled = blendStateAccess.getBlendDisabled();
+		this((GlBlendStateAccessor) blendState);
 	}
 
 	public GlBlendState toUndash() {

@@ -1,53 +1,42 @@
 package net.oskarstrom.dashloader.def.image;
 
-import net.oskarstrom.dashloader.core.util.DashHelper;
-import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAccessor;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
-import io.activej.serializer.annotations.SerializeNullable;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
+import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.Dashable;
-import net.oskarstrom.dashloader.core.registry.Pointer;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.util.DashHelper;
+import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAccessor;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
 
-import static net.oskarstrom.dashloader.core.util.DashHelper.nullable;
-
+@Data
 public class DashSprite implements Dashable<Sprite> {
-	@Serialize(order = 0)
-	@SerializeNullable
+	@DataNullable
 	public final DashSpriteAnimation animation;
-	@Serialize(order = 1)
 	public final int x;
-	@Serialize(order = 2)
 	public final int y;
-	@Serialize(order = 3)
 	public final int width;
-	@Serialize(order = 4)
 	public final int height;
-	@Serialize(order = 5)
 	public final float uMin;
-	@Serialize(order = 6)
 	public final float uMax;
-	@Serialize(order = 7)
 	public final float vMin;
-	@Serialize(order = 8)
 	public final float vMax;
-	@Serialize(order = 9)
 	public int[] images;
 
 
-	public DashSprite(@Deserialize("animation") DashSpriteAnimation animation,
-					  @Deserialize("x") int x,
-					  @Deserialize("y") int y,
-					  @Deserialize("width") int width,
-					  @Deserialize("height") int height,
-					  @Deserialize("uMin") float uMin,
-					  @Deserialize("uMax") float uMax,
-					  @Deserialize("vMin") float vMin,
-					  @Deserialize("vMax") float vMax,
-					  @Deserialize("images") int[] images
+	public DashSprite(
+			DashSpriteAnimation animation,
+			int x,
+			int y,
+			int width,
+			int height,
+			float uMin,
+			float uMax,
+			float vMin,
+			float vMax,
+			int[] images
 	) {
 		this.animation = animation;
 		this.images = images;
@@ -78,7 +67,8 @@ public class DashSprite implements Dashable<Sprite> {
 		this.animation = DashHelper.nullable((Sprite.Animation) sprite.getAnimation(), animation1 -> new DashSpriteAnimation(animation1, registry));
 	}
 
-	public final Sprite toUndash(final DashRegistry registry) {
+	@Override
+	public final Sprite toUndash(final DashExportHandler registry) {
 		final Sprite out = UnsafeHelper.allocateInstance(Sprite.class);
 		final SpriteAccessor spriteAccessor = ((SpriteAccessor) out);
 		final NativeImage[] imagesOut = new NativeImage[images.length];

@@ -1,30 +1,27 @@
 package net.oskarstrom.dashloader.def.image;
 
-import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAnimationAccessor;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
-import io.activej.serializer.annotations.SerializeNullable;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
+import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.texture.Sprite;
+import net.oskarstrom.dashloader.core.Dashable;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.util.DashHelper;
+import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAnimationAccessor;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static net.oskarstrom.dashloader.core.util.DashHelper.nullable;
-
+@Data
 public class DashSpriteAnimation {
-	@Serialize(order = 0)
 	public final List<DashSpriteAnimationFrame> frames;
-	@Serialize(order = 1)
 	public final int frameCount;
-	@Serialize(order = 2)
-	@SerializeNullable
+	@DataNullable
 	public final DashSpriteInterpolation interpolation;
 
-	public DashSpriteAnimation(@Deserialize("frames") List<DashSpriteAnimationFrame> frames,
-							   @Deserialize("frameCount") int frameCount,
-							   @Deserialize("interpolation") DashSpriteInterpolation interpolation) {
+	public DashSpriteAnimation(
+			List<DashSpriteAnimationFrame> frames,
+			int frameCount,
+			DashSpriteInterpolation interpolation) {
 		this.frames = frames;
 		this.frameCount = frameCount;
 		this.interpolation = interpolation;
@@ -39,7 +36,7 @@ public class DashSpriteAnimation {
 	}
 
 
-	public Sprite.Animation toUndash(Sprite owner, DashRegistry registry) {
+	public Sprite.Animation toUndash(Sprite owner, DashExportHandler registry) {
 		return SpriteAnimationAccessor.init(
 				owner,
 				DashHelper.convertCollection(frames, frame -> frame.toUndash(registry)),
