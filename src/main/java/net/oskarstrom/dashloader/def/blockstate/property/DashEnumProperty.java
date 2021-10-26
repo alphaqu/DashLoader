@@ -1,13 +1,11 @@
 package net.oskarstrom.dashloader.def.blockstate.property;
 
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.def.api.DashObject;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.StringIdentifiable;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import net.oskarstrom.dashloader.def.api.DashObject;
 import net.oskarstrom.dashloader.def.util.ClassHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,28 +14,30 @@ import java.util.Objects;
 
 @DashObject(EnumProperty.class)
 public class DashEnumProperty implements DashProperty {
-	@Serialize(order = 0)
 	public final List<String> values;
-	@Serialize(order = 1)
 	public final String className;
-	@Serialize(order = 2)
 	public final String name;
+	public transient Class<?> type;
 
-	public Class<?> type;
-
-	public DashEnumProperty(@Deserialize("values") List<String> values,
-							@Deserialize("className") String className,
-							@Deserialize("name") String name) {
+	public DashEnumProperty(
+			List<String> values,
+			String className,
+			String name) {
 		this.values = values;
 		this.className = className;
 		this.name = name;
 	}
 
+
 	public DashEnumProperty(EnumProperty property) {
-		className = property.getType().getName();
-		name = property.getName();
-		values = new ArrayList<>();
+		this(getValues(property), property.getType().getName(), property.getName());
+	}
+
+	@NotNull
+	private static List<String> getValues(EnumProperty property) {
+		final List<String> values = new ArrayList<>();
 		property.getValues().forEach(valuee -> values.add(valuee.toString()));
+		return values;
 	}
 
 	@Override

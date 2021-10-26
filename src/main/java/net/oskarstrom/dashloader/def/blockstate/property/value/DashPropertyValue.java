@@ -5,7 +5,6 @@ import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.core.registry.DashRegistry;
 
 public interface DashPropertyValue extends Dashable<Comparable<?>> {
-
 	Comparable<?> toUndash(DashExportHandler exportHandler);
 }
 

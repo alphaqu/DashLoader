@@ -1,37 +1,16 @@
 package net.oskarstrom.dashloader.def.blockstate.property;
 
+import net.minecraft.state.property.IntProperty;
 import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.api.DashObject;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
-import net.minecraft.state.property.IntProperty;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
 
 import java.util.Objects;
 
 @DashObject(IntProperty.class)
-public class DashIntProperty implements DashProperty {
+public record DashIntProperty(String name, int lowest, int highest) implements DashProperty {
 
-	@Serialize(order = 0)
-	public final String name;
-
-	@Serialize(order = 1)
-	public final int lowest;
-
-	@Serialize(order = 2)
-	public final int highest;
-
-
-	public DashIntProperty(@Deserialize("name") String name,
-						   @Deserialize("lowest") int lowest,
-						   @Deserialize("highest") int highest) {
-		this.name = name;
-		this.lowest = lowest;
-		this.highest = highest;
-	}
-
-	public DashIntProperty(IntProperty property) {
-		name = property.getName();
+	public static DashIntProperty create(IntProperty property) {
+		var name = property.getName();
 		int lowest = -1;
 		int highest = -1;
 		for (Integer integer : property.getValues()) {
@@ -42,25 +21,11 @@ public class DashIntProperty implements DashProperty {
 				lowest = integer;
 			}
 		}
-		this.lowest = lowest;
-		this.highest = highest;
+		return new DashIntProperty(name, lowest, highest);
 	}
 
 	@Override
 	public IntProperty toUndash(DashExportHandler exportHandler) {
 		return IntProperty.of(name, lowest, highest);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		DashIntProperty that = (DashIntProperty) o;
-		return lowest == that.lowest && highest == that.highest && Objects.equals(name, that.name);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(name, lowest, highest);
 	}
 }
