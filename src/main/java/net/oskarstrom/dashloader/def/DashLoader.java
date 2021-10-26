@@ -4,12 +4,13 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.text.Text;
-import net.oskarstrom.dashloader.api.DashLoaderFactory;
-import net.oskarstrom.dashloader.api.ThreadManager;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.Pointer;
-import net.oskarstrom.dashloader.api.serializer.DashSerializer;
-import net.oskarstrom.dashloader.api.serializer.DashSerializerManager;
+import net.oskarstrom.dashloader.core.DashLoaderFactory;
+import net.oskarstrom.dashloader.core.ThreadManager;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.Pointer;
+import net.oskarstrom.dashloader.core.serializer.DashSerializer;
+import net.oskarstrom.dashloader.core.serializer.DashSerializerManager;
 import net.oskarstrom.dashloader.core.util.ClassLoaderHelper;
 import net.oskarstrom.dashloader.def.api.DashDataType;
 import net.oskarstrom.dashloader.def.api.DashLoaderAPI;
@@ -170,7 +171,7 @@ public class DashLoader implements ModInitializer {
 
 			System.out.println(size);
 			//create the registry
-			DashRegistry registry = DashLoaderFactory.createDeserializationRegistry(size);
+			DashExportHandler registry = DashLoaderFactory.createExportHandler(size);
 
 			//add the storages
 			for (RegistryDataObject registryDataObject : registryDataObjects)

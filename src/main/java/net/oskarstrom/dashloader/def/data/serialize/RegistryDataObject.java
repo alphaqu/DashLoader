@@ -1,8 +1,8 @@
 package net.oskarstrom.dashloader.def.data.serialize;
 
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 
 public interface RegistryDataObject {
-	void dumpData(DashRegistry dashRegistry);
+	void dumpData(DashExportHandler dashRegistry);
 	int getSize();
 }

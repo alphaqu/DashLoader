@@ -1,9 +1,10 @@
 package net.oskarstrom.dashloader.def.blockstate.property.value;
 
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 
 @DashObject(Boolean.class)
 public class DashBooleanValue implements DashPropertyValue {
@@ -16,7 +17,7 @@ public class DashBooleanValue implements DashPropertyValue {
 
 
 	@Override
-	public Boolean toUndash(DashRegistry registry) {
+	public Boolean toUndash(DashExportHandler exportHandler) {
 		return value;
 	}
 }

@@ -1,9 +1,10 @@
 package net.oskarstrom.dashloader.def.blockstate.property.value;
 
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 
 @DashObject(Integer.class)
 public class DashIntValue implements DashPropertyValue {
@@ -16,7 +17,7 @@ public class DashIntValue implements DashPropertyValue {
 
 
 	@Override
-	public Integer toUndash(DashRegistry registry) {
+	public Integer toUndash(DashExportHandler exportHandler) {
 		return value;
 	}
 }

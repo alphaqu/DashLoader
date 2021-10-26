@@ -5,9 +5,9 @@ import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.api.Dashable;
-import net.oskarstrom.dashloader.api.data.Pointer2PointerMap;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.Dashable;
+import net.oskarstrom.dashloader.core.data.Pointer2PointerMap;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.data.VanillaData;
 
 import java.util.HashMap;

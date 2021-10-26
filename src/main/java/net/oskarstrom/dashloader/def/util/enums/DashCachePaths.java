@@ -1,6 +1,6 @@
 package net.oskarstrom.dashloader.def.util.enums;
 
-import net.oskarstrom.dashloader.api.PathConstants;
+import net.oskarstrom.dashloader.core.PathConstants;
 
 public enum DashCachePaths {
 	REGISTRY_CACHE("registry-data"),

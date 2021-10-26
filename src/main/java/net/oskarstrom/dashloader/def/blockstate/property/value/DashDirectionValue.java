@@ -1,10 +1,11 @@
 package net.oskarstrom.dashloader.def.blockstate.property.value;
 
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.util.math.Direction;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 
 @DashObject(Direction.class)
 public class DashDirectionValue implements DashPropertyValue {
@@ -21,7 +22,7 @@ public class DashDirectionValue implements DashPropertyValue {
 
 
 	@Override
-	public Direction toUndash(DashRegistry registry) {
+	public Direction toUndash(DashExportHandler exportHandler) {
 		return Direction.byId(direction);
 	}
 }

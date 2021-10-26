@@ -6,8 +6,8 @@ import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.util.collection.Weight;
 import net.minecraft.util.collection.Weighted;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.Pointer;
 
 public class DashWeightedModelEntry {
 	@Serialize(order = 0)
@@ -27,7 +27,7 @@ public class DashWeightedModelEntry {
 		weight = entry.getWeight().getValue();
 	}
 
-	public Weighted.Present<BakedModel> toUndash(DashRegistry registry) {
+	public Weighted.Present<BakedModel> toUndash(DashExportHandler exportHandler) {
 		return WeightedBakedModelEntryAccessor.init(registry.get(model), Weight.of(weight));
 	}
 

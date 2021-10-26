@@ -1,6 +1,6 @@
 package net.oskarstrom.dashloader.def.font;
 
-import net.oskarstrom.dashloader.api.data.Pointer2PointerMap;
+import net.oskarstrom.dashloader.core.data.Pointer2PointerMap;
 import net.oskarstrom.dashloader.def.api.DashDataType;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import io.activej.serializer.annotations.Deserialize;
@@ -8,7 +8,7 @@ import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.font.UnicodeTextureFont;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.mixin.accessor.UnicodeTextureFontAccessor;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
 
@@ -45,7 +45,7 @@ public class DashUnicodeFont implements DashFont {
 	}
 
 
-	public UnicodeTextureFont toUndash(DashRegistry registry) {
+	public UnicodeTextureFont toUndash(DashExportHandler exportHandler) {
 		Map<Identifier, NativeImage> out = new HashMap<>(images.size());
 		images.forEach((entry) -> out.put(registry.get(entry.key), registry.get(entry.value)));
 		UnicodeTextureFont font = UnsafeHelper.allocateInstance(UnicodeTextureFont.class);

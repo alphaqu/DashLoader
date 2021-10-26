@@ -2,11 +2,11 @@ package net.oskarstrom.dashloader.def.registry;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.oskarstrom.dashloader.api.Dashable;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.FactoryConstructor;
-import net.oskarstrom.dashloader.api.registry.RegistryStorage;
-import net.oskarstrom.dashloader.api.registry.RegistryStorageFactory;
+import net.oskarstrom.dashloader.core.Dashable;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.FactoryConstructor;
+import net.oskarstrom.dashloader.core.registry.RegistryStorage;
+import net.oskarstrom.dashloader.core.registry.RegistryStorageFactory;
 import net.oskarstrom.dashloader.core.registry.FactoryConstructorImpl;
 import net.oskarstrom.dashloader.def.blockstate.property.value.DashEnumValue;
 import org.jetbrains.annotations.NotNull;

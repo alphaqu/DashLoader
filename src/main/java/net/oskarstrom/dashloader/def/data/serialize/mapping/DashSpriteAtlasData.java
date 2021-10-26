@@ -1,5 +1,6 @@
 package net.oskarstrom.dashloader.def.data.serialize.mapping;
 
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.image.DashSpriteAtlasTexture;
 import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAtlasManagerAccessor;
 import io.activej.serializer.annotations.Deserialize;
@@ -7,8 +8,8 @@ import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.api.data.PairMap;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.data.PairMap;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.data.VanillaData;
 import org.apache.commons.lang3.tuple.Pair;
@@ -44,15 +45,15 @@ public class DashSpriteAtlasData {
 	}
 
 
-	public Pair<SpriteAtlasManager, List<SpriteAtlasTexture>> toUndash(DashRegistry registry) {
+	public Pair<SpriteAtlasManager, List<SpriteAtlasTexture>> toUndash(DashExportHandler exportHandler) {
 		ArrayList<SpriteAtlasTexture> out = new ArrayList<>(atlases.size());
 		ArrayList<SpriteAtlasTexture> toRegister = new ArrayList<>(atlases.size());
 		atlases.forEach((entry) -> {
 			final DashSpriteAtlasTexture key = entry.key;
 			if (entry.value == 0) {
-				out.add(key.toUndash(registry));
+				out.add(key.toUndash(exportHandler));
 			}
-			toRegister.add(key.toUndash(registry));
+			toRegister.add(key.toUndash(exportHandler));
 		});
 		return Pair.of(new SpriteAtlasManager(out), toRegister);
 	}

@@ -1,12 +1,12 @@
 package net.oskarstrom.dashloader.def.image;
 
-import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.registry.Pointer;
 import net.oskarstrom.dashloader.def.mixin.accessor.SpriteInterpolationAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
 import net.oskarstrom.dashloader.def.util.mixins.SpriteInterpolationDuck;
 

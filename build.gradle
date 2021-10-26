@@ -18,6 +18,7 @@ configurations.all {
 
 repositories {
     mavenCentral();
+    mavenLocal()
     maven {
         name "Sonatype Snapshots"
         url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
@@ -40,7 +41,6 @@ dependencies {
 
     // TODO jákob if you need modmenu uncomment this and in gradle.properties - !alpha
     // modImplementation "com.terraformersmc:modmenu:$project.modmenu_version"
-
 
     modApi "net.oskarstrom.dashloader:dashloader-core:$project.dashloader_core_version"
     include "net.oskarstrom.dashloader:dashloader-core:$project.dashloader_core_version"

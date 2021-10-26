@@ -4,8 +4,8 @@ import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import io.activej.serializer.annotations.SerializeNullable;
 import net.minecraft.client.render.model.json.ModelOverrideList;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.Pointer;
 import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.mixin.accessor.ModelOverrideListBakedOverrideAccessor;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +33,7 @@ public class DashModelOverrideListBakedOverride {
 
 	}
 
-	public ModelOverrideList.BakedOverride toUndash(DashRegistry registry) {
+	public ModelOverrideList.BakedOverride toUndash(DashExportHandler exportHandler) {
 		final var conditions = DashHelper.convertArrays(this.conditions, ModelOverrideList.InlinedCondition[]::new, DashModelOverrideListInlinedCondition::toUndash);
 		return ModelOverrideListBakedOverrideAccessor.newModelOverrideListBakedOverride(conditions, DashHelper.nullable(model, registry::get));
 	}

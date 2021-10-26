@@ -4,8 +4,8 @@ import net.oskarstrom.dashloader.def.mixin.accessor.BitmapFontGlyphAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.font.BitmapFont;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.Pointer;
 
 public class DashBitmapFontGlyph {
 	@Serialize(order = 0)
@@ -56,7 +56,7 @@ public class DashBitmapFontGlyph {
 		ascent = font.getAscent();
 	}
 
-	public BitmapFont.BitmapFontGlyph toUndash(DashRegistry registry) {
+	public BitmapFont.BitmapFontGlyph toUndash(DashExportHandler exportHandler) {
 		return BitmapFontGlyphAccessor.init(scaleFactor, registry.get(image), x, y, width, height, advance, ascent);
 	}
 }

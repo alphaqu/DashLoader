@@ -1,9 +1,10 @@
 package net.oskarstrom.dashloader.def.blockstate.property.value;
 
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.util.ClassHelper;
 
 @DashObject(Enum.class)
@@ -25,7 +26,7 @@ public class DashEnumValue implements DashPropertyValue {
 	}
 
 	@Override
-	public Enum<?> toUndash(DashRegistry registry) {
+	public Enum<?> toUndash(DashExportHandler exportHandler) {
 		return get();
 	}
 

@@ -1,10 +1,11 @@
 package net.oskarstrom.dashloader.def.blockstate.property;
 
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.state.property.BooleanProperty;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 
 import java.util.Objects;
 
@@ -24,7 +25,7 @@ public class DashBooleanProperty implements DashProperty {
 	}
 
 	@Override
-	public BooleanProperty toUndash(DashRegistry registry) {
+	public BooleanProperty toUndash(DashExportHandler exportHandler) {
 		return BooleanProperty.of(name);
 	}
 

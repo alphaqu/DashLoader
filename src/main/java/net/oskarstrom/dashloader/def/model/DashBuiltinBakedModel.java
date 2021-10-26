@@ -8,8 +8,8 @@ import io.activej.serializer.annotations.SerializeNullable;
 import net.minecraft.client.render.model.BuiltinBakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.Pointer;
 import net.oskarstrom.dashloader.def.model.components.DashModelOverrideList;
 import net.oskarstrom.dashloader.def.model.components.DashModelTransformation;
 
@@ -48,7 +48,7 @@ public class DashBuiltinBakedModel implements DashModel {
 
 
 	@Override
-	public BuiltinBakedModel toUndash(DashRegistry registry) {
+	public BuiltinBakedModel toUndash(DashExportHandler exportHandler) {
 		Sprite sprite = registry.get(spritePointer);
 		return new BuiltinBakedModel(DashModelTransformation.toUndashOrDefault(transformation), itemPropertyOverrides.toUndash(registry), sprite, sideLit);
 	}

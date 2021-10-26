@@ -3,30 +3,36 @@ package net.oskarstrom.dashloader.def.data.serialize;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import io.activej.serializer.annotations.SerializeSubclasses;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.RegistryStorageData;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.texture.NativeImage;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.RegistryStorageData;
+import net.oskarstrom.dashloader.core.registry.RegistryStorageDataImpl;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.api.DashDataType;
+import net.oskarstrom.dashloader.def.image.DashImage;
+import net.oskarstrom.dashloader.def.mixin.feature.cache.BakedModelManagerOverride;
 import net.oskarstrom.dashloader.def.model.DashModel;
 
 public class ModelData implements RegistryDataObject {
 	@Serialize(order = 0)
 	@SerializeSubclasses(extraSubclassesId = "models", path = {0})
-	public final RegistryStorageData<DashModel> modelData;
+	public final RegistryStorageDataImpl<BakedModel, DashModel> modelData;
 
-	public ModelData(@Deserialize("modelData") RegistryStorageData<DashModel> modelData) {
+	public ModelData(@Deserialize("modelData") RegistryStorageDataImpl<BakedModel, DashModel> modelData) {
 		this.modelData = modelData;
 	}
 
 	public ModelData(DashRegistry dashRegistry) {
 		var storageMappings = DashLoader.getInstance().getApi().storageMappings;
 		//noinspection unchecked
-		this.modelData = (RegistryStorageData<DashModel>) dashRegistry.getStorageData(storageMappings.getByte(DashDataType.MODEL));
+		this.modelData = (RegistryStorageDataImpl<BakedModel, DashModel>) dashRegistry.getStorage(storageMappings.getByte(DashDataType.MODEL));
 	}
 
 	@Override
-	public void dumpData(DashRegistry dashRegistry) {
-		dashRegistry.addStorage(modelData);
+	public void dumpData(DashExportHandler exportHandler) {
+		exportHandler.addStorage(modelData);
 	}
 
 	@Override

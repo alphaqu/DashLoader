@@ -4,10 +4,11 @@ import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.font.Font;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.api.Dashable;
-import net.oskarstrom.dashloader.api.data.Pointer2ObjectMap;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.Dashable;
+import net.oskarstrom.dashloader.core.data.Pointer2ObjectMap;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.Pointer;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.data.VanillaData;
 
@@ -43,12 +44,12 @@ public class DashFontManagerData implements Dashable<Map<Identifier, List<Font>>
 		});
 	}
 
-	public Map<Identifier, List<Font>> toUndash(DashRegistry registry) {
+	public Map<Identifier, List<Font>> toUndash(DashExportHandler exportHandler) {
 		Map<Identifier, List<Font>> out = new HashMap<>();
 		fontMap.forEach((entry) -> {
 			List<Font> fontsOut = new ArrayList<>();
-			entry.value.forEach(fontPointer -> fontsOut.add(registry.get(fontPointer)));
-			out.put(registry.get(entry.key), fontsOut);
+			entry.value.forEach(fontPointer -> fontsOut.add(exportHandler.get(fontPointer)));
+			out.put(exportHandler.get(entry.key), fontsOut);
 		});
 		return out;
 	}

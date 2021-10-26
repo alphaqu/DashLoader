@@ -1,5 +1,6 @@
 package net.oskarstrom.dashloader.def.data.serialize.mapping;
 
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.image.DashSpriteAtlasTexture;
 import io.activej.serializer.annotations.Deserialize;
@@ -7,10 +8,10 @@ import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.api.Dashable;
-import net.oskarstrom.dashloader.api.data.Pointer2ObjectMap;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.Dashable;
+import net.oskarstrom.dashloader.core.data.Pointer2ObjectMap;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.Pointer;
 import net.oskarstrom.dashloader.def.data.VanillaData;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -50,14 +51,14 @@ public class DashParticleData implements Dashable<Pair<Map<Identifier, List<Spri
 	}
 
 
-	public Pair<Map<Identifier, List<Sprite>>, SpriteAtlasTexture> toUndash(DashRegistry registry) {
+	public Pair<Map<Identifier, List<Sprite>>, SpriteAtlasTexture> toUndash(DashExportHandler exportHandler) {
 		Map<Identifier, List<Sprite>> out = new HashMap<>();
 		particles.forEach((entry) -> {
 			List<Sprite> outInner = new ArrayList<>();
-			entry.value.forEach(pntr -> outInner.add(registry.get(pntr)));
-			out.put(registry.get(entry.key), outInner);
+			entry.value.forEach(pntr -> outInner.add(exportHandler.get(pntr)));
+			out.put(exportHandler.get(entry.key), outInner);
 		});
-		return Pair.of(out, atlasTexture.toUndash(registry));
+		return Pair.of(out, atlasTexture.toUndash(exportHandler));
 	}
 
 }

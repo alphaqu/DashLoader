@@ -5,9 +5,10 @@ import io.activej.serializer.annotations.Serialize;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.block.BlockState;
-import net.oskarstrom.dashloader.api.Dashable;
-import net.oskarstrom.dashloader.api.data.Pointer2ObjectMap;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.Dashable;
+import net.oskarstrom.dashloader.core.data.Pointer2ObjectMap;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.data.VanillaData;
 
@@ -30,9 +31,9 @@ public class DashBlockStateData implements Dashable<Object2IntMap<BlockState>> {
 		});
 	}
 
-	public Object2IntMap<BlockState> toUndash(DashRegistry registry) {
+	public Object2IntMap<BlockState> toUndash(DashExportHandler exportHandler) {
 		final Object2IntOpenHashMap<BlockState> stateLookupOut = new Object2IntOpenHashMap<>();
-		blockstates.forEach((entry) -> stateLookupOut.put(registry.get(entry.key), entry.value));
+		blockstates.forEach((entry) -> stateLookupOut.put(exportHandler.get(entry.key), entry.value));
 		return stateLookupOut;
 	}
 

@@ -5,7 +5,7 @@ import net.oskarstrom.dashloader.def.mixin.accessor.WeightedBakedModelAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.render.model.WeightedBakedModel;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.model.components.DashWeightedModelEntry;
 
@@ -28,7 +28,7 @@ public class DashWeightedBakedModel implements DashModel {
 	}
 
 	@Override
-	public WeightedBakedModel toUndash(DashRegistry registry) {
+	public WeightedBakedModel toUndash(DashExportHandler exportHandler) {
 		return new WeightedBakedModel(DashHelper.convertCollection(models, entry -> entry.toUndash(registry)));
 	}
 

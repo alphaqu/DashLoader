@@ -9,10 +9,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.oskarstrom.dashloader.api.Dashable;
-import net.oskarstrom.dashloader.api.data.Pointer2PointerMap;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.Dashable;
+import net.oskarstrom.dashloader.core.data.Pointer2PointerMap;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.Pointer;
 
 
 public class DashBlockState implements Dashable<BlockState> {

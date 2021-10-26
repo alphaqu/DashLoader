@@ -1,10 +1,11 @@
 package net.oskarstrom.dashloader.def.blockstate.property;
 
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.state.property.IntProperty;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 
 import java.util.Objects;
 
@@ -46,7 +47,7 @@ public class DashIntProperty implements DashProperty {
 	}
 
 	@Override
-	public IntProperty toUndash(DashRegistry registry) {
+	public IntProperty toUndash(DashExportHandler exportHandler) {
 		return IntProperty.of(name, lowest, highest);
 	}
 

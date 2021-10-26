@@ -4,7 +4,7 @@ import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.mixin.accessor.ModelOverrideListAccessor;
 
@@ -31,7 +31,7 @@ public class DashModelOverrideList {
 
 	}
 
-	public ModelOverrideList toUndash(DashRegistry registry) {
+	public ModelOverrideList toUndash(DashExportHandler exportHandler) {
 		toApply = ModelOverrideListAccessor.newModelOverrideList();
 
 		final Identifier[] identifiers = DashHelper.convertArrays(conditionTypes, Identifier[]::new, registry::get);

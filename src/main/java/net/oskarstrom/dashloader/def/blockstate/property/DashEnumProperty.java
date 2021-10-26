@@ -1,11 +1,12 @@
 package net.oskarstrom.dashloader.def.blockstate.property;
 
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.StringIdentifiable;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.util.ClassHelper;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class DashEnumProperty implements DashProperty {
 	}
 
 	@Override
-	public EnumProperty<?> toUndash(DashRegistry registry) {
+	public EnumProperty<?> toUndash(DashExportHandler exportHandler) {
 		return get();
 	}
 

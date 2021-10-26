@@ -5,7 +5,7 @@ import io.activej.serializer.annotations.Serialize;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import net.oskarstrom.dashloader.def.util.BooleanSelector;
 
@@ -27,7 +27,7 @@ public class DashStaticPredicate implements DashPredicate {
 	}
 
 	@Override
-	public Predicate<BlockState> toUndash(DashRegistry registry) {
+	public Predicate<BlockState> toUndash(DashExportHandler exportHandler) {
 		return (blockState) -> value;
 	}
 

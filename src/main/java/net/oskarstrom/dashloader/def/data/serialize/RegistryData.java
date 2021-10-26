@@ -4,8 +4,15 @@ import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import io.activej.serializer.annotations.SerializeSubclasses;
 import it.unimi.dsi.fastutil.objects.Object2ByteMap;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.RegistryStorageData;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.font.Font;
+import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.state.property.Property;
+import net.minecraft.util.Identifier;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.RegistryStorageDataImpl;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.api.DashDataType;
 import net.oskarstrom.dashloader.def.api.DashLoaderAPI;
@@ -15,55 +22,57 @@ import net.oskarstrom.dashloader.def.blockstate.property.value.DashPropertyValue
 import net.oskarstrom.dashloader.def.common.DashIdentifier;
 import net.oskarstrom.dashloader.def.common.DashIdentifierInterface;
 import net.oskarstrom.dashloader.def.common.DashModelIdentifier;
-import net.oskarstrom.dashloader.def.font.*;
+import net.oskarstrom.dashloader.def.font.DashFont;
+import net.oskarstrom.dashloader.def.image.DashImage;
 import net.oskarstrom.dashloader.def.image.DashSprite;
 import net.oskarstrom.dashloader.def.model.components.DashBakedQuad;
 import net.oskarstrom.dashloader.def.model.predicates.DashPredicate;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class RegistryData implements RegistryDataObject {
 	@Serialize
-	public final RegistryStorageData<DashBlockState> blockStateRegistryData;
+	public final RegistryStorageDataImpl<BlockState, DashBlockState> blockStateRegistryData;
 
 	@Serialize
-	@SerializeSubclasses(extraSubclassesId = "fonts", path = {0})
-	public final RegistryStorageData<DashFont> fontRegistryData;
+	@SerializeSubclasses(extraSubclassesId = "fonts", path = {1})
+	public final RegistryStorageDataImpl<Font, DashFont> fontRegistryData;
 
 	@Serialize
-	@SerializeSubclasses(value = {DashIdentifier.class, DashModelIdentifier.class}, path = {0})
-	public final RegistryStorageData<DashIdentifierInterface> identifierRegistryData;
+	@SerializeSubclasses(value = {DashIdentifier.class, DashModelIdentifier.class}, path = {1})
+	public final RegistryStorageDataImpl<Identifier, DashIdentifierInterface> identifierRegistryData;
 
 	@Serialize
-	@SerializeSubclasses(extraSubclassesId = "properties", path = {0})
-	public final RegistryStorageData<DashProperty> propertyRegistryData;
+	@SerializeSubclasses(extraSubclassesId = "properties", path = {1})
+	public final RegistryStorageDataImpl<Property<?>, DashProperty> propertyRegistryData;
 
 	@Serialize
-	@SerializeSubclasses(extraSubclassesId = "values", path = {0})
-	public final RegistryStorageData<DashPropertyValue> propertyValueRegistryData;
+	@SerializeSubclasses(extraSubclassesId = "values", path = {1})
+	public final RegistryStorageDataImpl<Comparable<?>, DashPropertyValue> propertyValueRegistryData;
 
 	@Serialize
-	public final RegistryStorageData<DashSprite> spriteRegistryData;
+	public final RegistryStorageDataImpl<Sprite, DashSprite> spriteRegistryData;
 
 	@Serialize
 	@SerializeSubclasses(extraSubclassesId = "predicates", path = {0})
-	public final RegistryStorageData<DashPredicate> predicateRegistryData;
+	public final RegistryStorageDataImpl<Predicate<BlockState>, DashPredicate> predicateRegistryData;
 
 	@Serialize
-	public final RegistryStorageData<DashBakedQuad> registryBakedQuadData;
+	public final RegistryStorageDataImpl<BakedQuad, DashBakedQuad> registryBakedQuadData;
 /*	@Serialize(order = 8)
 	@SerializeSubclasses(extraSubclassesId = "data", path = {0})
 	public final List<DashDataClass> dataClassList;*/
 
 
-	public RegistryData(@Deserialize("blockStateRegistryData") RegistryStorageData<DashBlockState> blockStateRegistryData,
-						@Deserialize("fontRegistryData") RegistryStorageData<DashFont> fontRegistryData,
-						@Deserialize("identifierRegistryData") RegistryStorageData<DashIdentifierInterface> identifierRegistryData,
-						@Deserialize("propertyRegistryData") RegistryStorageData<DashProperty> propertyRegistryData,
-						@Deserialize("propertyValueRegistryData") RegistryStorageData<DashPropertyValue> propertyValueRegistryData,
-						@Deserialize("spriteRegistryData") RegistryStorageData<DashSprite> spriteRegistryData,
-						@Deserialize("predicateRegistryData") RegistryStorageData<DashPredicate> predicateRegistryData,
-						@Deserialize("registryBakedQuadData") RegistryStorageData<DashBakedQuad> registryBakedQuadData
+	public RegistryData(@Deserialize("blockStateRegistryData") RegistryStorageDataImpl<BlockState, DashBlockState> blockStateRegistryData,
+						@Deserialize("fontRegistryData") RegistryStorageDataImpl<Font, DashFont> fontRegistryData,
+						@Deserialize("identifierRegistryData") RegistryStorageDataImpl<Identifier, DashIdentifierInterface> identifierRegistryData,
+						@Deserialize("propertyRegistryData") RegistryStorageDataImpl<Property<?>, DashProperty> propertyRegistryData,
+						@Deserialize("propertyValueRegistryData") RegistryStorageDataImpl<Comparable<?>, DashPropertyValue> propertyValueRegistryData,
+						@Deserialize("spriteRegistryData") RegistryStorageDataImpl<Sprite, DashSprite> spriteRegistryData,
+						@Deserialize("predicateRegistryData") RegistryStorageDataImpl<Predicate<BlockState>, DashPredicate> predicateRegistryData,
+						@Deserialize("registryBakedQuadData") RegistryStorageDataImpl<BakedQuad, DashBakedQuad> registryBakedQuadData
 			/*				@Deserialize("dataClassList") List<DashDataClass> dataClassList*/) {
 		this.blockStateRegistryData = blockStateRegistryData;
 		this.fontRegistryData = fontRegistryData;
@@ -80,23 +89,19 @@ public class RegistryData implements RegistryDataObject {
 	public RegistryData(DashRegistry registry) {
 		final DashLoaderAPI api = DashLoader.getInstance().getApi();
 		final Object2ByteMap<DashDataType> mappings = api.storageMappings;
-		Function<DashDataType, RegistryStorageData<?>> getter = ((type) -> {
-			final RegistryStorageData<?> storageData = registry.getStorageData(mappings.getByte(type));
-			System.out.println(type.name + " / " + storageData.dashables.size());
-			return storageData;
+		Function<DashDataType, RegistryStorageDataImpl<?, ?>> getter = ((type) -> {
+			byte pos = mappings.getByte(type);
+			var storage = registry.getStorage(pos);
+			return new RegistryStorageDataImpl<>((DashImage[]) storage.getDashables(), pos, (short) 0);
 		});
-		this.blockStateRegistryData = (RegistryStorageData<DashBlockState>) getter.apply(DashDataType.BLOCKSTATE);
-		this.fontRegistryData = (RegistryStorageData<DashFont>) getter.apply(DashDataType.FONT);
-
-		for (DashFont dashable : fontRegistryData.dashables) {
-			final Class<? extends DashFont> aClass = dashable.getClass();
-		}
-		this.identifierRegistryData = (RegistryStorageData<DashIdentifierInterface>) getter.apply(DashDataType.IDENTIFIER);
-		this.propertyRegistryData = (RegistryStorageData<DashProperty>) getter.apply(DashDataType.PROPERTY);
-		this.propertyValueRegistryData = (RegistryStorageData<DashPropertyValue>) getter.apply(DashDataType.PROPERTY_VALUE);
-		this.spriteRegistryData = (RegistryStorageData<DashSprite>) getter.apply(DashDataType.SPRITE);
-		this.predicateRegistryData = (RegistryStorageData<DashPredicate>) getter.apply(DashDataType.PREDICATE);
-		this.registryBakedQuadData = (RegistryStorageData<DashBakedQuad>) getter.apply(DashDataType.BAKEDQUAD);
+		this.blockStateRegistryData = (RegistryStorageDataImpl<BlockState, DashBlockState>) getter.apply(DashDataType.BLOCKSTATE);
+		this.fontRegistryData = (RegistryStorageDataImpl<Font, DashFont>) getter.apply(DashDataType.FONT);
+		this.identifierRegistryData = (RegistryStorageDataImpl<Identifier, DashIdentifierInterface>) getter.apply(DashDataType.IDENTIFIER);
+		this.propertyRegistryData = (RegistryStorageDataImpl<Property<?>, DashProperty>) getter.apply(DashDataType.PROPERTY);
+		this.propertyValueRegistryData = (RegistryStorageDataImpl<Comparable<?>, DashPropertyValue>) getter.apply(DashDataType.PROPERTY_VALUE);
+		this.spriteRegistryData = (RegistryStorageDataImpl<Sprite, DashSprite>) getter.apply(DashDataType.SPRITE);
+		this.predicateRegistryData = (RegistryStorageDataImpl<Predicate<BlockState>, DashPredicate>) getter.apply(DashDataType.PREDICATE);
+		this.registryBakedQuadData = (RegistryStorageDataImpl<BakedQuad, DashBakedQuad>) getter.apply(DashDataType.BAKEDQUAD);
 
 		// TODO data classes
 /*
@@ -104,15 +109,15 @@ public class RegistryData implements RegistryDataObject {
 */
 	}
 
-	public void dumpData(DashRegistry dashRegistry) {
-		dashRegistry.addStorage(blockStateRegistryData);
-		dashRegistry.addStorage(fontRegistryData);
-		dashRegistry.addStorage(identifierRegistryData);
-		dashRegistry.addStorage(propertyRegistryData);
-		dashRegistry.addStorage(propertyValueRegistryData);
-		dashRegistry.addStorage(spriteRegistryData);
-		dashRegistry.addStorage(predicateRegistryData);
-		dashRegistry.addStorage(registryBakedQuadData);
+	public void dumpData(DashExportHandler exportHandler) {
+		exportHandler.addStorage(blockStateRegistryData, blockStateRegistryData.registryPos);
+		exportHandler.addStorage(fontRegistryData, fontRegistryData.registryPos);
+		exportHandler.addStorage(identifierRegistryData, identifierRegistryData.registryPos);
+		exportHandler.addStorage(propertyRegistryData, propertyRegistryData.registryPos);
+		exportHandler.addStorage(propertyValueRegistryData, propertyValueRegistryData.registryPos);
+		exportHandler.addStorage(spriteRegistryData, spriteRegistryData.registryPos);
+		exportHandler.addStorage(predicateRegistryData, predicateRegistryData.registryPos);
+		exportHandler.addStorage(registryBakedQuadData, registryBakedQuadData.registryPos);
 	}
 
 	@Override

@@ -1,11 +1,11 @@
 package net.oskarstrom.dashloader.def.image;
 
-import net.oskarstrom.dashloader.api.Dashable;
+import net.oskarstrom.dashloader.core.Dashable;
 import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAnimationFrameAccessor;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;
 import net.minecraft.client.texture.Sprite;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 
 public class DashSpriteAnimationFrame implements Dashable<Sprite.AnimationFrame> {
 	@Serialize(order = 0)
@@ -26,7 +26,7 @@ public class DashSpriteAnimationFrame implements Dashable<Sprite.AnimationFrame>
 	}
 
 	@Override
-	public Sprite.AnimationFrame toUndash(DashRegistry registry) {
+	public Sprite.AnimationFrame toUndash(DashExportHandler exportHandler) {
 		return SpriteAnimationFrameAccessor.newSpriteFrame(index, time);
 	}
 }

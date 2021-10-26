@@ -1,5 +1,6 @@
 package net.oskarstrom.dashloader.def.image;
 
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.mixin.accessor.AbstractTextureAccessor;
 import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAccessor;
 import net.oskarstrom.dashloader.def.mixin.accessor.SpriteAtlasTextureAccessor;
@@ -9,9 +10,9 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureTickListener;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.api.data.Pointer2PointerMap;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.data.Pointer2PointerMap;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.Pointer;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
 
@@ -57,14 +58,14 @@ public class DashSpriteAtlasTexture {
 		mipmap = ((AbstractTextureAccessor) spriteAtlasTexture).getMipmap();
 	}
 
-	public SpriteAtlasTexture toUndash(DashRegistry registry) {
+	public SpriteAtlasTexture toUndash(DashExportHandler exportHandler) {
 		final SpriteAtlasTexture spriteAtlasTexture = UnsafeHelper.allocateInstance(SpriteAtlasTexture.class);
 		final AbstractTextureAccessor access = ((AbstractTextureAccessor) spriteAtlasTexture);
 		access.setBilinear(bilinear);
 		access.setMipmap(mipmap);
 		final SpriteAtlasTextureAccessor spriteAtlasTextureAccessor = ((SpriteAtlasTextureAccessor) spriteAtlasTexture);
 		final Map<Identifier, Sprite> out = new HashMap<>(sprites.size());
-		sprites.forEach((entry) -> out.put(registry.get(entry.key), loadSprite(entry.value, registry, spriteAtlasTexture)));
+		sprites.forEach((entry) -> out.put(exportHandler.get(entry.key), loadSprite(entry.value, exportHandler, spriteAtlasTexture)));
 		final List<TextureTickListener> outAnimatedSprites = new ArrayList<>();
 		out.values().forEach(sprite -> {
 			final TextureTickListener animation = sprite.getAnimation();
@@ -75,14 +76,14 @@ public class DashSpriteAtlasTexture {
 		spriteAtlasTextureAccessor.setAnimatedSprites(outAnimatedSprites);
 		spriteAtlasTextureAccessor.setSpritesToLoad(new HashSet<>());
 		spriteAtlasTextureAccessor.setSprites(out);
-		spriteAtlasTextureAccessor.setId(registry.get(id));
+		spriteAtlasTextureAccessor.setId(exportHandler.get(id));
 		spriteAtlasTextureAccessor.setMaxTextureSize(maxTextureSize);
 		DashLoader.getVanillaData().addAtlasData(spriteAtlasTexture, data);
 		return spriteAtlasTexture;
 	}
 
-	private Sprite loadSprite(int spritePointer, DashRegistry registry, SpriteAtlasTexture spriteAtlasTexture) {
-		Sprite sprite = registry.get(spritePointer);
+	private Sprite loadSprite(int spritePointer, DashExportHandler exportHandler, SpriteAtlasTexture spriteAtlasTexture) {
+		Sprite sprite = exportHandler.get(spritePointer);
 		((SpriteAccessor) sprite).setAtlas(spriteAtlasTexture);
 		return sprite;
 	}

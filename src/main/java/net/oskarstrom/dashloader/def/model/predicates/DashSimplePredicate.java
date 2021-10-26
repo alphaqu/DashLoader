@@ -8,9 +8,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
-import net.oskarstrom.dashloader.api.data.Pointer2PointerMap;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
-import net.oskarstrom.dashloader.api.registry.Pointer;
+import net.oskarstrom.dashloader.core.data.Pointer2PointerMap;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.Pointer;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import net.oskarstrom.dashloader.def.mixin.accessor.SimpleMultipartModelSelectorAccessor;
@@ -73,7 +73,7 @@ public class DashSimplePredicate implements DashPredicate {
 	}
 
 	@Override
-	public Predicate<BlockState> toUndash(DashRegistry registry) {
+	public Predicate<BlockState> toUndash(DashExportHandler exportHandler) {
 		List<Map.Entry<? extends Property<?>, ? extends Comparable<?>>> out = new ArrayList<>();
 		properties.forEach((entry) -> out.add(Pair.of(registry.get(entry.key), registry.get(entry.value))));
 		Predicate<BlockState> outPredicate;

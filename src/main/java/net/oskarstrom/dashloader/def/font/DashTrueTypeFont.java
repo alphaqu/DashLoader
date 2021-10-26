@@ -10,7 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TrueTypeFont;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.util.IOHelper;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
@@ -75,7 +75,7 @@ public class DashTrueTypeFont implements DashFont {
 	}
 
 	@Override
-	public TrueTypeFont toUndash(DashRegistry registry) {
+	public TrueTypeFont toUndash(DashExportHandler exportHandler) {
 		STBTTFontinfo sTBTTFontinfo = STBTTFontinfo.malloc();
 		ByteBuffer byteBuffer2 = ByteBuffer.allocateDirect(ttfBuffer.length);
 		byteBuffer2.put(ttfBuffer);

@@ -6,7 +6,8 @@ import io.activej.serializer.annotations.Serialize;
 import io.activej.serializer.annotations.SerializeFixedSize;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.def.mixin.accessor.ModelIdentifierAccessor;
 
 
@@ -26,7 +27,7 @@ public class DashModelIdentifier implements DashIdentifierInterface {
 	}
 
 	@Override
-	public Identifier toUndash(DashRegistry registry) {
+	public Identifier toUndash(DashExportHandler exportHandler) {
 		return ModelIdentifierAccessor.init(strings);
 	}
 }

@@ -9,7 +9,8 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.api.feature.Feature;
@@ -111,7 +112,7 @@ public class MappingData {
 		}
 	}
 
-	public void toUndash(DashRegistry registry, VanillaData vanillaData) {
+	public void toUndash(DashExportHandler registry, VanillaData vanillaData) {
 		final Pair<SpriteAtlasManager, List<SpriteAtlasTexture>> spriteData =
 				DashHelper.nullable(spriteAtlasData, spriteAtlasData -> spriteAtlasData.toUndash(registry));
 

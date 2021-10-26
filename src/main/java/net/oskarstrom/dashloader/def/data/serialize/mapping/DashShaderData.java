@@ -1,6 +1,6 @@
 package net.oskarstrom.dashloader.def.data.serialize.mapping;
 
-import net.oskarstrom.dashloader.api.ThreadManager;
+import net.oskarstrom.dashloader.core.ThreadManager;
 import net.oskarstrom.dashloader.def.image.shader.DashShader;
 import io.activej.serializer.annotations.Deserialize;
 import io.activej.serializer.annotations.Serialize;

@@ -1,26 +1,12 @@
 package net.oskarstrom.dashloader.def.model.components;
 
+import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 import net.oskarstrom.dashloader.def.util.ClassHelper;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
-import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
-
 
 import java.lang.reflect.Field;
 
-public class DashMesh {
-	@Serialize(order = 0)
-	public final int[] data;
-	@Serialize(order = 1)
-	public final String className;
-
-	@SuppressWarnings("unused")
-	public DashMesh(@Deserialize("data") int[] data,
-					@Deserialize("className") String className) {
-		this.data = data;
-		this.className = className;
-	}
+public record DashMesh(int[] data, String className) {
 
 	public DashMesh(Mesh mesh) {
 		final Class<? extends Mesh> aClass = mesh.getClass();
@@ -33,6 +19,7 @@ public class DashMesh {
 			throw new RuntimeException("shit", e);
 		}
 	}
+
 
 	public Mesh toUndash() {
 		final Class<?> aClass = ClassHelper.getClass(className);

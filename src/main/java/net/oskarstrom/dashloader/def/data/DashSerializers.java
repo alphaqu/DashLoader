@@ -6,8 +6,8 @@ import net.oskarstrom.dashloader.def.data.serialize.MappingData;
 import net.oskarstrom.dashloader.def.data.serialize.ModelData;
 import net.oskarstrom.dashloader.def.data.serialize.RegistryData;
 import net.oskarstrom.dashloader.def.util.enums.DashCachePaths;
-import net.oskarstrom.dashloader.api.serializer.DashSerializer;
-import net.oskarstrom.dashloader.api.serializer.DashSerializerManager;
+import net.oskarstrom.dashloader.core.serializer.DashSerializer;
+import net.oskarstrom.dashloader.core.serializer.DashSerializerManager;
 
 import java.nio.file.Path;
 

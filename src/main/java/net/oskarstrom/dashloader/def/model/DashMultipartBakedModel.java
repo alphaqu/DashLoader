@@ -1,7 +1,6 @@
 package net.oskarstrom.dashloader.def.model;
 
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,9 +9,10 @@ import net.minecraft.client.render.model.MultipartBakedModel;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Util;
-import net.oskarstrom.dashloader.api.data.Pointer2ObjectMap;
-import net.oskarstrom.dashloader.api.data.Pointer2PointerMap;
-import net.oskarstrom.dashloader.api.registry.DashRegistry;
+
+import net.oskarstrom.dashloader.core.data.IntIntList;
+import net.oskarstrom.dashloader.core.data.IntObjectList;
+import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.api.DashObject;
@@ -33,9 +33,9 @@ public class DashMultipartBakedModel implements DashModel {
 	private static final Class<MultipartBakedModel> cls = MultipartBakedModel.class;
 	//identifier baked model
 	@Serialize(order = 0)
-	public final Pointer2PointerMap components;
+	public final IntIntList components;
 	@Serialize(order = 1)
-	public final Pointer2ObjectMap<byte[]> stateCache;
+	public final IntObjectList<byte[]> stateCache;
 	MultipartBakedModel toApply;
 
 	public DashMultipartBakedModel(@Deserialize("components") Pointer2PointerMap components,
@@ -56,7 +56,6 @@ public class DashMultipartBakedModel implements DashModel {
 			final MultipartModelSelector selector = selectors.getKey().get(i);
 			DashLoader.getVanillaData().stateManagers.put(selector, selectors.getValue());
 
-
 			components.add(Pointer2PointerMap.Entry.of(registry.add(RegistryUtil.preparePredicate(selector)), registry.add(right)));
 		}
 		final Map<BlockState, BitSet> stateCache = access.getStateCache();
@@ -66,7 +65,7 @@ public class DashMultipartBakedModel implements DashModel {
 	}
 
 	@Override
-	public MultipartBakedModel toUndash(DashRegistry registry) {
+	public MultipartBakedModel toUndash(DashExportHandler exportHandler) {
 		MultipartBakedModel model = UnsafeHelper.allocateInstance(cls);
 		Map<BlockState, BitSet> stateCacheOut = new Object2ObjectOpenCustomHashMap<>(Util.identityHashStrategy());
 		stateCache.forEach((entry) -> stateCacheOut.put(registry.get(entry.key), BitSet.valueOf(entry.value)));
