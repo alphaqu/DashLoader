@@ -1,34 +1,23 @@
 package net.oskarstrom.dashloader.def.model.components;
 
-import net.oskarstrom.dashloader.def.mixin.accessor.WeightedBakedModelEntryAccessor;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.util.collection.Weight;
 import net.minecraft.util.collection.Weighted;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.registry.Pointer;
+import net.oskarstrom.dashloader.def.mixin.accessor.WeightedBakedModelEntryAccessor;
 
-public class DashWeightedModelEntry {
-	@Serialize(order = 0)
-	public final int model;
-
-	@Serialize(order = 1)
-	public final int weight;
-
-	public DashWeightedModelEntry(@Deserialize("model") int model,
-								  @Deserialize("weight") int weight) {
-		this.model = model;
-		this.weight = weight;
-	}
+@Data
+public record DashWeightedModelEntry(int model, int weight) {
 
 	public DashWeightedModelEntry(Weighted.Present<BakedModel> entry, DashRegistry registry) {
-		this.model = registry.add(entry.getData());
-		weight = entry.getWeight().getValue();
+		this(registry.add(entry.getData()), entry.getWeight().getValue());
 	}
 
-	public Weighted.Present<BakedModel> toUndash(DashExportHandler exportHandler) {
-		return WeightedBakedModelEntryAccessor.init(registry.get(model), Weight.of(weight));
+
+	public Weighted.Present<BakedModel> toUndash(DashExportHandler handler) {
+		return WeightedBakedModelEntryAccessor.init(handler.get(model), Weight.of(weight));
 	}
 
 

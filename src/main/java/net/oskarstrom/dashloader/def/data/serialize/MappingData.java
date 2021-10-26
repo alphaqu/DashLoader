@@ -1,9 +1,8 @@
 package net.oskarstrom.dashloader.def.data.serialize;
 
 import com.mojang.blaze3d.platform.TextureUtil;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
-import io.activej.serializer.annotations.SerializeNullable;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
+import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -28,32 +27,32 @@ import java.util.List;
 import java.util.Map;
 
 public class MappingData {
-	@Serialize(order = 0)
-	@SerializeNullable
+	@Data
+	@DataNullable
 	public DashBlockStateData blockStateData;
 
-	@Serialize(order = 1)
-	@SerializeNullable
+	@Data
+	@DataNullable
 	public DashFontManagerData fontManagerData;
 
-	@Serialize(order = 2)
-	@SerializeNullable
+	@Data
+	@DataNullable
 	public DashModelData modelData;
 
-	@Serialize(order = 3)
-	@SerializeNullable
+	@Data
+	@DataNullable
 	public DashParticleData predicateData;
 
-	@Serialize(order = 4)
-	@SerializeNullable
+	@Data
+	@DataNullable
 	public DashSplashTextData splashTextData;
 
-	@Serialize(order = 5)
-	@SerializeNullable
+	@Data
+	@DataNullable
 	public DashSpriteAtlasData spriteAtlasData;
 
-	@Serialize(order = 6)
-	@SerializeNullable
+	@Data
+	@DataNullable
 	public DashShaderData shaderData;
 
 	private List<Pair<Feature, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>>> atlasesToRegister;
@@ -62,14 +61,8 @@ public class MappingData {
 	public MappingData() {
 	}
 
-	@SuppressWarnings("unused") //active j
-	public MappingData(@Deserialize("blockStateData") DashBlockStateData blockStateData,
-					   @Deserialize("fontManagerData") DashFontManagerData fontManagerData,
-					   @Deserialize("modelData") DashModelData modelData,
-					   @Deserialize("predicateData") DashParticleData predicateData,
-					   @Deserialize("splashTextData") DashSplashTextData splashTextData,
-					   @Deserialize("spriteAtlasData") DashSpriteAtlasData spriteAtlasData,
-					   @Deserialize("shaderData") DashShaderData shaderData) {
+	@SuppressWarnings("unused") // hyphen
+	public MappingData(DashBlockStateData blockStateData, DashFontManagerData fontManagerData, DashModelData modelData, DashParticleData predicateData, DashSplashTextData splashTextData, DashSpriteAtlasData spriteAtlasData, DashShaderData shaderData) {
 		this.blockStateData = blockStateData;
 		this.fontManagerData = fontManagerData;
 		this.modelData = modelData;

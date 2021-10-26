@@ -61,7 +61,7 @@ public record DashBasicBakedModel(List<DashBakedQuad> quads,
 	}
 
 	@Override
-	public void apply(DashRegistry registry) {
+	public void apply(DashExportHandler registry) {
 		itemPropertyOverrides.applyOverrides(registry);
 	}
 

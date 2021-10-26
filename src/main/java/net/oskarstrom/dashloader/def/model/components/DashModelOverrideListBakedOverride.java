@@ -1,35 +1,27 @@
 package net.oskarstrom.dashloader.def.model.components;
 
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
-import io.activej.serializer.annotations.SerializeNullable;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
+import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.json.ModelOverrideList;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.registry.Pointer;
 import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.mixin.accessor.ModelOverrideListBakedOverrideAccessor;
 import org.jetbrains.annotations.Nullable;
 
-public class DashModelOverrideListBakedOverride {
-	@Serialize(order = 0)
-	public final DashModelOverrideListInlinedCondition[] conditions;
-	@Nullable
-	@Serialize(order = 1)
-	@SerializeNullable
-	public final Integer model; // temp
-
-	public DashModelOverrideListBakedOverride(@Deserialize("conditions") DashModelOverrideListInlinedCondition[] conditions,
-											  @Deserialize("model") @Nullable Integer model) {
+@Data
+public record DashModelOverrideListBakedOverride(DashModelOverrideListInlinedCondition[] conditions,
+												 @DataNullable Integer model) {
+	public DashModelOverrideListBakedOverride(DashModelOverrideListInlinedCondition[] conditions,
+			@Nullable Integer model) {
 		this.conditions = conditions;
 		this.model = model;
 	}
 
-
 	public DashModelOverrideListBakedOverride(ModelOverrideList.BakedOverride override, DashRegistry registry) {
-		final ModelOverrideListBakedOverrideAccessor access = (ModelOverrideListBakedOverrideAccessor) override;
-
-		this.conditions = DashHelper.convertArrays(access.getConditions(), DashModelOverrideListInlinedCondition[]::new, DashModelOverrideListInlinedCondition::new);
-		this.model = DashHelper.nullable(access.getModel(), registry::add);
+		this(DashHelper.convertArrays(
+				((ModelOverrideListBakedOverrideAccessor) override).getConditions(), DashModelOverrideListInlinedCondition[]::new,
+				DashModelOverrideListInlinedCondition::new), DashHelper.nullable(((ModelOverrideListBakedOverrideAccessor) override).getModel(), registry::add));
 
 	}
 

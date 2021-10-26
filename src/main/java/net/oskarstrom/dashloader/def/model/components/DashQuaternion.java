@@ -1,35 +1,12 @@
 package net.oskarstrom.dashloader.def.model.components;
 
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.util.math.Quaternion;
 
-public class DashQuaternion {
-
-	@Serialize(order = 0)
-	public final float x;
-	@Serialize(order = 1)
-	public final float y;
-	@Serialize(order = 2)
-	public final float z;
-	@Serialize(order = 3)
-	public final float w;
-
-	public DashQuaternion(@Deserialize("x") float x,
-						  @Deserialize("y") float y,
-						  @Deserialize("z") float z,
-						  @Deserialize("w") float w) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.w = w;
-	}
-
+@Data
+public record DashQuaternion(float x, float y, float z, float w) {
 	public DashQuaternion(Quaternion quaternion) {
-		x = quaternion.getX();
-		y = quaternion.getY();
-		z = quaternion.getZ();
-		w = quaternion.getW();
+		this(quaternion.getX(), quaternion.getY(), quaternion.getZ(), quaternion.getW());
 	}
 
 	public Quaternion toUndash() {
