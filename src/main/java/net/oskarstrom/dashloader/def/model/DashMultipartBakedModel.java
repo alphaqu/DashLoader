@@ -1,17 +1,19 @@
 package net.oskarstrom.dashloader.def.model;
 
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.MultipartBakedModel;
+import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Util;
 
+import net.oskarstrom.dashloader.core.annotations.Dependencies;
 import net.oskarstrom.dashloader.core.data.IntIntList;
 import net.oskarstrom.dashloader.core.data.IntObjectList;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.DashLoader;
@@ -27,19 +29,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+@Data
 @DashObject(MultipartBakedModel.class)
+@Dependencies({WeightedBakedModel.class})
 public class DashMultipartBakedModel implements DashModel {
-
 	private static final Class<MultipartBakedModel> cls = MultipartBakedModel.class;
 	//identifier baked model
-	@Serialize(order = 0)
 	public final IntIntList components;
-	@Serialize(order = 1)
 	public final IntObjectList<byte[]> stateCache;
-	MultipartBakedModel toApply;
+	transient MultipartBakedModel toApply;
 
-	public DashMultipartBakedModel(@Deserialize("components") Pointer2PointerMap components,
-								   @Deserialize("stateCache") Pointer2ObjectMap<byte[]> stateCache) {
+	public DashMultipartBakedModel(IntIntList components, IntObjectList<byte[]> stateCache) {
 		this.components = components;
 		this.stateCache = stateCache;
 	}
@@ -49,35 +49,35 @@ public class DashMultipartBakedModel implements DashModel {
 		MultipartBakedModelAccessor access = ((MultipartBakedModelAccessor) model);
 		List<Pair<Predicate<BlockState>, BakedModel>> accessComponents = access.getComponents();
 		final int size = accessComponents.size();
-		this.components = new Pointer2PointerMap(size);
+		this.components = new IntIntList(new ArrayList<>(size));
 		for (int i = 0; i < size; i++) {
 			final BakedModel right = accessComponents.get(i).getRight();
 
 			final MultipartModelSelector selector = selectors.getKey().get(i);
 			DashLoader.getVanillaData().stateManagers.put(selector, selectors.getValue());
 
-			components.add(Pointer2PointerMap.Entry.of(registry.add(RegistryUtil.preparePredicate(selector)), registry.add(right)));
+			components.put(registry.add(RegistryUtil.preparePredicate(selector)), registry.add(right));
 		}
 		final Map<BlockState, BitSet> stateCache = access.getStateCache();
-		this.stateCache = new Pointer2ObjectMap<>(DashHelper.convertMapToCollection(
+		this.stateCache = new IntObjectList<>(DashHelper.convertMapToCollection(
 				stateCache,
-				(entry) -> Pointer2ObjectMap.Entry.of(registry.add(entry.getKey()), entry.getValue().toByteArray())));
+				(entry) -> new IntObjectList.IntObjectEntry<>(registry.add(entry.getKey()), entry.getValue().toByteArray())));
 	}
 
 	@Override
-	public MultipartBakedModel toUndash(DashExportHandler exportHandler) {
+	public MultipartBakedModel toUndash(DashExportHandler handler) {
 		MultipartBakedModel model = UnsafeHelper.allocateInstance(cls);
 		Map<BlockState, BitSet> stateCacheOut = new Object2ObjectOpenCustomHashMap<>(Util.identityHashStrategy());
-		stateCache.forEach((entry) -> stateCacheOut.put(registry.get(entry.key), BitSet.valueOf(entry.value)));
+		stateCache.forEach((key, value) -> stateCacheOut.put(handler.get(key), BitSet.valueOf(value)));
 		((MultipartBakedModelAccessor) model).setStateCache(stateCacheOut);
 		toApply = model;
 		return model;
 	}
 
 	@Override
-	public void apply(DashRegistry registry) {
+	public void apply(DashExportHandler handler) {
 		List<Pair<Predicate<BlockState>, BakedModel>> componentsOut = new ArrayList<>();
-		components.forEach((entry) -> componentsOut.add(Pair.of(registry.get(entry.key), registry.get(entry.value))));
+		components.forEach((key, value) -> componentsOut.add(Pair.of(handler.get(key), handler.get(value))));
 		MultipartBakedModelAccessor access = ((MultipartBakedModelAccessor) toApply);
 		BakedModel bakedModel = (BakedModel) ((Pair) componentsOut.iterator().next()).getRight();
 		access.setComponents(componentsOut);
@@ -88,9 +88,5 @@ public class DashMultipartBakedModel implements DashModel {
 		access.setTransformations(bakedModel.getTransformation());
 		access.setItemPropertyOverrides(bakedModel.getOverrides());
 	}
-
-	@Override
-	public int getStage() {
-		return 2;
-	}
 }
+

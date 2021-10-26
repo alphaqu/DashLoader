@@ -1,23 +1,28 @@
 package net.oskarstrom.dashloader.def.model.components;
 
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 import net.oskarstrom.dashloader.def.util.ClassHelper;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
 
 import java.lang.reflect.Field;
-
+@Data
 public record DashMesh(int[] data, String className) {
 
 	public DashMesh(Mesh mesh) {
-		final Class<? extends Mesh> aClass = mesh.getClass();
-		className = aClass.getName();
+		this(getData(mesh), mesh.getClass().getName());
+	}
+
+	private static int[] getData(Mesh mesh) {
+		final int[] data;
 		try {
-			final Field data = aClass.getDeclaredField("data");
-			data.setAccessible(true);
-			this.data = (int[]) data.get(mesh);
+			final Field field = mesh.getClass().getDeclaredField("data");
+			field.setAccessible(true);
+			data = (int[]) field.get(mesh);
 		} catch (IllegalAccessException | NoSuchFieldException e) {
 			throw new RuntimeException("shit", e);
 		}
+		return data;
 	}
 
 

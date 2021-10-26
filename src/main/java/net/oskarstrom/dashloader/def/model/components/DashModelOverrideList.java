@@ -1,23 +1,20 @@
 package net.oskarstrom.dashloader.def.model.components;
 
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.util.Identifier;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.core.registry.DashRegistry;
 import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.mixin.accessor.ModelOverrideListAccessor;
-
+@Data
 public class DashModelOverrideList {
-	@Serialize(order = 0)
 	public final DashModelOverrideListBakedOverride[] overrides;
-	@Serialize(order = 1)
 	public final Integer[] conditionTypes; //identifiers
 
-	ModelOverrideList toApply;
+	transient ModelOverrideList toApply;
 
-	public DashModelOverrideList(@Deserialize("overrides") DashModelOverrideListBakedOverride[] overrides,
-								 @Deserialize("conditionTypes") Integer[] conditionTypes) {
+	public DashModelOverrideList(DashModelOverrideListBakedOverride[] overrides, Integer[] conditionTypes) {
 		this.overrides = overrides;
 		this.conditionTypes = conditionTypes;
 	}
@@ -31,16 +28,16 @@ public class DashModelOverrideList {
 
 	}
 
-	public ModelOverrideList toUndash(DashExportHandler exportHandler) {
+	public ModelOverrideList toUndash(DashExportHandler handler) {
 		toApply = ModelOverrideListAccessor.newModelOverrideList();
 
-		final Identifier[] identifiers = DashHelper.convertArrays(conditionTypes, Identifier[]::new, registry::get);
+		final Identifier[] identifiers = DashHelper.convertArrays(conditionTypes, Identifier[]::new, handler::get);
 		((ModelOverrideListAccessor) toApply).setConditionTypes(identifiers);
 
 		return toApply;
 	}
 
-	public void applyOverrides(DashRegistry registry) {
+	public void applyOverrides(DashExportHandler registry) {
 		ModelOverrideList.BakedOverride[] bakedOverrides = DashHelper.convertArrays(this.overrides, ModelOverrideList.BakedOverride[]::new, override -> override.toUndash(registry));
 		((ModelOverrideListAccessor) toApply).setOverrides(bakedOverrides);
 	}

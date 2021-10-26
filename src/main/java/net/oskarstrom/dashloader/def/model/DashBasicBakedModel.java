@@ -1,5 +1,6 @@
 package net.oskarstrom.dashloader.def.model;
 
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BasicBakedModel;
@@ -20,14 +21,36 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+@Data
 @DashObject(BasicBakedModel.class)
-public record DashBasicBakedModel(List<DashBakedQuad> quads,
-								  ObjectObjectList<DashDirectionValue, Collection<Integer>> faceQuads,
-								  boolean usesAo, boolean hasDepth, boolean isSideLit,
-								  @DataNullable DashModelTransformation transformation,
-								  DashModelOverrideList itemPropertyOverrides,
-								  int spritePointer) implements DashModel {
+public final class DashBasicBakedModel implements DashModel {
+	public final List<DashBakedQuad> quads;
+	public final ObjectObjectList<DashDirectionValue, Collection<Integer>> faceQuads;
+	public final boolean usesAo;
+	public final boolean hasDepth;
+	public final boolean isSideLit;
+	@DataNullable
+	public final DashModelTransformation transformation;
+	public final DashModelOverrideList itemPropertyOverrides;
+	public final int spritePointer;
+
+	public DashBasicBakedModel(List<DashBakedQuad> quads,
+			ObjectObjectList<DashDirectionValue, Collection<Integer>> faceQuads,
+			boolean usesAo, boolean hasDepth, boolean isSideLit,
+			DashModelTransformation transformation,
+			DashModelOverrideList itemPropertyOverrides,
+			int spritePointer) {
+		this.quads = quads;
+		this.faceQuads = faceQuads;
+		this.usesAo = usesAo;
+		this.hasDepth = hasDepth;
+		this.isSideLit = isSideLit;
+		this.transformation = transformation;
+		this.itemPropertyOverrides = itemPropertyOverrides;
+		this.spritePointer = spritePointer;
+	}
 
 
 	public DashBasicBakedModel(BasicBakedModel basicBakedModel, DashRegistry registry) {
@@ -54,15 +77,14 @@ public record DashBasicBakedModel(List<DashBakedQuad> quads,
 	public BasicBakedModel toUndash(final DashExportHandler registry) {
 		final Sprite sprite = registry.get(spritePointer);
 		final List<BakedQuad> quadsOut = DashHelper.convertCollection(quads, bakedQuad -> bakedQuad.toUndash(registry));
-		final Map<Direction, List<BakedQuad>> faceQuadsOut = DashHelper.convertCollectionToMap(faceQuads.data, (entry) ->
-				Pair.of(entry.getKey().toUndash(registry), DashHelper.convertCollection(entry.getValue(), registry::get)));
+		final Map<Direction, List<BakedQuad>> faceQuadsOut = DashHelper.convertCollectionToMap(faceQuads.list(), (entry) ->
+				Pair.of(entry.key().toUndash(registry), DashHelper.convertCollection(entry.value(), registry::get)));
 
 		return new BasicBakedModel(quadsOut, faceQuadsOut, usesAo, isSideLit, hasDepth, sprite, DashModelTransformation.toUndashOrDefault(transformation), itemPropertyOverrides.toUndash(registry));
 	}
 
 	@Override
-	public void apply(DashRegistry registry) {
+	public void apply(DashExportHandler registry) {
 		itemPropertyOverrides.applyOverrides(registry);
 	}
-
 }

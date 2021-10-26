@@ -1,25 +1,12 @@
 package net.oskarstrom.dashloader.def.model.components;
 
-import net.oskarstrom.dashloader.def.mixin.accessor.ModelOverrideListInlinedCondition;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.model.json.ModelOverrideList;
-
-public class DashModelOverrideListInlinedCondition {
-	@Serialize(order = 0)
-	public final int index;
-	@Serialize(order = 1)
-	public final float threshold;
-
-
-	public DashModelOverrideListInlinedCondition(@Deserialize("index") int index, @Deserialize("threshold") float threshold) {
-		this.index = index;
-		this.threshold = threshold;
-	}
-
+import net.oskarstrom.dashloader.def.mixin.accessor.ModelOverrideListInlinedCondition;
+@Data
+public record DashModelOverrideListInlinedCondition(int index, float threshold) {
 	public DashModelOverrideListInlinedCondition(ModelOverrideList.InlinedCondition inlinedCondition) {
-		index = inlinedCondition.index;
-		threshold = inlinedCondition.threshold;
+		this(inlinedCondition.index, inlinedCondition.threshold);
 	}
 
 	public ModelOverrideList.InlinedCondition toUndash() {

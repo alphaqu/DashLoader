@@ -1,14 +1,12 @@
 package net.oskarstrom.dashloader.def.model.predicates;
 
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
-import io.activej.serializer.annotations.SerializeSubclasses;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.registry.Pointer;
-import net.oskarstrom.dashloader.core.registry.RegistryStorageImpl;
+import net.oskarstrom.dashloader.core.registry.storage.RegistryStorageImpl;
 import net.oskarstrom.dashloader.core.util.DashHelper;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.api.DashDataType;
@@ -22,13 +20,12 @@ import java.util.List;
 import java.util.function.Predicate;
 
 
+@Data
 @DashObject(OrMultipartModelSelector.class)
 public class DashOrPredicate implements DashPredicate {
-	@Serialize(order = 0)
-	@SerializeSubclasses(extraSubclassesId = "predicates", path = {0})
 	public final List<DashPredicate> selectors;
 
-	public DashOrPredicate(@Deserialize("selectors") List<DashPredicate> selectors) {
+	public DashOrPredicate(List<DashPredicate> selectors) {
 		this.selectors = selectors;
 	}
 
@@ -36,13 +33,13 @@ public class DashOrPredicate implements DashPredicate {
 		OrMultipartModelSelectorAccessor access = ((OrMultipartModelSelectorAccessor) selector);
 		selectors = new ArrayList<>();
 		for (MultipartModelSelector accessSelector : access.getSelectors()) {
-			selectors.add((DashPredicate) ((RegistryStorageImpl)registry.getStorage(DashLoader.getInstance().getApi().storageMappings.getByte(DashDataType.PREDICATE))).create(RegistryUtil.preparePredicate(accessSelector),registry));
+			selectors.add((DashPredicate) ((RegistryStorageImpl) registry.getStorage(DashLoader.getInstance().getApi().storageMappings.getByte(DashDataType.PREDICATE))).create(RegistryUtil.preparePredicate(accessSelector), registry));
 		}
 	}
 
 	@Override
-	public Predicate<BlockState> toUndash(DashExportHandler exportHandler) {
-		Collection<Predicate<BlockState>> list = DashHelper.convertCollection(selectors, (s) -> s.toUndash(registry));
+	public Predicate<BlockState> toUndash(DashExportHandler handler) {
+		Collection<Predicate<BlockState>> list = DashHelper.convertCollection(selectors, (s) -> s.toUndash(handler));
 		return (blockState) -> list.stream().anyMatch((predicate) -> predicate.test(blockState));
 	}
 }
