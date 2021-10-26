@@ -26,36 +26,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Data
+@DataNullable
 public class MappingData {
-	@Data
-	@DataNullable
 	public DashBlockStateData blockStateData;
-
-	@Data
-	@DataNullable
 	public DashFontManagerData fontManagerData;
-
-	@Data
-	@DataNullable
 	public DashModelData modelData;
-
-	@Data
-	@DataNullable
 	public DashParticleData predicateData;
-
-	@Data
-	@DataNullable
 	public DashSplashTextData splashTextData;
-
-	@Data
-	@DataNullable
 	public DashSpriteAtlasData spriteAtlasData;
-
-	@Data
-	@DataNullable
 	public DashShaderData shaderData;
 
-	private List<Pair<Feature, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>>> atlasesToRegister;
+	private transient List<Pair<Feature, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>>> atlasesToRegister;
 
 
 	public MappingData() {
