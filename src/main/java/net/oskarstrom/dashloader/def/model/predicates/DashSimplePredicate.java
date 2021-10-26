@@ -1,16 +1,15 @@
 package net.oskarstrom.dashloader.def.model.predicates;
 
 import com.google.common.base.Splitter;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
-import net.oskarstrom.dashloader.core.data.Pointer2PointerMap;
+import net.oskarstrom.dashloader.core.data.IntIntList;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.registry.Pointer;
 import net.oskarstrom.dashloader.def.DashLoader;
 import net.oskarstrom.dashloader.def.api.DashObject;
 import net.oskarstrom.dashloader.def.mixin.accessor.SimpleMultipartModelSelectorAccessor;
@@ -23,18 +22,17 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+
+@Data
 @DashObject(SimpleMultipartModelSelector.class)
 public class DashSimplePredicate implements DashPredicate {
 	private static final Splitter VALUE_SPLITTER = Splitter.on('|').omitEmptyStrings();
 
-	@Serialize(order = 0)
-	public final Pointer2PointerMap properties;
-
-	@Serialize(order = 1)
+	public final IntIntList properties;
 	public final boolean negate;
 
-	public DashSimplePredicate(@Deserialize("properties") Pointer2PointerMap properties,
-							   @Deserialize("negate") boolean negate) {
+	public DashSimplePredicate(IntIntList properties,
+			boolean negate) {
 		this.properties = properties;
 		this.negate = negate;
 	}
@@ -45,7 +43,7 @@ public class DashSimplePredicate implements DashPredicate {
 		StateManager<Block, BlockState> stateManager = DashLoader.getVanillaData().stateManagers.get(simpleMultipartModelSelector);
 		SimpleMultipartModelSelectorAccessor access = ((SimpleMultipartModelSelectorAccessor) simpleMultipartModelSelector);
 		Property<?> stateManagerProperty = stateManager.getProperty(access.getKey());
-		properties = new Pointer2PointerMap();
+		properties = new IntIntList(new ArrayList<>());
 		String string = access.getValueString();
 		negate = !string.isEmpty() && string.charAt(0) == '!';
 		if (negate) {
@@ -54,10 +52,10 @@ public class DashSimplePredicate implements DashPredicate {
 		List<String> list = VALUE_SPLITTER.splitToList(string);
 		if (list.size() == 1) {
 			Pair<Integer, Integer> predicateProperty = createPredicateInfo(stateManager, stateManagerProperty, string, registry);
-			properties.add(Pointer2PointerMap.Entry.of(predicateProperty.getLeft(), predicateProperty.getRight()));
+			properties.put(predicateProperty.getLeft(), predicateProperty.getRight());
 		} else {
 			List<Pair<Integer, Integer>> predicateProperties = list.stream().map((stringx) -> createPredicateInfo(stateManager, stateManagerProperty, stringx, registry)).collect(Collectors.toList());
-			predicateProperties.forEach(pair -> properties.add(Pointer2PointerMap.Entry.of(pair.getLeft(), pair.getRight())));
+			predicateProperties.forEach(pair -> properties.put(pair.getLeft(), pair.getRight()));
 		}
 
 	}
@@ -73,9 +71,9 @@ public class DashSimplePredicate implements DashPredicate {
 	}
 
 	@Override
-	public Predicate<BlockState> toUndash(DashExportHandler exportHandler) {
+	public Predicate<BlockState> toUndash(DashExportHandler handler) {
 		List<Map.Entry<? extends Property<?>, ? extends Comparable<?>>> out = new ArrayList<>();
-		properties.forEach((entry) -> out.add(Pair.of(registry.get(entry.key), registry.get(entry.value))));
+		properties.forEach((key, value) -> out.add(Pair.of(handler.get(key), handler.get(value))));
 		Predicate<BlockState> outPredicate;
 		if (out.size() == 1) {
 			final Map.Entry<? extends Property<?>, ? extends Comparable<?>> entry = out.get(0);
