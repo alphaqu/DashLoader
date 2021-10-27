@@ -1,39 +1,23 @@
 package net.oskarstrom.dashloader.def.font;
 
-import net.oskarstrom.dashloader.def.mixin.accessor.BitmapFontGlyphAccessor;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.font.BitmapFont;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.registry.Pointer;
+import net.oskarstrom.dashloader.def.mixin.accessor.BitmapFontGlyphAccessor;
 
+@Data
 public class DashBitmapFontGlyph {
-	@Serialize(order = 0)
 	public final float scaleFactor;
-	@Serialize(order = 1)
 	public final int image;
-	@Serialize(order = 2)
 	public final int x;
-	@Serialize(order = 3)
 	public final int y;
-	@Serialize(order = 4)
 	public final int width;
-	@Serialize(order = 5)
 	public final int height;
-	@Serialize(order = 6)
 	public final int advance;
-	@Serialize(order = 7)
 	public final int ascent;
 
-	public DashBitmapFontGlyph(@Deserialize("scaleFactor") float scaleFactor,
-							   @Deserialize("image") int image,
-							   @Deserialize("x") int x,
-							   @Deserialize("y") int y,
-							   @Deserialize("width") int width,
-							   @Deserialize("height") int height,
-							   @Deserialize("advance") int advance,
-							   @Deserialize("ascent") int ascent
-	) {
+	public DashBitmapFontGlyph(float scaleFactor, int image, int x, int y, int width, int height, int advance, int ascent) {
 		this.scaleFactor = scaleFactor;
 		this.image = image;
 		this.x = x;
@@ -56,7 +40,7 @@ public class DashBitmapFontGlyph {
 		ascent = font.getAscent();
 	}
 
-	public BitmapFont.BitmapFontGlyph toUndash(DashExportHandler exportHandler) {
-		return BitmapFontGlyphAccessor.init(scaleFactor, registry.get(image), x, y, width, height, advance, ascent);
+	public BitmapFont.BitmapFontGlyph toUndash(DashExportHandler handler) {
+		return BitmapFontGlyphAccessor.init(scaleFactor, handler.get(image), x, y, width, height, advance, ascent);
 	}
 }

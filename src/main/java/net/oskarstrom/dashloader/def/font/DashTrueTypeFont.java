@@ -1,17 +1,16 @@
 package net.oskarstrom.dashloader.def.font;
 
-import net.oskarstrom.dashloader.def.api.DashObject;
-import net.oskarstrom.dashloader.def.mixin.accessor.TrueTypeFontAccessor;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TrueTypeFont;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 import net.oskarstrom.dashloader.def.DashLoader;
+import net.oskarstrom.dashloader.def.api.DashObject;
+import net.oskarstrom.dashloader.def.mixin.accessor.TrueTypeFontAccessor;
 import net.oskarstrom.dashloader.def.util.IOHelper;
 import net.oskarstrom.dashloader.def.util.UnsafeHelper;
 import org.lwjgl.stb.STBTTFontinfo;
@@ -21,31 +20,19 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Set;
 
+@Data
 @DashObject(TrueTypeFont.class)
 public class DashTrueTypeFont implements DashFont {
-	@Serialize(order = 0)
 	public final byte[] ttfBuffer;
-	@Serialize(order = 1)
 	public final float oversample;
-	@Serialize(order = 2)
 	public final Set<Integer> excludedCharacters;
-	@Serialize(order = 3)
 	public final float shiftX;
-	@Serialize(order = 4)
 	public final float shiftY;
-	@Serialize(order = 5)
 	public final float scaleFactor;
-	@Serialize(order = 6)
 	public final float ascent;
 
 
-	public DashTrueTypeFont(@Deserialize("ttfBuffer") byte[] ttfBuffer,
-							@Deserialize("oversample") float oversample,
-							@Deserialize("excludedCharacters") Set<Integer> excludedCharacters,
-							@Deserialize("shiftX") float shiftX,
-							@Deserialize("shiftY") float shiftY,
-							@Deserialize("scaleFactor") float scaleFactor,
-							@Deserialize("ascent") float ascent) {
+	public DashTrueTypeFont(byte[] ttfBuffer, float oversample, Set<Integer> excludedCharacters, float shiftX, float shiftY, float scaleFactor, float ascent) {
 		this.ttfBuffer = ttfBuffer;
 		this.oversample = oversample;
 		this.excludedCharacters = excludedCharacters;
@@ -75,7 +62,7 @@ public class DashTrueTypeFont implements DashFont {
 	}
 
 	@Override
-	public TrueTypeFont toUndash(DashExportHandler exportHandler) {
+	public TrueTypeFont toUndash(DashExportHandler handler) {
 		STBTTFontinfo sTBTTFontinfo = STBTTFontinfo.malloc();
 		ByteBuffer byteBuffer2 = ByteBuffer.allocateDirect(ttfBuffer.length);
 		byteBuffer2.put(ttfBuffer);
