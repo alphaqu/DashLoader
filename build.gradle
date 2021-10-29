@@ -42,8 +42,8 @@ dependencies {
     // TODO jákob if you need modmenu uncomment this and in gradle.properties - !alpha
     // modImplementation "com.terraformersmc:modmenu:$project.modmenu_version"
 
-    modApi "net.oskarstrom.dashloader:dashloader-core:$project.dashloader_core_version"
-    include "net.oskarstrom.dashloader:dashloader-core:$project.dashloader_core_version"
+    modApi "dev.quantumfusion.dashloader:dashloader-core:$project.dashloader_core_version"
+    include "dev.quantumfusion.dashloader:dashloader-core:$project.dashloader_core_version"
 
     testImplementation(platform('org.junit:junit-bom:5.7.2'))
     testImplementation('org.junit.jupiter:junit-jupiter:5.7.2')
