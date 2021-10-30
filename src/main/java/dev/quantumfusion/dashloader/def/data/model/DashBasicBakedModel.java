@@ -61,7 +61,7 @@ public final class DashBasicBakedModel implements DashModel {
 		this.faceQuads = new ObjectObjectList<>();
 		access.getFaceQuads().forEach((direction, bakedQuads) -> {
 			var bakedQuadsOut = new ArrayList<Integer>();
-			for (var bakedQuad : bakedQuads) writer.add(bakedQuad);
+			for (var bakedQuad : bakedQuads) bakedQuadsOut.add(writer.add(bakedQuad));
 			this.faceQuads.put(direction, bakedQuadsOut);
 		});
 
@@ -79,7 +79,7 @@ public final class DashBasicBakedModel implements DashModel {
 		final Sprite sprite = reader.get(spritePointer);
 
 		var quadsOut = new ArrayList<BakedQuad>();
-		for (DashBakedQuad quad : this.quads) quadsOut.add(quad.export(reader));
+		for (var quad : this.quads) quadsOut.add(quad.export(reader));
 
 		var faceQuadsOut = new HashMap<Direction, List<BakedQuad>>();
 		for (var entry : faceQuads.list()) {
