@@ -1,32 +1,32 @@
 package dev.quantumfusion.dashloader.def.data.model;
 
-import dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashDirectionValue;
+import dev.quantumfusion.dashloader.core.api.annotation.DashDependencies;
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.common.ObjectObjectList;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.def.data.image.DashSprite;
 import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.def.data.model.components.DashModelOverrideList;
 import dev.quantumfusion.dashloader.def.data.model.components.DashModelTransformation;
+import dev.quantumfusion.dashloader.def.mixin.accessor.BasicBakedModelAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
-import net.oskarstrom.dashloader.core.data.ObjectObjectList;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.util.DashHelper;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
-import dev.quantumfusion.dashloader.def.mixin.accessor.BasicBakedModelAccessor;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @DashObject(BasicBakedModel.class)
+@DashDependencies({DashSprite.class, DashBakedQuad.class})
 public final class DashBasicBakedModel implements DashModel {
 	public final List<DashBakedQuad> quads;
-	public final ObjectObjectList<DashDirectionValue, Collection<Integer>> faceQuads;
+	public final ObjectObjectList<Direction, List<Integer>> faceQuads;
 	public final boolean usesAo;
 	public final boolean hasDepth;
 	public final boolean isSideLit;
@@ -36,7 +36,7 @@ public final class DashBasicBakedModel implements DashModel {
 	public final int spritePointer;
 
 	public DashBasicBakedModel(List<DashBakedQuad> quads,
-			ObjectObjectList<DashDirectionValue, Collection<Integer>> faceQuads,
+			ObjectObjectList<Direction, List<Integer>> faceQuads,
 			boolean usesAo, boolean hasDepth, boolean isSideLit,
 			DashModelTransformation transformation,
 			DashModelOverrideList itemPropertyOverrides,
@@ -52,38 +52,47 @@ public final class DashBasicBakedModel implements DashModel {
 	}
 
 
-	public DashBasicBakedModel(BasicBakedModel basicBakedModel, DashRegistry registry) {
+	public DashBasicBakedModel(BasicBakedModel basicBakedModel, DashRegistryWriter writer) {
 		BasicBakedModelAccessor access = ((BasicBakedModelAccessor) basicBakedModel);
-		this.quads = DashHelper.convertCollection(access.getQuads(), quad -> new DashBakedQuad(quad, registry));
-		final Map<Direction, List<BakedQuad>> faceQuads = access.getFaceQuads();
-		this.faceQuads = new ObjectObjectList<>(DashHelper.convertMapToCollection(
-				faceQuads,
-				(entry) -> {
-					final List<BakedQuad> value = entry.getValue();
-					final Collection<Integer> right = DashHelper.convertCollection(value, registry::add);
-					return new ObjectObjectList.ObjectObjectEntry<>(new DashDirectionValue(entry.getKey()), right);
-				}));
-		this.itemPropertyOverrides = new DashModelOverrideList(access.getItemPropertyOverrides(), registry);
+		//DashHelper.convertCollection(access.getQuads(), quad -> new DashBakedQuad(quad, writer))
+		this.quads = new ArrayList<>();
+		for (var quad : access.getQuads()) quads.add(new DashBakedQuad(quad, writer));
+
+		this.faceQuads = new ObjectObjectList<>();
+		access.getFaceQuads().forEach((direction, bakedQuads) -> {
+			var bakedQuadsOut = new ArrayList<Integer>();
+			for (var bakedQuad : bakedQuads) writer.add(bakedQuad);
+			this.faceQuads.put(direction, bakedQuadsOut);
+		});
+
+		this.itemPropertyOverrides = new DashModelOverrideList(access.getItemPropertyOverrides(), writer);
 		this.usesAo = access.getUsesAo();
 		this.hasDepth = access.getHasDepth();
 		this.isSideLit = access.getIsSideLit();
 		this.transformation = DashModelTransformation.createDashOrReturnNullIfDefault(access.getTransformation());
-		spritePointer = registry.add(access.getSprite());
+		spritePointer = writer.add(access.getSprite());
 	}
 
 
 	@Override
-	public BasicBakedModel toUndash(final DashExportHandler registry) {
-		final Sprite sprite = registry.get(spritePointer);
-		final List<BakedQuad> quadsOut = DashHelper.convertCollection(quads, bakedQuad -> bakedQuad.toUndash(registry));
-		final Map<Direction, List<BakedQuad>> faceQuadsOut = DashHelper.convertCollectionToMap(faceQuads.list(), (entry) ->
-				Pair.of(entry.key().toUndash(registry), DashHelper.convertCollection(entry.value(), registry::get)));
+	public BasicBakedModel export(final DashRegistryReader reader) {
+		final Sprite sprite = reader.get(spritePointer);
 
-		return new BasicBakedModel(quadsOut, faceQuadsOut, usesAo, isSideLit, hasDepth, sprite, DashModelTransformation.toUndashOrDefault(transformation), itemPropertyOverrides.toUndash(registry));
+		var quadsOut = new ArrayList<BakedQuad>();
+		for (DashBakedQuad quad : this.quads) quadsOut.add(quad.export(reader));
+
+		var faceQuadsOut = new HashMap<Direction, List<BakedQuad>>();
+		for (var entry : faceQuads.list()) {
+			var out = new ArrayList<BakedQuad>();
+			for (Integer integer : entry.value()) out.add(reader.get(integer));
+			faceQuadsOut.put(entry.key(), out);
+		}
+
+		return new BasicBakedModel(quadsOut, faceQuadsOut, usesAo, isSideLit, hasDepth, sprite, DashModelTransformation.exportOrDefault(transformation), itemPropertyOverrides.export(reader));
 	}
 
 	@Override
-	public void apply(DashExportHandler registry) {
+	public void apply(DashRegistryReader registry) {
 		itemPropertyOverrides.applyOverrides(registry);
 	}
 }

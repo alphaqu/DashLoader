@@ -1,22 +1,36 @@
 package dev.quantumfusion.dashloader.def.data.image.shader;
 
 import com.google.common.collect.ImmutableMap;
+import dev.quantumfusion.dashloader.def.mixin.accessor.VertexFormatAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.VertexFormat;
-import net.oskarstrom.dashloader.core.util.DashHelper;
-import dev.quantumfusion.dashloader.def.mixin.accessor.VertexFormatAccessor;
-import org.apache.commons.lang3.tuple.Pair;
+import net.minecraft.client.render.VertexFormatElement;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public record DashVertexFormat(Map<String, DashVertexFormatElement> elementMap) {
+public final class DashVertexFormat {
+	private final Map<String, DashVertexFormatElement> elementMap;
 
-	public DashVertexFormat(VertexFormat vertexFormat) {
-		this(DashHelper.convertMap(((VertexFormatAccessor) vertexFormat).getElementMap(), entry -> Pair.of(entry.getKey(), new DashVertexFormatElement(entry.getValue()))));
+	public DashVertexFormat(Map<String, DashVertexFormatElement> elementMap) {
+		this.elementMap = elementMap;
 	}
 
-	public VertexFormat toUndash() {
-		return new VertexFormat(ImmutableMap.copyOf(DashHelper.convertMap(elementMap, entry -> Pair.of(entry.getKey(), entry.getValue().toUndash()))));
+	public DashVertexFormat(VertexFormat vertexFormat) {
+		var elementMap = ((VertexFormatAccessor) vertexFormat).getElementMap();
+		var outElementMap = new HashMap<String, DashVertexFormatElement>();
+		elementMap.forEach((s, vertexFormatElement) -> outElementMap.put(s, new DashVertexFormatElement(vertexFormatElement)));
+		this.elementMap = outElementMap;
+	}
+
+	public VertexFormat export() {
+		var outElementMap = new HashMap<String, VertexFormatElement>();
+		elementMap.forEach((s, dashVertexFormatElement) -> outElementMap.put(s, dashVertexFormatElement.export()));
+		return new VertexFormat(ImmutableMap.copyOf(outElementMap));
+	}
+
+	public Map<String, DashVertexFormatElement> elementMap() {
+		return elementMap;
 	}
 }

@@ -1,46 +1,44 @@
 package dev.quantumfusion.dashloader.def.data.dataobject.mapping;
 
+import dev.quantumfusion.dashloader.core.Dashable;
+import dev.quantumfusion.dashloader.core.common.IntIntList;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.dashloader.def.data.VanillaData;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.core.Dashable;
-import net.oskarstrom.dashloader.core.data.Pointer2PointerMap;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@Data
 public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
+	public final IntIntList models;
 
-
-	@Serialize(order = 0)
-	public final Pointer2PointerMap models;
-
-
-	public DashModelData(@Deserialize("models") Pointer2PointerMap models) {
+	public DashModelData(IntIntList models) {
 		this.models = models;
 	}
 
-	public DashModelData(VanillaData data, DashRegistry registry, DashLoader.TaskHandler taskHandler) {
+	public DashModelData(VanillaData data, DashRegistryWriter writer, DashLoader.TaskHandler taskHandler) {
 		final Map<Identifier, BakedModel> models = data.getModels();
 		final int size = models.size();
-		this.models = new Pointer2PointerMap(size);
+		this.models = new IntIntList(new ArrayList<>(models.size()));
 		taskHandler.setSubtasks(size);
 		models.forEach((identifier, bakedModel) -> {
 			if (bakedModel != null) {
-				this.models.add(Pointer2PointerMap.Entry.of(registry.add(identifier), registry.add(bakedModel)));
+				this.models.put(writer.add(identifier), writer.add(bakedModel));
 			}
 			taskHandler.completedSubTask();
 		});
 	}
 
 
-	public Map<Identifier, BakedModel> toUndash(final DashRegistry registry) {
+	public Map<Identifier, BakedModel> export(final DashRegistryReader reader) {
 		final HashMap<Identifier, BakedModel> out = new HashMap<>();
-		models.forEach((entry) -> out.put(registry.get(entry.key), registry.get(entry.value)));
+		models.forEach((key, value) -> out.put(reader.get(key), reader.get(value)));
 		return out;
 	}
 

@@ -1,8 +1,8 @@
 package dev.quantumfusion.dashloader.def.data.image.shader;
 
+import dev.quantumfusion.dashloader.def.mixin.accessor.GlBlendStateAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.gl.GlBlendState;
-import dev.quantumfusion.dashloader.def.mixin.accessor.GlBlendStateAccessor;
 
 @Data
 public record DashGlBlendState(
@@ -24,7 +24,7 @@ public record DashGlBlendState(
 		this((GlBlendStateAccessor) blendState);
 	}
 
-	public GlBlendState toUndash() {
+	public GlBlendState export() {
 		return GlBlendStateAccessor.create(separateBlend, blendDisabled, srcRgb, dstRgb, srcAlpha, dstAlpha, func);
 	}
 }

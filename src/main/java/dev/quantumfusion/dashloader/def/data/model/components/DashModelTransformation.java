@@ -57,11 +57,11 @@ public class DashModelTransformation {
 	}
 
 	@Nullable
-	public static ModelTransformation toUndashOrDefault(@Nullable DashModelTransformation other) {
+	public static ModelTransformation exportOrDefault(@Nullable DashModelTransformation other) {
 		if (other == null)
 			return ModelTransformation.NONE;
 
-		return other.toUndash();
+		return other.export();
 	}
 
 	private DashTransformation createTransformation(Transformation transformation) {
@@ -74,10 +74,10 @@ public class DashModelTransformation {
 	}
 
 	private Transformation unDashTransformation(DashTransformation transformation) {
-		return transformation == null ? Transformation.IDENTITY : transformation.toUndash();
+		return transformation == null ? Transformation.IDENTITY : transformation.export();
 	}
 
-	public ModelTransformation toUndash() {
+	public ModelTransformation export() {
 		return new ModelTransformation(
 				unDashTransformation(thirdPersonLeftHand),
 				unDashTransformation(thirdPersonRightHand),

@@ -1,11 +1,11 @@
 package dev.quantumfusion.dashloader.def.mixin.feature.misc;
 
+import dev.quantumfusion.dashloader.def.DashLoader;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import dev.quantumfusion.dashloader.def.DashLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

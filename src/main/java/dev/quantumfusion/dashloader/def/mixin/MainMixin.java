@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.mixin;
 
-import net.minecraft.client.main.Main;
 import dev.quantumfusion.dashloader.def.DashLoader;
+import net.minecraft.client.main.Main;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,6 +14,5 @@ public class MainMixin {
 			at = @At(value = "HEAD"), cancellable = true)
 	private static void main(String[] args, CallbackInfo ci) {
 		DashLoader loader = new DashLoader(Thread.currentThread().getContextClassLoader());
-		loader.initialize();
 	}
 }

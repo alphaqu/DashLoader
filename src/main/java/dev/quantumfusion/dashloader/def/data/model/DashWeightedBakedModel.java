@@ -1,31 +1,39 @@
 package dev.quantumfusion.dashloader.def.data.model;
 
+import dev.quantumfusion.dashloader.core.api.annotation.DashDependencies;
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
 import dev.quantumfusion.dashloader.def.data.model.components.DashWeightedModelEntry;
 import dev.quantumfusion.dashloader.def.mixin.accessor.WeightedBakedModelAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
-import net.minecraft.client.render.model.BasicBakedModel;
-import net.minecraft.client.render.model.BuiltinBakedModel;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.WeightedBakedModel;
-import net.oskarstrom.dashloader.core.annotations.Dependencies;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.util.DashHelper;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
+import net.minecraft.util.collection.Weighted;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @DashObject(WeightedBakedModel.class)
-@Dependencies({BasicBakedModel.class, BuiltinBakedModel.class})
-public record DashWeightedBakedModel(List<DashWeightedModelEntry> models) implements DashModel {
-	public DashWeightedBakedModel(WeightedBakedModel model, DashRegistry registry) {
-		this(DashHelper.convertCollection(
-				((WeightedBakedModelAccessor) model).getModels(),
-				entry -> new DashWeightedModelEntry(entry, registry)));
+@DashDependencies({DashBasicBakedModel.class, DashBuiltinBakedModel.class})
+public final class DashWeightedBakedModel implements DashModel {
+	public final List<DashWeightedModelEntry> models;
+
+	public DashWeightedBakedModel(List<DashWeightedModelEntry> models) {
+		this.models = models;
+	}
+
+	public DashWeightedBakedModel(WeightedBakedModel model, DashRegistryWriter writer) {
+		this.models = new ArrayList<>();
+		for (var weightedModel : ((WeightedBakedModelAccessor) model).getModels())
+			this.models.add(new DashWeightedModelEntry(weightedModel, writer));
 	}
 
 	@Override
-	public WeightedBakedModel toUndash(DashExportHandler handler) {
-		return new WeightedBakedModel(DashHelper.convertCollection(models, entry -> entry.toUndash(handler)));
+	public WeightedBakedModel export(DashRegistryReader reader) {
+		var modelsOut = new ArrayList<Weighted.Present<BakedModel>>();
+		for (DashWeightedModelEntry model : models) modelsOut.add(model.export(reader));
+		return new WeightedBakedModel(modelsOut);
 	}
 }

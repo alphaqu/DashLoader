@@ -26,7 +26,7 @@ public record DashMesh(int[] data, String className) {
 	}
 
 
-	public Mesh toUndash() {
+	public Mesh export() {
 		final Class<?> aClass = ClassHelper.getClass(className);
 		final Mesh mesh = (Mesh) UnsafeHelper.allocateInstance(aClass);
 		try {

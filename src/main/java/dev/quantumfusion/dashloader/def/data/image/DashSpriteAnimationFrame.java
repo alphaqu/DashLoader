@@ -1,10 +1,10 @@
 package dev.quantumfusion.dashloader.def.data.image;
 
+import dev.quantumfusion.dashloader.core.Dashable;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAnimationFrameAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.texture.Sprite;
-import net.oskarstrom.dashloader.core.Dashable;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAnimationFrameAccessor;
 
 @Data
 public class DashSpriteAnimationFrame implements Dashable<Sprite.AnimationFrame> {
@@ -23,7 +23,7 @@ public class DashSpriteAnimationFrame implements Dashable<Sprite.AnimationFrame>
 	}
 
 	@Override
-	public Sprite.AnimationFrame toUndash(DashExportHandler exportHandler) {
+	public Sprite.AnimationFrame export(DashRegistryReader exportHandler) {
 		return SpriteAnimationFrameAccessor.newSpriteFrame(index, time);
 	}
 }

@@ -9,7 +9,7 @@ public record DashVec3f(float x, float y, float z) {
 		this(vector3f.getX(), vector3f.getY(), vector3f.getZ());
 	}
 
-	public Vec3f toUndash() {
+	public Vec3f export() {
 		return new Vec3f(x, y, z);
 	}
 

@@ -1,10 +1,11 @@
 package dev.quantumfusion.dashloader.def.data.blockstate.property;
 
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.def.util.ClassHelper;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.StringIdentifiable;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
-import dev.quantumfusion.dashloader.def.util.ClassHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@Data
 @DashObject(EnumProperty.class)
 public class DashEnumProperty implements DashProperty {
 	public final List<String> values;
@@ -41,7 +43,7 @@ public class DashEnumProperty implements DashProperty {
 	}
 
 	@Override
-	public EnumProperty<?> toUndash(DashExportHandler exportHandler) {
+	public EnumProperty<?> export(DashRegistryReader exportHandler) {
 		return get();
 	}
 

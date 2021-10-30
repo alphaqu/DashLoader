@@ -1,19 +1,21 @@
 package dev.quantumfusion.dashloader.def.data.model.components;
 
+import dev.quantumfusion.dashloader.core.Dashable;
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashDirectionValue;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.model.BakedQuad;
-import net.oskarstrom.dashloader.core.Dashable;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashDirectionValue;
 
 @Data
+@DashObject(BakedQuad.class)
 public record DashBakedQuad(int[] vertexData, int colorIndex, DashDirectionValue face, boolean shade, int sprite) implements Dashable<BakedQuad> {
-	public DashBakedQuad(BakedQuad bakedQuad, DashRegistry registry) {
-		this(bakedQuad.getVertexData(), bakedQuad.getColorIndex(), new DashDirectionValue(bakedQuad.getFace()), bakedQuad.hasShade(), registry.add(bakedQuad.getSprite()));
+	public DashBakedQuad(BakedQuad bakedQuad, DashRegistryWriter writer) {
+		this(bakedQuad.getVertexData(), bakedQuad.getColorIndex(), new DashDirectionValue(bakedQuad.getFace()), bakedQuad.hasShade(), writer.add(bakedQuad.getSprite()));
 	}
 
-	public BakedQuad toUndash(DashExportHandler handler) {
-		return new BakedQuad(vertexData, colorIndex, face.toUndash(handler), handler.get(sprite), shade);
+	public BakedQuad export(DashRegistryReader handler) {
+		return new BakedQuad(vertexData, colorIndex, face.export(handler), handler.get(sprite), shade);
 	}
 }

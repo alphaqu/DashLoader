@@ -1,9 +1,9 @@
 package dev.quantumfusion.dashloader.def.data.blockstate.property;
 
+import dev.quantumfusion.dashloader.core.Dashable;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import net.minecraft.state.property.Property;
-import net.oskarstrom.dashloader.core.Dashable;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 
 public interface DashProperty extends Dashable<Property<?>> {
-	Property<?> toUndash(DashExportHandler exportHandler);
+	Property<?> export(DashRegistryReader exportHandler);
 }

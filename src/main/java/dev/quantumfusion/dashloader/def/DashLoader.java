@@ -1,38 +1,40 @@
 package dev.quantumfusion.dashloader.def;
 
-import dev.quantumfusion.dashloader.def.data.dataobject.*;
-import dev.quantumfusion.dashloader.def.util.enums.DashCachePaths;
-import net.fabricmc.api.ModInitializer;
+import dev.quantumfusion.dashloader.core.DashLoaderCore;
+import dev.quantumfusion.dashloader.core.registry.ChunkDataHolder;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.def.api.DashLoaderAPI;
+import dev.quantumfusion.dashloader.def.data.DashIdentifierInterface;
+import dev.quantumfusion.dashloader.def.data.VanillaData;
+import dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState;
+import dev.quantumfusion.dashloader.def.data.blockstate.property.DashProperty;
+import dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashPropertyValue;
+import dev.quantumfusion.dashloader.def.data.dataobject.ImageData;
+import dev.quantumfusion.dashloader.def.data.dataobject.MappingData;
+import dev.quantumfusion.dashloader.def.data.dataobject.ModelData;
+import dev.quantumfusion.dashloader.def.data.dataobject.RegistryData;
+import dev.quantumfusion.dashloader.def.data.font.DashFont;
+import dev.quantumfusion.dashloader.def.data.image.DashImage;
+import dev.quantumfusion.dashloader.def.data.image.DashSprite;
+import dev.quantumfusion.dashloader.def.data.image.shader.DashShader;
+import dev.quantumfusion.dashloader.def.data.model.DashModel;
+import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
+import dev.quantumfusion.dashloader.def.data.model.predicates.DashPredicate;
+import dev.quantumfusion.hyphen.SerializerFactory;
+import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.text.Text;
-import net.oskarstrom.dashloader.core.DashLoaderFactory;
-import net.oskarstrom.dashloader.core.ThreadManager;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.registry.DashRegistryBuilder;
-import net.oskarstrom.dashloader.core.registry.Pointer;
-import net.oskarstrom.dashloader.core.serializer.DashSerializer;
-import net.oskarstrom.dashloader.core.serializer.DashSerializerManager;
-import net.oskarstrom.dashloader.core.util.ClassLoaderHelper;
-import dev.quantumfusion.dashloader.def.api.DashLoaderAPI;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
-import net.oskarstrom.dashloader.def.data.dataobject.*;
-import net.oskarstrom.dashloader.def.registry.PropertyValueRegistryStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class DashLoader implements ModInitializer {
+public class DashLoader {
 	public static final Logger LOGGER = LogManager.getLogger("DashLoader");
 	public static final String VERSION = FabricLoader.getInstance()
 			.getModContainer("dashloader")
@@ -49,15 +51,42 @@ public class DashLoader implements ModInitializer {
 	private final DashLoaderAPI api;
 	private Status status;
 	private MappingData mappings;
-	private DashSerializerManager serializerManager;
 	private DashMetadata metadata;
-	private DashLoaderCo metadata;
+	private DashLoaderCore core;
 
 	public DashLoader(ClassLoader classLoader) {
-		instance = this;
-		this.api = new DashLoaderAPI(this);
-		ClassLoaderHelper.accessor = new ClassLoaderHelper.Accessor(classLoader);
-		LOGGER.info("Created DashLoader with {} classloader.", classLoader.getClass().getSimpleName());
+		try {
+			LOGGER.info("Initializing DashLoader " + VERSION + ".");
+			instance = this;
+			final FabricLoader instance = FabricLoader.getInstance();
+
+			this.api = new DashLoaderAPI(this);
+			api.initAPI();
+
+			metadata = new DashMetadata();
+			metadata.setModHash(instance);
+			this.core = new DashLoaderCore(MAIN_PATH.resolve("mods-" + metadata.modInfo + "/"), api.dashObjects.toArray(Class[]::new));
+			if (instance.isDevelopmentEnvironment()) {
+				LOGGER.warn("DashLoader launched in dev.");
+			}
+			core.setCurrentSubcache("null");
+
+			core.prepareSerializer(RegistryData.class, DashBlockState.class, DashFont.class, DashIdentifierInterface.class, DashProperty.class, DashPropertyValue.class, DashSprite.class, DashPredicate.class, DashBakedQuad.class);
+			core.prepareSerializer(ImageData.class, DashImage.class);
+			core.prepareSerializer(ModelData.class, DashModel.class);
+			core.prepareSerializer(MappingData.class);
+
+			LOGGER.info("Created DashLoader with {} classloader.", classLoader.getClass().getSimpleName());
+			LOGGER.info("Initialized DashLoader");
+
+			final SerializerFactory<ByteBufferIO, DashShader> factory = SerializerFactory.createDebug(ByteBufferIO.class, DashShader.class);
+			factory.setExportPath(Path.of("./ForFucksSake.class"));
+			factory.setClassName("ForFucksSake");
+			factory.build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("mc exception bad");
+		}
 	}
 
 	public static Path getMainPath() {
@@ -72,14 +101,6 @@ public class DashLoader implements ModInitializer {
 		return VANILLA_DATA;
 	}
 
-	private static <O> O deserialize(DashSerializer<O> serializer, DashCachePaths path) {
-		try {
-			return serializer.deserialize(path.getFileName(true));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public MappingData getMappings() {
 		return mappings;
 	}
@@ -92,100 +113,59 @@ public class DashLoader implements ModInitializer {
 		shouldReload = true;
 	}
 
-	public void initialize() {
-		LOGGER.info("Initializing DashLoader " + VERSION + ".");
-		final FabricLoader instance = FabricLoader.getInstance();
-		if (instance.isDevelopmentEnvironment()) {
-			LOGGER.warn("DashLoader launched in dev.");
-		}
-		metadata = new DashMetadata();
-		metadata.setModHash(instance);
-		serializerManager = DashLoaderFactory.createSerializationManager(getModBoundDir());
-		ThreadManager.init();
-		LOGGER.info("Initialized DashLoader");
-	}
-
 	public void reload(Collection<String> resourcePacks) {
 		if (shouldReload) {
 			metadata.setResourcePackHash(resourcePacks);
+			core.setCurrentSubcache(metadata.resourcePacks);
 			LOGGER.info("Reloading DashLoader. [mod-hash: {}] [resource-hash: {}]", metadata.modInfo, metadata.resourcePacks);
-			if (Arrays.stream(DashCachePaths.values()).allMatch(dashCachePaths -> Files.exists(getResourcePackBoundDir().resolve(dashCachePaths.getFileName(true))))) {
-				loadDashCache();
-			} else {
-				status = Status.EMPTY;
-			}
+			if (core.isCacheMissing()) status = Status.EMPTY;
+			else loadDashCache();
 			LOGGER.info("Reloaded DashLoader");
 			shouldReload = false;
 		}
 	}
 
 	public void saveDashCache() {
-		DashRegistry registry = DashRegistryBuilder.create().build();
-		DashRegistry registry = new DashRegistry((o, registri) -> {
-			if (o instanceof Enum<?> enumObject) {
-				final byte storagePointer = api.storageMappings.getByte(DashDataType.PROPERTY_VALUE);
-				return Pointer.parsePointer(((PropertyValueRegistryStorage) registri.getStorage(storagePointer)).add(enumObject), storagePointer);
-			}
-			return null;
-		});
-		api.initAPI(registry);
-
-
+		LOGGER.info("Creating writer");
+		DashRegistryWriter writer = core.createWriter();
+		LOGGER.info("Creating Mapped data");
 		MappingData mappings = new MappingData();
-		mappings.loadVanillaData(VANILLA_DATA, registry, TASK_HANDLER);
-
-
-		try {
-			DashSerializers.REGISTRY_SERIALIZER.serialize(new RegistryData(registry));
-			DashSerializers.IMAGE_SERIALIZER.serialize(new ImageData(registry));
-			DashSerializers.MODEL_SERIALIZER.serialize(new ModelData(registry));
-			DashSerializers.MAPPING_SERIALIZER.serialize(mappings);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		LOGGER.info("Writing vanilla data");
+		mappings.writeVanillaData(VANILLA_DATA, writer, TASK_HANDLER);
+		LOGGER.info("Saving registry data");
+		core.save(new RegistryData(writer));
+		LOGGER.info("Saving image data");
+		core.save(new ImageData(writer));
+		LOGGER.info("Saving model data");
+		core.save(new ModelData(writer));
+		LOGGER.info("Saving mapping data");
+		core.save(mappings);
 		TASK_HANDLER.setCurrentTask("Caching is now complete.");
 		LOGGER.info("Created cache in " + "TODO" + "s");
-
 	}
 
 	public void loadDashCache() {
+		core.setCurrentSubcache(metadata.resourcePacks);
 		LOGGER.info("Starting DashLoader Deserialization");
 		try {
-			DashSerializers.initSerializers();
-			AtomicReference<MappingData> mappingsReference = new AtomicReference<>();
-			List<RegistryDataObject> registryDataObjects = new ArrayList<>();
 
-			ThreadManager.executeRunnables(
-					() -> registryDataObjects.add(deserialize(DashSerializers.REGISTRY_SERIALIZER, DashCachePaths.REGISTRY_CACHE)),
-					() -> registryDataObjects.add(deserialize(DashSerializers.MODEL_SERIALIZER, DashCachePaths.REGISTRY_MODEL_CACHE)),
-					() -> registryDataObjects.add(deserialize(DashSerializers.IMAGE_SERIALIZER, DashCachePaths.REGISTRY_IMAGE_CACHE)),
-					() -> mappingsReference.set(deserialize(DashSerializers.MAPPING_SERIALIZER, DashCachePaths.MAPPINGS_CACHE))
-			);
+			AtomicReference<MappingData> mappingsReference = new AtomicReference<>();
+			ChunkDataHolder[] registryDataObjects = new ChunkDataHolder[3];
+
+
+			registryDataObjects[0] = (core.load(RegistryData.class));
+			registryDataObjects[1] = (core.load(ImageData.class));
+			registryDataObjects[2] = (core.load(ModelData.class));
+			mappingsReference.set(core.load(MappingData.class));
+
 			mappings = mappingsReference.get();
 			assert mappings != null;
 
 			LOGGER.info("      Creating Registry");
-			//get the total amount of registrystorages
-			int size = 0;
-			for (RegistryDataObject registryDataObject : registryDataObjects)
-				size += registryDataObject.getSize();
-
-			System.out.println(size);
-			//create the registry
-			DashExportHandler handler = DashLoaderFactory.createExportHandler(size);
-
-			//add the storages
-			for (RegistryDataObject registryDataObject : registryDataObjects)
-				registryDataObject.dumpData(handler);
-
-
-			LOGGER.info("      Loading Registry");
-			handler.export();
-
+			final DashRegistryReader reader = core.createReader(registryDataObjects);
 
 			LOGGER.info("      Loading Mappings");
-			mappings.toUndash(handler, VANILLA_DATA);
+			mappings.export(reader, VANILLA_DATA);
 
 
 			LOGGER.info("    Loaded DashLoader");
@@ -194,42 +174,9 @@ public class DashLoader implements ModInitializer {
 			LOGGER.error("DashLoader has devolved to CrashLoader???", e);
 			status = Status.CRASHLOADER;
 			if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
-				try {
-					Files.deleteIfExists(getModBoundDir());
-				} catch (IOException ioException) {
-					ioException.printStackTrace();
-				}
+				// TODO REMOVE FILES IF IT CRASHED
 			}
 		}
-	}
-
-	public Path getModBoundDir() {
-		try {
-			final Path resolve = DashLoader.getMainPath().resolve("mods-" + metadata.modInfo + "/");
-			return Files.createDirectories(resolve);
-		} catch (IOException e) {
-			LOGGER.error("Could not create ModBoundDir: ", e);
-		}
-		throw new IllegalStateException();
-	}
-
-	public Path getResourcePackBoundDir() {
-		try {
-			final Path resolve = getModBoundDir().resolve("resourcepacks-" + metadata.resourcePacks + "/");
-			return Files.createDirectories(resolve);
-		} catch (IOException e) {
-			LOGGER.error("Could not create ResourcePackBoundDir: ", e);
-		}
-		throw new IllegalStateException();
-	}
-
-	@Override
-	public void onInitialize() {
-		//TODO timing
-	}
-
-	public DashSerializerManager getSerializerManager() {
-		return serializerManager;
 	}
 
 	public Status getStatus() {

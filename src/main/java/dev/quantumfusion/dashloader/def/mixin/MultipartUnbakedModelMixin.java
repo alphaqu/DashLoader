@@ -1,5 +1,8 @@
 package dev.quantumfusion.dashloader.def.mixin;
 
+import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.def.mixin.accessor.MultipartModelComponentAccessor;
+import dev.quantumfusion.dashloader.def.util.mixins.MixinThings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.*;
@@ -9,9 +12,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
-import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.mixin.accessor.MultipartModelComponentAccessor;
-import dev.quantumfusion.dashloader.def.util.mixins.MixinThings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

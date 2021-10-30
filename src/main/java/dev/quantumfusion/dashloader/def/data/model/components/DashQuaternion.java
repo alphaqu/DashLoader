@@ -9,7 +9,7 @@ public record DashQuaternion(float x, float y, float z, float w) {
 		this(quaternion.getX(), quaternion.getY(), quaternion.getZ(), quaternion.getW());
 	}
 
-	public Quaternion toUndash() {
+	public Quaternion export() {
 		return new Quaternion(x, y, z, w);
 	}
 }

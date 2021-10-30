@@ -16,9 +16,7 @@
 	"license" : "LGPL-3.0-only",
 	"icon" : "assets/dashloader/def/textures/icon.png",
 	"environment" : "*",
-	"entrypoints" : {
-
-	},
+	"accessWidener" : "dashloader.accesswidener",
 	"mixins" : [
 		"dashloader.mixins.json"
 	],
@@ -26,6 +24,44 @@
 		"fabricloader" : ">=0.11.3",
 		"minecraft" : "1.17.x",
 		"java" : ">=16"
+	},
+	"custom": {
+		"dashloader:customobject" : [
+			"dev.quantumfusion.dashloader.def.data.DashIdentifier",
+			"dev.quantumfusion.dashloader.def.data.DashModelIdentifier",
+
+			"dev.quantumfusion.dashloader.def.data.model.DashBasicBakedModel",
+			"dev.quantumfusion.dashloader.def.data.model.DashBuiltinBakedModel",
+			"dev.quantumfusion.dashloader.def.data.model.DashMultipartBakedModel",
+			"dev.quantumfusion.dashloader.def.data.model.DashWeightedBakedModel",
+
+			"dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad",
+
+			"dev.quantumfusion.dashloader.def.data.model.predicates.DashAndPredicate",
+			"dev.quantumfusion.dashloader.def.data.model.predicates.DashOrPredicate",
+			"dev.quantumfusion.dashloader.def.data.model.predicates.DashSimplePredicate",
+			"dev.quantumfusion.dashloader.def.data.model.predicates.DashStaticPredicate",
+
+			"dev.quantumfusion.dashloader.def.data.image.DashImage",
+			"dev.quantumfusion.dashloader.def.data.image.DashSpriteImpl",
+			"dev.quantumfusion.dashloader.def.data.image.DashMissingSprite",
+
+
+			"dev.quantumfusion.dashloader.def.data.font.DashBitmapFont",
+			"dev.quantumfusion.dashloader.def.data.font.DashBlankFont",
+			"dev.quantumfusion.dashloader.def.data.font.DashTrueTypeFont",
+			"dev.quantumfusion.dashloader.def.data.font.DashUnicodeFont",
+
+			"dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState",
+			"dev.quantumfusion.dashloader.def.data.blockstate.property.DashBooleanProperty",
+			"dev.quantumfusion.dashloader.def.data.blockstate.property.DashDirectionProperty",
+			"dev.quantumfusion.dashloader.def.data.blockstate.property.DashEnumProperty",
+			"dev.quantumfusion.dashloader.def.data.blockstate.property.DashIntProperty",
+			"dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashBooleanValue",
+			"dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashDirectionValue",
+			"dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashEnumValue",
+			"dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashIntValue"
+		]
 	},
 	"breaks" : {
 		"connected_block_textures" : "*",

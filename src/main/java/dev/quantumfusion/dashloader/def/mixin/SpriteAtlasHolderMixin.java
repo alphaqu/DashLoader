@@ -1,11 +1,11 @@
 package dev.quantumfusion.dashloader.def.mixin;
 
+import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.def.data.dataobject.MappingData;
 import net.minecraft.client.texture.SpriteAtlasHolder;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.profiler.Profiler;
-import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.data.dataobject.MappingData;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;

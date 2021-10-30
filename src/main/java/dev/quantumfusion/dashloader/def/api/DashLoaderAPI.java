@@ -1,32 +1,28 @@
 package dev.quantumfusion.dashloader.def.api;
 
+import dev.quantumfusion.dashloader.core.Dashable;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.DashSerializers;
-import it.unimi.dsi.fastutil.objects.*;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.oskarstrom.dashloader.core.Dashable;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.registry.DashRegistryBuilder;
-import net.oskarstrom.dashloader.core.util.ClassLoaderHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class DashLoaderAPI {
 	public static final Logger LOGGER = LogManager.getLogger();
-	public final DashObjectMap<?, ?> dashObjects;
+	public final List<Class<? extends Dashable<?>>> dashObjects;
 	private boolean initialized = false;
 	private boolean failed = false;
 
 	public DashLoaderAPI(DashLoader manager) {
-		this.dashObjects = new DashObjectMap<>(new Object2ObjectOpenHashMap<>());
+		this.dashObjects = Collections.synchronizedList(new ArrayList<>());
 	}
 
 
@@ -41,13 +37,12 @@ public class DashLoaderAPI {
 			failed = true;
 			return;
 		}
-		dashObjects.add();
-
-
+		LOGGER.info("Added " + dashClass.getSimpleName());
+		dashObjects.add(dashClass);
 	}
 
 
-	public void initAPI(DashRegistry registry) {
+	public void initAPI() {
 		if (!initialized) {
 			Instant start = Instant.now();
 			clearAPI();
@@ -60,20 +55,10 @@ public class DashLoaderAPI {
 
 			if (failed)
 				throw new RuntimeException("Failed to initialize the API");
-			DashSerializers.initSerializers();
 
 			LOGGER.info("[" + Duration.between(start, Instant.now()).toMillis() + "ms] Initialized api.");
 			initialized = true;
 		}
-	}
-
-	public DashRegistry createRegistry() {
-		ClassLoaderHelper.init();
-		final DashRegistryBuilder factory = DashRegistryBuilder.create();
-		// Add dash objects
-		dashObjects.forEach((dashDataType, mappingMap) -> factory.withDashObjects(mappingMap.values().toArray(Class[]::new)));
-		final DashRegistry registry = factory.build();
-
 	}
 
 
@@ -92,39 +77,4 @@ public class DashLoaderAPI {
 			}
 		}
 	}
-
-	public static class DashObjectMap<T, D extends Dashable<T>> extends AbstractObject2ObjectMap<Class<? extends T>, List<Class<? extends D>>> {
-		private final Object2ObjectMap<Class<? extends T>, List<Class<? extends D>>> delegate;
-
-		private DashObjectMap(Object2ObjectMap<Class<? extends T>, List<Class<? extends D>>> delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public int size() {
-			return delegate.size();
-		}
-
-		@Override
-		public ObjectSet<Entry<Class<? extends T>, List<Class<? extends D>>>> object2ObjectEntrySet() {
-			return delegate.object2ObjectEntrySet();
-		}
-
-
-		@Override
-		public List<Class<? extends D>> get(Object key) {
-			return delegate.get(key);
-		}
-
-		@Override
-		public List<Class<? extends D>> put(Class<? extends T> key, List<Class<? extends D>> value) {
-			return delegate.put(key, value);
-		}
-
-		public void add(Class<? extends T> key, Class<? extends D> value) {
-			delegate.computeIfAbsent(key, (c) -> new ArrayList<>()).add(value);
-		}
-	}
-
-
 }

@@ -1,18 +1,20 @@
 package dev.quantumfusion.dashloader.def.data.blockstate.property.value;
 
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.def.util.ClassHelper;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 
-@DashObject(Enum.class)
+@Data
+@DashObject(EnumValueWrapped.class)
 public record DashEnumValue(String value, String enumClass) implements DashPropertyValue {
 
-	public DashEnumValue(Enum<?> enuum) {
-		this(enuum.name(), enuum.getDeclaringClass().getName());
+	public DashEnumValue(EnumValueWrapped enuum) {
+		this(enuum.e().name(), enuum.e().getDeclaringClass().getName());
 	}
 
 	@Override
-	public Enum<?> toUndash(DashExportHandler exportHandler) {
+	public Enum<?> export(DashRegistryReader exportHandler) {
 		return get();
 	}
 

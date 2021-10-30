@@ -1,11 +1,14 @@
 package dev.quantumfusion.dashloader.def.data.image.shader;
 
-import dev.quantumfusion.hyphen.scan.annotations.Data;
-import net.minecraft.client.gl.GlShader;
-import net.minecraft.client.gl.GlUniform;
+import dev.quantumfusion.dashloader.core.util.DashUtil;
 import dev.quantumfusion.dashloader.def.mixin.accessor.GlUniformAccessor;
 import dev.quantumfusion.dashloader.def.util.IOHelper;
 import dev.quantumfusion.dashloader.def.util.UnsafeHelper;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
+import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import net.minecraft.client.gl.GlShader;
+import net.minecraft.client.gl.GlUniform;
+import org.apache.commons.io.IOUtils;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -16,16 +19,14 @@ import java.util.List;
 public class DashGlUniform {
 	public final int count;
 	public final int dataType;
+	@DataNullable
 	public final int[] intData;
+	@DataNullable
 	public final float[] floatData;
 	public final String name;
 
 
-	public DashGlUniform(int count,
-						 int dataType,
-						 int[] intData,
-						 float[] floatData,
-						 String name) {
+	public DashGlUniform(int count, int dataType, int[] intData, float[] floatData, String name) {
 		this.count = count;
 		this.dataType = dataType;
 		this.intData = intData;
@@ -36,48 +37,19 @@ public class DashGlUniform {
 	public DashGlUniform(GlUniform glUniform) {
 		this.count = glUniform.getCount();
 		this.dataType = glUniform.getDataType();
-		final IntBuffer intData = glUniform.getIntData();
-		if (intData != null) {
-			this.intData = IOHelper.toArray(intData, count);
-		} else {
-			this.intData = new int[0];
-		}
-
-		final FloatBuffer floatData = glUniform.getFloatData();
-		if (floatData != null) {
-			this.floatData = IOHelper.toArray(floatData, count);
-		} else {
-			this.floatData = new float[0];
-		}
-
+		this.intData = DashUtil.nullable(glUniform.getIntData(), IOHelper::toArray);
+		this.floatData = DashUtil.nullable(glUniform.getFloatData(), IOHelper::toArray);
 		this.name = glUniform.getName();
 	}
 
-	public GlUniform toUndash(GlShader shader, List<GlUniform> uniforms) {
+	public GlUniform export(GlShader shader, List<GlUniform> uniforms) {
 		final GlUniform glUniform = UnsafeHelper.allocateInstance(GlUniform.class);
 		GlUniformAccessor glUniformAccess = (GlUniformAccessor) glUniform;
 		glUniformAccess.setCount(this.count);
 		glUniformAccess.setDataType(this.dataType);
 		glUniformAccess.setProgram(shader);
-
-		if (floatData.length == 0) {
-			glUniformAccess.setFloatData(null);
-		} else {
-			final FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(count);
-			floatBuffer.put(floatData);
-			floatBuffer.flip();
-			glUniformAccess.setFloatData(floatBuffer);
-		}
-
-		if (intData.length == 0) {
-			glUniformAccess.setIntData(null);
-		} else {
-			final IntBuffer intBuffer = MemoryUtil.memAllocInt(count);
-			intBuffer.put(intData);
-			intBuffer.flip();
-			glUniformAccess.setIntData(intBuffer);
-		}
-
+		glUniformAccess.setIntData(DashUtil.nullable(intData, IOHelper::fromArray));
+		glUniformAccess.setFloatData(DashUtil.nullable(floatData, IOHelper::fromArray));
 		glUniformAccess.setName(this.name);
 		uniforms.add(glUniform);
 		return glUniform;

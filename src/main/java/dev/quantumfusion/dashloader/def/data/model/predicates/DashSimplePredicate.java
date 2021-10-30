@@ -1,18 +1,19 @@
 package dev.quantumfusion.dashloader.def.data.model.predicates;
 
 import com.google.common.base.Splitter;
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.common.IntIntList;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashPropertyValueManager;
+import dev.quantumfusion.dashloader.def.mixin.accessor.SimpleMultipartModelSelectorAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
-import net.oskarstrom.dashloader.core.data.IntIntList;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import dev.quantumfusion.dashloader.def.DashLoader;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
-import dev.quantumfusion.dashloader.def.mixin.accessor.SimpleMultipartModelSelectorAccessor;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class DashSimplePredicate implements DashPredicate {
 	}
 
 
-	public DashSimplePredicate(SimpleMultipartModelSelector simpleMultipartModelSelector, DashRegistry registry) {
+	public DashSimplePredicate(SimpleMultipartModelSelector simpleMultipartModelSelector, DashRegistryWriter writer) {
 		//TODO statemanager
 		StateManager<Block, BlockState> stateManager = DashLoader.getVanillaData().stateManagers.get(simpleMultipartModelSelector);
 		SimpleMultipartModelSelectorAccessor access = ((SimpleMultipartModelSelectorAccessor) simpleMultipartModelSelector);
@@ -51,27 +52,27 @@ public class DashSimplePredicate implements DashPredicate {
 		}
 		List<String> list = VALUE_SPLITTER.splitToList(string);
 		if (list.size() == 1) {
-			Pair<Integer, Integer> predicateProperty = createPredicateInfo(stateManager, stateManagerProperty, string, registry);
+			Pair<Integer, Integer> predicateProperty = createPredicateInfo(stateManager, stateManagerProperty, string, writer);
 			properties.put(predicateProperty.getLeft(), predicateProperty.getRight());
 		} else {
-			List<Pair<Integer, Integer>> predicateProperties = list.stream().map((stringx) -> createPredicateInfo(stateManager, stateManagerProperty, stringx, registry)).collect(Collectors.toList());
+			List<Pair<Integer, Integer>> predicateProperties = list.stream().map((stringx) -> createPredicateInfo(stateManager, stateManagerProperty, stringx, writer)).collect(Collectors.toList());
 			predicateProperties.forEach(pair -> properties.put(pair.getLeft(), pair.getRight()));
 		}
 
 	}
 
 
-	private Pair<Integer, Integer> createPredicateInfo(StateManager<Block, BlockState> stateFactory, Property<?> property, String valueString, DashRegistry registry) {
+	private Pair<Integer, Integer> createPredicateInfo(StateManager<Block, BlockState> stateFactory, Property<?> property, String valueString, DashRegistryWriter writer) {
 		Optional<?> optional = property.parse(valueString);
 		if (optional.isEmpty()) {
 			throw new RuntimeException(String.format("Unknown value '%s' '%s'", valueString, stateFactory.getOwner().toString()));
 		} else {
-			return Pair.of(registry.add(property), registry.add((Comparable<?>) optional.get()));
+			return Pair.of(writer.add(property), writer.add(DashPropertyValueManager.prepare((Comparable<?>) optional.get())));
 		}
 	}
 
 	@Override
-	public Predicate<BlockState> toUndash(DashExportHandler handler) {
+	public Predicate<BlockState> export(DashRegistryReader handler) {
 		List<Map.Entry<? extends Property<?>, ? extends Comparable<?>>> out = new ArrayList<>();
 		properties.forEach((key, value) -> out.add(Pair.of(handler.get(key), handler.get(value))));
 		Predicate<BlockState> outPredicate;

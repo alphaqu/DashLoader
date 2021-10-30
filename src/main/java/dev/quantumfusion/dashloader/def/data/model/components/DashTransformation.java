@@ -9,7 +9,7 @@ public record DashTransformation(DashVec3f rotation, DashVec3f translation, Dash
 		this(new DashVec3f(transformation.rotation), new DashVec3f(transformation.translation), new DashVec3f(transformation.scale));
 	}
 
-	public Transformation toUndash() {
-		return new Transformation(rotation.toUndash(), translation.toUndash(), scale.toUndash());
+	public Transformation export() {
+		return new Transformation(rotation.export(), translation.export(), scale.export());
 	}
 }

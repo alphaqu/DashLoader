@@ -1,12 +1,12 @@
 package dev.quantumfusion.dashloader.def.data.model.components;
 
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.def.mixin.accessor.ModelOverrideListAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.util.DashHelper;
-import dev.quantumfusion.dashloader.def.mixin.accessor.ModelOverrideListAccessor;
+
 @Data
 public class DashModelOverrideList {
 	public final DashModelOverrideListBakedOverride[] overrides;
@@ -19,26 +19,36 @@ public class DashModelOverrideList {
 		this.conditionTypes = conditionTypes;
 	}
 
-	public DashModelOverrideList(ModelOverrideList modelOverrideList, DashRegistry registry) {
+	public DashModelOverrideList(ModelOverrideList modelOverrideList, DashRegistryWriter writer) {
 		final ModelOverrideList.BakedOverride[] overrides = ((ModelOverrideListAccessor) modelOverrideList).getOverrides();
 		final Identifier[] conditionTypes = ((ModelOverrideListAccessor) modelOverrideList).getConditionTypes();
 
-		this.overrides = DashHelper.convertArrays(overrides, DashModelOverrideListBakedOverride[]::new, bakedOverride -> new DashModelOverrideListBakedOverride(bakedOverride, registry));
-		this.conditionTypes = DashHelper.convertArrays(conditionTypes, Integer[]::new, registry::add);
+		this.overrides = new DashModelOverrideListBakedOverride[overrides.length];
+		this.conditionTypes = new Integer[conditionTypes.length];
 
+		for (int i = 0; i < overrides.length; i++)
+			this.overrides[i] = new DashModelOverrideListBakedOverride(overrides[i], writer);
+
+		for (int i = 0; i < conditionTypes.length; i++)
+			this.conditionTypes[i] = writer.add(conditionTypes[i]);
 	}
 
-	public ModelOverrideList toUndash(DashExportHandler handler) {
+	public ModelOverrideList export(DashRegistryReader reader) {
 		toApply = ModelOverrideListAccessor.newModelOverrideList();
 
-		final Identifier[] identifiers = DashHelper.convertArrays(conditionTypes, Identifier[]::new, handler::get);
-		((ModelOverrideListAccessor) toApply).setConditionTypes(identifiers);
+		var conditionTypesOut = new Identifier[conditionTypes.length];
+		for (int i = 0; i < conditionTypes.length; i++)
+			conditionTypesOut[i] = reader.get(conditionTypes[i]);
 
+		((ModelOverrideListAccessor) toApply).setConditionTypes(conditionTypesOut);
 		return toApply;
 	}
 
-	public void applyOverrides(DashExportHandler registry) {
-		ModelOverrideList.BakedOverride[] bakedOverrides = DashHelper.convertArrays(this.overrides, ModelOverrideList.BakedOverride[]::new, override -> override.toUndash(registry));
-		((ModelOverrideListAccessor) toApply).setOverrides(bakedOverrides);
+	public void applyOverrides(DashRegistryReader reader) {
+		var overridesOut = new ModelOverrideList.BakedOverride[overrides.length];
+		for (int i = 0; i < overrides.length; i++)
+			overridesOut[i] = this.overrides[i].export(reader);
+
+		((ModelOverrideListAccessor) toApply).setOverrides(overridesOut);
 	}
 }

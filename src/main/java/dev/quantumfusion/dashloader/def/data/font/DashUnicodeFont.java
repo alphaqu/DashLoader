@@ -1,22 +1,22 @@
 package dev.quantumfusion.dashloader.def.data.font;
 
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.common.IntIntList;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
 import dev.quantumfusion.dashloader.def.mixin.accessor.UnicodeTextureFontAccessor;
 import dev.quantumfusion.dashloader.def.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.font.UnicodeTextureFont;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.core.data.IntIntList;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
-@DashObject(value = UnicodeTextureFont.class)
+@DashObject(UnicodeTextureFont.class)
 public class DashUnicodeFont implements DashFont {
 	public final IntIntList images;
 	public final byte[] sizes;
@@ -28,16 +28,16 @@ public class DashUnicodeFont implements DashFont {
 		this.template = template;
 	}
 
-	public DashUnicodeFont(UnicodeTextureFont rawFont, DashRegistry registry) {
+	public DashUnicodeFont(UnicodeTextureFont rawFont, DashRegistryWriter writer) {
 		images = new IntIntList(new ArrayList<>());
 		UnicodeTextureFontAccessor font = ((UnicodeTextureFontAccessor) rawFont);
-		font.getImages().forEach((identifier, nativeImage) -> images.put(registry.add(identifier), registry.add(nativeImage)));
+		font.getImages().forEach((identifier, nativeImage) -> images.put(writer.add(identifier), writer.add(nativeImage)));
 		this.sizes = font.getSizes();
 		this.template = font.getTemplate();
 	}
 
 
-	public UnicodeTextureFont toUndash(DashExportHandler handler) {
+	public UnicodeTextureFont export(DashRegistryReader handler) {
 		Map<Identifier, NativeImage> out = new HashMap<>(images.list().size());
 		images.forEach((key, value) -> out.put(handler.get(key), handler.get(value)));
 		UnicodeTextureFont font = UnsafeHelper.allocateInstance(UnicodeTextureFont.class);

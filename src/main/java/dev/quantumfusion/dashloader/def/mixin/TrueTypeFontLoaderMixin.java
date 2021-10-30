@@ -1,10 +1,10 @@
 package dev.quantumfusion.dashloader.def.mixin;
 
+import dev.quantumfusion.dashloader.def.DashLoader;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.TrueTypeFontLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import dev.quantumfusion.dashloader.def.DashLoader;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

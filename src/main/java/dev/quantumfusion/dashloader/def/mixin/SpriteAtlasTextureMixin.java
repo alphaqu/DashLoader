@@ -1,8 +1,8 @@
 package dev.quantumfusion.dashloader.def.mixin;
 
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

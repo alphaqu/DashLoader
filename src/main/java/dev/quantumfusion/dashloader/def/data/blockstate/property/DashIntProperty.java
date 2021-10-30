@@ -1,9 +1,11 @@
 package dev.quantumfusion.dashloader.def.data.blockstate.property;
 
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.state.property.IntProperty;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
 
+@Data
 @DashObject(IntProperty.class)
 public record DashIntProperty(String name, int lowest, int highest) implements DashProperty {
 
@@ -23,7 +25,7 @@ public record DashIntProperty(String name, int lowest, int highest) implements D
 	}
 
 	@Override
-	public IntProperty toUndash(DashExportHandler exportHandler) {
+	public IntProperty export(DashRegistryReader exportHandler) {
 		return IntProperty.of(name, lowest, highest);
 	}
 }

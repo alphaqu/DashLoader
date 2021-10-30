@@ -1,10 +1,10 @@
 package dev.quantumfusion.dashloader.def.data.font;
 
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
 import dev.quantumfusion.dashloader.def.mixin.accessor.BitmapFontGlyphAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.font.BitmapFont;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
 
 @Data
 public class DashBitmapFontGlyph {
@@ -28,10 +28,10 @@ public class DashBitmapFontGlyph {
 		this.ascent = ascent;
 	}
 
-	public DashBitmapFontGlyph(BitmapFont.BitmapFontGlyph bitmapFontGlyph, DashRegistry registry) {
+	public DashBitmapFontGlyph(BitmapFont.BitmapFontGlyph bitmapFontGlyph, DashRegistryWriter writer) {
 		BitmapFontGlyphAccessor font = ((BitmapFontGlyphAccessor) (Object) bitmapFontGlyph);
 		scaleFactor = font.getScaleFactor();
-		image = registry.add(font.getImage());
+		image = writer.add(font.getImage());
 		x = font.getX();
 		y = font.getY();
 		width = font.getWidth();
@@ -40,7 +40,7 @@ public class DashBitmapFontGlyph {
 		ascent = font.getAscent();
 	}
 
-	public BitmapFont.BitmapFontGlyph toUndash(DashExportHandler handler) {
+	public BitmapFont.BitmapFontGlyph export(DashRegistryReader handler) {
 		return BitmapFontGlyphAccessor.init(scaleFactor, handler.get(image), x, y, width, height, advance, ascent);
 	}
 }

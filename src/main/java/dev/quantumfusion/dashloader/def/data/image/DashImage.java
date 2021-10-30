@@ -1,11 +1,12 @@
 package dev.quantumfusion.dashloader.def.data.image;
 
-import dev.quantumfusion.hyphen.scan.annotations.Data;
-import net.minecraft.client.texture.NativeImage;
-import net.oskarstrom.dashloader.core.Dashable;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import dev.quantumfusion.dashloader.core.Dashable;
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.NativeImageAccessor;
 import dev.quantumfusion.dashloader.def.util.IOHelper;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
+import net.minecraft.client.texture.NativeImage;
 import org.lwjgl.stb.STBIWriteCallback;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageWrite;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 @Data
+@DashObject(NativeImage.class)
 public class DashImage implements Dashable<NativeImage> {
 	public final byte[] image;
 	public final NativeImage.Format format;
@@ -25,6 +27,8 @@ public class DashImage implements Dashable<NativeImage> {
 
 
 	public DashImage(NativeImage nativeImage) {
+
+		int afsd = 1 >>> 3;
 		try {
 			NativeImageAccessor nativeImageAccess = (NativeImageAccessor) (Object) nativeImage;
 			this.format = nativeImage.getFormat();
@@ -38,10 +42,10 @@ public class DashImage implements Dashable<NativeImage> {
 	}
 
 	public DashImage(byte[] image,
-					 NativeImage.Format format,
-					 boolean useSTB,
-					 int width,
-					 int height) {
+			NativeImage.Format format,
+			boolean useSTB,
+			int width,
+			int height) {
 		this.image = image;
 		this.format = format;
 		this.useSTB = useSTB;
@@ -70,7 +74,7 @@ public class DashImage implements Dashable<NativeImage> {
 	 * @return da image
 	 */
 	@Override
-	public final NativeImage toUndash(final DashExportHandler registry) {
+	public final NativeImage export(final DashRegistryReader registry) {
 		final ByteBuffer buf = ByteBuffer.allocateDirect(image.length);
 		buf.put(image);
 		buf.flip();

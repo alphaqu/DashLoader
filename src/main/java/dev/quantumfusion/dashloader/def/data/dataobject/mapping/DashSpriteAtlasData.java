@@ -1,59 +1,49 @@
 package dev.quantumfusion.dashloader.def.data.dataobject.mapping;
 
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
-import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasManagerAccessor;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
-import net.minecraft.client.render.model.SpriteAtlasManager;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.core.data.PairMap;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
+import dev.quantumfusion.dashloader.core.common.ObjectObjectList;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.data.VanillaData;
+import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
+import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasManagerAccessor;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
+import net.minecraft.client.render.model.SpriteAtlasManager;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+@Data
 public class DashSpriteAtlasData {
-	@Serialize(order = 0)
-	public final PairMap<DashSpriteAtlasTexture,Integer> atlases;
+	public final ObjectObjectList<DashSpriteAtlasTexture, Integer> atlases;
 
-	public DashSpriteAtlasData(@Deserialize("atlases") PairMap<DashSpriteAtlasTexture,Integer> atlases) {
+	public DashSpriteAtlasData(ObjectObjectList<DashSpriteAtlasTexture, Integer> atlases) {
 		this.atlases = atlases;
 	}
 
-	public DashSpriteAtlasData(VanillaData data, DashRegistry registry, DashLoader.TaskHandler taskHandler) {
-		atlases = new PairMap<>();
-		final Map<Identifier, SpriteAtlasTexture> atlases = ((SpriteAtlasManagerAccessor) data.getAtlasManager()).getAtlases();
-		final List<SpriteAtlasTexture> extraAtlases = data.getExtraAtlases();
+	public DashSpriteAtlasData(VanillaData data, DashRegistryWriter writer, DashLoader.TaskHandler taskHandler) {
+		atlases = new ObjectObjectList<>();
+		var atlases = ((SpriteAtlasManagerAccessor) data.getAtlasManager()).getAtlases();
+		var extraAtlases = data.getExtraAtlases();
 		taskHandler.setSubtasks(atlases.size() + extraAtlases.size());
-		atlases.forEach((identifier, spriteAtlasTexture) -> {
-			addAtlas(data, registry, taskHandler, spriteAtlasTexture, 0);
-		});
-		extraAtlases.forEach(spriteAtlasTexture -> {
-			addAtlas(data, registry, taskHandler, spriteAtlasTexture, 1);
-		});
+		atlases.forEach((identifier, spriteAtlasTexture) -> addAtlas(data, writer, taskHandler, spriteAtlasTexture, 0));
+		extraAtlases.forEach(spriteAtlasTexture -> addAtlas(data, writer, taskHandler, spriteAtlasTexture, 1));
 	}
 
-	private void addAtlas(VanillaData data, DashRegistry registry, DashLoader.TaskHandler taskHandler, SpriteAtlasTexture spriteAtlasTexture, int i) {
-		this.atlases.add(PairMap.Entry.of(new DashSpriteAtlasTexture(spriteAtlasTexture, data.getAtlasData(spriteAtlasTexture), registry), i));
-		taskHandler.completedSubTask();
+	private void addAtlas(VanillaData data, DashRegistryWriter writer, DashLoader.TaskHandler tasks, SpriteAtlasTexture texture, int i) {
+		this.atlases.put(new DashSpriteAtlasTexture(texture, data.getAtlasData(texture), writer), i);
+		tasks.completedSubTask();
 	}
 
 
-	public Pair<SpriteAtlasManager, List<SpriteAtlasTexture>> toUndash(DashExportHandler exportHandler) {
-		ArrayList<SpriteAtlasTexture> out = new ArrayList<>(atlases.size());
-		ArrayList<SpriteAtlasTexture> toRegister = new ArrayList<>(atlases.size());
-		atlases.forEach((entry) -> {
-			final DashSpriteAtlasTexture key = entry.key;
-			if (entry.value == 0) {
-				out.add(key.toUndash(exportHandler));
-			}
-			toRegister.add(key.toUndash(exportHandler));
+	public Pair<SpriteAtlasManager, List<SpriteAtlasTexture>> export(DashRegistryReader exportHandler) {
+		var out = new ArrayList<SpriteAtlasTexture>(atlases.list().size());
+		var toRegister = new ArrayList<SpriteAtlasTexture>(atlases.list().size());
+		atlases.forEach((key, value) -> {
+			if (value == 0) out.add(key.export(exportHandler));
+			toRegister.add(key.export(exportHandler));
 		});
 		return Pair.of(new SpriteAtlasManager(out), toRegister);
 	}

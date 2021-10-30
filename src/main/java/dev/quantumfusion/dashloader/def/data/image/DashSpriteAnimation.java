@@ -1,13 +1,14 @@
 package dev.quantumfusion.dashloader.def.data.image;
 
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.util.DashUtil;
+import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAnimationAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.texture.Sprite;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.util.DashHelper;
-import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAnimationAccessor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -27,20 +28,28 @@ public class DashSpriteAnimation {
 	}
 
 
-	public DashSpriteAnimation(Sprite.Animation animation, DashRegistry registry) {
+	public DashSpriteAnimation(Sprite.Animation animation, DashRegistryWriter registry) {
 		SpriteAnimationAccessor access = ((SpriteAnimationAccessor) animation);
-		frames = DashHelper.convertCollection(access.getFrames(), DashSpriteAnimationFrame::new);
-		frameCount = access.getFrameCount();
-		interpolation = DashHelper.nullable(access.getInterpolation(), registry, DashSpriteInterpolation::new);
+		this.frames = new ArrayList<>();
+		for (var frame : access.getFrames()) {
+			this.frames.add(new DashSpriteAnimationFrame(frame));
+		}
+		this.frameCount = access.getFrameCount();
+		this.interpolation = DashUtil.nullable(access.getInterpolation(), registry, DashSpriteInterpolation::new);
 	}
 
 
-	public Sprite.Animation toUndash(Sprite owner, DashExportHandler registry) {
+	public Sprite.Animation export(Sprite owner, DashRegistryReader registry) {
+		var framesOut = new ArrayList<Sprite.AnimationFrame>();
+		for (var frame : this.frames) {
+			framesOut.add(frame.export(registry));
+		}
+
 		return SpriteAnimationAccessor.init(
 				owner,
-				DashHelper.convertCollection(frames, frame -> frame.toUndash(registry)),
+				framesOut,
 				frameCount,
-				DashHelper.nullable(interpolation, interpolation -> interpolation.toUndash(owner, registry))
+				DashUtil.nullable(interpolation, interpolation -> interpolation.export(owner, registry))
 		);
 	}
 }

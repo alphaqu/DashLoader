@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.mixin;
 
-import net.minecraft.client.MinecraftClient;
 import dev.quantumfusion.dashloader.def.DashLoader;
+import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

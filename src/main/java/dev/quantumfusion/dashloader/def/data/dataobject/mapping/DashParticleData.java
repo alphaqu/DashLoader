@@ -1,17 +1,16 @@
 package dev.quantumfusion.dashloader.def.data.dataobject.mapping;
 
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
+import dev.quantumfusion.dashloader.core.Dashable;
+import dev.quantumfusion.dashloader.core.common.IntObjectList;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
 import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.def.data.VanillaData;
 import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.core.Dashable;
-import net.oskarstrom.dashloader.core.data.Pointer2ObjectMap;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -19,45 +18,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Data
 public class DashParticleData implements Dashable<Pair<Map<Identifier, List<Sprite>>, SpriteAtlasTexture>> {
-
-	@Serialize(order = 0)
-	public final Pointer2ObjectMap<List<Integer>> particles;
-
-	@Serialize(order = 1)
+	public final IntObjectList<List<Integer>> particles;
 	public final DashSpriteAtlasTexture atlasTexture;
 
-	public DashParticleData(@Deserialize("particles") Pointer2ObjectMap<List<Integer>> particles,
-							@Deserialize("atlasTexture") DashSpriteAtlasTexture atlasTexture) {
+	public DashParticleData(IntObjectList<List<Integer>> particles,
+			DashSpriteAtlasTexture atlasTexture) {
 		this.particles = particles;
 		this.atlasTexture = atlasTexture;
 	}
 
-	public DashParticleData(VanillaData data, DashRegistry registry, DashLoader.TaskHandler taskHandler) {
-		this.particles = new Pointer2ObjectMap<>();
+	public DashParticleData(VanillaData data, DashRegistryWriter writer, DashLoader.TaskHandler taskHandler) {
+		this.particles = new IntObjectList<>();
 		final Map<Identifier, List<Sprite>> particles = data.getParticles();
 		taskHandler.setSubtasks(particles.size() + 1);
 		particles.forEach((identifier, spriteList) -> {
 			List<Integer> out = new ArrayList<>();
-			spriteList.forEach(sprite -> out.add(registry.add(sprite)));
-			this.particles.add(Pointer2ObjectMap.Entry.of(registry.add(identifier), out));
+			spriteList.forEach(sprite -> out.add(writer.add(sprite)));
+			this.particles.put(writer.add(identifier), out);
 			taskHandler.completedSubTask();
 		});
 		final SpriteAtlasTexture particleAtlas = data.getParticleAtlas();
-		atlasTexture = new DashSpriteAtlasTexture(particleAtlas, data.getAtlasData(particleAtlas), registry);
+		atlasTexture = new DashSpriteAtlasTexture(particleAtlas, data.getAtlasData(particleAtlas), writer);
 		taskHandler.completedSubTask();
 
 	}
 
 
-	public Pair<Map<Identifier, List<Sprite>>, SpriteAtlasTexture> toUndash(DashExportHandler exportHandler) {
+	public Pair<Map<Identifier, List<Sprite>>, SpriteAtlasTexture> export(DashRegistryReader reader) {
 		Map<Identifier, List<Sprite>> out = new HashMap<>();
-		particles.forEach((entry) -> {
+		particles.forEach((key, value) -> {
 			List<Sprite> outInner = new ArrayList<>();
-			entry.value.forEach(pntr -> outInner.add(exportHandler.get(pntr)));
-			out.put(exportHandler.get(entry.key), outInner);
+			value.forEach(pntr -> outInner.add(reader.get(pntr)));
+			out.put(reader.get(key), outInner);
 		});
-		return Pair.of(out, atlasTexture.toUndash(exportHandler));
+		return Pair.of(out, atlasTexture.export(reader));
 	}
 
 }

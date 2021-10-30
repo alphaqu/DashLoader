@@ -1,5 +1,12 @@
 package dev.quantumfusion.dashloader.def.mixin;
 
+import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.def.api.feature.Feature;
+import dev.quantumfusion.dashloader.def.api.feature.FeatureHandler;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.metadata.CustomValue;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -12,7 +19,7 @@ public class MixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public void onLoad(String mixinPackage) {
 		//TODO config
-/*		FeatureHandler.init();
+		FeatureHandler.init();
 		for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
 			final ModMetadata metadata = mod.getMetadata();
 			if (metadata.containsCustomValue("dashloader:disablefeature")) {
@@ -24,7 +31,8 @@ public class MixinPlugin implements IMixinConfigPlugin {
 				});
 			}
 		}
-		DumperOptions options = new DumperOptions();
+
+		/*DumperOptions options = new DumperOptions();
 		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 		Yaml yaml = new Yaml(options);
 		final Path resolve = DashLoader.getConfig().resolve("dashloader.yaml");
@@ -59,8 +67,7 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		//TODO config / features
-		return true /*FeatureHandler.active(mixinClassName)*/;
+		return FeatureHandler.active(mixinClassName);
 	}
 
 	@Override

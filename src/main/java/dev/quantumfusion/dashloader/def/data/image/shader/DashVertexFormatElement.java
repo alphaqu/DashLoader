@@ -11,7 +11,7 @@ public record DashVertexFormatElement(
 		this(vertexFormatElement.getDataType(), vertexFormatElement.getType(), vertexFormatElement.getTextureIndex(), vertexFormatElement.getLength());
 	}
 
-	public VertexFormatElement toUndash() {
+	public VertexFormatElement export() {
 		return new VertexFormatElement(textureIndex, dataType, type, length);
 	}
 }

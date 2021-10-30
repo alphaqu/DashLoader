@@ -2,16 +2,15 @@ package dev.quantumfusion.dashloader.def.data.dataobject.mapping;
 
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.data.VanillaData;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 
 import java.util.List;
 
+@Data
 public class DashSplashTextData {
-	@Serialize(order = 0)
 	public final List<String> splashList;
 
-	public DashSplashTextData(@Deserialize("splashList") List<String> splashList) {
+	public DashSplashTextData(List<String> splashList) {
 		this.splashList = splashList;
 	}
 
@@ -21,7 +20,7 @@ public class DashSplashTextData {
 		taskHandler.completedSubTask();
 	}
 
-	public List<String> toUndash() {
+	public List<String> export() {
 		return splashList;
 	}
 

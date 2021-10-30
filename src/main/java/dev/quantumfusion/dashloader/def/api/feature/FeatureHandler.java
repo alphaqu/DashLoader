@@ -16,7 +16,7 @@ public class FeatureHandler {
 		mixinCache = new HashMap<>();
 		nameCache = new HashMap<>();
 		for (Feature value : Feature.values()) {
-			FeatureHandler.mixinCache.put("net.oskarstrom.dashloader.mixin.feature." + value.mixin, value);
+			FeatureHandler.mixinCache.put("dev.quantumfusion.dashloader.def.mixin.feature." + value.mixin, value);
 			FeatureHandler.nameCache.put(value.name(), value);
 		}
 	}

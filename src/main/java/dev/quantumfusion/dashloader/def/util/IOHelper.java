@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.def.util;
 
 import org.apache.commons.io.IOUtils;
+import org.lwjgl.system.MemoryUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,32 +9,49 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public class IOHelper {
 
-	public static int[] toArray(IntBuffer buffer, int size) {
-		int[] bufferOut = new int[size];
-		buffer.get(bufferOut);
-		return bufferOut;
+	public static int[] toArray(IntBuffer buffer) {
+		buffer.rewind();
+		int[] foo = new int[buffer.remaining()];
+		buffer.get(foo);
+		return foo;
 	}
 
-	public static float[] toArray(FloatBuffer buffer, int size) {
-		float[] bufferOut = new float[size];
-		buffer.get(bufferOut);
-		return bufferOut;
+	public static float[] toArray(FloatBuffer buffer) {
+		buffer.rewind();
+		float[] foo = new float[buffer.remaining()];
+		buffer.get(foo);
+		return foo;
 	}
+
+	public static IntBuffer fromArray(int[] arr) {
+		var buffer = MemoryUtil.memAllocInt(arr.length);
+		buffer.put(arr);
+		buffer.rewind();
+		return buffer;
+	}
+
+	public static FloatBuffer fromArray(float[] arr) {
+		var buffer = MemoryUtil.memAllocFloat(arr.length);
+		buffer.put(arr);
+		buffer.rewind();
+		return buffer;
+	}
+
+
 
 
 	public static byte[] toArray(ByteBuffer buffer, int size) {
 		byte[] bufferOut = new byte[size];
-		buffer.get(bufferOut);
+		buffer.rewind();
+		buffer.get(bufferOut, 0, size);
 		return bufferOut;
 	}
 
 	public static Integer[] toBoxedArray(IntBuffer buffer, int size) {
-		int[] integers = toArray(buffer, size);
+		int[] integers = toArray(buffer);
 		Integer[] out = new Integer[integers.length];
 
 		for (int i = 0; i < integers.length; i++) {
@@ -44,7 +62,7 @@ public class IOHelper {
 	}
 
 	public static Float[] toBoxedArray(FloatBuffer buffer, int size) {
-		float[] floats = toArray(buffer, size);
+		float[] floats = toArray(buffer);
 		Float[] out = new Float[floats.length];
 
 		for (int i = 0; i < floats.length; i++) {
@@ -53,9 +71,6 @@ public class IOHelper {
 
 		return out;
 	}
-
-
-
 
 
 	public static byte[] streamToArray(InputStream inputStream) throws IOException {

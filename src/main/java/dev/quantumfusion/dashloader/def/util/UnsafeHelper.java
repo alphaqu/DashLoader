@@ -1,7 +1,5 @@
 package dev.quantumfusion.dashloader.def.util;
 
-import dev.quantumfusion.hyphen.io.UnsafeIO;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;

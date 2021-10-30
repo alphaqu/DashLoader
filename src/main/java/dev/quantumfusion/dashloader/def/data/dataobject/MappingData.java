@@ -1,6 +1,9 @@
 package dev.quantumfusion.dashloader.def.data.dataobject;
 
 import com.mojang.blaze3d.platform.TextureUtil;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.util.DashUtil;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.feature.Feature;
 import dev.quantumfusion.dashloader.def.data.VanillaData;
@@ -11,21 +14,14 @@ import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasTextureAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
-import net.minecraft.client.render.model.SpriteAtlasManager;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.util.DashHelper;
-import net.oskarstrom.dashloader.def.data.dataobject.mapping.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @DataNullable
@@ -55,7 +51,7 @@ public class MappingData {
 		this.shaderData = shaderData;
 	}
 
-	public void loadVanillaData(VanillaData data, DashRegistry registry, DashLoader.TaskHandler taskHandler) {
+	public void writeVanillaData(VanillaData data, DashRegistryWriter registry, DashLoader.TaskHandler taskHandler) {
 		if (Feature.MODEL_LOADER.active()) {
 			taskHandler.logAndTask("Mapping " + data.getStateLookup().size() + " Blockstates");
 			blockStateData = new DashBlockStateData(data, registry, taskHandler);
@@ -88,22 +84,20 @@ public class MappingData {
 		}
 	}
 
-	public void toUndash(DashExportHandler registry, VanillaData vanillaData) {
-		final Pair<SpriteAtlasManager, List<SpriteAtlasTexture>> spriteData =
-				DashHelper.nullable(spriteAtlasData, spriteAtlasData -> spriteAtlasData.toUndash(registry));
-
-
-		final Pair<Map<Identifier, List<Sprite>>, SpriteAtlasTexture> particleData = DashHelper.nullable(this.predicateData, data -> data.toUndash(registry));
+	public void export(DashRegistryReader registry, VanillaData vanillaData) {
+		var spriteData = DashUtil.nullable(this.spriteAtlasData, registry, DashSpriteAtlasData::export);
+		var particleData = DashUtil.nullable(this.predicateData, registry, DashParticleData::export);
 		vanillaData.loadCacheData(
-				DashHelper.nullable(spriteData, Pair::getLeft),
-				DashHelper.nullable(blockStateData, data -> data.toUndash(registry)),
-				DashHelper.nullable(modelData, data -> data.toUndash(registry)),
-				DashHelper.nullable(particleData, Pair::getLeft),
-				DashHelper.nullable(fontManagerData, data -> data.toUndash(registry)),
-				DashHelper.nullable(splashTextData, DashSplashTextData::toUndash),
-				DashHelper.nullable(shaderData, DashShaderData::toUndash)
+				DashUtil.nullable(spriteData, Pair::getLeft),
+				DashUtil.nullable(blockStateData, registry, DashBlockStateData::export),
+				DashUtil.nullable(modelData, registry, DashModelData::export),
+				DashUtil.nullable(particleData, Pair::getLeft),
+				DashUtil.nullable(fontManagerData, registry, DashFontManagerData::export),
+				DashUtil.nullable(splashTextData, DashSplashTextData::export),
+				DashUtil.nullable(shaderData, DashShaderData::export)
 		);
 		atlasesToRegister = new ArrayList<>();
+
 		if (spriteData != null) {
 			spriteData.getValue().forEach(atlasTexture -> atlasesToRegister.add(Pair.of(Feature.MODEL_LOADER, Pair.of(atlasTexture, vanillaData.getAtlasData(atlasTexture)))));
 		}
@@ -133,9 +127,9 @@ public class MappingData {
 		//atlas registration
 		final Identifier id = atlasTexture.getId();
 		final int glId = TextureUtil.generateTextureId();
-		final int width = data.width;
-		final int maxLevel = data.maxLevel;
-		final int height = data.height;
+		final int width = data.width();
+		final int maxLevel = data.maxLevel();
+		final int height = data.height();
 		((AbstractTextureAccessor) atlasTexture).setGlId(glId);
 		//ding dong lwjgl here are their styles
 

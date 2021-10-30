@@ -1,9 +1,11 @@
 package dev.quantumfusion.dashloader.def.data.blockstate.property;
 
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.state.property.BooleanProperty;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
 
+@Data
 @DashObject(BooleanProperty.class)
 public record DashBooleanProperty(String name) implements DashProperty {
 
@@ -12,7 +14,7 @@ public record DashBooleanProperty(String name) implements DashProperty {
 	}
 
 	@Override
-	public BooleanProperty toUndash(DashExportHandler exportHandler) {
+	public BooleanProperty export(DashRegistryReader exportHandler) {
 		return BooleanProperty.of(name);
 	}
 }

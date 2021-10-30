@@ -1,5 +1,10 @@
 package dev.quantumfusion.dashloader.def.data.model;
 
+import dev.quantumfusion.dashloader.core.api.annotation.DashDependencies;
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.def.data.image.DashSprite;
 import dev.quantumfusion.dashloader.def.data.model.components.DashModelOverrideList;
 import dev.quantumfusion.dashloader.def.data.model.components.DashModelTransformation;
 import dev.quantumfusion.dashloader.def.mixin.accessor.BuiltinBakedModelAccessor;
@@ -8,12 +13,10 @@ import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.BuiltinBakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
 
 @Data
 @DashObject(BuiltinBakedModel.class)
+@DashDependencies(DashSprite.class)
 public class DashBuiltinBakedModel implements DashModel {
 	@DataNullable
 	public final DashModelTransformation transformation;
@@ -29,24 +32,24 @@ public class DashBuiltinBakedModel implements DashModel {
 	}
 
 
-	public DashBuiltinBakedModel(BuiltinBakedModel builtinBakedModel, DashRegistry registry) {
+	public DashBuiltinBakedModel(BuiltinBakedModel builtinBakedModel, DashRegistryWriter writer) {
 		BuiltinBakedModelAccessor access = ((BuiltinBakedModelAccessor) builtinBakedModel);
 		final ModelTransformation transformation = access.getTransformation();
 		this.transformation = DashModelTransformation.createDashOrReturnNullIfDefault(transformation);
-		itemPropertyOverrides = new DashModelOverrideList(access.getItemPropertyOverrides(), registry);
-		spritePointer = registry.add(access.getSprite());
+		itemPropertyOverrides = new DashModelOverrideList(access.getItemPropertyOverrides(), writer);
+		spritePointer = writer.add(access.getSprite());
 		sideLit = access.getSideLit();
 	}
 
 
 	@Override
-	public BuiltinBakedModel toUndash(DashExportHandler handler) {
-		Sprite sprite = handler.get(spritePointer);
-		return new BuiltinBakedModel(DashModelTransformation.toUndashOrDefault(transformation), itemPropertyOverrides.toUndash(handler), sprite, sideLit);
+	public BuiltinBakedModel export(DashRegistryReader reader) {
+		Sprite sprite = reader.get(spritePointer);
+		return new BuiltinBakedModel(DashModelTransformation.exportOrDefault(transformation), itemPropertyOverrides.export(reader), sprite, sideLit);
 	}
 
 	@Override
-	public void apply(DashExportHandler handler) {
+	public void apply(DashRegistryReader handler) {
 		itemPropertyOverrides.applyOverrides(handler);
 	}
 

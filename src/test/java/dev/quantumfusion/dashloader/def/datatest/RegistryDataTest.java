@@ -14,7 +14,7 @@ import dev.quantumfusion.dashloader.def.data.font.DashBitmapFont;
 import dev.quantumfusion.dashloader.def.data.font.DashBlankFont;
 import dev.quantumfusion.dashloader.def.data.font.DashTrueTypeFont;
 import dev.quantumfusion.dashloader.def.data.font.DashUnicodeFont;
-import dev.quantumfusion.dashloader.def.data.image.DashSprite;
+import dev.quantumfusion.dashloader.def.data.image.DashSpriteImpl;
 import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashAndPredicate;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashOrPredicate;
@@ -59,7 +59,7 @@ public class RegistryDataTest {
 
 	@Test
 	public void testSpriteRegistryData() {
-		TestUtils.testCreation(DashSprite.class);
+		TestUtils.testCreation(DashSpriteImpl.class);
 	}
 
 	@Test

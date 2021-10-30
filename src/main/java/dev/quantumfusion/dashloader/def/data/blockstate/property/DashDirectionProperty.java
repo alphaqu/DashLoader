@@ -1,16 +1,18 @@
 package dev.quantumfusion.dashloader.def.data.blockstate.property;
 
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.math.Direction;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+@Data
 @DashObject(DirectionProperty.class)
 public record DashDirectionProperty(String name, @DataNullable Direction[] directions) implements DashProperty {
 
@@ -35,7 +37,7 @@ public record DashDirectionProperty(String name, @DataNullable Direction[] direc
 	}
 
 	@Override
-	public DirectionProperty toUndash(DashExportHandler exportHandler) {
+	public DirectionProperty export(DashRegistryReader exportHandler) {
 		return DirectionProperty.of(name, directions == null ? Direction.values() : directions);
 	}
 

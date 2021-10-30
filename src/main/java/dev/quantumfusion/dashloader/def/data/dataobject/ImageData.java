@@ -1,37 +1,29 @@
 package dev.quantumfusion.dashloader.def.data.dataobject;
 
-import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.core.registry.ChunkDataHolder;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.chunk.data.AbstractDataChunk;
 import dev.quantumfusion.dashloader.def.data.image.DashImage;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.texture.NativeImage;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.registry.RegistryStorage;
-import net.oskarstrom.dashloader.core.registry.RegistryStorageDataImpl;
 
-public class ImageData implements RegistryDataObject {
-	@Serialize(order = 0)
-	public final RegistryStorageDataImpl<NativeImage, DashImage> imageData;
+import java.util.Collection;
+import java.util.List;
 
-	public ImageData(@Deserialize("imageData") RegistryStorageDataImpl<NativeImage, DashImage> imageData) {
+@Data
+public class ImageData implements ChunkDataHolder {
+	public final AbstractDataChunk<NativeImage, DashImage> imageData;
+
+	public ImageData(AbstractDataChunk<NativeImage, DashImage> imageData) {
 		this.imageData = imageData;
 	}
 
-	public ImageData(DashRegistry dashRegistry) {
-		var storageMappings = DashLoader.getInstance().getApi().storageMappings;
-		final byte pos = storageMappings.getByte(DashDataType.NATIVEIMAGE);
-		final RegistryStorage<?> storage = dashRegistry.getStorage(pos);
-		this.imageData = new RegistryStorageDataImpl<>((DashImage[]) storage.getDashables(), pos, (short) 0);
+	public ImageData(DashRegistryWriter writer) {
+		this.imageData = writer.getChunk(DashImage.class).exportData();
 	}
 
 	@Override
-	public void dumpData(DashExportHandler dashRegistry) {
-		dashRegistry.addStorage(imageData, imageData.registryPos);
-	}
-
-	@Override
-	public int getSize() {
-		return 1;
+	public Collection<AbstractDataChunk<?, ?>> getChunks() {
+		return List.of(imageData);
 	}
 }

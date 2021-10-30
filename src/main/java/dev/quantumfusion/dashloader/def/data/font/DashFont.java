@@ -1,11 +1,10 @@
 package dev.quantumfusion.dashloader.def.data.font;
 
+import dev.quantumfusion.dashloader.core.Dashable;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import net.minecraft.client.font.Font;
-import net.oskarstrom.dashloader.core.Dashable;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 
 public interface DashFont extends Dashable<Font> {
-	Font toUndash(DashExportHandler exportHandler);
-
+	Font export(DashRegistryReader exportHandler);
 }
 

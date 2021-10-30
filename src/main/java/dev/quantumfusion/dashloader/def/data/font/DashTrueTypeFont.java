@@ -1,5 +1,7 @@
 package dev.quantumfusion.dashloader.def.data.font;
 
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.TrueTypeFontAccessor;
 import dev.quantumfusion.dashloader.def.util.IOHelper;
@@ -11,28 +13,27 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TrueTypeFont;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.annotations.DashObject;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @DashObject(TrueTypeFont.class)
 public class DashTrueTypeFont implements DashFont {
 	public final byte[] ttfBuffer;
 	public final float oversample;
-	public final Set<Integer> excludedCharacters;
+	public final List<Integer> excludedCharacters;
 	public final float shiftX;
 	public final float shiftY;
 	public final float scaleFactor;
 	public final float ascent;
 
 
-	public DashTrueTypeFont(byte[] ttfBuffer, float oversample, Set<Integer> excludedCharacters, float shiftX, float shiftY, float scaleFactor, float ascent) {
+	public DashTrueTypeFont(byte[] ttfBuffer, float oversample, List<Integer> excludedCharacters, float shiftX, float shiftY, float scaleFactor, float ascent) {
 		this.ttfBuffer = ttfBuffer;
 		this.oversample = oversample;
 		this.excludedCharacters = excludedCharacters;
@@ -54,7 +55,7 @@ public class DashTrueTypeFont implements DashFont {
 		}
 		ttfBuffer = data;
 		oversample = fontAccess.getOversample();
-		excludedCharacters = fontAccess.getExcludedCharacters();
+		excludedCharacters = new ArrayList<>(fontAccess.getExcludedCharacters());
 		shiftX = fontAccess.getShiftX();
 		shiftY = fontAccess.getShiftY();
 		scaleFactor = fontAccess.getScaleFactor();
@@ -62,7 +63,7 @@ public class DashTrueTypeFont implements DashFont {
 	}
 
 	@Override
-	public TrueTypeFont toUndash(DashExportHandler handler) {
+	public TrueTypeFont export(DashRegistryReader handler) {
 		STBTTFontinfo sTBTTFontinfo = STBTTFontinfo.malloc();
 		ByteBuffer byteBuffer2 = ByteBuffer.allocateDirect(ttfBuffer.length);
 		byteBuffer2.put(ttfBuffer);

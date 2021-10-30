@@ -1,40 +1,29 @@
 package dev.quantumfusion.dashloader.def.data.dataobject;
 
-import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.core.registry.ChunkDataHolder;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.chunk.data.AbstractDataChunk;
 import dev.quantumfusion.dashloader.def.data.model.DashModel;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
-import io.activej.serializer.annotations.SerializeSubclasses;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.model.BakedModel;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
-import net.oskarstrom.dashloader.core.registry.DashRegistry;
-import net.oskarstrom.dashloader.core.registry.RegistryStorageData;
-import net.oskarstrom.dashloader.core.registry.RegistryStorageDataImpl;
 
-public class ModelData implements RegistryDataObject {
-	@Serialize(order = 0)
-	@SerializeSubclasses(extraSubclassesId = "models", path = {0})
-	public final RegistryStorageDataImpl<BakedModel, DashModel> modelData;
+import java.util.Collection;
+import java.util.List;
 
-	public ModelData(@Deserialize("modelData") RegistryStorageDataImpl<BakedModel, DashModel> modelData) {
+@Data
+public class ModelData implements ChunkDataHolder {
+	public final AbstractDataChunk<BakedModel, DashModel> modelData;
+
+	public ModelData(AbstractDataChunk<BakedModel, DashModel> modelData) {
 		this.modelData = modelData;
 	}
 
-	public ModelData(DashRegistry dashRegistry) {
-		var storageMappings = DashLoader.getInstance().getApi().storageMappings;
-		//noinspection unchecked
-		this.modelData = (RegistryStorageDataImpl<BakedModel, DashModel>) dashRegistry.getStorage(storageMappings.getByte(DashDataType.MODEL));
+	public ModelData(DashRegistryWriter writer) {
+		this.modelData = writer.getChunk(DashModel.class).exportData();
 	}
 
 	@Override
-	public void dumpData(DashExportHandler exportHandler) {
-		exportHandler.addStorage(modelData);
+	public Collection<AbstractDataChunk<?, ?>> getChunks() {
+		return List.of(modelData);
 	}
-
-	@Override
-	public int getSize() {
-		return 1;
-	}
-
-
 }

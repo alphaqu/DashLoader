@@ -1,12 +1,12 @@
 package dev.quantumfusion.dashloader.def.data.image.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import dev.quantumfusion.hyphen.scan.annotations.Data;
-import net.minecraft.client.gl.EffectProgram;
-import net.minecraft.client.gl.Program;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.EffectProgramAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ProgramAccessor;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
+import net.minecraft.client.gl.EffectProgram;
+import net.minecraft.client.gl.Program;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -42,13 +42,13 @@ public record DashProgram(Program.Type shaderType, String name, List<String> sha
 
 	}
 
-	public Program toUndashProgram() {
+	public Program exportProgram() {
 		final Program program = ProgramAccessor.create(shaderType, createProgram(shaderType), name);
 		shaderType.getProgramCache().put(name, program);
 		return program;
 	}
 
-	public EffectProgram toUndashEffectProgram() {
+	public EffectProgram exportEffectProgram() {
 		return EffectProgramAccessor.create(shaderType, createProgram(shaderType), name);
 	}
 

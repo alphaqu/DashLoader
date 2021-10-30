@@ -1,20 +1,19 @@
 package dev.quantumfusion.dashloader.def.data;
 
 
+import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ModelIdentifierAccessor;
-import io.activej.serializer.annotations.Deserialize;
-import io.activej.serializer.annotations.Serialize;
-import io.activej.serializer.annotations.SerializeFixedSize;
+import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
-import net.oskarstrom.dashloader.core.registry.DashExportHandler;
 
-
+@Data
+@DashObject(ModelIdentifier.class)
 public class DashModelIdentifier implements DashIdentifierInterface {
-	@Serialize(order = 0)
 	public final String[] strings;
 
-	public DashModelIdentifier(@Deserialize("strings") String[] strings) {
+	public DashModelIdentifier(String[] strings) {
 		this.strings = strings;
 	}
 
@@ -26,7 +25,7 @@ public class DashModelIdentifier implements DashIdentifierInterface {
 	}
 
 	@Override
-	public Identifier toUndash(DashExportHandler exportHandler) {
+	public Identifier export(DashRegistryReader exportHandler) {
 		return ModelIdentifierAccessor.init(strings);
 	}
 }
