@@ -189,6 +189,7 @@ public abstract class GameRendererMixin {
 	@Shadow
 	protected abstract void clearShaders();
 
+
 	@Inject(
 			method = "loadShaders",
 			at = @At(value = "HEAD"),

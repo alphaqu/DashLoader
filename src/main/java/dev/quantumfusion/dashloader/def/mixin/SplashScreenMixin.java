@@ -16,15 +16,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SplashOverlay.class)
 public class SplashScreenMixin {
-
-
-	private static boolean printed = false;
 	@Shadow
 	@Final
 	private MinecraftClient client;
 
-	@Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;IIF)V",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J", shift = At.Shift.BEFORE, ordinal = 1), cancellable = true)
+	@Inject(
+			method = "render(Lnet/minecraft/client/util/math/MatrixStack;IIF)V",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J", shift = At.Shift.BEFORE, ordinal = 1),
+			cancellable = true
+	)
 	private void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		if (DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
 			this.client.setOverlay(null);
@@ -41,9 +41,7 @@ public class SplashScreenMixin {
 			currentScreen.start();
 
 		}
-		if (!printed) {
-			printed = true;
-		}
+
 		ci.cancel();
 	}
 }

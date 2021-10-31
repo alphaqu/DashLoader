@@ -9,8 +9,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(SoundManager.class)
 public class SoundManagerMixin {
-
-
 	/**
 	 * Save time by not checking sounds.
 	 *

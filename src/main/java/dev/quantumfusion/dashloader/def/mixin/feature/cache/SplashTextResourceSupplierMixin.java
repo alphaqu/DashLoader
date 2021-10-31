@@ -29,9 +29,11 @@ public class SplashTextResourceSupplierMixin {
 	@Final
 	private static Identifier RESOURCE_ID;
 
-	@Inject(method = "prepare(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;)Ljava/util/List;",
+	@Inject(
+			method = "prepare(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;)Ljava/util/List;",
 			at = @At(value = "HEAD"),
-			cancellable = true)
+			cancellable = true
+	)
 	private void applySplashCache(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<List<String>> cir) {
 		try {
 			final List<String> splashTextOut = DashLoader.getVanillaData().getSplashText();

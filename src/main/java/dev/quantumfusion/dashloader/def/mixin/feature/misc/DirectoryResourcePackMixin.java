@@ -27,9 +27,7 @@ public class DirectoryResourcePackMixin {
 	@Overwrite
 	public static boolean isValidPath(File file, String filename) {
 		String string = file.getPath();
-		if (IS_WINDOWS) {
-			string = BACKSLASH_MATCHER.replaceFrom(string, '/');
-		}
+		if (IS_WINDOWS) string = BACKSLASH_MATCHER.replaceFrom(string, '/');
 		return string.endsWith(filename);
 	}
 }

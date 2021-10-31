@@ -55,8 +55,11 @@ public class BakedModelManagerOverride {
 	@Final
 	private BlockModels blockModelCache;
 
-	@Inject(method = "prepare",
-			at = @At(value = "HEAD"), cancellable = true)
+	@Inject(
+			method = "prepare",
+			at = @At(value = "HEAD"),
+			cancellable = true
+	)
 	private void prepare(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<ModelLoader> cir) {
 		profiler.startTick();
 		ModelLoader modelLoader;

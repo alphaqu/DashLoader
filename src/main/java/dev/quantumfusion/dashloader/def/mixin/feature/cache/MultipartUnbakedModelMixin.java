@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.def.mixin;
+package dev.quantumfusion.dashloader.def.mixin.feature.cache;
 
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.MultipartModelComponentAccessor;
@@ -37,10 +37,12 @@ public class MultipartUnbakedModelMixin {
 	@Final
 	private StateManager<Block, BlockState> stateFactory;
 
-	@Inject(method = "bake(Lnet/minecraft/client/render/model/ModelLoader;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/model/BakedModel;",
+	@Inject(
+			method = "bake(Lnet/minecraft/client/render/model/ModelLoader;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/model/BakedModel;",
 			at = @At(value = "RETURN"),
 			locals = LocalCapture.CAPTURE_FAILSOFT,
-			cancellable = true)
+			cancellable = true
+	)
 	private void addPredicateInfo(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId, CallbackInfoReturnable<BakedModel> cir, MultipartBakedModel.Builder builder) {
 		var bakedModel = (MultipartBakedModel) builder.build();
 		var outSelectors = new ArrayList<MultipartModelSelector>();

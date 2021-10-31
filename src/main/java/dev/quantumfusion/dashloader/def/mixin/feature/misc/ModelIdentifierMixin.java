@@ -9,8 +9,6 @@ import java.util.Objects;
 
 @Mixin(ModelIdentifier.class)
 public abstract class ModelIdentifierMixin {
-
-
 	@Shadow
 	@Final
 	private String variant;
