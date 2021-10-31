@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.def.mixin;
 
 import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.def.client.DashCachingScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -28,14 +29,17 @@ public class SplashScreenMixin {
 		if (DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
 			this.client.setOverlay(null);
 			if (client.currentScreen != null) {
-				if (client.currentScreen instanceof TitleScreen) {
-					client.currentScreen = new TitleScreen(false);
+				if (this.client.currentScreen instanceof TitleScreen) {
+					this.client.currentScreen = new TitleScreen(false);
 				}
 				this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
 			}
 		} else {
 			this.client.setOverlay(null);
-			DashLoader.getInstance().saveDashCache();
+			final DashCachingScreen currentScreen = new DashCachingScreen(this.client.currentScreen);
+			this.client.setScreen(currentScreen);
+			currentScreen.start();
+
 		}
 		if (!printed) {
 			printed = true;

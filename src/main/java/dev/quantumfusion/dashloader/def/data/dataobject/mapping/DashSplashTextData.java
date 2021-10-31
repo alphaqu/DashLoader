@@ -14,10 +14,8 @@ public class DashSplashTextData {
 		this.splashList = splashList;
 	}
 
-	public DashSplashTextData(VanillaData data, DashLoader.TaskHandler taskHandler) {
-		taskHandler.setSubtasks(1);
+	public DashSplashTextData(VanillaData data) {
 		splashList = data.getSplashText();
-		taskHandler.completedSubTask();
 	}
 
 	public List<String> export() {

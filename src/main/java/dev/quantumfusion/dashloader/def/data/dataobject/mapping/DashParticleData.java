@@ -29,20 +29,16 @@ public class DashParticleData implements Dashable<Pair<Map<Identifier, List<Spri
 		this.atlasTexture = atlasTexture;
 	}
 
-	public DashParticleData(VanillaData data, DashRegistryWriter writer, DashLoader.TaskHandler taskHandler) {
+	public DashParticleData(VanillaData data, DashRegistryWriter writer) {
 		this.particles = new IntObjectList<>();
 		final Map<Identifier, List<Sprite>> particles = data.getParticles();
-		taskHandler.setSubtasks(particles.size() + 1);
 		particles.forEach((identifier, spriteList) -> {
 			List<Integer> out = new ArrayList<>();
 			spriteList.forEach(sprite -> out.add(writer.add(sprite)));
 			this.particles.put(writer.add(identifier), out);
-			taskHandler.completedSubTask();
 		});
 		final SpriteAtlasTexture particleAtlas = data.getParticleAtlas();
 		atlasTexture = new DashSpriteAtlasTexture(particleAtlas, data.getAtlasData(particleAtlas), writer);
-		taskHandler.completedSubTask();
-
 	}
 
 

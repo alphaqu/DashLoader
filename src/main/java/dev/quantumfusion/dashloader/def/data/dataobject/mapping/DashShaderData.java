@@ -21,13 +21,9 @@ public class DashShaderData {
 		this.shaders = shaders;
 	}
 
-	public DashShaderData(VanillaData data, DashLoader.TaskHandler taskHandler) {
-		taskHandler.setSubtasks(data.getShaderData().size());
+	public DashShaderData(VanillaData data) {
 		this.shaders = new HashMap<>();
-		data.getShaderData().forEach((s, shader) -> {
-			this.shaders.put(s, new DashShader(shader));
-			taskHandler.completedSubTask();
-		});
+		data.getShaderData().forEach((s, shader) -> this.shaders.put(s, new DashShader(shader)));
 	}
 
 	public Map<String, Shader> export() {

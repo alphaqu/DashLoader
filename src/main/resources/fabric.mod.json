@@ -26,7 +26,11 @@
 		"java" : ">=16"
 	},
 	"custom": {
-		"dashloader:customobject" : [
+		"sodium:options": {
+			"mixin.features.model": false,
+			"mixin.features.shader": false
+		},
+		"dashloader:dashobject" : [
 			"dev.quantumfusion.dashloader.def.data.DashIdentifier",
 			"dev.quantumfusion.dashloader.def.data.DashModelIdentifier",
 

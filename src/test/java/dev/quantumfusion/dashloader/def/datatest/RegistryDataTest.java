@@ -2,6 +2,8 @@ package dev.quantumfusion.dashloader.def.datatest;
 
 import dev.quantumfusion.dashloader.def.TestUtils;
 import dev.quantumfusion.dashloader.def.data.DashIdentifier;
+import dev.quantumfusion.dashloader.def.data.DashModelIdentifier;
+import dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState;
 import dev.quantumfusion.dashloader.def.data.blockstate.property.DashBooleanProperty;
 import dev.quantumfusion.dashloader.def.data.blockstate.property.DashDirectionProperty;
 import dev.quantumfusion.dashloader.def.data.blockstate.property.DashEnumProperty;
@@ -20,9 +22,6 @@ import dev.quantumfusion.dashloader.def.data.model.predicates.DashAndPredicate;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashOrPredicate;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashSimplePredicate;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashStaticPredicate;
-import dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState;
-import dev.quantumfusion.dashloader.def.data.DashModelIdentifier;
-import net.oskarstrom.dashloader.def.data.font.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

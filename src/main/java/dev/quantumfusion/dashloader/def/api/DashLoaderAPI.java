@@ -37,7 +37,6 @@ public class DashLoaderAPI {
 			failed = true;
 			return;
 		}
-		LOGGER.info("Added " + dashClass.getSimpleName());
 		dashObjects.add(dashClass);
 	}
 
@@ -49,7 +48,10 @@ public class DashLoaderAPI {
 			FabricLoader.getInstance().getAllMods().forEach(modContainer -> {
 				final ModMetadata metadata = modContainer.getMetadata();
 				if (metadata.getCustomValues().size() != 0) {
-					applyForClassesInValue(metadata, "dashloader:customobject", this::registerDashObject);
+					CustomValue value = metadata.getCustomValue("dashloader:customobject");
+					if (value != null) LOGGER.error("Found DashLoader 2.0 mod: " + modContainer.getMetadata().getId());
+
+					applyForClassesInValue(metadata, "dashloader:dashobject", this::registerDashObject);
 				}
 			});
 
@@ -63,7 +65,7 @@ public class DashLoaderAPI {
 
 
 	private <F, D extends Dashable<F>> void applyForClassesInValue(ModMetadata modMetadata, String valueName, Consumer<Class<D>> func) {
-		CustomValue value = modMetadata.getCustomValue(valueName);
+		var value = modMetadata.getCustomValue(valueName);
 		if (value != null) {
 			for (CustomValue customValue : value.getAsArray()) {
 				final String dashObject = customValue.getAsString();

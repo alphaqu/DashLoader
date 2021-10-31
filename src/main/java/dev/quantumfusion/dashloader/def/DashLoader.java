@@ -4,7 +4,9 @@ import dev.quantumfusion.dashloader.core.DashLoaderCore;
 import dev.quantumfusion.dashloader.core.registry.ChunkDataHolder;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.ui.DashLoaderProgress;
 import dev.quantumfusion.dashloader.def.api.DashLoaderAPI;
+import dev.quantumfusion.dashloader.def.client.DashCachingScreen;
 import dev.quantumfusion.dashloader.def.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.def.data.VanillaData;
 import dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState;
@@ -17,21 +19,19 @@ import dev.quantumfusion.dashloader.def.data.dataobject.RegistryData;
 import dev.quantumfusion.dashloader.def.data.font.DashFont;
 import dev.quantumfusion.dashloader.def.data.image.DashImage;
 import dev.quantumfusion.dashloader.def.data.image.DashSprite;
-import dev.quantumfusion.dashloader.def.data.image.shader.DashShader;
 import dev.quantumfusion.dashloader.def.data.model.DashModel;
 import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashPredicate;
-import dev.quantumfusion.hyphen.SerializerFactory;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static dev.quantumfusion.dashloader.core.ui.DashLoaderProgress.PROGRESS;
 
 
 public class DashLoader {
@@ -43,9 +43,8 @@ public class DashLoader {
 			.getVersion()
 			.getFriendlyString();
 
-	public static final TaskHandler TASK_HANDLER = new TaskHandler(LOGGER);
-	private static final Path MAIN_PATH = FabricLoader.getInstance().getConfigDir().normalize().resolve("quantumfusion/dashloader/");
-	private static final VanillaData VANILLA_DATA = new VanillaData();
+	public static final Path MAIN_PATH = FabricLoader.getInstance().getConfigDir().normalize().resolve("quantumfusion/dashloader/");
+	public static final VanillaData VANILLA_DATA = new VanillaData();
 	private static boolean shouldReload = true;
 	private static DashLoader instance;
 	private final DashLoaderAPI api;
@@ -78,11 +77,6 @@ public class DashLoader {
 
 			LOGGER.info("Created DashLoader with {} classloader.", classLoader.getClass().getSimpleName());
 			LOGGER.info("Initialized DashLoader");
-
-			final SerializerFactory<ByteBufferIO, DashShader> factory = SerializerFactory.createDebug(ByteBufferIO.class, DashShader.class);
-			factory.setExportPath(Path.of("./ForFucksSake.class"));
-			factory.setClassName("ForFucksSake");
-			factory.build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("mc exception bad");
@@ -126,21 +120,21 @@ public class DashLoader {
 	}
 
 	public void saveDashCache() {
-		LOGGER.info("Creating writer");
+		PROGRESS.reset();
+		PROGRESS.setTotalTasks(5);
 		DashRegistryWriter writer = core.createWriter();
-		LOGGER.info("Creating Mapped data");
-		MappingData mappings = new MappingData();
-		LOGGER.info("Writing vanilla data");
-		mappings.writeVanillaData(VANILLA_DATA, writer, TASK_HANDLER);
-		LOGGER.info("Saving registry data");
-		core.save(new RegistryData(writer));
-		LOGGER.info("Saving image data");
+		PROGRESS.completedTask();
+		mappings = new MappingData(writer);
+		mappings.map();
+		PROGRESS.completedTask();
 		core.save(new ImageData(writer));
-		LOGGER.info("Saving model data");
+		PROGRESS.completedTask();
 		core.save(new ModelData(writer));
-		LOGGER.info("Saving mapping data");
+		PROGRESS.completedTask();
+		core.save(new RegistryData(writer));
 		core.save(mappings);
-		TASK_HANDLER.setCurrentTask("Caching is now complete.");
+		PROGRESS.completedTask();
+		DashCachingScreen.exit = true;
 		LOGGER.info("Created cache in " + "TODO" + "s");
 	}
 
@@ -188,75 +182,6 @@ public class DashLoader {
 		LOADED,
 		CRASHLOADER,
 		EMPTY
-	}
-
-	public static class TaskHandler {
-		public static int TOTALTASKS = 9;
-		private static float taskStep = 1f / TOTALTASKS;
-		private final Logger logger;
-		private String task;
-		private int tasksComplete;
-		private int subTotalTasks = 1;
-		private int subTasksComplete = 0;
-		private boolean failed = false;
-
-		public TaskHandler(Logger logger) {
-			task = "Starting DashLoader";
-			tasksComplete = 0;
-			this.logger = logger;
-		}
-
-		public static void setTotalTasks(int tasks) {
-			TOTALTASKS = tasks;
-			taskStep = 1f / TOTALTASKS;
-		}
-
-		public void logAndTask(String s) {
-			logger.info(s);
-			tasksComplete++;
-			task = s;
-		}
-
-		public void reset() {
-			tasksComplete = 0;
-			subTotalTasks = 1;
-			subTasksComplete = 0;
-		}
-
-		public void completedTask() {
-			tasksComplete++;
-		}
-
-		public void setCurrentTask(String task) {
-			this.task = task;
-		}
-
-		public void setSubtasks(int tasks) {
-			subTotalTasks = tasks;
-			subTasksComplete = 0;
-		}
-
-		public void completedSubTask() {
-			subTasksComplete++;
-		}
-
-		public Text getText() {
-			return Text.of("(" + tasksComplete + "/" + TOTALTASKS + ") " + task);
-		}
-
-		public Text getSubText() {
-			return TOTALTASKS == tasksComplete ? Text.of("") : Text.of("[" + subTasksComplete + "/" + subTotalTasks + "] ");
-		}
-
-		public boolean isFailed() {
-			return failed;
-		}
-
-		public double getProgress() {
-			if (failed) return 0;
-			if (subTasksComplete == subTotalTasks && tasksComplete == TOTALTASKS) return 1;
-			return (tasksComplete == 0 ? 0 : tasksComplete / (float) TOTALTASKS) + (((float) subTasksComplete / subTotalTasks) * taskStep);
-		}
 	}
 
 	public static class DashMetadata {

@@ -4,7 +4,6 @@ import dev.quantumfusion.dashloader.core.Dashable;
 import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.NativeImageAccessor;
-import dev.quantumfusion.dashloader.def.util.IOHelper;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.texture.NativeImage;
 import org.lwjgl.stb.STBIWriteCallback;
@@ -12,7 +11,6 @@ import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -25,10 +23,7 @@ public class DashImage implements Dashable<NativeImage> {
 	public final int width;
 	public final int height;
 
-
 	public DashImage(NativeImage nativeImage) {
-
-		int afsd = 1 >>> 3;
 		try {
 			NativeImageAccessor nativeImageAccess = (NativeImageAccessor) (Object) nativeImage;
 			this.format = nativeImage.getFormat();
@@ -41,11 +36,7 @@ public class DashImage implements Dashable<NativeImage> {
 		}
 	}
 
-	public DashImage(byte[] image,
-			NativeImage.Format format,
-			boolean useSTB,
-			int width,
-			int height) {
+	public DashImage(byte[] image, NativeImage.Format format, boolean useSTB, int width, int height) {
 		this.image = image;
 		this.format = format;
 		this.useSTB = useSTB;
@@ -56,6 +47,7 @@ public class DashImage implements Dashable<NativeImage> {
 
 	private byte[] write(long pointer) throws IOException {
 		final int channelCount = this.format.getChannelCount();
+
 		final GLCallback writeCallback = new GLCallback();
 		try {
 			if (STBImageWrite.nstbi_write_png_to_func(writeCallback.address(), 0L, width, height, channelCount, pointer, 0) != 0) {
@@ -78,12 +70,7 @@ public class DashImage implements Dashable<NativeImage> {
 		final ByteBuffer buf = ByteBuffer.allocateDirect(image.length);
 		buf.put(image);
 		buf.flip();
-		ByteBuffer buffer = STBImage.stbi_load_from_memory(
-				buf,
-				new int[1],
-				new int[1],
-				new int[1],
-				format.getChannelCount());
+		ByteBuffer buffer = STBImage.stbi_load_from_memory(buf, new int[1], new int[1], new int[1], format.getChannelCount());
 		if (buffer == null) {
 			throw new RuntimeException("Could not load image: " + STBImage.stbi_failure_reason());
 		}
@@ -91,23 +78,31 @@ public class DashImage implements Dashable<NativeImage> {
 	}
 
 	private static class GLCallback extends STBIWriteCallback {
-		private final ByteArrayOutputStream output;
-
+		private byte[] imageInfo;
+		private int pos = 0;
 
 		private GLCallback() {
-			this.output = new ByteArrayOutputStream();
 		}
 
 		public void invoke(long context, long data, int size) {
-			try {
-				output.write(IOHelper.toArray(STBIWriteCallback.getData(data, size), size));
-			} catch (IOException e) {
-				e.printStackTrace();
+			if (imageInfo == null) imageInfo = new byte[size];
+			final ByteBuffer buffer = STBIWriteCallback.getData(data, size);
+			buffer.rewind();
+			ensureSize(pos + size);
+			buffer.get(imageInfo, pos, size);
+			pos += size;
+		}
+
+		public void ensureSize(int size) {
+			if (size > imageInfo.length) {
+				final byte[] newArr = new byte[size * 2];
+				System.arraycopy(imageInfo, 0, newArr, 0, imageInfo.length);
+				imageInfo = newArr;
 			}
 		}
 
 		public byte[] getBytes() {
-			return output.toByteArray();
+			return imageInfo;
 		}
 
 

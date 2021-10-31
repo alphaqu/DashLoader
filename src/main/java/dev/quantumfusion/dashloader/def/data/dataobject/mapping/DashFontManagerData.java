@@ -23,20 +23,11 @@ public class DashFontManagerData implements Dashable<Map<Identifier, List<Font>>
 		this.fontMap = fontMap;
 	}
 
-	public DashFontManagerData(VanillaData data, DashRegistryWriter writer, DashLoader.TaskHandler taskHandler) {
+	public DashFontManagerData(VanillaData data, DashRegistryWriter writer) {
 		fontMap = new IntObjectList<>();
-		int amount = 0;
-		final Map<Identifier, List<Font>> fonts = data.getFonts();
-		for (List<Font> value : fonts.values()) {
-			amount += value.size();
-		}
-		taskHandler.setSubtasks(amount);
-		fonts.forEach((identifier, fontList) -> {
+		data.getFonts().forEach((identifier, fontList) -> {
 			List<Integer> fontsOut = new ArrayList<>();
-			fontList.forEach(font -> {
-				fontsOut.add(writer.add(font));
-				taskHandler.completedSubTask();
-			});
+			fontList.forEach(font -> fontsOut.add(writer.add(font)));
 			fontMap.put(writer.add(identifier), fontsOut);
 		});
 	}

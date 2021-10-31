@@ -1,8 +1,6 @@
 package dev.quantumfusion.dashloader.def;
 
-import io.activej.serializer.SerializerBuilder;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtils {
 	public static void testCreation(Class<?>... oClass) {
@@ -13,7 +11,6 @@ public class TestUtils {
 
 	public static void testCreation(Class<?> clazz) {
 		try {
-			SerializerBuilder.create().build(clazz);
 		} catch (RuntimeException e) {
 			System.out.println(clazz);
 			e.printStackTrace();
@@ -25,7 +22,7 @@ public class TestUtils {
 	public static void main(String[] args) {
 
 		final int _x = 0xFFFFFFFF;
-		final String x = Integer.toString(_x >>> 4,2);
+		final String x = Integer.toString(_x >>> 4, 2);
 		for (int i = 0; i < x.toCharArray().length; i++) {
 			System.out.print(x.charAt(i));
 			if (i % 4 == 3) {

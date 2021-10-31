@@ -19,14 +19,10 @@ public class DashBlockStateData implements Dashable<Object2IntMap<BlockState>> {
 		this.blockstates = blockstates;
 	}
 
-	public DashBlockStateData(VanillaData data, DashRegistryWriter writer, final DashLoader.TaskHandler taskHandler) {
+	public DashBlockStateData(VanillaData data, DashRegistryWriter writer) {
 		this.blockstates = new IntObjectList<>();
 		final Object2IntMap<BlockState> stateLookup = data.getStateLookup();
-		taskHandler.setSubtasks(stateLookup.size());
-		stateLookup.forEach((blockState, integer) -> {
-			this.blockstates.put(writer.add(blockState), integer);
-			taskHandler.completedSubTask();
-		});
+		stateLookup.forEach((blockState, integer) -> this.blockstates.put(writer.add(blockState), integer));
 	}
 
 	public Object2IntMap<BlockState> export(DashRegistryReader reader) {

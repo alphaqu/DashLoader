@@ -3,6 +3,7 @@ package dev.quantumfusion.dashloader.def.data.dataobject;
 import com.mojang.blaze3d.platform.TextureUtil;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.ui.DashLoaderProgress;
 import dev.quantumfusion.dashloader.core.util.DashUtil;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.feature.Feature;
@@ -22,6 +23,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static dev.quantumfusion.dashloader.def.DashLoader.VANILLA_DATA;
 
 @Data
 @DataNullable
@@ -35,13 +39,21 @@ public class MappingData {
 	public DashShaderData shaderData;
 
 	private transient List<Pair<Feature, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>>> atlasesToRegister;
+	private transient final DashRegistryWriter registry;
 
-
-	public MappingData() {
+	public MappingData(DashRegistryWriter registry) {
+		this.registry = registry;
 	}
 
 	@SuppressWarnings("unused") // hyphen
-	public MappingData(DashBlockStateData blockStateData, DashFontManagerData fontManagerData, DashModelData modelData, DashParticleData predicateData, DashSplashTextData splashTextData, DashSpriteAtlasData spriteAtlasData, DashShaderData shaderData) {
+	public MappingData(
+			DashBlockStateData blockStateData,
+			DashFontManagerData fontManagerData,
+			DashModelData modelData,
+			DashParticleData predicateData,
+			DashSplashTextData splashTextData,
+			DashSpriteAtlasData spriteAtlasData,
+			DashShaderData shaderData) {
 		this.blockStateData = blockStateData;
 		this.fontManagerData = fontManagerData;
 		this.modelData = modelData;
@@ -49,39 +61,34 @@ public class MappingData {
 		this.splashTextData = splashTextData;
 		this.spriteAtlasData = spriteAtlasData;
 		this.shaderData = shaderData;
+		this.registry = null;
 	}
 
-	public void writeVanillaData(VanillaData data, DashRegistryWriter registry, DashLoader.TaskHandler taskHandler) {
+
+	public void map() {
+		DashLoaderProgress.PROGRESS.setCurrentSubtask("Mapping", 5);
+
 		if (Feature.MODEL_LOADER.active()) {
-			taskHandler.logAndTask("Mapping " + data.getStateLookup().size() + " Blockstates");
-			blockStateData = new DashBlockStateData(data, registry, taskHandler);
-
-			taskHandler.logAndTask("Mapping " + data.getModels().size() + " Models");
-			modelData = new DashModelData(data, registry, taskHandler);
-
-			taskHandler.logAndTask("Mapping " + data.atlasData.size() + " Atlas's");
-			spriteAtlasData = new DashSpriteAtlasData(data, registry, taskHandler);
-		}
+			blockStateData = new DashBlockStateData(VANILLA_DATA, registry);
+			modelData = new DashModelData(VANILLA_DATA, registry);
+			spriteAtlasData = new DashSpriteAtlasData(VANILLA_DATA, registry);
+		} DashLoaderProgress.PROGRESS.completedSubTask();
 
 		if (Feature.PARTICLES.active()) {
-			taskHandler.logAndTask("Mapping " + data.getParticles().size() + " Particles");
-			predicateData = new DashParticleData(data, registry, taskHandler);
-		}
+			predicateData = new DashParticleData(VANILLA_DATA, registry);
+		} DashLoaderProgress.PROGRESS.completedSubTask();
 
 		if (Feature.FONTS.active()) {
-			taskHandler.logAndTask("Mapping " + data.fontData.size() + " Fonts");
-			fontManagerData = new DashFontManagerData(data, registry, taskHandler);
-		}
+			fontManagerData = new DashFontManagerData(VANILLA_DATA, registry);
+		} DashLoaderProgress.PROGRESS.completedSubTask();
 
 		if (Feature.SPLASH_TEXT.active()) {
-			taskHandler.logAndTask("Mapping Splash Text");
-			splashTextData = new DashSplashTextData(data, taskHandler);
-		}
+			splashTextData = new DashSplashTextData(VANILLA_DATA);
+		} DashLoaderProgress.PROGRESS.completedSubTask();
 
 		if (Feature.SHADERS.active()) {
-			taskHandler.logAndTask("Mapping Shaders");
-			shaderData = new DashShaderData(data, taskHandler);
-		}
+			shaderData = new DashShaderData(VANILLA_DATA);
+		} DashLoaderProgress.PROGRESS.completedSubTask();
 	}
 
 	public void export(DashRegistryReader registry, VanillaData vanillaData) {
@@ -123,6 +130,17 @@ public class MappingData {
 		});
 	}
 
+	@Nullable
+	public SpriteAtlasTexture getAtlas(Identifier identifier) {
+		for (Pair<Feature, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>> pair : atlasesToRegister) {
+			final SpriteAtlasTexture atlas = pair.getRight().getLeft();
+			if (identifier.equals(atlas.getId())) {
+				return atlas;
+			}
+		}
+		return null;
+	}
+
 	public void registerAtlas(SpriteAtlasTexture atlasTexture, DashSpriteAtlasTextureData data, TextureManager textureManager) {
 		//atlas registration
 		final Identifier id = atlasTexture.getId();
@@ -146,17 +164,4 @@ public class MappingData {
 		atlasTexture.setFilter(false, maxLevel > 0);
 		DashLoader.LOGGER.info("Allocated: {}x{}x{} {}-atlas", width, height, maxLevel, id);
 	}
-
-	@Nullable
-	public SpriteAtlasTexture getAtlas(Identifier identifier) {
-		for (Pair<Feature, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>> pair : atlasesToRegister) {
-			final SpriteAtlasTexture atlas = pair.getRight().getLeft();
-			if (identifier.equals(atlas.getId())) {
-				return atlas;
-			}
-		}
-		return null;
-	}
-
-
 }

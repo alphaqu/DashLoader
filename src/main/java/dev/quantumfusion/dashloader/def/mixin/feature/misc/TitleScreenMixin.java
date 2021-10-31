@@ -24,6 +24,6 @@ public class TitleScreenMixin extends Screen {
 					target = "Ljava/util/List;iterator()Ljava/util/Iterator;"),
 			cancellable = true)
 	private void waterMark(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-		DrawableHelper.drawStringWithShadow(matrices, this.textRenderer, "DashLoader (" + DashLoader.VERSION + ")", 2, this.height - 12 - textRenderer.fontHeight, 16777215);
+		DrawableHelper.drawStringWithShadow(matrices, this.textRenderer, "DashLoader (" + DashLoader.VERSION + ")", 2, this.height - 12 - textRenderer.fontHeight, 0xffffff);
 	}
 }

@@ -22,16 +22,12 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 		this.models = models;
 	}
 
-	public DashModelData(VanillaData data, DashRegistryWriter writer, DashLoader.TaskHandler taskHandler) {
+	public DashModelData(VanillaData data, DashRegistryWriter writer) {
 		final Map<Identifier, BakedModel> models = data.getModels();
-		final int size = models.size();
 		this.models = new IntIntList(new ArrayList<>(models.size()));
-		taskHandler.setSubtasks(size);
 		models.forEach((identifier, bakedModel) -> {
-			if (bakedModel != null) {
+			if (bakedModel != null)
 				this.models.put(writer.add(identifier), writer.add(bakedModel));
-			}
-			taskHandler.completedSubTask();
 		});
 	}
 

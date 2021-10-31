@@ -23,18 +23,16 @@ public class DashSpriteAtlasData {
 		this.atlases = atlases;
 	}
 
-	public DashSpriteAtlasData(VanillaData data, DashRegistryWriter writer, DashLoader.TaskHandler taskHandler) {
+	public DashSpriteAtlasData(VanillaData data, DashRegistryWriter writer) {
 		atlases = new ObjectObjectList<>();
 		var atlases = ((SpriteAtlasManagerAccessor) data.getAtlasManager()).getAtlases();
 		var extraAtlases = data.getExtraAtlases();
-		taskHandler.setSubtasks(atlases.size() + extraAtlases.size());
-		atlases.forEach((identifier, spriteAtlasTexture) -> addAtlas(data, writer, taskHandler, spriteAtlasTexture, 0));
-		extraAtlases.forEach(spriteAtlasTexture -> addAtlas(data, writer, taskHandler, spriteAtlasTexture, 1));
+		atlases.forEach((identifier, spriteAtlasTexture) -> addAtlas(data, writer, spriteAtlasTexture, 0));
+		extraAtlases.forEach(spriteAtlasTexture -> addAtlas(data, writer, spriteAtlasTexture, 1));
 	}
 
-	private void addAtlas(VanillaData data, DashRegistryWriter writer, DashLoader.TaskHandler tasks, SpriteAtlasTexture texture, int i) {
+	private void addAtlas(VanillaData data, DashRegistryWriter writer, SpriteAtlasTexture texture, int i) {
 		this.atlases.put(new DashSpriteAtlasTexture(texture, data.getAtlasData(texture), writer), i);
-		tasks.completedSubTask();
 	}
 
 

@@ -54,7 +54,6 @@ public final class DashBasicBakedModel implements DashModel {
 
 	public DashBasicBakedModel(BasicBakedModel basicBakedModel, DashRegistryWriter writer) {
 		BasicBakedModelAccessor access = ((BasicBakedModelAccessor) basicBakedModel);
-		//DashHelper.convertCollection(access.getQuads(), quad -> new DashBakedQuad(quad, writer))
 		this.quads = new ArrayList<>();
 		for (var quad : access.getQuads()) quads.add(new DashBakedQuad(quad, writer));
 
