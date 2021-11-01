@@ -50,12 +50,10 @@ public class MultipartUnbakedModelMixin {
 
 			components.forEach(multipartModelComponent -> outSelectors.add(((MultipartModelComponentAccessor) multipartModelComponent).getSelector()));
 			DashLoader.getData().getWriteContextData().multipartPredicates.put(bakedModel, Pair.of(outSelectors, stateFactory));
-			MixinThings.addPredicates(outSelectors,stateFactory);
+			MixinThings.addPredicates(outSelectors, stateFactory);
 			cir.setReturnValue(bakedModel);
 		}
 	}
-
-
 
 
 }

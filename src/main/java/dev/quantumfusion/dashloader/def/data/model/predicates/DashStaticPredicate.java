@@ -5,6 +5,7 @@ import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.def.util.BooleanSelector;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.render.model.json.MultipartModelSelector;
 
 import java.util.function.Predicate;
 
@@ -24,7 +25,7 @@ public class DashStaticPredicate implements DashPredicate {
 
 	@Override
 	public Predicate<BlockState> export(DashRegistryReader exportHandler) {
-		return (blockState) -> value;
+		return value ? MultipartModelSelector.TRUE.getPredicate(null) : MultipartModelSelector.FALSE.getPredicate(null);
 	}
 
 }

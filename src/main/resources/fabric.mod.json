@@ -57,20 +57,11 @@
 			"dev.quantumfusion.dashloader.def.data.font.DashTrueTypeFont",
 			"dev.quantumfusion.dashloader.def.data.font.DashUnicodeFont",
 
-			"dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState",
-			"dev.quantumfusion.dashloader.def.data.blockstate.property.DashBooleanProperty",
-			"dev.quantumfusion.dashloader.def.data.blockstate.property.DashDirectionProperty",
-			"dev.quantumfusion.dashloader.def.data.blockstate.property.DashEnumProperty",
-			"dev.quantumfusion.dashloader.def.data.blockstate.property.DashIntProperty",
-			"dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashBooleanValue",
-			"dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashDirectionValue",
-			"dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashEnumValue",
-			"dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashIntValue"
+			"dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState"
 		]
 	},
 	"breaks" : {
 		"connected_block_textures" : "*",
-		"hydrogen" : "*",
 		"sodium" : "<=0.1.0"
 	}
 }

@@ -20,13 +20,17 @@ import java.util.function.Predicate;
 @DashDependencies(DashSimplePredicate.class)
 public class DashOrPredicate implements DashPredicate {
 	public final List<DashPredicate> selectors;
+	public final int identifier;
 
-	public DashOrPredicate(List<DashPredicate> selectors) {
+	public DashOrPredicate(List<DashPredicate> selectors, int identifier) {
 		this.selectors = selectors;
+		this.identifier = identifier;
 	}
 
 	public DashOrPredicate(OrMultipartModelSelector selector, DashRegistryWriter writer) {
 		OrMultipartModelSelectorAccessor access = ((OrMultipartModelSelectorAccessor) selector);
+		this.identifier = writer.add(DashSimplePredicate.getStateManagerIdentifier(selector));
+
 		selectors = new ArrayList<>();
 		for (MultipartModelSelector accessSelector : access.getSelectors())
 			selectors.add(DashPredicateCreator.create(accessSelector, writer));
@@ -35,14 +39,12 @@ public class DashOrPredicate implements DashPredicate {
 
 	@Override
 	public Predicate<BlockState> export(DashRegistryReader handler) {
-		List<Predicate<BlockState>> selectorsOut = new ArrayList<>();
-		for (DashPredicate accessSelector : selectors)
-			selectorsOut.add(accessSelector.export(handler));
+		final ArrayList<MultipartModelSelector> selectors = new ArrayList<>();
+		for (DashPredicate accessSelector : this.selectors){
+			final Predicate<BlockState> export = accessSelector.export(handler);
+			selectors.add((stateStateManager) -> export);
+		}
 
-		return (blockState) -> {
-			for (Predicate<BlockState> blockStatePredicate : selectorsOut)
-				if (blockStatePredicate.test(blockState)) return true;
-			return false;
-		};
+		return new OrMultipartModelSelector(selectors).getPredicate(DashSimplePredicate.getStateManager(handler.get(identifier)));
 	}
 }

@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Objects;
 
-@Mixin(ModelIdentifier.class)
+@Mixin(value = ModelIdentifier.class, priority = 999)
 public abstract class ModelIdentifierMixin {
 	@Shadow
 	@Final

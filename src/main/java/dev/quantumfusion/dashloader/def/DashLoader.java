@@ -16,8 +16,6 @@ import dev.quantumfusion.dashloader.def.data.DashIdentifier;
 import dev.quantumfusion.dashloader.def.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.def.data.DashModelIdentifier;
 import dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState;
-import dev.quantumfusion.dashloader.def.data.blockstate.property.DashProperty;
-import dev.quantumfusion.dashloader.def.data.blockstate.property.value.DashPropertyValue;
 import dev.quantumfusion.dashloader.def.data.font.DashFont;
 import dev.quantumfusion.dashloader.def.data.image.DashImage;
 import dev.quantumfusion.dashloader.def.data.image.DashSprite;
@@ -78,7 +76,7 @@ public class DashLoader {
 				LOGGER.warn("DashLoader launched in dev.");
 
 			core.setCurrentSubcache("null");
-			core.prepareSerializer(RegistryData.class, DashBlockState.class, DashFont.class, DashIdentifierInterface.class, DashProperty.class, DashPropertyValue.class, DashSprite.class, DashPredicate.class, DashBakedQuad.class);
+			core.prepareSerializer(RegistryData.class, DashBlockState.class, DashFont.class, DashIdentifierInterface.class, DashSprite.class, DashPredicate.class, DashBakedQuad.class);
 			core.prepareSerializer(ImageData.class, DashImage.class);
 			core.prepareSerializer(ModelData.class, DashModel.class);
 			core.prepareSerializer(MappingData.class);
