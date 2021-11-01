@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.def.mixin.feature.cache;
 
+import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
@@ -36,15 +37,16 @@ public class SplashTextResourceSupplierMixin {
 	)
 	private void applySplashCache(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<List<String>> cir) {
 		try {
-			final List<String> splashTextOut = DashLoader.getVanillaData().getSplashText();
-			if (splashTextOut != null) {
-				cir.setReturnValue(splashTextOut);
+
+			final DashDataManager.DashDataHandler<List<String>> splashText = DashLoader.getData().splashText;
+			if (DashLoader.isRead() && splashText.dataAvailable()) {
+				cir.setReturnValue(splashText.getCacheResultData());
 			} else {
 				Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(RESOURCE_ID);
-				List<String> var7;
+				List<String> splashTexts;
 				try {
 					try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
-						var7 = bufferedReader.lines().map(String::trim).filter((string) -> string.hashCode() != 125780783).collect(Collectors.toList());
+						splashTexts = bufferedReader.lines().map(String::trim).filter((string) -> string.hashCode() != 125780783).collect(Collectors.toList());
 					}
 				} finally {
 					if (resource != null) {
@@ -52,8 +54,8 @@ public class SplashTextResourceSupplierMixin {
 					}
 
 				}
-				DashLoader.getVanillaData().setSplashTextAssets(var7);
-				cir.setReturnValue(var7);
+				splashText.setMinecraftData(splashTexts);
+				cir.setReturnValue(splashTexts);
 			}
 		} catch (IOException var36) {
 			cir.setReturnValue(Collections.emptyList());

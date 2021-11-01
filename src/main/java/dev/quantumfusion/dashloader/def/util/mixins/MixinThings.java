@@ -27,7 +27,7 @@ public class MixinThings {
 		} else if (multipartModelSelector instanceof OrMultipartModelSelector or) {
 			addPredicates(((OrMultipartModelSelectorAccessor) or).getSelectors(), stateStateManager);
 		}
-		DashLoader.getVanillaData().addPredicateStateManager(multipartModelSelector, stateStateManager);
+		DashLoader.getData().getWriteContextData().stateManagers.put(multipartModelSelector, stateStateManager);
 	}
 
 }

@@ -14,11 +14,12 @@ public class GlStateManagerMixin {
 
 	@Inject(
 			method = "glShaderSource",
-			at = @At(value = "HEAD"),
-			cancellable = true
+			at = @At(value = "HEAD")
 	)
 	private static void glShaderSourceInject(int shader, List<String> strings, CallbackInfo ci) {
-		DashLoader.getVanillaData().addProgramData(shader, strings);
+		if (DashLoader.isWrite()) {
+			DashLoader.getData().getWriteContextData().programData.put(shader, strings);
+		}
 	}
 
 }

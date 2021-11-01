@@ -64,7 +64,7 @@ public record DashSpriteAtlasTexture(
 		spriteAtlasTextureAccessor.setSprites(out);
 		spriteAtlasTextureAccessor.setId(reader.get(id));
 		spriteAtlasTextureAccessor.setMaxTextureSize(maxTextureSize);
-		DashLoader.getVanillaData().addAtlasData(spriteAtlasTexture, data);
+		DashLoader.getData().getReadContextData().atlasData.put(spriteAtlasTexture, data);
 		return spriteAtlasTexture;
 	}
 

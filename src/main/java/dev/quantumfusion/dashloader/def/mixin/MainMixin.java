@@ -12,10 +12,9 @@ public class MainMixin {
 
 	@Inject(
 			method = "main([Ljava/lang/String;)V",
-			at = @At(value = "HEAD"),
-			cancellable = true
+			at = @At(value = "HEAD")
 	)
 	private static void main(String[] args, CallbackInfo ci) {
-		new DashLoader(Thread.currentThread().getContextClassLoader());
+		DashLoader.init();
 	}
 }

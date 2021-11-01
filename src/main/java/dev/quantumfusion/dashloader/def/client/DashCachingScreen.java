@@ -41,7 +41,7 @@ public class DashCachingScreen extends Screen {
 	}
 
 	public void start() {
-		final Thread thread = new Thread(() -> DashLoader.getInstance().saveDashCache());
+		final Thread thread = new Thread(DashLoader.INSTANCE::saveDashCache);
 		thread.setName("dld-thread");
 		thread.start();
 	}
@@ -80,6 +80,7 @@ public class DashCachingScreen extends Screen {
 
 		if (exit) {
 			instance.setScreen(this.previousScreen);
+			DashLoader.INSTANCE.reloadComplete();
 			exit = false;
 		}
 
@@ -92,7 +93,7 @@ public class DashCachingScreen extends Screen {
 
 	private static double calcDelta(double targetProgress, double currentProgress, double timeOff) {
 		double delta = targetProgress - currentProgress;
-		return delta == 0 ? 0 : (delta / (delta < 0 ? 10 : 20)) / timeOff;
+		return delta == 0 ? 0 : (delta / (delta < 0 ? 5 : 10)) / timeOff;
 	}
 
 	private void updateProgress() {

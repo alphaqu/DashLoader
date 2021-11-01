@@ -1,11 +1,10 @@
-package dev.quantumfusion.dashloader.def.data.dataobject.mapping;
+package dev.quantumfusion.dashloader.def.corehook.holder;
 
 import dev.quantumfusion.dashloader.core.Dashable;
 import dev.quantumfusion.dashloader.core.common.IntObjectList;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
-import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
+import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -19,9 +18,9 @@ public class DashBlockStateData implements Dashable<Object2IntMap<BlockState>> {
 		this.blockstates = blockstates;
 	}
 
-	public DashBlockStateData(VanillaData data, DashRegistryWriter writer) {
+	public DashBlockStateData(DashDataManager data, DashRegistryWriter writer) {
 		this.blockstates = new IntObjectList<>();
-		final Object2IntMap<BlockState> stateLookup = data.getStateLookup();
+		final Object2IntMap<BlockState> stateLookup = data.modelStateLookup.getMinecraftData();
 		stateLookup.forEach((blockState, integer) -> this.blockstates.put(writer.add(blockState), integer));
 	}
 

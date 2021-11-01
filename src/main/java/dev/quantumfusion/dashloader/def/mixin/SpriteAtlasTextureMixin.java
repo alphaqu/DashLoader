@@ -16,6 +16,8 @@ public class SpriteAtlasTextureMixin {
 			at = @At(value = "HEAD")
 	)
 	private void saveAtlasInfo(SpriteAtlasTexture.Data data, CallbackInfo ci) {
-		DashLoader.getVanillaData().addAtlasData((SpriteAtlasTexture) (Object) this, new DashSpriteAtlasTextureData(data));
+		if (DashLoader.isWrite()) {
+			DashLoader.getData().getWriteContextData().atlasData.put((SpriteAtlasTexture) (Object) this, new DashSpriteAtlasTextureData(data));
+		}
 	}
 }

@@ -8,7 +8,6 @@ import dev.quantumfusion.dashloader.def.util.IOHelper;
 import dev.quantumfusion.dashloader.def.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TrueTypeFont;
 import net.minecraft.resource.Resource;
@@ -45,10 +44,10 @@ public class DashTrueTypeFont implements DashFont {
 
 	public DashTrueTypeFont(TrueTypeFont font) {
 		TrueTypeFontAccessor fontAccess = (TrueTypeFontAccessor) font;
-		final Object2ObjectMap<STBTTFontinfo, Identifier> fontData = DashLoader.getVanillaData().getFontData();
+		final Identifier ttFont = DashLoader.getData().getWriteContextData().fontData.get(fontAccess.getInfo());
 		byte[] data = null;
 		try {
-			Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(new Identifier(fontData.get(fontAccess.getInfo()).getNamespace(), "font/" + fontData.get(fontAccess.getInfo()).getPath()));
+			Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(new Identifier(ttFont.getNamespace(), "font/" + ttFont.getPath()));
 			data = IOHelper.streamToArray(resource.getInputStream());
 		} catch (IOException e) {
 			e.printStackTrace();

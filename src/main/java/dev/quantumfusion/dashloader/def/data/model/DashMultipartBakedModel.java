@@ -41,7 +41,7 @@ public class DashMultipartBakedModel implements DashModel {
 	}
 
 	public DashMultipartBakedModel(MultipartBakedModel model, DashRegistryWriter writer) {
-		var selectors = DashLoader.getVanillaData().getModelData(model);
+		var selectors = DashLoader.getData().getWriteContextData().multipartPredicates.get(model);
 		var access = ((MultipartBakedModelAccessor) model);
 		var accessComponents = access.getComponents();
 		int size = accessComponents.size();
@@ -50,19 +50,19 @@ public class DashMultipartBakedModel implements DashModel {
 		for (int i = 0; i < size; i++) {
 			var right = accessComponents.get(i).getRight();
 			var selector = selectors.getKey().get(i);
-			DashLoader.getVanillaData().stateManagers.put(selector, selectors.getValue());
+			DashLoader.getData().getWriteContextData().stateManagers.put(selector, selectors.getValue());
 			components.put(writer.add(RegistryUtil.preparePredicate(selector)), writer.add(right));
 		}
 		this.stateCache = new IntObjectList<>();
-		access.getStateCache().forEach((blockState, bitSet) -> this.stateCache.put(writer.add(bitSet), bitSet.toByteArray()));
+		access.getStateCache().forEach((blockState, bitSet) -> this.stateCache.put(writer.add(blockState), bitSet.toByteArray()));
 	}
 
 	@Override
-	public MultipartBakedModel export(DashRegistryReader handler) {
+	public MultipartBakedModel export(DashRegistryReader reader) {
 		MultipartBakedModel model = UnsafeHelper.allocateInstance(cls);
 
 		Map<BlockState, BitSet> stateCacheOut = new Object2ObjectOpenCustomHashMap<>(Util.identityHashStrategy());
-		stateCache.forEach((key, value) -> stateCacheOut.put(handler.get(key), BitSet.valueOf(value)));
+		stateCache.forEach((blockstate, bitSet) -> stateCacheOut.put(reader.get(blockstate), BitSet.valueOf(bitSet)));
 		((MultipartBakedModelAccessor) model).setStateCache(stateCacheOut);
 
 		toApply = model;

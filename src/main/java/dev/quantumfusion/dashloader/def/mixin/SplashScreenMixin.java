@@ -26,7 +26,7 @@ public class SplashScreenMixin {
 			cancellable = true
 	)
 	private void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-		if (DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
+		if (DashLoader.INSTANCE.getStatus() == DashLoader.Status.READ) {
 			this.client.setOverlay(null);
 			if (client.currentScreen != null) {
 				if (this.client.currentScreen instanceof TitleScreen) {
@@ -39,7 +39,6 @@ public class SplashScreenMixin {
 			final DashCachingScreen currentScreen = new DashCachingScreen(this.client.currentScreen);
 			this.client.setScreen(currentScreen);
 			currentScreen.start();
-
 		}
 
 		ci.cancel();

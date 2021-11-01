@@ -1,7 +1,6 @@
-package dev.quantumfusion.dashloader.def.data.dataobject.mapping;
+package dev.quantumfusion.dashloader.def.corehook.holder;
 
-import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
+import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 
 import java.util.List;
@@ -14,8 +13,8 @@ public class DashSplashTextData {
 		this.splashList = splashList;
 	}
 
-	public DashSplashTextData(VanillaData data) {
-		splashList = data.getSplashText();
+	public DashSplashTextData(DashDataManager data) {
+		splashList = data.splashText.getMinecraftData();
 	}
 
 	public List<String> export() {

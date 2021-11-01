@@ -25,7 +25,7 @@ import java.util.List;
 @DashObject(BasicBakedModel.class)
 @DashDependencies({DashSprite.class, DashBakedQuad.class})
 public final class DashBasicBakedModel implements DashModel {
-	public final List<DashBakedQuad> quads;
+	public final List<Integer> quads;
 	public final ObjectObjectList<Direction, List<Integer>> faceQuads;
 	public final boolean usesAo;
 	public final boolean hasDepth;
@@ -35,7 +35,7 @@ public final class DashBasicBakedModel implements DashModel {
 	public final DashModelOverrideList itemPropertyOverrides;
 	public final int spritePointer;
 
-	public DashBasicBakedModel(List<DashBakedQuad> quads,
+	public DashBasicBakedModel(List<Integer> quads,
 			ObjectObjectList<Direction, List<Integer>> faceQuads,
 			boolean usesAo, boolean hasDepth, boolean isSideLit,
 			DashModelTransformation transformation,
@@ -55,7 +55,7 @@ public final class DashBasicBakedModel implements DashModel {
 	public DashBasicBakedModel(BasicBakedModel basicBakedModel, DashRegistryWriter writer) {
 		BasicBakedModelAccessor access = ((BasicBakedModelAccessor) basicBakedModel);
 		this.quads = new ArrayList<>();
-		for (var quad : access.getQuads()) quads.add(new DashBakedQuad(quad, writer));
+		for (var quad : access.getQuads()) quads.add(writer.add(quad));
 
 		this.faceQuads = new ObjectObjectList<>();
 		access.getFaceQuads().forEach((direction, bakedQuads) -> {
@@ -78,7 +78,7 @@ public final class DashBasicBakedModel implements DashModel {
 		final Sprite sprite = reader.get(spritePointer);
 
 		var quadsOut = new ArrayList<BakedQuad>();
-		for (var quad : this.quads) quadsOut.add(quad.export(reader));
+		for (var quad : this.quads) quadsOut.add(reader.get(quad));
 
 		var faceQuadsOut = new HashMap<Direction, List<BakedQuad>>();
 		for (var entry : faceQuads.list()) {

@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.mixin.feature.shader;
 
+import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
 import dev.quantumfusion.dashloader.def.data.image.shader.DashShader;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Shader;
@@ -196,7 +196,7 @@ public abstract class GameRendererMixin {
 			cancellable = true
 	)
 	private void loadShaders(ResourceManager manager, CallbackInfo ci) {
-		if (DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
+		if (DashLoader.isRead()) {
 			dashReload();
 			ci.cancel();
 		}
@@ -204,21 +204,25 @@ public abstract class GameRendererMixin {
 
 	@Inject(
 			method = "loadShaders",
-			at = @At(value = "TAIL"),
-			cancellable = true
+			at = @At(value = "TAIL")
 	)
 	private void reloadEnd(ResourceManager manager, CallbackInfo ci) {
-		DashLoader.getVanillaData().setShaderAssets(shaders);
+		if (DashLoader.isWrite()) {
+			final DashDataManager instance = DashLoader.getData();
+			instance.shaders.setMinecraftData(shaders);
+		}
 	}
 
 	private void dashReload() {
-		final VanillaData vanillaData = DashLoader.getVanillaData();
-		final Map<String, DashShader> shaders = DashLoader.getInstance().getMappings().shaderData.shaders;
-		final int size = shaders.size();
+		var manager = DashLoader.getData();
+		var shaders = manager.getReadContextData().shaderData;
+		int size = shaders.size();
+
 		DashLoader.LOGGER.info("Applying {} shaders.", size);
-		shaders.values().forEach(DashShader::apply);
-		final Map<String, Shader> shaderData = vanillaData.getShaderData();
+		shaders.forEach(DashShader::apply);
+
 		DashLoader.LOGGER.info("Setting {} shaders.", size);
+		var shaderData = manager.shaders.getCacheResultData();
 		blockShader = shaderData.get("block");
 		newEntityShader = shaderData.get("new_entity");
 		particleShader = shaderData.get("particle");
@@ -273,6 +277,7 @@ public abstract class GameRendererMixin {
 		renderTypeEndGatewayShader = shaderData.get("rendertype_end_gateway");
 		renderTypeLinesShader = shaderData.get("rendertype_lines");
 		renderTypeCrumblingShader = shaderData.get("rendertype_crumbling");
+
 		DashLoader.LOGGER.info("Replacing {} shaders", size);
 		clearShaders();
 		shaderData.forEach(this.shaders::put);

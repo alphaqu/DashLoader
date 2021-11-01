@@ -36,15 +36,16 @@ public class FontManagerOverride {
 			cancellable = true
 	)
 	private void overridePrepare(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<Map<Identifier, List<Font>>> cir) {
-		final Map<Identifier, List<Font>> fontsOut = DashLoader.getVanillaData().getFonts();
-		if (fontsOut != null && DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
-			fontsOut.forEach((identifier, list) -> list.forEach(font -> {
+		var fonts = DashLoader.getData().fonts;
+		if (fonts.dataAvailable() && DashLoader.isRead()) {
+			var cacheResultData = fonts.getCacheResultData();
+			cacheResultData.forEach((identifier, list) -> list.forEach(font -> {
 						if (font instanceof UnicodeTextureFont) {
 							((UnicodeTextureFontAccessor) font).setResourceManager(resourceManager);
 						}
 					}
 			));
-			cir.setReturnValue(fontsOut);
+			cir.setReturnValue(cacheResultData);
 		}
 	}
 
@@ -55,7 +56,8 @@ public class FontManagerOverride {
 			cancellable = true
 	)
 	private void overrideApply(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		if (DashLoader.getVanillaData().getFonts() != null && DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
+		var fonts = DashLoader.getData().fonts;
+		if (fonts.dataAvailable() && DashLoader.isRead()) {
 			profiler.startTick();
 			profiler.push("closing");
 			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) MixinThings.fontManager;
@@ -63,11 +65,11 @@ public class FontManagerOverride {
 			fontManagerAccessor.getFontStorages().clear();
 			profiler.swap("reloading");
 			Map<FontStorage, List<Font>> fontMap = new LinkedHashMap<>();
-			map.forEach((identifier, fonts) -> {
+			map.forEach((identifier, fontList) -> {
 				FontStorage fontStorage = new FontStorage(fontManagerAccessor.getTextureManager(), identifier);
 				prepareFontStorage(((FontStorageAccessor) fontStorage));
 				fontManagerAccessor.getFontStorages().put(identifier, fontStorage);
-				fontMap.put(fontStorage, fonts);
+				fontMap.put(fontStorage, fontList);
 			});
 
 			fontMap.entrySet().parallelStream().forEach(entry -> computeFontStorages(((FontStorageAccessor) entry.getKey()), Lists.reverse(entry.getValue())));
@@ -77,9 +79,11 @@ public class FontManagerOverride {
 		}
 	}
 
-	@Inject(method = {"method_18635", "apply"}, at = @At(value = "TAIL"), cancellable = true)
+	@Inject(method = {"method_18635", "apply"}, at = @At(value = "TAIL"))
 	private void applyInject(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		DashLoader.getVanillaData().setFontAssets(map);
+		if (DashLoader.isWrite()) {
+			DashLoader.getData().fonts.setMinecraftData(map);
+		}
 	}
 
 	private void prepareFontStorage(FontStorageAccessor access) {

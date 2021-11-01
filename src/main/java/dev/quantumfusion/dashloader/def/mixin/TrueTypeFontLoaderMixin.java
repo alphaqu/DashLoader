@@ -28,6 +28,8 @@ public class TrueTypeFontLoaderMixin {
 			locals = LocalCapture.CAPTURE_FAILSOFT
 	)
 	private void loadInject(ResourceManager manager, CallbackInfoReturnable<Font> cir, STBTTFontinfo sTBTTFontinfo) {
-		DashLoader.getVanillaData().addTypeFontAsset(sTBTTFontinfo, filename);
+		if (DashLoader.isWrite()) {
+			DashLoader.getData().getWriteContextData().fontData.put(sTBTTFontinfo, filename);
+		}
 	}
 }

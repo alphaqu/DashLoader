@@ -1,9 +1,9 @@
 package dev.quantumfusion.dashloader.def.mixin.feature.cache;
 
+import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.feature.Feature;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
-import dev.quantumfusion.dashloader.def.data.dataobject.MappingData;
+import dev.quantumfusion.dashloader.def.fallback.DashModelLoader;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
@@ -63,9 +63,10 @@ public class BakedModelManagerOverride {
 	private void prepare(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<ModelLoader> cir) {
 		profiler.startTick();
 		ModelLoader modelLoader;
-		if (DashLoader.getInstance().getStatus() != DashLoader.Status.LOADED) {
+		if (DashLoader.isWrite()) {
 			DashLoader.LOGGER.info("DashLoader not loaded, Initializing minecraft ModelLoader to create assets for caching.");
 			modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmapLevels);
+			DashLoader.getData().getWriteContextData().loader = modelLoader;
 		} else {
 			DashLoader.LOGGER.info("Skipping the ModelLoader as DashLoader has assets loaded.");
 			//hipidy hopedy this is now dashes property
@@ -76,34 +77,35 @@ public class BakedModelManagerOverride {
 
 	}
 
-	@Inject(method = "apply",
+	@Inject(method = "apply*",
 			at = @At(value = "HEAD"), cancellable = true)
 	private void applyStage(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
 		profiler.startTick();
 		profiler.push("upload");
-		DashLoader loader = DashLoader.getInstance();
-		if (DashLoader.getInstance().getStatus() != DashLoader.Status.LOADED) {
+		final DashDataManager data = DashLoader.getData();
+		if (DashLoader.isWrite()) {
 			//serialization
 			this.atlasManager = modelLoader.upload(this.textureManager, profiler);
 			this.models = modelLoader.getBakedModelMap();
 			this.stateLookup = modelLoader.getStateLookup();
-			DashLoader.getVanillaData().setBakedModelAssets(atlasManager, stateLookup, models);
 
+			data.spriteAtlasManager.setMinecraftData(atlasManager);
+			data.bakedModels.setMinecraftData(models);
+			data.modelStateLookup.setMinecraftData(stateLookup);
 		} else {
 			//cache go brr
 			DashLoader.LOGGER.info("Starting apply stage.");
 			//register textures
 			profiler.push("atlas");
-			final MappingData mappings = loader.getMappings();
-			if (mappings != null) {
-				mappings.registerAtlases(textureManager, Feature.MODEL_LOADER);
-			}
+			data.getReadContextData().dashAtlasManager.registerAtlases(textureManager, Feature.MODEL_LOADER);
 			profiler.swap("baking");
 			profiler.pop();
-			final VanillaData vanillaData = DashLoader.getVanillaData();
-			this.atlasManager = vanillaData.getAtlasManager();
-			this.models = vanillaData.getModels();
-			this.stateLookup = vanillaData.getStateLookup();
+
+			this.atlasManager = data.spriteAtlasManager.getCacheResultData();
+			this.models = data.bakedModels.getCacheResultData();
+			this.stateLookup = data.modelStateLookup.getCacheResultData();
+
+			DashModelLoader.bakeUnsupportedModels(resourceManager, this.atlasManager, this.colorMap, this.models);
 		}
 		this.missingModel = this.models.get(ModelLoader.MISSING_ID);
 		profiler.swap("cache");

@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader.def.mixin;
 
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.data.dataobject.MappingData;
 import net.minecraft.client.texture.SpriteAtlasHolder;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.ResourceManager;
@@ -29,9 +28,9 @@ public class SpriteAtlasHolderMixin {
 			cancellable = true
 	)
 	private void prepareOverride(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<SpriteAtlasTexture.Data> cir) {
-		final DashLoader loader = DashLoader.getInstance();
-		if (loader.getStatus() == DashLoader.Status.LOADED) {
-			if (loader.getMappings().getAtlas(this.atlas.getId()) != null) {
+		if (DashLoader.isRead()) {
+			var dashAtlasManager = DashLoader.getData().getReadContextData().dashAtlasManager;
+			if (dashAtlasManager.getAtlas(this.atlas.getId()) != null) {
 				cir.setReturnValue(null);
 			}
 		}
@@ -44,15 +43,12 @@ public class SpriteAtlasHolderMixin {
 			cancellable = true
 	)
 	private void applyOverride(SpriteAtlasTexture.Data data, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		final DashLoader instance = DashLoader.getInstance();
-		if (instance.getStatus() == DashLoader.Status.LOADED) {
-			final MappingData mappings = instance.getMappings();
-			if (mappings != null) {
-				final SpriteAtlasTexture atlas = mappings.getAtlas(this.atlas.getId());
-				if (atlas != null) {
-					this.atlas = atlas;
-					ci.cancel();
-				}
+		if (DashLoader.isRead()) {
+			var dashAtlasManager = DashLoader.getData().getReadContextData().dashAtlasManager;
+			final SpriteAtlasTexture atlas = dashAtlasManager.getAtlas(this.atlas.getId());
+			if (atlas != null) {
+				this.atlas = atlas;
+				ci.cancel();
 			}
 		}
 	}
@@ -63,10 +59,10 @@ public class SpriteAtlasHolderMixin {
 			cancellable = true
 	)
 	private void applyCreate(SpriteAtlasTexture.Data data, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		if (DashLoader.getInstance().getStatus() == DashLoader.Status.LOADED) {
+		if (DashLoader.isRead()) {
 			ci.cancel();
 		} else {
-			DashLoader.getVanillaData().addExtraAtlasAssets(atlas);
+			DashLoader.getData().getWriteContextData().extraAtlases.add(atlas);
 		}
 	}
 }

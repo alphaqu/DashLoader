@@ -38,6 +38,7 @@
 			"dev.quantumfusion.dashloader.def.data.model.DashBuiltinBakedModel",
 			"dev.quantumfusion.dashloader.def.data.model.DashMultipartBakedModel",
 			"dev.quantumfusion.dashloader.def.data.model.DashWeightedBakedModel",
+			"dev.quantumfusion.dashloader.def.fallback.MissingDashModel",
 
 			"dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad",
 
@@ -69,9 +70,6 @@
 	},
 	"breaks" : {
 		"connected_block_textures" : "*",
-		"enhancedblockentities" : "*",
-		"optifabric" : "*",
-		"lambdabettergrass" : "*",
 		"hydrogen" : "*",
 		"sodium" : "<=0.1.0"
 	}

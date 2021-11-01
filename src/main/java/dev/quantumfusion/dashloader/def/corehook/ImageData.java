@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.def.data.dataobject;
+package dev.quantumfusion.dashloader.def.corehook;
 
 import dev.quantumfusion.dashloader.core.registry.ChunkDataHolder;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;

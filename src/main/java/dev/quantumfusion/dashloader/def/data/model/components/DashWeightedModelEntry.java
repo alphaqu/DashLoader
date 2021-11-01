@@ -19,6 +19,4 @@ public record DashWeightedModelEntry(int model, int weight) {
 	public Weighted.Present<BakedModel> export(DashRegistryReader handler) {
 		return WeightedBakedModelEntryAccessor.init(handler.get(model), Weight.of(weight));
 	}
-
-
 }

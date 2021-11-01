@@ -40,8 +40,7 @@ public class DashSimplePredicate implements DashPredicate {
 
 
 	public DashSimplePredicate(SimpleMultipartModelSelector simpleMultipartModelSelector, DashRegistryWriter writer) {
-		//TODO statemanager
-		StateManager<Block, BlockState> stateManager = DashLoader.getVanillaData().stateManagers.get(simpleMultipartModelSelector);
+		StateManager<Block, BlockState> stateManager = DashLoader.getData().getWriteContextData().stateManagers.get(simpleMultipartModelSelector);
 		SimpleMultipartModelSelectorAccessor access = ((SimpleMultipartModelSelectorAccessor) simpleMultipartModelSelector);
 		Property<?> stateManagerProperty = stateManager.getProperty(access.getKey());
 		properties = new IntIntList(new ArrayList<>());

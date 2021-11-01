@@ -17,9 +17,17 @@ public abstract class MinecraftClientMixin {
 	protected abstract void render(boolean tick);
 
 	@Inject(method = "reloadResources()Ljava/util/concurrent/CompletableFuture;",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;reloadResources(Z)Ljava/util/concurrent/CompletableFuture;"), cancellable = true)
-	private void reloadResourcesOverride(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-		DashLoader.getInstance().requestReload();
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;reloadResources(Z)Ljava/util/concurrent/CompletableFuture;"))
+	private void requestReload(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+		DashLoader.INSTANCE.requestReload();
+	}
+
+
+	@Inject(method = "reloadResources(Z)Ljava/util/concurrent/CompletableFuture;", at = @At(value = "RETURN"))
+	private void reloadComplete(boolean thing, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+		cir.getReturnValue().thenRun(() -> {
+			if (DashLoader.isRead()) DashLoader.INSTANCE.reloadComplete();
+		});
 	}
 
 

@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.datatest;
 
 import dev.quantumfusion.dashloader.def.TestUtils;
-import dev.quantumfusion.dashloader.def.data.dataobject.mapping.*;
+import dev.quantumfusion.dashloader.def.corehook.holder.*;
 import dev.quantumfusion.dashloader.def.data.image.shader.*;
 import org.junit.jupiter.api.Test;
 

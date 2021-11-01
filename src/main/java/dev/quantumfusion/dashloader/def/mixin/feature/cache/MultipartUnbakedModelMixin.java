@@ -44,16 +44,15 @@ public class MultipartUnbakedModelMixin {
 			cancellable = true
 	)
 	private void addPredicateInfo(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId, CallbackInfoReturnable<BakedModel> cir, MultipartBakedModel.Builder builder) {
-		var bakedModel = (MultipartBakedModel) builder.build();
-		var outSelectors = new ArrayList<MultipartModelSelector>();
-		var vanillaData = DashLoader.getVanillaData();
+		if (DashLoader.isWrite()) {
+			var bakedModel = (MultipartBakedModel) builder.build();
+			var outSelectors = new ArrayList<MultipartModelSelector>();
 
-		components.forEach(multipartModelComponent -> outSelectors.add(((MultipartModelComponentAccessor) multipartModelComponent).getSelector()));
-		vanillaData.addMultipartModelPredicate(bakedModel, Pair.of(outSelectors, stateFactory));
-		MixinThings.addPredicates(outSelectors,stateFactory);
-
-
-		cir.setReturnValue(bakedModel);
+			components.forEach(multipartModelComponent -> outSelectors.add(((MultipartModelComponentAccessor) multipartModelComponent).getSelector()));
+			DashLoader.getData().getWriteContextData().multipartPredicates.put(bakedModel, Pair.of(outSelectors, stateFactory));
+			MixinThings.addPredicates(outSelectors,stateFactory);
+			cir.setReturnValue(bakedModel);
+		}
 	}
 
 

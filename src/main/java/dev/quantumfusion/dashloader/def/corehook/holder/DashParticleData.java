@@ -1,11 +1,10 @@
-package dev.quantumfusion.dashloader.def.data.dataobject.mapping;
+package dev.quantumfusion.dashloader.def.corehook.holder;
 
 import dev.quantumfusion.dashloader.core.Dashable;
 import dev.quantumfusion.dashloader.core.common.IntObjectList;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
-import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
+import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.texture.Sprite;
@@ -29,16 +28,16 @@ public class DashParticleData implements Dashable<Pair<Map<Identifier, List<Spri
 		this.atlasTexture = atlasTexture;
 	}
 
-	public DashParticleData(VanillaData data, DashRegistryWriter writer) {
+	public DashParticleData(DashDataManager data, DashRegistryWriter writer) {
 		this.particles = new IntObjectList<>();
-		final Map<Identifier, List<Sprite>> particles = data.getParticles();
+		final Map<Identifier, List<Sprite>> particles = data.particleSprites.getMinecraftData();
 		particles.forEach((identifier, spriteList) -> {
 			List<Integer> out = new ArrayList<>();
 			spriteList.forEach(sprite -> out.add(writer.add(sprite)));
 			this.particles.put(writer.add(identifier), out);
 		});
-		final SpriteAtlasTexture particleAtlas = data.getParticleAtlas();
-		atlasTexture = new DashSpriteAtlasTexture(particleAtlas, data.getAtlasData(particleAtlas), writer);
+		final SpriteAtlasTexture particleAtlas = data.particleAtlas.getMinecraftData();
+		atlasTexture = new DashSpriteAtlasTexture(particleAtlas, data.getWriteContextData().atlasData.get(particleAtlas), writer);
 	}
 
 

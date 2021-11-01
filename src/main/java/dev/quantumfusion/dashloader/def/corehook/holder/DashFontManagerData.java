@@ -1,11 +1,10 @@
-package dev.quantumfusion.dashloader.def.data.dataobject.mapping;
+package dev.quantumfusion.dashloader.def.corehook.holder;
 
 import dev.quantumfusion.dashloader.core.Dashable;
 import dev.quantumfusion.dashloader.core.common.IntObjectList;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
-import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
+import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.font.Font;
 import net.minecraft.util.Identifier;
@@ -23,9 +22,9 @@ public class DashFontManagerData implements Dashable<Map<Identifier, List<Font>>
 		this.fontMap = fontMap;
 	}
 
-	public DashFontManagerData(VanillaData data, DashRegistryWriter writer) {
+	public DashFontManagerData(DashDataManager data, DashRegistryWriter writer) {
 		fontMap = new IntObjectList<>();
-		data.getFonts().forEach((identifier, fontList) -> {
+		data.fonts.getMinecraftData().forEach((identifier, fontList) -> {
 			List<Integer> fontsOut = new ArrayList<>();
 			fontList.forEach(font -> fontsOut.add(writer.add(font)));
 			fontMap.put(writer.add(identifier), fontsOut);

@@ -1,8 +1,7 @@
-package dev.quantumfusion.dashloader.def.data.dataobject.mapping;
+package dev.quantumfusion.dashloader.def.corehook.holder;
 
 import dev.quantumfusion.dashloader.core.util.DashThreading;
-import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
+import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.data.image.shader.DashShader;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.Shader;
@@ -21,9 +20,9 @@ public class DashShaderData {
 		this.shaders = shaders;
 	}
 
-	public DashShaderData(VanillaData data) {
+	public DashShaderData(DashDataManager data) {
 		this.shaders = new HashMap<>();
-		data.getShaderData().forEach((s, shader) -> this.shaders.put(s, new DashShader(shader)));
+		data.shaders.getMinecraftData().forEach((s, shader) -> this.shaders.put(s, new DashShader(shader)));
 	}
 
 	public Map<String, Shader> export() {

@@ -1,10 +1,9 @@
-package dev.quantumfusion.dashloader.def.data.dataobject.mapping;
+package dev.quantumfusion.dashloader.def.corehook.holder;
 
 import dev.quantumfusion.dashloader.core.common.ObjectObjectList;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
-import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.data.VanillaData;
+import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasManagerAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
@@ -23,16 +22,16 @@ public class DashSpriteAtlasData {
 		this.atlases = atlases;
 	}
 
-	public DashSpriteAtlasData(VanillaData data, DashRegistryWriter writer) {
+	public DashSpriteAtlasData(DashDataManager data, DashRegistryWriter writer) {
 		atlases = new ObjectObjectList<>();
-		var atlases = ((SpriteAtlasManagerAccessor) data.getAtlasManager()).getAtlases();
-		var extraAtlases = data.getExtraAtlases();
+		var atlases = ((SpriteAtlasManagerAccessor) data.spriteAtlasManager.getMinecraftData()).getAtlases();
+		var extraAtlases = data.getWriteContextData().extraAtlases;
 		atlases.forEach((identifier, spriteAtlasTexture) -> addAtlas(data, writer, spriteAtlasTexture, 0));
 		extraAtlases.forEach(spriteAtlasTexture -> addAtlas(data, writer, spriteAtlasTexture, 1));
 	}
 
-	private void addAtlas(VanillaData data, DashRegistryWriter writer, SpriteAtlasTexture texture, int i) {
-		this.atlases.put(new DashSpriteAtlasTexture(texture, data.getAtlasData(texture), writer), i);
+	private void addAtlas(DashDataManager data, DashRegistryWriter writer, SpriteAtlasTexture texture, int i) {
+		this.atlases.put(new DashSpriteAtlasTexture(texture, data.getWriteContextData().atlasData.get(texture), writer), i);
 	}
 
 

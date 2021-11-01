@@ -22,8 +22,9 @@ public record DashProgram(Program.Type shaderType, String name, List<String> sha
 		this(
 				access.getShaderType(),
 				program.getName(),
-				DashLoader.getVanillaData().getProgramData(access.getShaderRef()));
+				DashLoader.getData().getWriteContextData().programData.get(access.getShaderRef()));
 	}
+
 
 	public int createProgram(Program.Type type) {
 		//noinspection ConstantConditions (MixinAccessor shit)
