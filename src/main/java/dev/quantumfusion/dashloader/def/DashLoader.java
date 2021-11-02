@@ -28,12 +28,13 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -110,7 +111,7 @@ public class DashLoader {
 		shouldReload = true;
 	}
 
-	public void reload(Collection<String> resourcePacks) {
+	public void reload(List<String> resourcePacks) {
 		if (shouldReload) {
 			metadata.setResourcePackHash(resourcePacks);
 			core.setCurrentSubcache(metadata.resourcePacks);
@@ -244,14 +245,14 @@ public class DashLoader {
 			this.modInfo = Long.toHexString(modInfoData + 0x69);
 		}
 
-		public void setResourcePackHash(Collection<String> resourcePacks) {
-			long resourcePackData = 420;
-			for (String resourcePack : resourcePacks) {
-				for (char c : resourcePack.toCharArray()) {
-					resourcePackData += c;
-				}
+		public void setResourcePackHash(List<String> resourcePacks) {
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < resourcePacks.size(); i++) {
+				String resourcePack = resourcePacks.get(i);
+				stringBuilder.append(i).append(". ").append(resourcePack);
 			}
-			this.resourcePacks = Long.toHexString(resourcePackData + 0x69);
+
+			this.resourcePacks = DigestUtils.md5Hex(stringBuilder.toString()).toUpperCase();
 		}
 	}
 
