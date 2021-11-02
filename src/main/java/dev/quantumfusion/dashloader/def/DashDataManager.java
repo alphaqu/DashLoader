@@ -93,7 +93,6 @@ public class DashDataManager {
 		public final Int2ObjectMap<List<String>> programData = new Int2ObjectOpenHashMap<>();
 
 		// Model related
-		public ModelLoader loader;
 		public final Map<BakedModel, MissingDashModel> missingModelsWrite = new HashMap<>();
 		public final Map<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>> multipartPredicates = new HashMap<>();
 		public final Map<MultipartModelSelector, StateManager<Block, BlockState>> stateManagers = new HashMap<>();

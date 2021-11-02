@@ -34,9 +34,8 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 		this.missingModels = new ArrayList<>();
 
 		var writeContextData = DashLoader.getData().getWriteContextData();
-		var modelLoader = writeContextData.loader;
 		var flippedModelMap = new IdentityHashMap<BakedModel, Identifier>();
-		modelLoader.getBakedModelMap().forEach((identifier, bakedModel) -> flippedModelMap.put(bakedModel, identifier));
+		models.forEach((identifier, bakedModel) -> flippedModelMap.put(bakedModel, identifier));
 
 		writeContextData.missingModelsWrite.forEach((bakedModel, missingDashModel) -> {
 			final Identifier object = flippedModelMap.get(bakedModel);
@@ -45,8 +44,6 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 			}
 			missingModels.add(writer.add(object));
 		});
-
-		writeContextData.loader = null;
 	}
 
 

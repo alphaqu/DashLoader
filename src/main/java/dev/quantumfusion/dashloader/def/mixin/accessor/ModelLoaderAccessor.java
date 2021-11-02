@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.def.mixin.accessor;
 
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import dev.quantumfusion.hyphen.thr.HyphenException;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.block.Block;
@@ -11,11 +12,13 @@ import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.ModelVariantMap;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.AffineTransformation;
+import net.minecraft.util.profiler.Profiler;
 import org.apache.commons.lang3.tuple.Triple;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -43,10 +46,21 @@ public interface ModelLoaderAccessor {
 	@Mutable
 	void setBakedModelCache(Map<Triple<Identifier, AffineTransformation, Boolean>, BakedModel> bakedModelCache);
 
-
 	@Accessor
 	@Mutable
 	void setModelsToBake(Map<Identifier, UnbakedModel> modelsToBake);
+
+	@Accessor
+	@Mutable
+	Map<Identifier, UnbakedModel> getModelsToBake();
+
+	@Accessor
+	@Mutable
+	void setBakedModels(Map<Identifier, BakedModel> modelsToBake);
+
+	@Accessor
+	@Mutable
+	void setSpriteAtlasData(Map<Identifier, Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data>> spriteAtlasData);
 
 	@Accessor
 	@Mutable
@@ -66,7 +80,6 @@ public interface ModelLoaderAccessor {
 
 	@Invoker("addModel")
 	void invokeAddModel(ModelIdentifier modelId);
-
 
 	@Accessor("ITEM_FRAME_STATE_FACTORY")
 	static StateManager<Block, BlockState> getTheItemFrameThing() {

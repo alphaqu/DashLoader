@@ -61,6 +61,7 @@
     "accessor.WeightedBakedModelAccessor",
     "accessor.WeightedBakedModelEntryAccessor",
     "accessor.WeightedPickerEntryAccessor",
+    "feature.cache.ModelLoaderMixin",
     "feature.cache.BakedModelManagerOverride",
     "feature.cache.FontManagerOverride",
     "feature.cache.FontManagerOverride$LeoFontSolution",
