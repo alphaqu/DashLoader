@@ -177,7 +177,7 @@ public class DashLoader {
 		core.save(registrydata);
 		core.save(mappings);
 		PROGRESS.completedTask();
-		DashCachingScreen.exit = true;
+		DashCachingScreen.CACHING_COMPLETE = true;
 		LOGGER.info("Created cache in " + "TODO" + "s");
 	}
 
