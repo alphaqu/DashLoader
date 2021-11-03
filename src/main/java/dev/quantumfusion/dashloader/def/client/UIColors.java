@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.def.client;
 
-import dev.quantumfusion.dashloader.def.api.option.data.ColorEntry;
 import dev.quantumfusion.dashloader.def.api.option.data.DashConfig;
 
 import java.awt.Color;
