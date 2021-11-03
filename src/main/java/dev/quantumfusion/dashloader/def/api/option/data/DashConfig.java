@@ -2,7 +2,6 @@ package dev.quantumfusion.dashloader.def.api.option.data;
 
 import dev.quantumfusion.dashloader.def.api.option.Option;
 
-import java.util.List;
 import java.util.Map;
 
 public class DashConfig {
@@ -30,7 +29,7 @@ public class DashConfig {
 
 	public Map<String, Integer> lineColors = Map.of(
 			"base2", 1000,
-			"blue", 5,
+			"blue", 50,
 			"red", 1);
 
 
@@ -68,8 +67,6 @@ public class DashConfig {
 	public void setCacheScreenPaddingSize(int cacheScreenPaddingSize) {
 		this.cacheScreenPaddingSize = cacheScreenPaddingSize;
 	}
-
-
 
 	public String getBackgroundColor() {
 		return backgroundColor;
