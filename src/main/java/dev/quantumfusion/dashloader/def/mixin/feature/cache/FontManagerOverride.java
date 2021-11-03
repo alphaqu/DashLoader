@@ -60,7 +60,7 @@ public class FontManagerOverride {
 		if (fonts.dataAvailable() && DashLoader.isRead()) {
 			profiler.startTick();
 			profiler.push("closing");
-			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) MixinThings.fontManager;
+			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) MixinThings.FONTMANAGER;
 			fontManagerAccessor.getFontStorages().values().forEach(FontStorage::close);
 			fontManagerAccessor.getFontStorages().clear();
 			profiler.swap("reloading");
@@ -125,7 +125,7 @@ public class FontManagerOverride {
 	private static class LeoFontSolution {
 		@Inject(method = "<init>", at = @At(value = "TAIL"))
 		private void initInject(TextureManager manager, CallbackInfo ci) {
-			MixinThings.fontManager = ((FontManager) (Object) this);
+			MixinThings.FONTMANAGER = ((FontManager) (Object) this);
 		}
 	}
 

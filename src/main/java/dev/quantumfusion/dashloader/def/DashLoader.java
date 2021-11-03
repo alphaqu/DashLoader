@@ -23,6 +23,7 @@ import dev.quantumfusion.dashloader.def.data.model.DashModel;
 import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashPredicate;
 import dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel;
+import dev.quantumfusion.dashloader.def.util.TimeUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.render.model.BakedModel;
@@ -50,6 +51,10 @@ public class DashLoader {
 			.getMetadata()
 			.getVersion()
 			.getFriendlyString();
+
+	public static long RELOAD_START = 0;
+	public static long EXPORT_START = 0;
+	public static long EXPORT_END = 0;
 	private boolean shouldReload = true;
 	private final DashMetadata metadata = new DashMetadata();
 	private final DashLoaderCore core;
@@ -139,6 +144,7 @@ public class DashLoader {
 	}
 
 	public void saveDashCache() {
+		long start = System.currentTimeMillis();
 		PROGRESS.reset();
 		PROGRESS.setTotalTasks(5);
 		Map<Class<?>, WriteFailCallback<?, ?>> callbacks = new HashMap<>();
@@ -182,10 +188,11 @@ public class DashLoader {
 		core.save(mappings);
 		PROGRESS.completedTask();
 		DashCachingScreen.CACHING_COMPLETE = true;
-		LOGGER.info("Created cache in " + "TODO" + "s");
+		LOGGER.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
 	}
 
 	public void loadDashCache() {
+		EXPORT_START = System.currentTimeMillis();
 		core.setCurrentSubcache(metadata.resourcePacks);
 		LOGGER.info("Starting DashLoader Deserialization");
 		try {
@@ -203,19 +210,19 @@ public class DashLoader {
 			MappingData mappings = mappingsReference.get();
 			assert mappings != null;
 
-			LOGGER.info("      Creating Registry");
+			LOGGER.info("Creating Registry");
 			final DashRegistryReader reader = core.createReader(registryDataObjects);
 
 			status = Status.READ;
 			this.dataManager = new DashDataManager(new DashDataManager.DashReadContextData());
 
-			LOGGER.info("      Loading Mappings");
+			LOGGER.info("Loading Mappings");
 			mappings.export(reader, this.dataManager);
 
-
-			LOGGER.info("    Loaded DashLoader");
+			EXPORT_END = System.currentTimeMillis();
+			LOGGER.info("Loaded DashLoader in {}", TimeUtil.getTimeString(EXPORT_END - EXPORT_START));
 		} catch (Exception e) {
-			LOGGER.error("DashLoader has devolved to CrashLoader???", e);
+			LOGGER.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(EXPORT_START), e);
 			status = Status.CRASHLOADER;
 			if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
 				// TODO REMOVE FILES IF IT CRASHED

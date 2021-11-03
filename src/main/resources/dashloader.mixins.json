@@ -13,6 +13,7 @@
     "SpriteAtlasTextureMixin",
     "SpriteInterpolationMixin",
     "TrueTypeFontLoaderMixin",
+    "BootstrapMixin",
     "accessor.AbstractTextureAccessor",
     "accessor.AndMultipartModelSelectorAccessor",
     "accessor.AnimationResourceMetadataAccessor",

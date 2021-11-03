@@ -2,6 +2,8 @@ package dev.quantumfusion.dashloader.def.mixin;
 
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.client.DashCachingScreen;
+import dev.quantumfusion.dashloader.def.util.TimeUtil;
+import dev.quantumfusion.dashloader.def.util.mixins.MixinThings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -12,6 +14,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.lang.management.ManagementFactory;
 
 
 @Mixin(SplashOverlay.class)
@@ -30,6 +34,12 @@ public class SplashScreenMixin {
 			this.client.setOverlay(null);
 			if (client.currentScreen != null) {
 				if (this.client.currentScreen instanceof TitleScreen) {
+
+					DashLoader.LOGGER.info("</> DashLoader Profiled {}", "Times"); // ij labels plz show
+					DashLoader.LOGGER.info("</> ==> DashLoader Export time {}", TimeUtil.getTimeString(DashLoader.EXPORT_END - DashLoader.EXPORT_START));
+					DashLoader.LOGGER.info("</> ==> Minecraft Reload time {}", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
+					DashLoader.LOGGER.info("</> ==> Minecraft Bootstrap time {}", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
+					DashLoader.LOGGER.info("</> ==> Total Loading time {}", TimeUtil.getTimeStringFromStart(ManagementFactory.getRuntimeMXBean().getStartTime()));
 					this.client.currentScreen = new TitleScreen(false);
 				}
 				this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
