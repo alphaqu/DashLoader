@@ -68,6 +68,9 @@ public class DashLoader {
 		metadata.setModHash(instance);
 		final Path dashFolder = instance.getConfigDir().normalize().resolve("quantumfusion/dashloader/");
 		this.core = new DashLoaderCore(dashFolder.resolve("mods-" + metadata.modInfo + "/"), api.dashObjects.toArray(Class[]::new));
+
+		final Logger dlcLogger = LogManager.getLogger("DashLoaderCore");
+		DashLoaderCore.PRINT = dlcLogger::info;
 	}
 
 	private void initialize(ClassLoader classLoader) {
