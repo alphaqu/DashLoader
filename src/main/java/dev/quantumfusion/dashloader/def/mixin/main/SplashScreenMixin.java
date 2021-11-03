@@ -40,6 +40,7 @@ public class SplashScreenMixin {
 					DashLoader.LOGGER.info("</> ==> Minecraft Reload time {}", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
 					DashLoader.LOGGER.info("</> ==> Minecraft Bootstrap time {}", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
 					DashLoader.LOGGER.info("</> ==> Total Loading time {}", TimeUtil.getTimeStringFromStart(ManagementFactory.getRuntimeMXBean().getStartTime()));
+					System.out.println(MixinThings.TOTAL + " / " + MixinThings.CACHED);
 					this.client.currentScreen = new TitleScreen(false);
 				}
 				this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());

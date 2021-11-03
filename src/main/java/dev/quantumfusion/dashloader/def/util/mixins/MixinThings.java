@@ -17,6 +17,8 @@ public class MixinThings {
 	public static FontManager FONTMANAGER;
 	public static long BOOTSTRAP_START;
 	public static long BOOTSTRAP_END;
+	public static long TOTAL;
+	public static long CACHED;
 
 
 	public static <M extends MultipartModelSelector> void addPredicates(Iterable<M> multipartModelSelectors, StateManager<Block, BlockState> stateStateManager) {

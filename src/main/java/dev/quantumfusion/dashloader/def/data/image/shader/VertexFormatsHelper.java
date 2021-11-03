@@ -21,10 +21,7 @@ public class VertexFormatsHelper {
 		if (format == VertexFormats.POSITION_COLOR_TEXTURE_LIGHT) return Value.POSITION_COLOR_TEXTURE_LIGHT;
 		if (format == VertexFormats.POSITION_TEXTURE_LIGHT_COLOR) return Value.POSITION_TEXTURE_LIGHT_COLOR;
 		if (format == VertexFormats.POSITION_TEXTURE_COLOR_NORMAL) return Value.POSITION_TEXTURE_COLOR_NORMAL;
-		System.out.println("wot");
-		return null;
-
-
+		throw new RuntimeException("no");
 	}
 
 	public enum Value {

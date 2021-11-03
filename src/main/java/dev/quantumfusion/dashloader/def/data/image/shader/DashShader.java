@@ -2,7 +2,6 @@ package dev.quantumfusion.dashloader.def.data.image.shader;
 
 import com.google.common.collect.UnmodifiableIterator;
 import com.mojang.blaze3d.platform.GlStateManager;
-import dev.quantumfusion.dashloader.core.util.DashUtil;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ShaderAccessor;
 import dev.quantumfusion.dashloader.def.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
@@ -24,59 +23,11 @@ public class DashShader {
 	public final DashProgram vertexShader;
 	public final DashProgram fragmentShader;
 	public final VertexFormatsHelper.Value format;
-	@DataNullable
-	public final DashGlUniform modelViewMat;
-	@DataNullable
-	public final DashGlUniform projectionMat;
-	@DataNullable
-	public final DashGlUniform textureMat;
-	@DataNullable
-	public final DashGlUniform screenSize;
-	@DataNullable
-	public final DashGlUniform colorModulator;
-	@DataNullable
-	public final DashGlUniform light0Direction;
-	@DataNullable
-	public final DashGlUniform light1Direction;
-	@DataNullable
-	public final DashGlUniform fogStart;
-	@DataNullable
-	public final DashGlUniform fogEnd;
-	@DataNullable
-	public final DashGlUniform fogColor;
-	@DataNullable
-	public final DashGlUniform lineWidth;
-	@DataNullable
-	public final DashGlUniform gameTime;
-	@DataNullable
-	public final DashGlUniform chunkOffset;
+	public final Map<String, DashGlUniform> loadedUniforms;
 	public final List<String> samplerNames;
-
-
 	transient Shader toApply;
 
-
-	public DashShader(Map<String, Sampler> samplers,
-			String name,
-			DashGlBlendState blendState,
-			List<String> attributeNames,
-			DashProgram vertexShader,
-			DashProgram fragmentShader,
-			VertexFormatsHelper.Value format,
-			DashGlUniform modelViewMat,
-			DashGlUniform projectionMat,
-			DashGlUniform textureMat,
-			DashGlUniform screenSize,
-			DashGlUniform colorModulator,
-			DashGlUniform light0Direction,
-			DashGlUniform light1Direction,
-			DashGlUniform fogStart,
-			DashGlUniform fogEnd,
-			DashGlUniform fogColor,
-			DashGlUniform lineWidth,
-			DashGlUniform gameTime,
-			DashGlUniform chunkOffset,
-			List<String> samplerNames) {
+	public DashShader(Map<String, Sampler> samplers, String name, DashGlBlendState blendState, List<String> attributeNames, DashProgram vertexShader, DashProgram fragmentShader, VertexFormatsHelper.Value format, Map<String, DashGlUniform> loadedUniforms, List<String> samplerNames) {
 		this.samplers = samplers;
 		this.name = name;
 		this.blendState = blendState;
@@ -84,19 +35,7 @@ public class DashShader {
 		this.vertexShader = vertexShader;
 		this.fragmentShader = fragmentShader;
 		this.format = format;
-		this.modelViewMat = modelViewMat;
-		this.projectionMat = projectionMat;
-		this.textureMat = textureMat;
-		this.screenSize = screenSize;
-		this.colorModulator = colorModulator;
-		this.light0Direction = light0Direction;
-		this.light1Direction = light1Direction;
-		this.fogStart = fogStart;
-		this.fogEnd = fogEnd;
-		this.fogColor = fogColor;
-		this.lineWidth = lineWidth;
-		this.gameTime = gameTime;
-		this.chunkOffset = chunkOffset;
+		this.loadedUniforms = loadedUniforms;
 		this.samplerNames = samplerNames;
 	}
 
@@ -112,19 +51,8 @@ public class DashShader {
 		this.vertexShader = new DashProgram(shader.getVertexShader());
 		this.fragmentShader = new DashProgram(shader.getFragmentShader());
 		this.format = VertexFormatsHelper.getEnum(shader.getFormat());
-		this.modelViewMat = DashUtil.nullable(shader.modelViewMat, DashGlUniform::new);
-		this.projectionMat = DashUtil.nullable(shader.projectionMat, DashGlUniform::new);
-		this.textureMat = DashUtil.nullable(shader.textureMat, DashGlUniform::new);
-		this.screenSize = DashUtil.nullable(shader.screenSize, DashGlUniform::new);
-		this.colorModulator = DashUtil.nullable(shader.colorModulator, DashGlUniform::new);
-		this.light0Direction = DashUtil.nullable(shader.light0Direction, DashGlUniform::new);
-		this.light1Direction = DashUtil.nullable(shader.light1Direction, DashGlUniform::new);
-		this.fogStart = DashUtil.nullable(shader.fogStart, DashGlUniform::new);
-		this.fogEnd = DashUtil.nullable(shader.fogEnd, DashGlUniform::new);
-		this.fogColor = DashUtil.nullable(shader.fogColor, DashGlUniform::new);
-		this.lineWidth = DashUtil.nullable(shader.lineWidth, DashGlUniform::new);
-		this.gameTime = DashUtil.nullable(shader.gameTime, DashGlUniform::new);
-		this.chunkOffset = DashUtil.nullable(shader.chunkOffset, DashGlUniform::new);
+		this.loadedUniforms = new HashMap<>();
+		shaderAccess.getLoadedUniforms().forEach((s, glUniform) -> this.loadedUniforms.put(s, new DashGlUniform(glUniform)));
 		this.samplerNames = shaderAccess.getSamplerNames();
 	}
 
@@ -157,22 +85,24 @@ public class DashShader {
 		// JsonHelper.getArray(jsonObject, "attributes", (JsonArray)null);
 		shaderAccess.setAttributeNames(this.attributeNames);
 
+		var uniformsOut = new HashMap<String, GlUniform>();
+
+		this.loadedUniforms.forEach((s, dashGlUniform) -> uniformsOut.put(s, dashGlUniform.export(toApply, uniforms)));
 
 		// JsonHelper.getArray(jsonObject, "uniforms", (JsonArray)null);
-		final GlUniform modelViewMatOut = DashUtil.nullable(modelViewMat, (a) -> a.export(toApply, uniforms));
-		final GlUniform projectionMatOut = DashUtil.nullable(projectionMat, (a) -> a.export(toApply, uniforms));
-		final GlUniform textureMatOut = DashUtil.nullable(textureMat, (a) -> a.export(toApply, uniforms));
-		final GlUniform screenSizeOut = DashUtil.nullable(screenSize, (a) -> a.export(toApply, uniforms));
-		final GlUniform colorModulatorOut = DashUtil.nullable(colorModulator, (a) -> a.export(toApply, uniforms));
-		final GlUniform light0DirectionOut = DashUtil.nullable(light0Direction, (a) -> a.export(toApply, uniforms));
-		final GlUniform light1DirectionOut = DashUtil.nullable(light1Direction, (a) -> a.export(toApply, uniforms));
-		final GlUniform fogStartOut = DashUtil.nullable(fogStart, (a) -> a.export(toApply, uniforms));
-		final GlUniform fogEndOut = DashUtil.nullable(fogEnd, (a) -> a.export(toApply, uniforms));
-		final GlUniform fogColorOut = DashUtil.nullable(fogColor, (a) -> a.export(toApply, uniforms));
-		final GlUniform lineWidthOut = DashUtil.nullable(lineWidth, (a) -> a.export(toApply, uniforms));
-		final GlUniform gameTimeOut = DashUtil.nullable(gameTime, (a) -> a.export(toApply, uniforms));
-		final GlUniform chunkOffsetOut = DashUtil.nullable(chunkOffset, (a) -> a.export(toApply, uniforms));
-
+		final GlUniform modelViewMatOut  = uniformsOut.get("ModelViewMat");
+		final GlUniform projectionMatOut  = uniformsOut.get("ProjMat");
+		final GlUniform textureMatOut  = uniformsOut.get("TextureMat");
+		final GlUniform screenSizeOut  = uniformsOut.get("ScreenSize");
+		final GlUniform colorModulatorOut  = uniformsOut.get("ColorModulator");
+		final GlUniform light0DirectionOut  = uniformsOut.get("Light0_Direction");
+		final GlUniform light1DirectionOut  = uniformsOut.get("Light1_Direction");
+		final GlUniform fogStartOut  = uniformsOut.get("FogStart");
+		final GlUniform fogEndOut  = uniformsOut.get("FogEnd");
+		final GlUniform fogColorOut  = uniformsOut.get("FogColor");
+		final GlUniform lineWidthOut  = uniformsOut.get("LineWidth");
+		final GlUniform gameTimeOut  = uniformsOut.get("GameTime");
+		final GlUniform chunkOffsetOut  = uniformsOut.get("ChunkOffset");
 
 		toApply.markUniformsDirty();
 		shaderAccess.setModelViewMat(modelViewMatOut);
@@ -221,7 +151,7 @@ public class DashShader {
 		@DataSubclasses({Integer.class, String.class})
 		public final Object sampler;
 
-		public Sampler(@DataSubclasses({Integer.class, String.class}) Object sampler) {
+		public Sampler(Object sampler) {
 			this.sampler = sampler;
 		}
 	}
