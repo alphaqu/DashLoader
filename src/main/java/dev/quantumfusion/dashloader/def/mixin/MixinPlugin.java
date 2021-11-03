@@ -1,12 +1,6 @@
 package dev.quantumfusion.dashloader.def.mixin;
 
-import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.api.feature.Feature;
-import dev.quantumfusion.dashloader.def.api.feature.FeatureHandler;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.metadata.CustomValue;
-import net.fabricmc.loader.api.metadata.ModMetadata;
+import dev.quantumfusion.dashloader.def.api.option.ConfigHandler;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -18,46 +12,7 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public void onLoad(String mixinPackage) {
-		//TODO config
-		FeatureHandler.init();
-		for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
-			final ModMetadata metadata = mod.getMetadata();
-			if (metadata.containsCustomValue("dashloader:disablefeature")) {
-				final CustomValue customValue = metadata.getCustomValue("dashloader:disablefeature");
-				customValue.getAsArray().forEach(value -> {
-					final String feature = value.getAsString();
-					FeatureHandler.disableFeature(feature);
-					DashLoader.LOGGER.warn("Disabled " + feature + " feature from mod: " + metadata.getName());
-				});
-			}
-		}
-
-		/*DumperOptions options = new DumperOptions();
-		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-		Yaml yaml = new Yaml(options);
-		final Path resolve = DashLoader.getConfig().resolve("dashloader.yaml");
-		if (Files.exists(resolve)) {
-			try {
-				resolve.toFile().setReadable(true);
-				final DashConfig dashConfig = yaml.loadAs(FileUtils.openInputStream(resolve.toFile()), DashConfig.class);
-				for (Feature feature : dashConfig.getDisabledFeatures()) {
-					FeatureHandler.disableFeature(feature);
-					DashLoader.LOGGER.error("Disabled " + feature + " feature from config");
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			try {
-				resolve.toFile().setWritable(true);
-				Files.createFile(resolve);
-				final DashConfig data = new DashConfig(new Feature[]{});
-				Files.writeString(resolve, yaml.dumpAs(data, Tag.MAP, null));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}*/
-
+		ConfigHandler.update();
 	}
 
 	@Override
@@ -67,7 +22,7 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return FeatureHandler.active(mixinClassName);
+		return ConfigHandler.shouldApplyMixin(mixinClassName);
 	}
 
 	@Override

@@ -6,7 +6,8 @@ import dev.quantumfusion.dashloader.core.ui.DashLoaderProgress;
 import dev.quantumfusion.dashloader.core.util.DashUtil;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.api.feature.Feature;
+import dev.quantumfusion.dashloader.def.api.option.ConfigHandler;
+import dev.quantumfusion.dashloader.def.api.option.Option;
 import dev.quantumfusion.dashloader.def.corehook.holder.*;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
@@ -53,7 +54,8 @@ public class MappingData {
 		DashLoaderProgress.PROGRESS.setCurrentSubtask("Mapping", 5);
 		final DashDataManager dataManager = DashLoader.getData();
 
-		if (Feature.MODEL_LOADER.active()) {
+
+		if (ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
 			blockStateData = new DashBlockStateData(dataManager, registry);
 			modelData = new DashModelData(dataManager, registry);
 			spriteAtlasData = new DashSpriteAtlasData(dataManager, registry);
@@ -61,19 +63,19 @@ public class MappingData {
 
 		} DashLoaderProgress.PROGRESS.completedSubTask();
 
-		if (Feature.PARTICLES.active()) {
+		if (ConfigHandler.optionActive(Option.CACHE_PARTICLE)) {
 			particleData = new DashParticleData(dataManager, registry);
 		} DashLoaderProgress.PROGRESS.completedSubTask();
 
-		if (Feature.FONTS.active()) {
+		if (ConfigHandler.optionActive(Option.CACHE_FONT)) {
 			fontManagerData = new DashFontManagerData(dataManager, registry);
 		} DashLoaderProgress.PROGRESS.completedSubTask();
 
-		if (Feature.SPLASH_TEXT.active()) {
+		if (ConfigHandler.optionActive(Option.CACHE_SPLASH_TEXT)) {
 			splashTextData = new DashSplashTextData(dataManager);
 		} DashLoaderProgress.PROGRESS.completedSubTask();
 
-		if (Feature.SHADERS.active()) {
+		if (ConfigHandler.optionActive(Option.CACHE_SHADER)) {
 			shaderData = new DashShaderData(dataManager);
 		} DashLoaderProgress.PROGRESS.completedSubTask();
 	}
@@ -95,12 +97,12 @@ public class MappingData {
 		data.getReadContextData().shaderData.addAll(shaderData.shaders.values());
 		if (spriteData != null) {
 			for (SpriteAtlasTexture atlas : spriteData.getValue()) {
-				atlasManager.addAtlas(Feature.MODEL_LOADER, atlas);
+				atlasManager.addAtlas(Option.CACHE_MODEL_LOADER, atlas);
 			}
 		}
 
 		if (particleData != null) {
-			atlasManager.addAtlas(Feature.PARTICLES, particleData.getRight());
+			atlasManager.addAtlas(Option.CACHE_PARTICLE, particleData.getRight());
 		}
 
 		modelData = null;

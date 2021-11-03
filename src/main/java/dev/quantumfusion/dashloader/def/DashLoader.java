@@ -44,20 +44,21 @@ import static dev.quantumfusion.dashloader.core.ui.DashLoaderProgress.PROGRESS;
 
 public class DashLoader {
 	public static final Logger LOGGER = LogManager.getLogger("DashLoader");
-	public static final DashLoader INSTANCE = new DashLoader();
 	public static final String VERSION = FabricLoader.getInstance()
 			.getModContainer("dashloader")
 			.orElseThrow(() -> new IllegalStateException("DashLoader not found... apparently! WTF?"))
 			.getMetadata()
 			.getVersion()
 			.getFriendlyString();
-
+	public static final Path DASH_CONFIG_FOLDER = FabricLoader.getInstance().getConfigDir().normalize();
+	public static final Path DASH_CACHE_FOLDER = Path.of("./dashloader-cache/");
+	public static final DashLoader INSTANCE = new DashLoader();
 	public static long RELOAD_START = 0;
 	public static long EXPORT_START = 0;
 	public static long EXPORT_END = 0;
 	private boolean shouldReload = true;
 	private final DashMetadata metadata = new DashMetadata();
-	private final DashLoaderCore core;
+	private DashLoaderCore core;
 	private DashDataManager dataManager;
 	private Status status;
 
@@ -67,19 +68,18 @@ public class DashLoader {
 	}
 
 	private DashLoader() {
-		var api = new DashLoaderAPI(this);
-		api.initAPI();
-		final FabricLoader instance = FabricLoader.getInstance();
-		metadata.setModHash(instance);
-		final Path dashFolder = instance.getConfigDir().normalize().resolve("quantumfusion/dashloader/");
-		this.core = new DashLoaderCore(dashFolder.resolve("mods-" + metadata.modInfo + "/"), api.dashObjects.toArray(Class[]::new));
 
-		final Logger dlcLogger = LogManager.getLogger("DashLoaderCore");
-		DashLoaderCore.PRINT = dlcLogger::info;
 	}
 
 	private void initialize(ClassLoader classLoader) {
 		try {
+			var api = new DashLoaderAPI();
+			api.initAPI();
+			metadata.setModHash(FabricLoader.getInstance());
+			this.core = new DashLoaderCore(DASH_CACHE_FOLDER.resolve("mods-" + metadata.modInfo + "/"), api.dashObjects.toArray(Class[]::new));
+
+			final Logger dlcLogger = LogManager.getLogger("DashLoaderCore");
+			DashLoaderCore.PRINT = dlcLogger::info;
 			final FabricLoader instance = FabricLoader.getInstance();
 			if (instance.isDevelopmentEnvironment())
 				LOGGER.warn("DashLoader launched in dev.");
@@ -252,7 +252,7 @@ public class DashLoader {
 					modInfoData += c;
 				}
 			}
-			this.modInfo = Long.toHexString(modInfoData + 0x69);
+			this.modInfo = Long.toHexString(modInfoData + 0x69).toUpperCase();
 		}
 
 		public void setResourcePackHash(List<String> resourcePacks) {

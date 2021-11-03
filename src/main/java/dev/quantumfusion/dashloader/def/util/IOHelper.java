@@ -40,39 +40,6 @@ public class IOHelper {
 		return buffer;
 	}
 
-
-
-
-	public static byte[] toArray(ByteBuffer buffer, int size) {
-		byte[] bufferOut = new byte[size];
-		buffer.rewind();
-		buffer.get(bufferOut, 0, size);
-		return bufferOut;
-	}
-
-	public static Integer[] toBoxedArray(IntBuffer buffer, int size) {
-		int[] integers = toArray(buffer);
-		Integer[] out = new Integer[integers.length];
-
-		for (int i = 0; i < integers.length; i++) {
-			out[i] = integers[i];
-		}
-
-		return out;
-	}
-
-	public static Float[] toBoxedArray(FloatBuffer buffer, int size) {
-		float[] floats = toArray(buffer);
-		Float[] out = new Float[floats.length];
-
-		for (int i = 0; i < floats.length; i++) {
-			out[i] = floats[i];
-		}
-
-		return out;
-	}
-
-
 	public static byte[] streamToArray(InputStream inputStream) throws IOException {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream() {
 			@Override

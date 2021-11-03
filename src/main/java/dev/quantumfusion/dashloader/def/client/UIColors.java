@@ -1,27 +1,48 @@
 package dev.quantumfusion.dashloader.def.client;
 
+import dev.quantumfusion.dashloader.def.api.option.data.ColorEntry;
+import dev.quantumfusion.dashloader.def.api.option.data.DashConfig;
+
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UIColors {
-	public static final Color RED_COLOR = new Color(0xff6188);
-	public static final Color ORANGE_COLOR = new Color(0xfc9867);
-	public static final Color YELLOW_COLOR = new Color(0xffd866);
-	public static final Color GREEN_COLOR = new Color(0xa9dc76);
-	public static final Color BLUE_COLOR = new Color(0x78DCE8);
-	public static final Color PURPLE_COLOR = new Color(0xAB9DF2);
+	public static Color BACKGROUND_COLOR = null;
+	public static Color PROGRESS_LANE_COLOR = null;
+	public static Color TEXT_COLOR = null;
 
-	public static final Color TEXT_COLOR = new Color(0xfcfcfa);
-	public static final Color BASE_0 = new Color(0x19181a);
-	public static final Color BASE_1 = new Color(0x221f22);
-	public static final Color BASE_2 = new Color(0x2d2a2e);
+	public static Map<String, Color> COLORS = new HashMap<>();
+	public static Color[] PROGRESS_COLORS = null;
 
-	public static final Color[] LINE_COLORS = {RED_COLOR, ORANGE_COLOR, YELLOW_COLOR, GREEN_COLOR, BLUE_COLOR, PURPLE_COLOR};
+	public static Color parseColor(String str) {
+		if (COLORS.containsKey(str.toLowerCase())) {
+			return COLORS.get(str.toLowerCase());
+		} else {
+			return Color.decode(str.toUpperCase());
+		}
+	}
 
+	public static void loadConfig(DashConfig config) {
+		COLORS.clear();
+		config.colors.forEach((s, s2) -> COLORS.put(s, Color.decode(s2)));
 
+		final String[] progressColors = config.progressColors;
+		if (progressColors.length == 0) {
+			throw new RuntimeException("Progress Colors length is 0");
+		}
+		PROGRESS_COLORS = new Color[progressColors.length];
+		for (int i = 0; i < progressColors.length; i++) {
+			PROGRESS_COLORS[i] = parseColor(progressColors[i]);
+		}
 
+		BACKGROUND_COLOR = parseColor(config.backgroundColor);
+		PROGRESS_LANE_COLOR = parseColor(config.progressLaneColor);
+		TEXT_COLOR = parseColor(config.textColor);
+	}
 
 	public static Color getProgressColor(double progress) {
-		return mix(progress, RED_COLOR, ORANGE_COLOR, YELLOW_COLOR, GREEN_COLOR);
+		return mix(progress, PROGRESS_COLORS);
 	}
 
 	public static Color mix(double pos, Color... colors) {

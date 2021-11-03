@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def;
 
 import com.mojang.blaze3d.platform.TextureUtil;
-import dev.quantumfusion.dashloader.def.api.feature.Feature;
+import dev.quantumfusion.dashloader.def.api.option.Option;
 import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.def.data.image.shader.DashShader;
 import dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel;
@@ -127,18 +127,18 @@ public class DashDataManager {
 		}
 
 		public class DashAtlasManager {
-			private final List<Pair<Feature, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>>> atlasesToRegister;
+			private final List<Pair<Option, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>>> atlasesToRegister;
 
 			public DashAtlasManager() {
 				this.atlasesToRegister = new ArrayList<>();
 			}
 
-			public void addAtlas(Feature feature, SpriteAtlasTexture atlas) {
+			public void addAtlas(Option feature, SpriteAtlasTexture atlas) {
 				var atlasData = Pair.of(atlas, DashReadContextData.this.atlasData.get(atlas));
 				atlasesToRegister.add(Pair.of(feature, atlasData));
 			}
 
-			public void registerAtlases(TextureManager textureManager, Feature feature) {
+			public void registerAtlases(TextureManager textureManager, Option feature) {
 				atlasesToRegister.forEach((pair) -> {
 					if (pair.getLeft() == feature) {
 						final Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData> atlas = pair.getRight();
@@ -149,7 +149,7 @@ public class DashDataManager {
 
 			@Nullable
 			public SpriteAtlasTexture getAtlas(Identifier identifier) {
-				for (Pair<Feature, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>> pair : atlasesToRegister) {
+				for (Pair<Option, Pair<SpriteAtlasTexture, DashSpriteAtlasTextureData>> pair : atlasesToRegister) {
 					final SpriteAtlasTexture atlas = pair.getRight().getLeft();
 					if (identifier.equals(atlas.getId())) {
 						return atlas;
