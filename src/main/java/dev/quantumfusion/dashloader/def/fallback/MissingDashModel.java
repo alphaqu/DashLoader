@@ -1,9 +1,5 @@
 package dev.quantumfusion.dashloader.def.fallback;
 
-import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.def.data.model.DashModel;
-import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
@@ -16,57 +12,49 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Random;
 
-@Data
-@DashObject(NullPointerException.class)
-public class MissingDashModel implements DashModel {
+public class MissingDashModel implements BakedModel {
 
 	@Override
-	public BakedModel export(DashRegistryReader reader) {
-		return new MissingDashModelWrapper();
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
+		return List.of();
 	}
 
-	public static class MissingDashModelWrapper implements BakedModel {
-		public BakedModel actual;
+	@Override
+	public boolean useAmbientOcclusion() {
+		return false;
+	}
+
+	@Override
+	public boolean hasDepth() {
+		return true;
+	}
+
+	@Override
+	public boolean isSideLit() {
+		return false;
+	}
+
+	@Override
+	public boolean isBuiltin() {
+		return false;
+	}
+
+	@Override
+	public Sprite getParticleSprite() {
+		throw new RuntimeException("Tried rendering a MissingDashModel. " +
+										   "Some mod was not able to be loaded through the fallback system. " +
+										   "Or the fallback system blew up");
 
 
-		@Override
-		public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
-			return actual != null ? actual.getQuads(state, face, random) : List.of();
-		}
+	}
 
-		@Override
-		public boolean useAmbientOcclusion() {
-			return actual != null && actual.useAmbientOcclusion();
-		}
+	@Override
+	public ModelTransformation getTransformation() {
+		return ModelTransformation.NONE;
+	}
 
-		@Override
-		public boolean hasDepth() {
-			return actual != null && actual.hasDepth();
-		}
-
-		@Override
-		public boolean isSideLit() {
-			return actual != null && actual.isSideLit();
-		}
-
-		@Override
-		public boolean isBuiltin() {
-			return actual != null && actual.isBuiltin();
-		}
-
-		@Override
-		public Sprite getParticleSprite() {
-			return actual != null ? actual.getParticleSprite() : null;
-		}
-
-		@Override
-		public ModelTransformation getTransformation() {
-			return actual != null ? actual.getTransformation() : ModelTransformation.NONE;
-		}
-
-		@Override
-		public ModelOverrideList getOverrides() {
-			return actual != null ? actual.getOverrides() : ModelOverrideList.EMPTY;
-		}
+	@Override
+	public ModelOverrideList getOverrides() {
+		return ModelOverrideList.EMPTY;
 	}
 }

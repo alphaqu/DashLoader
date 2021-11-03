@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.TextureUtil;
 import dev.quantumfusion.dashloader.def.api.feature.Feature;
 import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.def.data.image.shader.DashShader;
-import dev.quantumfusion.dashloader.def.fallback.MissingDashModel;
+import dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel;
 import dev.quantumfusion.dashloader.def.mixin.accessor.AbstractTextureAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasTextureAccessor;
@@ -16,7 +16,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.texture.Sprite;
@@ -93,7 +92,7 @@ public class DashDataManager {
 		public final Int2ObjectMap<List<String>> programData = new Int2ObjectOpenHashMap<>();
 
 		// Model related
-		public final Map<BakedModel, MissingDashModel> missingModelsWrite = new HashMap<>();
+		public final Map<BakedModel, DashMissingDashModel> missingModelsWrite = new HashMap<>();
 		public final Map<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>> multipartPredicates = new HashMap<>();
 		public final Map<MultipartModelSelector, StateManager<Block, BlockState>> stateManagers = new HashMap<>();
 

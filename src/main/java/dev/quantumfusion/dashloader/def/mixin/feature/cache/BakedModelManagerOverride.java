@@ -3,7 +3,7 @@ package dev.quantumfusion.dashloader.def.mixin.feature.cache;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.feature.Feature;
-import dev.quantumfusion.dashloader.def.fallback.DashModelLoader;
+import dev.quantumfusion.dashloader.def.fallback.UnbakedBakedModel;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ModelLoaderAccessor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.block.BlockState;
@@ -55,7 +55,7 @@ public class BakedModelManagerOverride {
 	private BlockModels blockModelCache;
 
 	@Inject(
-			method = "prepare",
+			method = "prepare*",
 			at = @At(value = "HEAD"),
 			cancellable = true
 	)
@@ -100,26 +100,29 @@ public class BakedModelManagerOverride {
 			profiler.pop();
 
 			this.atlasManager = data.spriteAtlasManager.getCacheResultData();
-			final ModelLoader fastLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmapLevels);
-			final ModelLoaderAccessor access = (ModelLoaderAccessor) fastLoader;
+
+			DashLoader.LOGGER.info("Launching fallback system.");
+			var fallbackLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmapLevels);
+			var access = (ModelLoaderAccessor) fallbackLoader;
 			access.setSpriteAtlasManager(this.atlasManager);
 
 			this.models = data.bakedModels.getCacheResultData();
-
 			final int size = this.models.size();
-
 			final Map<Identifier, UnbakedModel> modelsToBake = access.getModelsToBake();
 
+			DashLoader.LOGGER.info("Baking fallback models.");
 			AtomicInteger fallback = new AtomicInteger();
 			modelsToBake.forEach((identifier, unbakedModel) -> {
-				if (!(unbakedModel instanceof DashModelLoader.BakedModelWrapper)) {
-					this.models.put(identifier, fastLoader.bake(identifier, ModelRotation.X0_Y0));
-					fallback.getAndIncrement();
+				if (!(unbakedModel instanceof UnbakedBakedModel)) {
+					this.models.put(identifier, fallbackLoader.bake(identifier, ModelRotation.X0_Y0));
+					if (!identifier.equals(ModelLoader.MISSING_ID)) {
+						fallback.getAndIncrement();
+					}
 				}
 			});
 
 			DashLoader.LOGGER.info("Loaded {} out of {} models with fallback system. ({}% cache coverage)", fallback.get(), size, (int)((1 - (fallback.get() / (float) size)) * 100));
-			this.stateLookup = fastLoader.getStateLookup();
+			this.stateLookup = fallbackLoader.getStateLookup();
 		}
 		this.missingModel = this.models.get(ModelLoader.MISSING_ID);
 		profiler.swap("cache");

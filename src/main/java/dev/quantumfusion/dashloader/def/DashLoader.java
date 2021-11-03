@@ -22,7 +22,7 @@ import dev.quantumfusion.dashloader.def.data.image.DashSprite;
 import dev.quantumfusion.dashloader.def.data.model.DashModel;
 import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashPredicate;
-import dev.quantumfusion.dashloader.def.fallback.MissingDashModel;
+import dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.render.model.BakedModel;
@@ -146,7 +146,7 @@ public class DashLoader {
 			if (writeContextData.missingModelsWrite.containsKey(rraw)) {
 				return writeContextData.missingModelsWrite.get(rraw);
 			}
-			final MissingDashModel value = new MissingDashModel();
+			final DashMissingDashModel value = new DashMissingDashModel();
 			writeContextData.missingModelsWrite.put(rraw, value);
 			return value;
 		});

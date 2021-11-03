@@ -38,7 +38,7 @@
 			"dev.quantumfusion.dashloader.def.data.model.DashBuiltinBakedModel",
 			"dev.quantumfusion.dashloader.def.data.model.DashMultipartBakedModel",
 			"dev.quantumfusion.dashloader.def.data.model.DashWeightedBakedModel",
-			"dev.quantumfusion.dashloader.def.fallback.MissingDashModel",
+			"dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel",
 
 			"dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad",
 
