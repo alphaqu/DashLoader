@@ -12,7 +12,4 @@ public interface ModelIdentifierAccessor {
 		throw new AssertionError();
 	}
 
-	@Accessor
-	void setVariant(String variant);
-
 }

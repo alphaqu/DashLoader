@@ -11,6 +11,9 @@ import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasTextureAccesso
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.font.Font;
@@ -87,18 +90,19 @@ public class DashDataManager {
 	 */
 	public static class DashWriteContextData {
 		// Font related
-		public final Map<STBTTFontinfo, Identifier> fontData = new HashMap<>();
+		public final Object2ObjectMap<STBTTFontinfo, Identifier> fontData = new Object2ObjectOpenHashMap<>();
 		// Shader related
 		public final Int2ObjectMap<List<String>> programData = new Int2ObjectOpenHashMap<>();
 
 		// Model related
-		public final Map<BakedModel, DashMissingDashModel> missingModelsWrite = new HashMap<>();
-		public final Map<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>> multipartPredicates = new HashMap<>();
-		public final Map<MultipartModelSelector, StateManager<Block, BlockState>> stateManagers = new HashMap<>();
+		public final Object2ObjectMap<BakedModel, DashMissingDashModel> missingModelsWrite = new Object2ObjectOpenHashMap<>();
+		public final Object2ObjectMap<Identifier, BlockState> modelIdentifierBlockStateMap = new Object2ObjectOpenHashMap<>();
+		public final Object2ObjectMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>> multipartPredicates = new Object2ObjectOpenHashMap<>();
+		public final Object2ObjectMap<MultipartModelSelector, StateManager<Block, BlockState>> stateManagers = new Object2ObjectOpenHashMap<>();
 
 		// Atlas related SAME THING IN READ
 		public final List<SpriteAtlasTexture> extraAtlases = new ArrayList<>();
-		public final Map<SpriteAtlasTexture, DashSpriteAtlasTextureData> atlasData = new HashMap<>();
+		public final Object2ObjectMap<SpriteAtlasTexture, DashSpriteAtlasTextureData> atlasData = new Object2ObjectOpenHashMap<>();
 
 		public DashWriteContextData() {
 		}
@@ -109,11 +113,11 @@ public class DashDataManager {
 	 */
 	public static class DashReadContextData {
 		// Model related
-		public final List<Identifier> missingModelsRead = new ArrayList<>();
+		public final Object2ObjectMap<BlockState, Identifier> missingModelsRead = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
 
 		// Atlas related SAME THING IN WRITE
 		public final List<SpriteAtlasTexture> extraAtlases = new ArrayList<>();
-		public final Map<SpriteAtlasTexture, DashSpriteAtlasTextureData> atlasData = new HashMap<>();
+		public final Object2ObjectMap<SpriteAtlasTexture, DashSpriteAtlasTextureData> atlasData = new Object2ObjectOpenHashMap<>();
 
 		// Atlas related unique
 		public final DashAtlasManager dashAtlasManager;
@@ -169,12 +173,16 @@ public class DashDataManager {
 				//ding dong lwjgl here are their styles
 
 				TextureUtil.prepareImage(glId, maxLevel, width, height);
-				((SpriteAtlasTextureAccessor) atlasTexture).getSprites().forEach((identifier, sprite) -> {
+				final Map<Identifier, Sprite> sprites = ((SpriteAtlasTextureAccessor) atlasTexture).getSprites();
+				sprites.forEach((identifier, sprite) -> {
 					final SpriteAccessor access = (SpriteAccessor) sprite;
 					access.setAtlas(atlasTexture);
 					access.setId(identifier);
-					sprite.upload();
 				});
+
+				for (Sprite value : sprites.values()) {
+					value.upload();
+				}
 
 				//helu textures here are the atlases
 				textureManager.registerTexture(id, atlasTexture);

@@ -19,7 +19,21 @@ public class BlockModelsMixin {
 	)
 	private static void snagModelId(Identifier id, BlockState state, CallbackInfoReturnable<ModelIdentifier> cir) {
 		if (DashLoader.isWrite()) {
-			DashLoader.getData().getWriteContextData().blockStates.put(cir.getReturnValue(), state);
+			DashLoader.getData().getWriteContextData().modelIdentifierBlockStateMap.put(cir.getReturnValue(), state);
+		}
+	}
+
+	@Inject(
+			method = "getModelId(Lnet/minecraft/block/BlockState;)Lnet/minecraft/client/util/ModelIdentifier;",
+			at = @At(value = "HEAD"),
+			cancellable = true
+	)
+	private static void cacheModelId(BlockState state, CallbackInfoReturnable<ModelIdentifier> cir) {
+		if (DashLoader.isRead()) {
+			final Identifier identifier = DashLoader.getData().getReadContextData().missingModelsRead.get(state);
+			if (identifier != null) {
+				cir.setReturnValue((ModelIdentifier) identifier);
+			}
 		}
 	}
 }

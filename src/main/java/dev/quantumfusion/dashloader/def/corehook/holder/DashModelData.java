@@ -4,56 +4,66 @@ import dev.quantumfusion.dashloader.core.Dashable;
 import dev.quantumfusion.dashloader.core.common.IntIntList;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.util.DashThreading;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
+import net.minecraft.block.Block;
+import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Data
 public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
-	public final IntIntList models;
-	public final List<Integer> missingModels;
+	public final IntIntList models; // identifier to model list
 
-	public DashModelData(IntIntList models, List<Integer> missingModels) {
+	public DashModelData(IntIntList models) {
 		this.models = models;
-		this.missingModels = missingModels;
 	}
 
 	public DashModelData(DashDataManager data, DashRegistryWriter writer) {
-		final Map<Identifier, BakedModel> models = data.bakedModels.getMinecraftData();
+		var writeContextData = data.getWriteContextData();
+		var missingModelsWrite = writeContextData.missingModelsWrite;
+		var models = data.bakedModels.getMinecraftData();
+
 		this.models = new IntIntList(new ArrayList<>(models.size()));
+
 		models.forEach((identifier, bakedModel) -> {
-			if (bakedModel != null)
-				this.models.put(writer.add(identifier), writer.add(bakedModel));
-		});
-
-		this.missingModels = new ArrayList<>();
-
-		var writeContextData = DashLoader.getData().getWriteContextData();
-		var flippedModelMap = new IdentityHashMap<BakedModel, Identifier>();
-		models.forEach((identifier, bakedModel) -> flippedModelMap.put(bakedModel, identifier));
-
-		writeContextData.missingModelsWrite.forEach((bakedModel, missingDashModel) -> {
-			final Identifier object = flippedModelMap.get(bakedModel);
-			if (object == null) {
-				throw new RuntimeException("what");
+			if (bakedModel != null) {
+				final int add = writer.add(bakedModel);
+				if (!missingModelsWrite.containsKey(bakedModel)) {
+					this.models.put(writer.add(identifier), add);
+				}
 			}
-			missingModels.add(writer.add(object));
 		});
 	}
-
 
 	public Map<Identifier, BakedModel> export(final DashRegistryReader reader) {
 		final HashMap<Identifier, BakedModel> out = new HashMap<>();
 		models.forEach((key, value) -> out.put(reader.get(key), reader.get(value)));
 
-		for (Integer missingModel : missingModels) {
-			DashLoader.getData().getReadContextData().missingModelsRead.add(reader.get(missingModel));
+		var missingModelsRead = DashLoader.getData().getReadContextData().missingModelsRead;
+		var tasks = new ArrayList<Runnable>();
+		DashLoader.LOGGER.info("Scanning Blocks");
+		for (Block block : Registry.BLOCK) {
+			tasks.add(() -> block.getStateManager().getStates().forEach((blockState) -> {
+				final ModelIdentifier modelId = BlockModels.getModelId(blockState);
+				if (!out.containsKey(modelId)) {
+					missingModelsRead.put(blockState, modelId);
+				}
+			}));
 		}
+
+		DashLoader.LOGGER.info("Verifying {} BlockStates", tasks.size());
+		DashThreading.run(tasks);
+		DashLoader.LOGGER.info("Found {} Missing BlockState Models", missingModelsRead.size());
 		return out;
 	}
 

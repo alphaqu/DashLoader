@@ -2,9 +2,12 @@ package dev.quantumfusion.dashloader.def.mixin.option.cache.model;
 
 import com.mojang.datafixers.util.Pair;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.fallback.model.MissingDashModel;
-import dev.quantumfusion.dashloader.def.fallback.model.UnbakedBakedModel;
+import dev.quantumfusion.dashloader.def.fallback.MissingDashModel;
+import dev.quantumfusion.dashloader.def.fallback.UnbakedBakedModel;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.model.ModelLoader;
@@ -19,16 +22,16 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Mixin(value = ModelLoader.class, priority = 69420)
-public class ModelLoaderMixin {
+public abstract class ModelLoaderMixin {
 
+	@Mutable
 	@Shadow
 	@Final
 	private Map<Identifier, UnbakedModel> unbakedModels;
@@ -38,6 +41,14 @@ public class ModelLoaderMixin {
 	@Final
 	private Object2IntMap<BlockState> stateLookup;
 
+	@Shadow
+	protected abstract void method_4716(BlockState blockState);
+
+	@Mutable
+	@Shadow @Final private Set<Identifier> modelsToLoad;
+
+	@Mutable
+	@Shadow @Final private Map<Identifier, UnbakedModel> modelsToBake;
 
 	@Inject(
 			method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
@@ -48,13 +59,36 @@ public class ModelLoaderMixin {
 			var data = DashLoader.getData();
 			var dashModels = data.bakedModels.getCacheResultData();
 			DashLoader.LOGGER.info("Injecting {} Cached Models", dashModels.size());
+			this.unbakedModels = new Object2ObjectOpenHashMap<>(this.unbakedModels);
+			this.modelsToBake = new Object2ObjectOpenHashMap<>(this.modelsToBake);
+			this.modelsToLoad = new ObjectOpenHashSet<>();
 			dashModels.forEach((identifier, bakedModel) -> {
-				if (!(bakedModel instanceof MissingDashModel))
+				if (!(bakedModel instanceof MissingDashModel)) {
 					this.unbakedModels.put(identifier, new UnbakedBakedModel(bakedModel));
+				}
 			});
-
 			this.stateLookup = data.modelStateLookup.getCacheResultData();
 		}
+	}
+
+	/**
+	 * We want to not load all of the blockstate models as we have a list of them available on which ones to load to save a lot of computation
+	 */
+	@Redirect(
+			method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
+			at = @At(value = "INVOKE", target = "Ljava/util/Iterator;hasNext()Z", ordinal = 0)
+	)
+	private boolean loadMissingModels(Iterator instance) {
+		if (DashLoader.isRead()) {
+			final Object2ObjectMap<BlockState, Identifier> missingModelsRead = DashLoader.getData().getReadContextData().missingModelsRead;
+			DashLoader.LOGGER.info("Loading {} unsupported models.", missingModelsRead.size());
+			for (BlockState blockState : missingModelsRead.keySet()) {
+				// load thing lambda
+				method_4716(blockState);
+			}
+			return false;
+		}
+		return instance.hasNext();
 	}
 
 	@Inject(

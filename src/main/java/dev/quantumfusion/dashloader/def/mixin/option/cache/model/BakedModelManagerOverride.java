@@ -2,15 +2,16 @@ package dev.quantumfusion.dashloader.def.mixin.option.cache.model;
 
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.api.option.Option;
 import dev.quantumfusion.dashloader.def.api.option.ConfigHandler;
-import dev.quantumfusion.dashloader.def.fallback.model.UnbakedBakedModel;
+import dev.quantumfusion.dashloader.def.api.option.Option;
+import dev.quantumfusion.dashloader.def.fallback.UnbakedBakedModel;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ModelLoaderAccessor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.*;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -27,13 +28,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Mixin(value = BakedModelManager.class, priority = 69420)
-public class BakedModelManagerOverride {
-
-	@Shadow
-	@Final
-	private BlockColors colorMap;
-	@Shadow
-	private int mipmapLevels;
+public abstract class BakedModelManagerOverride {
 	@Shadow
 	@Nullable
 	private SpriteAtlasManager atlasManager;
@@ -98,7 +93,7 @@ public class BakedModelManagerOverride {
 				}
 			});
 
-			DashLoader.LOGGER.info("Baked {} out of {} models with fallback system. ({}% cache coverage)", fallback.get(), size, (int)((1 - (fallback.get() / (float) size)) * 100));
+			DashLoader.LOGGER.info("Baked {} out of {} models with fallback system. ({}% cache coverage)", fallback.get(), size, (int) ((1 - (fallback.get() / (float) size)) * 100));
 			this.stateLookup = modelLoader.getStateLookup();
 		}
 		this.missingModel = this.models.get(ModelLoader.MISSING_ID);
