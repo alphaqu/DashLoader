@@ -4,7 +4,7 @@ import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.option.Option;
 import dev.quantumfusion.dashloader.def.api.option.ConfigHandler;
-import dev.quantumfusion.dashloader.def.fallback.UnbakedBakedModel;
+import dev.quantumfusion.dashloader.def.fallback.model.UnbakedBakedModel;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ModelLoaderAccessor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.block.BlockState;
@@ -22,12 +22,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Mixin(BakedModelManager.class)
+@Mixin(value = BakedModelManager.class, priority = 69420)
 public class BakedModelManagerOverride {
 
 	@Shadow
@@ -55,27 +54,6 @@ public class BakedModelManagerOverride {
 	@Final
 	private BlockModels blockModelCache;
 
-	@Inject(
-			method = "prepare*",
-			at = @At(value = "HEAD"),
-			cancellable = true
-	)
-	private void prepare(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<ModelLoader> cir) {
-		profiler.startTick();
-		ModelLoader modelLoader;
-		if (DashLoader.isWrite()) {
-			DashLoader.LOGGER.info("DashLoader not loaded, Initializing minecraft ModelLoader to create assets for caching.");
-			modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmapLevels);
-		} else {
-			DashLoader.LOGGER.info("Skipping the ModelLoader as DashLoader has assets loaded.");
-			//hipidy hopedy this is now dashes property
-			modelLoader = null;
-		}
-		profiler.endTick();
-		cir.setReturnValue(modelLoader);
-
-	}
-
 	@Inject(method = "apply*",
 			at = @At(value = "HEAD"), cancellable = true)
 	private void applyStage(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
@@ -100,30 +78,28 @@ public class BakedModelManagerOverride {
 			profiler.swap("baking");
 			profiler.pop();
 
+
+			var access = (ModelLoaderAccessor) modelLoader;
+
 			this.atlasManager = data.spriteAtlasManager.getCacheResultData();
-
-			DashLoader.LOGGER.info("Launching fallback system.");
-			var fallbackLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmapLevels);
-			var access = (ModelLoaderAccessor) fallbackLoader;
-			access.setSpriteAtlasManager(this.atlasManager);
-
 			this.models = data.bakedModels.getCacheResultData();
 			final int size = this.models.size();
 			final Map<Identifier, UnbakedModel> modelsToBake = access.getModelsToBake();
+			access.setSpriteAtlasManager(this.atlasManager);
 
 			DashLoader.LOGGER.info("Baking fallback models.");
 			AtomicInteger fallback = new AtomicInteger();
 			modelsToBake.forEach((identifier, unbakedModel) -> {
 				if (!(unbakedModel instanceof UnbakedBakedModel)) {
-					this.models.put(identifier, fallbackLoader.bake(identifier, ModelRotation.X0_Y0));
+					this.models.put(identifier, modelLoader.bake(identifier, ModelRotation.X0_Y0));
 					if (!identifier.equals(ModelLoader.MISSING_ID)) {
 						fallback.getAndIncrement();
 					}
 				}
 			});
 
-			DashLoader.LOGGER.info("Loaded {} out of {} models with fallback system. ({}% cache coverage)", fallback.get(), size, (int)((1 - (fallback.get() / (float) size)) * 100));
-			this.stateLookup = fallbackLoader.getStateLookup();
+			DashLoader.LOGGER.info("Baked {} out of {} models with fallback system. ({}% cache coverage)", fallback.get(), size, (int)((1 - (fallback.get() / (float) size)) * 100));
+			this.stateLookup = modelLoader.getStateLookup();
 		}
 		this.missingModel = this.models.get(ModelLoader.MISSING_ID);
 		profiler.swap("cache");

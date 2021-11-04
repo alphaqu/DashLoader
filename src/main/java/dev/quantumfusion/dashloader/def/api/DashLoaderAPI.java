@@ -73,11 +73,13 @@ public class DashLoaderAPI {
 			for (CustomValue customValue : value.getAsArray()) {
 				final String dashObject = customValue.getAsString();
 				try {
-					final Class<D> closs = (Class<D>) Class.forName(dashObject);
+					final Class<D> closs = (Class<D>) Class.forName(dashObject, true, Thread.currentThread().getContextClassLoader());
 					func.accept(closs);
 				} catch (ClassNotFoundException e) {
 					LOGGER.error("Class not found, Mod: \"{}\", Value: \"{}\"", modMetadata.getId(), customValue.getAsString());
 					failed = true;
+				} catch (Throwable throwable) {
+					LOGGER.error("Failed to load class. Mod: \"{}\", Value: \"{}\"", modMetadata.getId(), customValue.getAsString());
 				}
 			}
 		}

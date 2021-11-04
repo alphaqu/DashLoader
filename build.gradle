@@ -50,6 +50,7 @@ dependencies {
     testImplementation('org.junit.jupiter:junit-jupiter:5.7.2')
 
     modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.36.1+1.17");
+    modCompileOnly fabricApi.module("fabric-textures-v0", "0.36.1+1.17");
 }
 
 test {

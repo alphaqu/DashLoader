@@ -50,6 +50,7 @@
 			"dev.quantumfusion.dashloader.def.data.image.DashImage",
 			"dev.quantumfusion.dashloader.def.data.image.DashSpriteImpl",
 			"dev.quantumfusion.dashloader.def.data.image.DashMissingSprite",
+			"dev.quantumfusion.dashloader.def.data.image.DashFabricSprite",
 
 
 			"dev.quantumfusion.dashloader.def.data.font.DashBitmapFont",

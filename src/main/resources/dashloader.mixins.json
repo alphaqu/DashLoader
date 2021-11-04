@@ -65,6 +65,7 @@
     "option.cache.font.FontManagerOverride$LeoFontSolution",
     "option.cache.font.TrueTypeFontLoaderMixin",
     "option.cache.model.BakedModelManagerOverride",
+    "option.cache.model.BlockModelsMixin",
     "option.cache.model.ModelLoaderMixin",
     "option.cache.model.MultipartUnbakedModelMixin",
     "option.cache.shader.GameRendererMixin",
