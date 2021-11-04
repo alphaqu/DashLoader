@@ -30,17 +30,13 @@ public class SplashScreenMixin {
 			cancellable = true
 	)
 	private void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+		DashLoader.LOGGER.info("</> DashLoader Profiled {}", "Times"); // ij labels plz show
+
 		if (DashLoader.INSTANCE.getStatus() == DashLoader.Status.READ) {
 			this.client.setOverlay(null);
 			if (client.currentScreen != null) {
 				if (this.client.currentScreen instanceof TitleScreen) {
-
-					DashLoader.LOGGER.info("</> DashLoader Profiled {}", "Times"); // ij labels plz show
 					DashLoader.LOGGER.info("</> ==> DashLoader Export time {}", TimeUtil.getTimeString(DashLoader.EXPORT_END - DashLoader.EXPORT_START));
-					DashLoader.LOGGER.info("</> ==> Minecraft Reload time {}", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
-					DashLoader.LOGGER.info("</> ==> Minecraft Bootstrap time {}", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
-					DashLoader.LOGGER.info("</> ==> Total Loading time {}", TimeUtil.getTimeStringFromStart(ManagementFactory.getRuntimeMXBean().getStartTime()));
-					System.out.println(MixinThings.TOTAL + " / " + MixinThings.CACHED);
 					this.client.currentScreen = new TitleScreen(false);
 				}
 				this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
@@ -51,7 +47,9 @@ public class SplashScreenMixin {
 			this.client.setScreen(currentScreen);
 			currentScreen.start();
 		}
-
+		DashLoader.LOGGER.info("</> ==> Minecraft Reload time {}", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
+		DashLoader.LOGGER.info("</> ==> Minecraft Bootstrap time {}", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
+		DashLoader.LOGGER.info("</> ==> Total Loading time {}", TimeUtil.getTimeString(ManagementFactory.getRuntimeMXBean().getUptime()));
 		ci.cancel();
 	}
 }
