@@ -7,9 +7,9 @@ public class TimeUtil {
 	}
 
 	public static String getTimeString(long ms) {
-		if (ms > 60000) { // 1m
-			return ((int) (ms / 600000)) + "m " + printMsToSec((ms % 60000)) + "s"; // [4m 42s]
-		} else if (ms > 3000) // 3s
+		if (ms >= 60000) { // 1m
+			return ((int) ((ms / 60000))) + "m " + ((int) (ms % 60000) / 1000) + "s"; // [4m 42s]
+		} else if (ms >= 3000) // 3s
 			return printMsToSec(ms) + "s"; // 1293ms = [1.2s]
 		else return ms + "ms"; // [400ms]
 	}
