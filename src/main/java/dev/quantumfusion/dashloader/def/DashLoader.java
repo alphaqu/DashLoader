@@ -100,9 +100,13 @@ public class DashLoader {
 		}
 	}
 
+	public static boolean dataManagerActive() {
+		return INSTANCE.dataManager != null;
+	}
+
 	public static DashDataManager getData() {
 		final DashDataManager dataManager = INSTANCE.dataManager;
-		if (dataManager == null)
+		if (!dataManagerActive())
 			throw new NullPointerException("No dataManager active");
 		return dataManager;
 	}

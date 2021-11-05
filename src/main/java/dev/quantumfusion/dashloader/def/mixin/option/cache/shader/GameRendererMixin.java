@@ -196,7 +196,7 @@ public abstract class GameRendererMixin {
 			cancellable = true
 	)
 	private void loadShaders(ResourceManager manager, CallbackInfo ci) {
-		if (DashLoader.isRead()) {
+		if (DashLoader.isRead() && DashLoader.dataManagerActive()) {
 			dashReload();
 			ci.cancel();
 		}
@@ -207,7 +207,7 @@ public abstract class GameRendererMixin {
 			at = @At(value = "TAIL")
 	)
 	private void reloadEnd(ResourceManager manager, CallbackInfo ci) {
-		if (DashLoader.isWrite()) {
+		if (DashLoader.isWrite() && DashLoader.dataManagerActive()) {
 			final DashDataManager instance = DashLoader.getData();
 			instance.shaders.setMinecraftData(shaders);
 		}

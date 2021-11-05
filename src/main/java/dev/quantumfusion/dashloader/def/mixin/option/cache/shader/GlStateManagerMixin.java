@@ -17,7 +17,7 @@ public class GlStateManagerMixin {
 			at = @At(value = "HEAD")
 	)
 	private static void glShaderSourceInject(int shader, List<String> strings, CallbackInfo ci) {
-		if (DashLoader.isWrite()) {
+		if (DashLoader.isWrite() && DashLoader.dataManagerActive()) {
 			DashLoader.getData().getWriteContextData().programData.put(shader, strings);
 		}
 	}
