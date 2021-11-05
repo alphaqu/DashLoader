@@ -36,6 +36,10 @@ public class ConfigHandler {
 			}
 		}
 
+		updateFile();
+	}
+
+	public static void updateFile() {
 		// update from config. Do it after mods because this has priority
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		final Path config = DashLoader.DASH_CONFIG_FOLDER.resolve("dashloader.json");

@@ -78,7 +78,6 @@ public abstract class BakedModelManagerOverride {
 
 			this.atlasManager = data.spriteAtlasManager.getCacheResultData();
 			this.models = data.bakedModels.getCacheResultData();
-			final int size = this.models.size();
 			final Map<Identifier, UnbakedModel> modelsToBake = access.getModelsToBake();
 			access.setSpriteAtlasManager(this.atlasManager);
 
@@ -93,6 +92,7 @@ public abstract class BakedModelManagerOverride {
 				}
 			});
 
+			final int size = this.models.size();
 			DashLoader.LOGGER.info("Baked {} out of {} models with fallback system. ({}% cache coverage)", fallback.get(), size, (int) ((1 - (fallback.get() / (float) size)) * 100));
 			this.stateLookup = modelLoader.getStateLookup();
 		}

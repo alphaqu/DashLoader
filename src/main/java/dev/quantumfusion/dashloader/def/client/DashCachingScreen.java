@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.option.ConfigHandler;
 import dev.quantumfusion.dashloader.def.api.option.data.DashConfig;
-import dev.quantumfusion.dashloader.def.api.option.data.LineEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
@@ -30,7 +29,7 @@ public class DashCachingScreen extends Screen {
 	public static final List<String> SUPPORTERS = new ArrayList<>();
 	public static boolean CACHING_COMPLETE = false;
 	private final int barSize = 2;
-	private final int padding;
+	private int padding;
 
 	private final Screen previousScreen;
 
@@ -39,6 +38,8 @@ public class DashCachingScreen extends Screen {
 	private final List<Line> lines = new ArrayList<>();
 	private final List<Pair<Color, Integer>> lineColorSelectors = new ArrayList<>();
 	private float weight = 0;
+	private boolean debug;
+	private int frame = 0;
 
 	private final String fact = HahaManager.getFact();
 
@@ -50,16 +51,20 @@ public class DashCachingScreen extends Screen {
 		UIColors.loadConfig(ConfigHandler.CONFIG);
 		this.previousScreen = previousScreen;
 		this.padding = ConfigHandler.CONFIG.cacheScreenPaddingSize;
+		this.debug = ConfigHandler.CONFIG.debug;
 		drawer.update(MinecraftClient.getInstance(), this::fillGradient);
 		createLines();
 	}
 
 	private void createLines() {
+		weight = 0;
+		lineColorSelectors.clear();
+		lines.clear();
 		final DashConfig config = ConfigHandler.CONFIG;
 
 		config.lineColors.forEach((s, integer) -> {
 			weight += integer;
-			lineColorSelectors.add(Pair.of(UIColors.parseColor(s),integer));
+			lineColorSelectors.add(Pair.of(UIColors.parseColor(s), integer));
 		});
 
 		for (int i = 0; i < config.cacheScreenLines; i++) {
@@ -94,20 +99,40 @@ public class DashCachingScreen extends Screen {
 	}
 
 	public void start() {
-		final Thread thread = new Thread(DashLoader.INSTANCE::saveDashCache);
-		thread.setName("dld-thread");
-		thread.start();
+		if (!debug) {
+			final Thread thread = new Thread(DashLoader.INSTANCE::saveDashCache);
+			thread.setName("dld-thread");
+			thread.start();
+		}
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		if (CACHING_COMPLETE) {
+		if (CACHING_COMPLETE && !debug) {
 			MinecraftClient.getInstance().setScreen(this.previousScreen);
 			DashLoader.INSTANCE.reloadComplete();
 			CACHING_COMPLETE = false;
 		}
 
 		drawer.push(matrices, textRenderer);
+		if (debug) {
+			frame++;
+
+
+			if (frame % 20 == 0) {
+				ConfigHandler.updateFile();
+				UIColors.loadConfig(ConfigHandler.CONFIG);
+				this.padding = ConfigHandler.CONFIG.cacheScreenPaddingSize;
+				weight = 0;
+				lineColorSelectors.clear();
+				final DashConfig config = ConfigHandler.CONFIG;
+				config.lineColors.forEach((s, integer) -> {
+					weight += integer;
+					lineColorSelectors.add(Pair.of(UIColors.parseColor(s), integer));
+				});
+			}
+		}
+
 		final int width = drawer.getWidth();
 		final int height = drawer.getHeight();
 
@@ -121,12 +146,12 @@ public class DashCachingScreen extends Screen {
 		drawLines(lines, matrices);
 
 
-		updateProgress();
+		updateProgress(debug ? (mouseX / (double) width) : PROGRESS.getProgress());
 
 		final int barY = height - padding - barSize;
 		drawer.drawQuad(PROGRESS_LANE_COLOR, 0, barY, width, barSize); // progress back
 		drawer.drawQuad(getProgressColor(currentProgress), 0, barY, (int) (width * currentProgress), barSize); // the progress bar
-		drawer.drawText(TEXT_LEFT, PROGRESS.getSubtaskName(), TEXT_COLOR, padding, barY - padding); // current task
+		drawer.drawText(TEXT_LEFT,debug ? "Debug mode is activated in DashLoader config." : PROGRESS.getSubtaskName(), TEXT_COLOR, padding, barY - padding); // current task
 
 
 		// fun fact
@@ -145,11 +170,11 @@ public class DashCachingScreen extends Screen {
 		drawer.update(client, this::fillGradient);
 	}
 
-	private void updateProgress() {
+	private void updateProgress(double targetProgress) {
 		long currentTime = System.currentTimeMillis();
 		final long deltaTime = currentTime - oldTime;
 		if (deltaTime > 16) {
-			this.currentProgress += calcDelta(1, currentProgress, deltaTime / 16d);
+			this.currentProgress += calcDelta(targetProgress, currentProgress, deltaTime / 16d);
 			this.oldTime = currentTime;
 		}
 	}

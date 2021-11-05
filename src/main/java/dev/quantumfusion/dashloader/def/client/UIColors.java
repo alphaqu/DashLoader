@@ -45,7 +45,8 @@ public class UIColors {
 	}
 
 	public static Color mix(double pos, Color... colors) {
-		pos = Math.min(1, pos);
+		if(colors.length == 1) return colors[0];
+		pos = Math.min(1, Math.max(0, pos));
 		int breaks = colors.length - 1;
 		if (pos == 1) return colors[breaks];
 		int colorPos = (int) Math.floor(pos * (breaks));

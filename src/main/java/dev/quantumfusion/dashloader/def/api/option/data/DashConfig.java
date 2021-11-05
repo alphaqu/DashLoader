@@ -8,6 +8,7 @@ public class DashConfig {
 	public Option[] disabledOptions = new Option[0];
 	public boolean disableWatermark = false;
 	public int cacheScreenLines = 100;
+	public boolean debug = false;
 	public int cacheScreenPaddingSize = 10;
 
 	public String backgroundColor = "base1";
@@ -34,6 +35,14 @@ public class DashConfig {
 
 
 	public DashConfig() {
+	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 	public Option[] getDisabledOptions() {
