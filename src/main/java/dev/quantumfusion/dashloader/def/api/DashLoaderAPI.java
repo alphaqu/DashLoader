@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.def.api;
 
 import dev.quantumfusion.dashloader.core.Dashable;
+import dev.quantumfusion.dashloader.def.DashConstants;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -16,10 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DashLoaderAPI {
-	public static final Function<String, String> DASH_VALUE_CONSUMER = (s) -> "dashloader:" + s;
-	public static final String DASH_OBJECT_TAG = "dashobject";
-	public static final String DASH_OPTION_TAG = "dashoption";
-	public static final Logger LOGGER = LogManager.getLogger();
+	public static final Logger LOGGER = LogManager.getLogger("DashLoaderAPI");
 	public final List<Class<? extends Dashable<?>>> dashObjects;
 	private boolean initialized = false;
 	private boolean failed = false;
@@ -54,7 +52,7 @@ public class DashLoaderAPI {
 					CustomValue value = metadata.getCustomValue("dashloader:customobject");
 					if (value != null) LOGGER.error("Found DashLoader 2.0 mod: " + modContainer.getMetadata().getId());
 
-					applyForClassesInValue(metadata, DASH_VALUE_CONSUMER.apply(DASH_OBJECT_TAG), this::registerDashObject);
+					applyForClassesInValue(metadata, DashConstants.DASH_OBJECT_TAG, this::registerDashObject);
 				}
 			});
 

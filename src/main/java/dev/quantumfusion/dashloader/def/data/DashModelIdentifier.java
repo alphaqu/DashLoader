@@ -5,13 +5,14 @@ import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ModelIdentifierAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
+import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 
 @Data
 @DashObject(ModelIdentifier.class)
 public class DashModelIdentifier implements DashIdentifierInterface {
-	public final String[] strings;
+	public final String @DataFixedArraySize(3) [] strings;
 
 	public DashModelIdentifier(String[] strings) {
 		this.strings = strings;

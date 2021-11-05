@@ -2,8 +2,8 @@ package dev.quantumfusion.dashloader.def.api.option;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dev.quantumfusion.dashloader.def.DashConstants;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.api.DashLoaderAPI;
 import dev.quantumfusion.dashloader.def.api.option.data.DashConfig;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -16,7 +16,7 @@ import java.util.EnumMap;
 public class ConfigHandler {
 	public static DashConfig CONFIG = new DashConfig();
 	private static final EnumMap<Option, Boolean> OPTION_ACTIVE = new EnumMap<>(Option.class);
-	private static final String OPTION_TAG = DashLoaderAPI.DASH_VALUE_CONSUMER.apply(DashLoaderAPI.DASH_OPTION_TAG);
+	private static final String OPTION_TAG = DashConstants.DASH_OPTION_TAG;
 
 	public static void update() {
 		// update all fabric mods and such, config has priority

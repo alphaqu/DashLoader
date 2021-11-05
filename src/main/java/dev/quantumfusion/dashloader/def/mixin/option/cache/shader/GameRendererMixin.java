@@ -280,7 +280,7 @@ public abstract class GameRendererMixin {
 
 		DashLoader.LOGGER.info("Replacing {} shaders", size);
 		clearShaders();
-		shaderData.forEach(this.shaders::put);
+		this.shaders.putAll(shaderData);
 		DashLoader.LOGGER.info("Shader reload complete.");
 
 	}

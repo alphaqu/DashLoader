@@ -25,32 +25,26 @@ import java.util.function.Predicate;
 public class RegistryData implements ChunkDataHolder {
 	public final AbstractDataChunk<BlockState, DashBlockState> blockStateRegistryData;
 	public final AbstractDataChunk<Font, DashFont> fontRegistryData;
-	public final AbstractDataChunk<Identifier, DashIdentifierInterface> identifierRegistryData;
 	public final AbstractDataChunk<Sprite, DashSprite> spriteRegistryData;
 	public final AbstractDataChunk<Predicate<BlockState>, DashPredicate> predicateRegistryData;
-	public final AbstractDataChunk<BakedQuad, DashBakedQuad> registryBakedQuadData;
 /*	@Serialize(order = 8)
 	@SerializeSubclasses(extraSubclassesId = "data", path = {0})
 	public final List<DashDataClass> dataClassList;*/
 
 
-	public RegistryData(AbstractDataChunk<BlockState, DashBlockState> blockStateRegistryData, AbstractDataChunk<Font, DashFont> fontRegistryData, AbstractDataChunk<Identifier, DashIdentifierInterface> identifierRegistryData, AbstractDataChunk<Sprite, DashSprite> spriteRegistryData, AbstractDataChunk<Predicate<BlockState>, DashPredicate> predicateRegistryData, AbstractDataChunk<BakedQuad, DashBakedQuad> registryBakedQuadData) {
+	public RegistryData(AbstractDataChunk<BlockState, DashBlockState> blockStateRegistryData, AbstractDataChunk<Font, DashFont> fontRegistryData, AbstractDataChunk<Sprite, DashSprite> spriteRegistryData, AbstractDataChunk<Predicate<BlockState>, DashPredicate> predicateRegistryData) {
 		this.blockStateRegistryData = blockStateRegistryData;
 		this.fontRegistryData = fontRegistryData;
-		this.identifierRegistryData = identifierRegistryData;
 		this.spriteRegistryData = spriteRegistryData;
 		this.predicateRegistryData = predicateRegistryData;
-		this.registryBakedQuadData = registryBakedQuadData;
 	}
 
 	@SuppressWarnings("unchecked")
 	public RegistryData(DashRegistryWriter writer) {
 		this.blockStateRegistryData = writer.getChunk(DashBlockState.class).exportData();
 		this.fontRegistryData = writer.getChunk(DashFont.class).exportData();
-		this.identifierRegistryData = writer.getChunk(DashIdentifierInterface.class).exportData();
 		this.spriteRegistryData = writer.getChunk(DashSprite.class).exportData();
 		this.predicateRegistryData = writer.getChunk(DashPredicate.class).exportData();
-		this.registryBakedQuadData = writer.getChunk(DashBakedQuad.class).exportData();
 
 		// TODO data classes
 /*
@@ -61,6 +55,6 @@ public class RegistryData implements ChunkDataHolder {
 
 	@Override
 	public Collection<AbstractDataChunk<?, ?>> getChunks() {
-		return List.of(blockStateRegistryData, fontRegistryData, identifierRegistryData, spriteRegistryData, predicateRegistryData, registryBakedQuadData);
+		return List.of(blockStateRegistryData, fontRegistryData, spriteRegistryData, predicateRegistryData);
 	}
 }

@@ -8,10 +8,7 @@ import dev.quantumfusion.dashloader.core.registry.WriteFailCallback;
 import dev.quantumfusion.dashloader.core.util.DashThreading;
 import dev.quantumfusion.dashloader.def.api.DashLoaderAPI;
 import dev.quantumfusion.dashloader.def.client.DashCachingScreen;
-import dev.quantumfusion.dashloader.def.corehook.ImageData;
-import dev.quantumfusion.dashloader.def.corehook.MappingData;
-import dev.quantumfusion.dashloader.def.corehook.ModelData;
-import dev.quantumfusion.dashloader.def.corehook.RegistryData;
+import dev.quantumfusion.dashloader.def.corehook.*;
 import dev.quantumfusion.dashloader.def.data.DashIdentifier;
 import dev.quantumfusion.dashloader.def.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.def.data.DashModelIdentifier;
@@ -85,9 +82,11 @@ public class DashLoader {
 				LOGGER.warn("DashLoader launched in dev.");
 
 			core.setCurrentSubcache("null");
-			core.prepareSerializer(RegistryData.class, DashBlockState.class, DashFont.class, DashIdentifierInterface.class, DashSprite.class, DashPredicate.class, DashBakedQuad.class);
+			core.prepareSerializer(RegistryData.class, DashBlockState.class, DashFont.class,  DashSprite.class, DashPredicate.class);
 			core.prepareSerializer(ImageData.class, DashImage.class);
 			core.prepareSerializer(ModelData.class, DashModel.class);
+			core.prepareSerializer(IdentifierData.class, DashIdentifierInterface.class);
+			core.prepareSerializer(BakedQuadData.class, DashBakedQuad.class);
 			core.prepareSerializer(MappingData.class);
 
 			status = Status.WRITE;
@@ -182,12 +181,16 @@ public class DashLoader {
 		PROGRESS.completedTask();
 		final ModelData models = new ModelData(writer);
 		final RegistryData registrydata = new RegistryData(writer);
+		final IdentifierData identifierData = new IdentifierData(writer);
+		final BakedQuadData bakedQuadData = new BakedQuadData(writer);
 		PROGRESS.completedTask();
 
 		// serialization
 		core.save(images);
 		core.save(models);
 		core.save(registrydata);
+		core.save(bakedQuadData);
+		core.save(identifierData);
 		core.save(mappings);
 		PROGRESS.completedTask();
 
@@ -201,13 +204,15 @@ public class DashLoader {
 		LOGGER.info("Starting DashLoader Deserialization");
 		try {
 			AtomicReference<MappingData> mappingsReference = new AtomicReference<>();
-			ChunkDataHolder[] registryDataObjects = new ChunkDataHolder[3];
+			ChunkDataHolder[] registryDataObjects = new ChunkDataHolder[5];
 
 
 			DashThreading.run(
 					() -> registryDataObjects[0] = (core.load(RegistryData.class)),
 					() -> registryDataObjects[1] = (core.load(ImageData.class)),
 					() -> registryDataObjects[2] = (core.load(ModelData.class)),
+					() -> registryDataObjects[3] = (core.load(IdentifierData.class)),
+					() -> registryDataObjects[4] = (core.load(BakedQuadData.class)),
 					() -> mappingsReference.set(core.load(MappingData.class))
 			);
 
