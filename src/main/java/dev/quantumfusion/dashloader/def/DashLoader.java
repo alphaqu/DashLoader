@@ -146,7 +146,7 @@ public class DashLoader {
 	public void saveDashCache() {
 		long start = System.currentTimeMillis();
 		PROGRESS.reset();
-		PROGRESS.setTotalTasks(5);
+		PROGRESS.setTotalTasks(4);
 		Map<Class<?>, WriteFailCallback<?, ?>> callbacks = new HashMap<>();
 
 		// missing model callback
@@ -167,7 +167,6 @@ public class DashLoader {
 
 		// creation
 		DashRegistryWriter writer = core.createWriter(callbacks);
-		PROGRESS.completedTask();
 
 		// mapping
 		MappingData mappings = new MappingData();
@@ -187,6 +186,7 @@ public class DashLoader {
 		core.save(registrydata);
 		core.save(mappings);
 		PROGRESS.completedTask();
+
 		DashCachingScreen.CACHING_COMPLETE = true;
 		LOGGER.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
 	}

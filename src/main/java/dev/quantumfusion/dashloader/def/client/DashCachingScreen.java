@@ -161,7 +161,7 @@ public class DashCachingScreen extends Screen {
 
 	private static double calcDelta(double targetProgress, double currentProgress, double timeOff) {
 		double delta = targetProgress - currentProgress;
-		return delta == 0 ? 0 : (delta / (delta < 0 ? 10 : 20)) / timeOff;
+		return delta == 0 ? 0 : (delta / (delta < 0 ? 4 : 10)) / timeOff;
 	}
 
 	@Override

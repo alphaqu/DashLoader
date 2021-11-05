@@ -7,6 +7,8 @@ import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
 import dev.quantumfusion.dashloader.core.util.DashThreading;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.def.data.DashIdentifierInterface;
+import dev.quantumfusion.dashloader.def.data.model.DashModel;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.block.BlockModels;
@@ -35,11 +37,13 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 
 		this.models = new IntIntList(new ArrayList<>(models.size()));
 
+		var modelChunk = writer.getChunk(DashModel.class);
+		var identifierChunk = writer.getChunk(DashIdentifierInterface.class);
 		models.forEach((identifier, bakedModel) -> {
 			if (bakedModel != null) {
-				final int add = writer.add(bakedModel);
+				final int add = writer.addDirect(modelChunk, bakedModel);
 				if (!missingModelsWrite.containsKey(bakedModel)) {
-					this.models.put(writer.add(identifier), add);
+					this.models.put(writer.addDirect(identifierChunk, identifier), add);
 				}
 			}
 		});

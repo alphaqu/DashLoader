@@ -51,33 +51,47 @@ public class MappingData {
 		if (DashLoader.isRead())
 			throw new RuntimeException("Tried to map data when DashDataManager is in Read mode");
 
-		DashLoaderProgress.PROGRESS.setCurrentSubtask("Mapping", 5);
+		DashLoaderProgress.PROGRESS.setCurrentSubtask("Mapping", 7);
 		final DashDataManager dataManager = DashLoader.getData();
 
 
 		if (ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
+			DashLoader.LOGGER.info("Mapping Blockstates");
 			blockStateData = new DashBlockStateData(dataManager, registry);
+			DashLoaderProgress.PROGRESS.completedSubTask();
+
+			DashLoader.LOGGER.info("Mapping Models");
 			modelData = new DashModelData(dataManager, registry);
+			DashLoaderProgress.PROGRESS.completedSubTask();
+
+			DashLoader.LOGGER.info("Mapping Sprites");
 			spriteAtlasData = new DashSpriteAtlasData(dataManager, registry);
-
-
-		} DashLoaderProgress.PROGRESS.completedSubTask();
+			DashLoaderProgress.PROGRESS.completedSubTask();
+		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_PARTICLE)) {
+			DashLoader.LOGGER.info("Mapping Particles");
 			particleData = new DashParticleData(dataManager, registry);
-		} DashLoaderProgress.PROGRESS.completedSubTask();
+			DashLoaderProgress.PROGRESS.completedSubTask();
+		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_FONT)) {
+			DashLoader.LOGGER.info("Mapping Fonts");
 			fontManagerData = new DashFontManagerData(dataManager, registry);
-		} DashLoaderProgress.PROGRESS.completedSubTask();
+			DashLoaderProgress.PROGRESS.completedSubTask();
+		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_SPLASH_TEXT)) {
+			DashLoader.LOGGER.info("Mapping SplashText");
 			splashTextData = new DashSplashTextData(dataManager);
-		} DashLoaderProgress.PROGRESS.completedSubTask();
+			DashLoaderProgress.PROGRESS.completedSubTask();
+		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_SHADER)) {
+			DashLoader.LOGGER.info("Mapping Shaders");
 			shaderData = new DashShaderData(dataManager);
-		} DashLoaderProgress.PROGRESS.completedSubTask();
+			DashLoaderProgress.PROGRESS.completedSubTask();
+		}
 	}
 
 	public void export(DashRegistryReader registry, DashDataManager data) {

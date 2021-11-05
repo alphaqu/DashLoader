@@ -5,7 +5,9 @@ import dev.quantumfusion.dashloader.core.common.IntIntList;
 import dev.quantumfusion.dashloader.core.common.IntObjectList;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
 import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.chunk.write.AbstractChunkWriter;
 import dev.quantumfusion.dashloader.def.DashDataManager;
+import dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -22,7 +24,8 @@ public class DashBlockStateData implements Dashable<Object2IntMap<BlockState>> {
 	public DashBlockStateData(DashDataManager data, DashRegistryWriter writer) {
 		this.blockstates = new IntIntList();
 		final Object2IntMap<BlockState> stateLookup = data.modelStateLookup.getMinecraftData();
-		stateLookup.object2IntEntrySet().forEach((e) -> this.blockstates.put(writer.add(e.getKey()), e.getIntValue()));
+		final AbstractChunkWriter<BlockState, DashBlockState> chunk = writer.getChunk(DashBlockState.class);
+		stateLookup.object2IntEntrySet().forEach((e) -> this.blockstates.put(writer.addDirect(chunk, e.getKey()), e.getIntValue()));
 	}
 
 	public Object2IntMap<BlockState> export(DashRegistryReader reader) {
