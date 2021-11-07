@@ -1,9 +1,9 @@
 package dev.quantumfusion.dashloader.def.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.quantumfusion.dashloader.core.client.config.DashConfig;
+import dev.quantumfusion.dashloader.core.client.config.DashConfigHandler;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.api.option.ConfigHandler;
-import dev.quantumfusion.dashloader.def.api.option.data.DashConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
@@ -28,8 +28,6 @@ import static dev.quantumfusion.dashloader.def.client.UIDrawer.TextOrientation.T
 public class DashCachingScreen extends Screen {
 	public static final List<String> SUPPORTERS = new ArrayList<>();
 	public static boolean CACHING_COMPLETE = false;
-	private final int barSize = 2;
-	private int padding;
 
 	private final Screen previousScreen;
 
@@ -39,7 +37,13 @@ public class DashCachingScreen extends Screen {
 	private final List<Pair<Color, Integer>> lineColorSelectors = new ArrayList<>();
 	private float weight = 0;
 	private boolean debug;
-	private int frame = 0;
+	private int padding;
+	private int progressBarHeight = 0;
+	private int progressBarSpeedDivision = 0;
+	private float lineSpeedDifference = 0;
+	private int lineAmount = 100;
+
+	private boolean configRequiresUpdate = false;
 
 	private final String fact = HahaManager.getFact();
 
@@ -48,34 +52,82 @@ public class DashCachingScreen extends Screen {
 
 	public DashCachingScreen(Screen previousScreen) {
 		super(Text.of("Caching"));
-		UIColors.loadConfig(ConfigHandler.CONFIG);
+		UIColors.loadConfig(DashConfigHandler.INSTANCE.config);
 		this.previousScreen = previousScreen;
-		this.padding = ConfigHandler.CONFIG.cacheScreenPaddingSize;
-		this.debug = ConfigHandler.CONFIG.debug;
 		drawer.update(MinecraftClient.getInstance(), this::fillGradient);
 		createLines();
+		updateConfig();
 	}
 
 	private void createLines() {
+		lines.clear();
+		final DashConfig config = DashConfigHandler.INSTANCE.config;
+
+		for (int i = 0; i < config.lineAmount; i++) {
+			lines.add(new Line());
+		}
+	}
+
+	private void updateConfig() {
+		final DashConfig config = DashConfigHandler.INSTANCE.config;
+		UIColors.loadConfig(config);
+
+		this.padding = config.paddingSize;
+		this.debug = config.debugMode;
+		this.progressBarHeight = config.progressBarHeight;
+		this.lineSpeedDifference = config.progressBarSpeedDivision;
+		this.lineAmount = config.lineAmount;
+		this.progressBarSpeedDivision = config.progressBarSpeedDivision;
+
+		// lines
 		weight = 0;
 		lineColorSelectors.clear();
-		lines.clear();
-		final DashConfig config = ConfigHandler.CONFIG;
-
 		config.lineColors.forEach((s, integer) -> {
 			weight += integer;
 			lineColorSelectors.add(Pair.of(UIColors.parseColor(s), integer));
 		});
 
-		for (int i = 0; i < config.cacheScreenLines; i++) {
-			final int height = random.nextInt(5) + 5;
-			final float speed = random.nextFloat() + 1; // 1 to 2
-			final float x = drawer.getWidth() * random.nextFloat();
-			final float y = drawer.getHeight() * random.nextFloat();
-			final Line e = new Line(UIDrawer.GradientOrientation.GRADIENT_LEFT, x, y, 100, height, BACKGROUND_COLOR, speed);
-			e.updateColor();
-			lines.add(e);
+		UIDrawer.GradientOrientation lineOrientation = UIDrawer.GradientOrientation.GRADIENT_LEFT;
+
+		final String lineDirection = config.lineDirection;
+		switch (lineDirection) {
+			case "UP" -> lineOrientation = UIDrawer.GradientOrientation.GRADIENT_TOP;
+			case "LEFT" -> lineOrientation = UIDrawer.GradientOrientation.GRADIENT_LEFT;
+			case "RIGHT" -> lineOrientation = UIDrawer.GradientOrientation.GRADIENT_RIGHT;
+			case "DOWN" -> lineOrientation = UIDrawer.GradientOrientation.GRADIENT_DOWN;
+			default -> DashLoader.LOGGER.error("Direction {} does not exist. (LEFT, RIGHT, UP, DOWN)", lineDirection);
 		}
+
+		lineSpeedDifference = config.lineSpeedDifference;
+
+		if (lineAmount > lines.size()) {
+			for (int i = 0; i < (lineAmount - lines.size()); i++) {
+				lines.add(new Line());
+			}
+		} else if (lineAmount < lines.size()) {
+			final int toRemove = lines.size() - lineAmount;
+			if (toRemove > 0) lines.subList(0, toRemove).clear();
+		}
+
+		for (Line line : lines) {
+			line.speed = config.lineSpeed;
+			line.width = config.lineWidth;
+			final int bound = config.lineMaxHeight - config.lineMinHeight;
+			line.height = config.lineMinHeight + (bound > 0 ? random.nextInt(bound) : 0);
+			line.orientation = lineOrientation;
+			line.updateStep();
+		}
+
+
+		if (this.debug) {
+			DashConfigHandler.INSTANCE.addListener(listener -> configRequiresUpdate = true);
+		}
+
+	}
+
+	@Override
+	public boolean shouldCloseOnEsc() {
+		return false;
 	}
 
 	public Color getLineColor() {
@@ -114,25 +166,12 @@ public class DashCachingScreen extends Screen {
 			CACHING_COMPLETE = false;
 		}
 
-		drawer.push(matrices, textRenderer);
-		if (debug) {
-			frame++;
-
-
-			if (frame % 20 == 0) {
-				ConfigHandler.updateFile();
-				UIColors.loadConfig(ConfigHandler.CONFIG);
-				this.padding = ConfigHandler.CONFIG.cacheScreenPaddingSize;
-				weight = 0;
-				lineColorSelectors.clear();
-				final DashConfig config = ConfigHandler.CONFIG;
-				config.lineColors.forEach((s, integer) -> {
-					weight += integer;
-					lineColorSelectors.add(Pair.of(UIColors.parseColor(s), integer));
-				});
-			}
+		if (configRequiresUpdate) {
+			updateConfig();
+			configRequiresUpdate = false;
 		}
 
+		drawer.push(matrices, textRenderer);
 		final int width = drawer.getWidth();
 		final int height = drawer.getHeight();
 
@@ -148,10 +187,10 @@ public class DashCachingScreen extends Screen {
 
 		updateProgress(debug ? (mouseX / (double) width) : PROGRESS.getProgress());
 
-		final int barY = height - padding - barSize;
-		drawer.drawQuad(PROGRESS_LANE_COLOR, 0, barY, width, barSize); // progress back
-		drawer.drawQuad(getProgressColor(currentProgress), 0, barY, (int) (width * currentProgress), barSize); // the progress bar
-		drawer.drawText(TEXT_LEFT,debug ? "Debug mode is activated in DashLoader config." : PROGRESS.getSubtaskName(), TEXT_COLOR, padding, barY - padding); // current task
+		final int barY = height - padding - progressBarHeight;
+		drawer.drawQuad(PROGRESS_LANE_COLOR, 0, barY, width, progressBarHeight); // progress back
+		drawer.drawQuad(getProgressColor(currentProgress), 0, barY, (int) (width * currentProgress), progressBarHeight); // the progress bar
+		drawer.drawText(TEXT_LEFT, debug ? "Debug mode is activated in DashLoader config." : PROGRESS.getSubtaskName(), TEXT_COLOR, padding, barY - padding); // current task
 
 
 		// fun fact
@@ -159,9 +198,9 @@ public class DashCachingScreen extends Screen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private static double calcDelta(double targetProgress, double currentProgress, double timeOff) {
+	private double calcDelta(double targetProgress, double currentProgress, double timeOff) {
 		double delta = targetProgress - currentProgress;
-		return delta == 0 ? 0 : (delta / (delta < 0 ? 4 : 10)) / timeOff;
+		return delta == 0 ? 0 : (delta / (delta < 0 ? 3 : progressBarSpeedDivision));
 	}
 
 	@Override
@@ -174,10 +213,11 @@ public class DashCachingScreen extends Screen {
 		long currentTime = System.currentTimeMillis();
 		final long deltaTime = currentTime - oldTime;
 		if (deltaTime > 16) {
-			this.currentProgress += calcDelta(targetProgress, currentProgress, deltaTime / 16d);
+			this.currentProgress += calcDelta(targetProgress, currentProgress, 1);
 			this.oldTime = currentTime;
 		}
 	}
+
 
 	private void drawLines(List<Line> lines, MatrixStack ms) {
 		RenderSystem.disableTexture();
@@ -211,13 +251,20 @@ public class DashCachingScreen extends Screen {
 	}
 
 	private final class Line {
-		public final UIDrawer.GradientOrientation orientation;
-		public final int width;
-		public final int height;
-		public final float speed;
+		public UIDrawer.GradientOrientation orientation;
 		public Color color;
 		public float x;
 		public float y;
+		public int width;
+		public int height;
+		public float speed;
+
+		public float xStep;
+		public float yStep;
+
+		public Line() {
+			this(UIDrawer.GradientOrientation.GRADIENT_LEFT, -100, -100, 0, 0, Color.WHITE, 1);
+		}
 
 		private Line(UIDrawer.GradientOrientation orientation, float x, float y, int width, int height, Color color, float speed) {
 			this.orientation = orientation;
@@ -230,30 +277,42 @@ public class DashCachingScreen extends Screen {
 		}
 
 		public void tick() {
-			this.x += (orientation.xDir * (speed * 4f)) / 2f;
-			this.y += (orientation.yDir * (speed * 4f)) / 2f;
+			this.x += xStep;
+			this.y += yStep;
 
-			if (x - width > drawer.getWidth()) {
+			final int screenHeight = drawer.getHeight();
+			final int screenWidth = drawer.getWidth();
+			if (x - this.width > screenWidth) {
 				this.x = 0;
-				this.y = random.nextInt(drawer.getHeight());
-				updateColor();
-			} else if (x + width < 0) {
-				this.x = drawer.getWidth();
-				this.y = random.nextInt(drawer.getHeight());
-				updateColor();
-			} else if (y - height > drawer.getHeight()) {
-				this.y = 0;
-				this.x = random.nextInt(drawer.getWidth());
-				updateColor();
-			} else if (y + height < 0) {
-				this.y = drawer.getHeight();
-				this.x = random.nextInt(drawer.getWidth());
-				updateColor();
+				this.y = random.nextInt(screenHeight);
+				update();
+			} else if (x + this.width < 0) {
+				this.x = screenWidth;
+				this.y = random.nextInt(screenHeight);
+				update();
+			} else if (y - this.height > screenHeight) {
+				this.y = -height;
+				this.x = random.nextInt(screenWidth);
+				update();
+			} else if (y + this.height < 0) {
+				this.y = screenHeight;
+				this.x = random.nextInt(screenWidth);
+				update();
 			}
+		}
+
+		private void update() {
+			updateColor();
+			updateStep();
 		}
 
 		private void updateColor() {
 			this.color = getLineColor();
+		}
+
+		private void updateStep() {
+			this.xStep = (orientation.xDir * (speed * (1 + (random.nextFloat() * lineSpeedDifference)))) / 2f;
+			this.yStep = (orientation.yDir * (speed * (1 + (random.nextFloat() * lineSpeedDifference)))) / 2f;
 		}
 	}
 

@@ -1,20 +1,14 @@
 package dev.quantumfusion.dashloader.def.api.option;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import dev.quantumfusion.dashloader.core.client.config.DashConfigHandler;
 import dev.quantumfusion.dashloader.def.DashConstants;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.api.option.data.DashConfig;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.EnumMap;
 
 public class ConfigHandler {
-	public static DashConfig CONFIG = new DashConfig();
+	public static boolean pathSet = false;
 	private static final EnumMap<Option, Boolean> OPTION_ACTIVE = new EnumMap<>(Option.class);
 	private static final String OPTION_TAG = DashConstants.DASH_OPTION_TAG;
 
@@ -36,35 +30,12 @@ public class ConfigHandler {
 			}
 		}
 
-		updateFile();
-	}
-
-	public static void updateFile() {
-		// update from config. Do it after mods because this has priority
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		final Path config = DashLoader.DASH_CONFIG_FOLDER.resolve("dashloader.json");
-		if (Files.exists(config)) {
-			try {
-				CONFIG = gson.fromJson(Files.readString(config), DashConfig.class);
-				if (CONFIG.disabledOptions != null) {
-					for (Option disabledOption : CONFIG.disabledOptions)
-						OPTION_ACTIVE.put(disabledOption, false);
-				}
-
-				if (CONFIG.disableWatermark)
-					OPTION_ACTIVE.put(Option.WATERMARK, false);
-
-				return;
-			} catch (Throwable e) {
-				DashLoader.LOGGER.error("Failed to read config file", e);
-			}
+		if (!pathSet) {
+			DashConfigHandler.INSTANCE.setConfigPath(DashLoader.DASH_CONFIG_FOLDER.resolve("dashloader.json"));
 		}
 
-		try {
-			Files.writeString(config, gson.toJson(CONFIG), StandardOpenOption.CREATE);
-		} catch (IOException e) {
-			DashLoader.LOGGER.error("Failed to create config file", e);
-		}
+		System.out.println("Reloading config");
+		DashConfigHandler.INSTANCE.reloadConfig();
 	}
 
 	public static boolean shouldApplyMixin(String name) {

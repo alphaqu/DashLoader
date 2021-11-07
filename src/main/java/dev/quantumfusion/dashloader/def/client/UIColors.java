@@ -1,6 +1,6 @@
 package dev.quantumfusion.dashloader.def.client;
 
-import dev.quantumfusion.dashloader.def.api.option.data.DashConfig;
+import dev.quantumfusion.dashloader.core.client.config.DashConfig;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -18,13 +18,17 @@ public class UIColors {
 		if (COLORS.containsKey(str.toLowerCase())) {
 			return COLORS.get(str.toLowerCase());
 		} else {
-			return Color.decode(str.toUpperCase());
+			try {
+				return Color.decode(str.toUpperCase());
+			} catch (NumberFormatException formatException) {
+				return Color.MAGENTA;
+			}
 		}
 	}
 
 	public static void loadConfig(DashConfig config) {
 		COLORS.clear();
-		config.colors.forEach((s, s2) -> COLORS.put(s, Color.decode(s2)));
+		config.colorVariables.forEach((s, s2) -> COLORS.put(s, Color.decode(s2)));
 
 		final String[] progressColors = config.progressColors;
 		if (progressColors.length == 0) {
@@ -36,8 +40,8 @@ public class UIColors {
 		}
 
 		BACKGROUND_COLOR = parseColor(config.backgroundColor);
-		PROGRESS_LANE_COLOR = parseColor(config.progressLaneColor);
-		TEXT_COLOR = parseColor(config.textColor);
+		PROGRESS_LANE_COLOR = parseColor(config.progressTrackColor);
+		TEXT_COLOR = parseColor(config.foregroundColor);
 	}
 
 	public static Color getProgressColor(double progress) {
@@ -45,7 +49,7 @@ public class UIColors {
 	}
 
 	public static Color mix(double pos, Color... colors) {
-		if(colors.length == 1) return colors[0];
+		if (colors.length == 1) return colors[0];
 		pos = Math.min(1, Math.max(0, pos));
 		int breaks = colors.length - 1;
 		if (pos == 1) return colors[breaks];
