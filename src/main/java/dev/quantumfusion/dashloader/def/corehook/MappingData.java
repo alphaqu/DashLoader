@@ -1,8 +1,11 @@
 package dev.quantumfusion.dashloader.def.corehook;
 
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
-import dev.quantumfusion.dashloader.core.ui.DashLoaderProgress;
+import dev.quantumfusion.dashloader.core.DashLoaderCore;
+import dev.quantumfusion.dashloader.core.progress.ProgressHandler;
+import dev.quantumfusion.dashloader.core.progress.task.CountTask;
+import dev.quantumfusion.dashloader.core.progress.task.Task;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.core.util.DashUtil;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
@@ -47,54 +50,58 @@ public class MappingData {
 	}
 
 
-	public void map(DashRegistryWriter registry) {
+	public void map(RegistryWriter registry, Task task) {
 		if (DashLoader.isRead())
 			throw new RuntimeException("Tried to map data when DashDataManager is in Read mode");
 
-		DashLoaderProgress.PROGRESS.setCurrentSubtask("Mapping", 7);
+		final ProgressHandler progress = DashLoaderCore.PROGRESS;
+		progress.setCurrentTask("Mapping");
+		CountTask mapping = new CountTask(7);
+		task.setSubtask(mapping);
+
+
 		final DashDataManager dataManager = DashLoader.getData();
-
-
 		if (ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
-			DashLoader.LOGGER.info("Mapping Blockstates");
+
+			progress.setCurrentTask("Mapping Blockstates");
 			blockStateData = new DashBlockStateData(dataManager, registry);
-			DashLoaderProgress.PROGRESS.completedSubTask();
+			mapping.completedTask();
 
-			DashLoader.LOGGER.info("Mapping Models");
+			progress.setCurrentTask("Mapping Models");
 			modelData = new DashModelData(dataManager, registry);
-			DashLoaderProgress.PROGRESS.completedSubTask();
+			mapping.completedTask();
 
-			DashLoader.LOGGER.info("Mapping Sprites");
+			progress.setCurrentTask("Mapping Sprites");
 			spriteAtlasData = new DashSpriteAtlasData(dataManager, registry);
-			DashLoaderProgress.PROGRESS.completedSubTask();
+			mapping.completedTask();
 		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_PARTICLE)) {
-			DashLoader.LOGGER.info("Mapping Particles");
+			progress.setCurrentTask("Mapping Particles");
 			particleData = new DashParticleData(dataManager, registry);
-			DashLoaderProgress.PROGRESS.completedSubTask();
+			mapping.completedTask();
 		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_FONT)) {
-			DashLoader.LOGGER.info("Mapping Fonts");
+			progress.setCurrentTask("Mapping Fonts");
 			fontManagerData = new DashFontManagerData(dataManager, registry);
-			DashLoaderProgress.PROGRESS.completedSubTask();
+			mapping.completedTask();
 		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_SPLASH_TEXT)) {
-			DashLoader.LOGGER.info("Mapping SplashText");
+			progress.setCurrentTask("Mapping SplashText");
 			splashTextData = new DashSplashTextData(dataManager);
-			DashLoaderProgress.PROGRESS.completedSubTask();
+			mapping.completedTask();
 		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_SHADER)) {
-			DashLoader.LOGGER.info("Mapping Shaders");
+			progress.setCurrentTask("Mapping Shaders");
 			shaderData = new DashShaderData(dataManager);
-			DashLoaderProgress.PROGRESS.completedSubTask();
+			mapping.completedTask();
 		}
 	}
 
-	public void export(DashRegistryReader registry, DashDataManager data) {
+	public void export(RegistryReader registry, DashDataManager data) {
 		var spriteData = DashUtil.nullable(this.spriteAtlasData, registry, DashSpriteAtlasData::export);
 		var particleData = DashUtil.nullable(this.particleData, registry, DashParticleData::export);
 

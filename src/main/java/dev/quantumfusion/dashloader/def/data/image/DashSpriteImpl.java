@@ -1,9 +1,9 @@
 package dev.quantumfusion.dashloader.def.data.image;
 
-import dev.quantumfusion.dashloader.core.api.annotation.DashDependencies;
-import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.api.DashDependencies;
+import dev.quantumfusion.dashloader.core.api.DashObject;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.core.util.DashUtil;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAccessor;
 import dev.quantumfusion.dashloader.def.util.UnsafeHelper;
@@ -43,12 +43,12 @@ public class DashSpriteImpl implements DashSprite {
 		this.vMax = vMax;
 	}
 
-	public DashSpriteImpl(Sprite sprite, DashRegistryWriter writer) {
+	public DashSpriteImpl(Sprite sprite, RegistryWriter writer) {
 		this(DashUtil.nullable((Sprite.Animation) sprite.getAnimation(), animation1 -> new DashSpriteAnimation(animation1, writer)),
 			 convertImages((SpriteAccessor) sprite, writer), sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight(), sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
 	}
 
-	private static int[] convertImages(SpriteAccessor sprite, DashRegistryWriter writer) {
+	private static int[] convertImages(SpriteAccessor sprite, RegistryWriter writer) {
 		final NativeImage[] images = sprite.getImages();
 		var imageOut = new int[images.length];
 		for (int i = 0; i < images.length; i++) {
@@ -58,7 +58,7 @@ public class DashSpriteImpl implements DashSprite {
 	}
 
 	@Override
-	public Sprite export(final DashRegistryReader registry) {
+	public Sprite export(final RegistryReader registry) {
 		final Sprite out = UnsafeHelper.allocateInstance(Sprite.class);
 		final SpriteAccessor spriteAccessor = ((SpriteAccessor) out);
 		final NativeImage[] imagesOut = new NativeImage[images.length];

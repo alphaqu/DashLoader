@@ -1,9 +1,11 @@
 package dev.quantumfusion.dashloader.def.data.model.predicates;
 
-import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.api.DashDependencies;
+import dev.quantumfusion.dashloader.core.api.DashObject;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.def.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ModelLoaderAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SimpleMultipartModelSelectorAccessor;
@@ -22,6 +24,7 @@ import java.util.function.Predicate;
 
 @Data
 @DashObject(SimpleMultipartModelSelector.class)
+@DashDependencies(DashIdentifierInterface.class)
 public class DashSimplePredicate implements DashPredicate {
 	public final String key;
 	public final String valueString;
@@ -33,7 +36,7 @@ public class DashSimplePredicate implements DashPredicate {
 		this.identifier = identifier;
 	}
 
-	public DashSimplePredicate(SimpleMultipartModelSelector simpleMultipartModelSelector, DashRegistryWriter writer) {
+	public DashSimplePredicate(SimpleMultipartModelSelector simpleMultipartModelSelector, RegistryWriter writer) {
 		var access = ((SimpleMultipartModelSelectorAccessor) simpleMultipartModelSelector);
 		this.identifier = writer.add(getStateManagerIdentifier(simpleMultipartModelSelector));
 		this.key = access.getKey();
@@ -41,7 +44,7 @@ public class DashSimplePredicate implements DashPredicate {
 	}
 
 	@Override
-	public Predicate<BlockState> export(DashRegistryReader handler) {
+	public Predicate<BlockState> export(RegistryReader handler) {
 		return new SimpleMultipartModelSelector(key, valueString).getPredicate(getStateManager(handler.get(identifier)));
 	}
 

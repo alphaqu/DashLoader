@@ -1,6 +1,6 @@
 package dev.quantumfusion.dashloader.def.data.model.predicates;
 
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.util.BooleanSelector;
 import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
@@ -9,7 +9,7 @@ import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
 
 public class DashPredicateCreator {
 
-	public static DashPredicate create(MultipartModelSelector selector, DashRegistryWriter writer) {
+	public static DashPredicate create(MultipartModelSelector selector, RegistryWriter writer) {
 		if (selector == MultipartModelSelector.TRUE) return new DashStaticPredicate(true);
 		else if (selector == MultipartModelSelector.FALSE) return new DashStaticPredicate(false);
 		else if (selector instanceof AndMultipartModelSelector s) return new DashAndPredicate(s, writer);

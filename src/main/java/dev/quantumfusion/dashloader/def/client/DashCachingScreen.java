@@ -1,8 +1,8 @@
 package dev.quantumfusion.dashloader.def.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.quantumfusion.dashloader.core.client.config.DashConfig;
-import dev.quantumfusion.dashloader.core.client.config.DashConfigHandler;
+import dev.quantumfusion.dashloader.core.DashLoaderCore;
+import dev.quantumfusion.dashloader.core.config.DashConfig;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static dev.quantumfusion.dashloader.core.ui.DashLoaderProgress.PROGRESS;
 import static dev.quantumfusion.dashloader.def.client.UIColors.*;
 import static dev.quantumfusion.dashloader.def.client.UIDrawer.TextOrientation.TEXT_LEFT;
 
@@ -52,7 +51,7 @@ public class DashCachingScreen extends Screen {
 
 	public DashCachingScreen(Screen previousScreen) {
 		super(Text.of("Caching"));
-		UIColors.loadConfig(DashConfigHandler.INSTANCE.config);
+		UIColors.loadConfig(DashLoaderCore.CONFIG.config);
 		this.previousScreen = previousScreen;
 		drawer.update(MinecraftClient.getInstance(), this::fillGradient);
 		createLines();
@@ -61,7 +60,7 @@ public class DashCachingScreen extends Screen {
 
 	private void createLines() {
 		lines.clear();
-		final DashConfig config = DashConfigHandler.INSTANCE.config;
+		final DashConfig config = DashLoaderCore.CONFIG.config;
 
 		for (int i = 0; i < config.lineAmount; i++) {
 			lines.add(new Line());
@@ -69,7 +68,7 @@ public class DashCachingScreen extends Screen {
 	}
 
 	private void updateConfig() {
-		final DashConfig config = DashConfigHandler.INSTANCE.config;
+		final DashConfig config = DashLoaderCore.CONFIG.config;
 		UIColors.loadConfig(config);
 
 		this.padding = config.paddingSize;
@@ -120,7 +119,7 @@ public class DashCachingScreen extends Screen {
 
 
 		if (this.debug) {
-			DashConfigHandler.INSTANCE.addListener(listener -> configRequiresUpdate = true);
+			DashLoaderCore.CONFIG.addListener(listener -> configRequiresUpdate = true);
 		}
 
 	}
@@ -177,20 +176,14 @@ public class DashCachingScreen extends Screen {
 
 
 		drawer.drawQuad(BACKGROUND_COLOR, 0, 0, width, height);
-		for (Line line : lines) {
-			line.tick();
-		}
+		currentProgress = DashLoaderCore.PROGRESS.getProgress();
 
 
 		drawLines(lines, matrices);
-
-
-		updateProgress(debug ? (mouseX / (double) width) : PROGRESS.getProgress());
-
 		final int barY = height - padding - progressBarHeight;
 		drawer.drawQuad(PROGRESS_LANE_COLOR, 0, barY, width, progressBarHeight); // progress back
 		drawer.drawQuad(getProgressColor(currentProgress), 0, barY, (int) (width * currentProgress), progressBarHeight); // the progress bar
-		drawer.drawText(TEXT_LEFT, debug ? "Debug mode is activated in DashLoader config." : PROGRESS.getSubtaskName(), TEXT_COLOR, padding, barY - padding); // current task
+		drawer.drawText(TEXT_LEFT, debug ? "Debug mode is activated in DashLoader config." : DashLoaderCore.PROGRESS.getCurrentTask(), TEXT_COLOR, padding, barY - padding); // current task
 
 
 		// fun fact
@@ -198,24 +191,10 @@ public class DashCachingScreen extends Screen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private double calcDelta(double targetProgress, double currentProgress, double timeOff) {
-		double delta = targetProgress - currentProgress;
-		return delta == 0 ? 0 : (delta / (delta < 0 ? 3 : progressBarSpeedDivision));
-	}
-
 	@Override
 	public void resize(MinecraftClient client, int width, int height) {
 		super.resize(client, width, height);
 		drawer.update(client, this::fillGradient);
-	}
-
-	private void updateProgress(double targetProgress) {
-		long currentTime = System.currentTimeMillis();
-		final long deltaTime = currentTime - oldTime;
-		if (deltaTime > 16) {
-			this.currentProgress += calcDelta(targetProgress, currentProgress, 1);
-			this.oldTime = currentTime;
-		}
 	}
 
 

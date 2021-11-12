@@ -1,8 +1,10 @@
 package dev.quantumfusion.dashloader.def.corehook.holder;
 
+import dev.quantumfusion.dashloader.core.DashLoaderCore;
 import dev.quantumfusion.dashloader.core.common.ObjectObjectList;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.progress.task.CountTask;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasManagerAccessor;
@@ -22,20 +24,29 @@ public class DashSpriteAtlasData {
 		this.atlases = atlases;
 	}
 
-	public DashSpriteAtlasData(DashDataManager data, DashRegistryWriter writer) {
+	public DashSpriteAtlasData(DashDataManager data, RegistryWriter writer) {
 		atlases = new ObjectObjectList<>();
 		var atlases = ((SpriteAtlasManagerAccessor) data.spriteAtlasManager.getMinecraftData()).getAtlases();
 		var extraAtlases = data.getWriteContextData().extraAtlases;
-		atlases.forEach((identifier, spriteAtlasTexture) -> addAtlas(data, writer, spriteAtlasTexture, 0));
-		extraAtlases.forEach(spriteAtlasTexture -> addAtlas(data, writer, spriteAtlasTexture, 1));
+
+		CountTask task = new CountTask(atlases.size() + extraAtlases.size());
+		DashLoaderCore.PROGRESS.getCurrentContext().setSubtask(task);
+		atlases.forEach((identifier, spriteAtlasTexture) -> {
+			addAtlas(data, writer, spriteAtlasTexture, 0);
+			task.completedTask();
+		});
+		extraAtlases.forEach(spriteAtlasTexture -> {
+			addAtlas(data, writer, spriteAtlasTexture, 1);
+			task.completedTask();
+		});
 	}
 
-	private void addAtlas(DashDataManager data, DashRegistryWriter writer, SpriteAtlasTexture texture, int i) {
+	private void addAtlas(DashDataManager data, RegistryWriter writer, SpriteAtlasTexture texture, int i) {
 		this.atlases.put(new DashSpriteAtlasTexture(texture, data.getWriteContextData().atlasData.get(texture), writer), i);
 	}
 
 
-	public Pair<SpriteAtlasManager, List<SpriteAtlasTexture>> export(DashRegistryReader exportHandler) {
+	public Pair<SpriteAtlasManager, List<SpriteAtlasTexture>> export(RegistryReader exportHandler) {
 		var out = new ArrayList<SpriteAtlasTexture>(atlases.list().size());
 		var toRegister = new ArrayList<SpriteAtlasTexture>(atlases.list().size());
 		atlases.forEach((key, value) -> {

@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.data.image;
 
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.core.util.DashUtil;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAnimationAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
@@ -28,7 +28,7 @@ public class DashSpriteAnimation {
 	}
 
 
-	public DashSpriteAnimation(Sprite.Animation animation, DashRegistryWriter registry) {
+	public DashSpriteAnimation(Sprite.Animation animation, RegistryWriter registry) {
 		SpriteAnimationAccessor access = ((SpriteAnimationAccessor) animation);
 		this.frames = new ArrayList<>();
 		for (var frame : access.getFrames()) {
@@ -39,7 +39,7 @@ public class DashSpriteAnimation {
 	}
 
 
-	public Sprite.Animation export(Sprite owner, DashRegistryReader registry) {
+	public Sprite.Animation export(Sprite owner, RegistryReader registry) {
 		var framesOut = new ArrayList<Sprite.AnimationFrame>();
 		for (var frame : this.frames) {
 			framesOut.add(frame.export(registry));

@@ -43,8 +43,13 @@ dependencies {
 
     modApi "dev.quantumfusion.dashloader:dashloader-core:$project.dashloader_core_version"
     include "dev.quantumfusion.dashloader:dashloader-core:$project.dashloader_core_version"
+
     modApi "dev.quantumfusion:hyphen:0.1"
     include "dev.quantumfusion:hyphen:0.1"
+
+    modApi 'io.airlift:aircompressor:0.21'
+    include 'io.airlift:aircompressor:0.21'
+
 
     testImplementation(platform('org.junit:junit-bom:5.7.2'))
     testImplementation('org.junit.jupiter:junit-jupiter:5.7.2')

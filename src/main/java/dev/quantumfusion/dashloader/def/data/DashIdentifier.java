@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.data;
 
-import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.api.DashObject;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.IdentifierAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
@@ -23,7 +23,7 @@ public class DashIdentifier implements DashIdentifierInterface {
 	}
 
 	@Override
-	public Identifier export(DashRegistryReader exportHandler) {
+	public Identifier export(RegistryReader exportHandler) {
 		return IdentifierAccessor.init(strings);
 	}
 }

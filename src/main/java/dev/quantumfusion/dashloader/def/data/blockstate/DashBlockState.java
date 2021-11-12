@@ -1,10 +1,10 @@
 package dev.quantumfusion.dashloader.def.data.blockstate;
 
 import dev.quantumfusion.dashloader.core.Dashable;
-import dev.quantumfusion.dashloader.core.api.annotation.DashDependencies;
-import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.api.DashDependencies;
+import dev.quantumfusion.dashloader.core.api.DashObject;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.data.DashIdentifier;
 import dev.quantumfusion.dashloader.def.data.DashModelIdentifier;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ModelLoaderAccessor;
@@ -26,7 +26,7 @@ public final class DashBlockState implements Dashable<BlockState> {
 		this.pos = pos;
 	}
 
-	public DashBlockState(BlockState blockState, DashRegistryWriter writer) {
+	public DashBlockState(BlockState blockState, RegistryWriter writer) {
 		var block = blockState.getBlock();
 		int pos = -1;
 
@@ -63,7 +63,7 @@ public final class DashBlockState implements Dashable<BlockState> {
 	}
 
 	@Override
-	public BlockState export(final DashRegistryReader reader) {
+	public BlockState export(final RegistryReader reader) {
 		final Identifier id = reader.get(owner);
 		// if its itemframe get its state from the modelloader as mojank is mojank
 		if (id.equals(ITEM_FRAME)) {

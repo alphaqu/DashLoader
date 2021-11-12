@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.corehook;
 
-import dev.quantumfusion.dashloader.core.registry.ChunkDataHolder;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.ChunkHolder;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.core.registry.chunk.data.AbstractDataChunk;
 import dev.quantumfusion.dashloader.def.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
@@ -13,19 +13,19 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
-public class BakedQuadData implements ChunkDataHolder {
+public class BakedQuadData implements ChunkHolder {
 	public final AbstractDataChunk<BakedQuad, DashBakedQuad> bakedQuadData;
 
 	public BakedQuadData(AbstractDataChunk<BakedQuad, DashBakedQuad> bakedQuadData) {
 		this.bakedQuadData = bakedQuadData;
 	}
 
-	public BakedQuadData(DashRegistryWriter writer) {
+	public BakedQuadData(RegistryWriter writer) {
 		this.bakedQuadData = writer.getChunk(DashBakedQuad.class).exportData();
 	}
 
 	@Override
-	public Collection<AbstractDataChunk<?, ?>> getChunks() {
-		return List.of(bakedQuadData);
+	public AbstractDataChunk<?, ?>[] getChunks() {
+		return new AbstractDataChunk[]{bakedQuadData};
 	}
 }

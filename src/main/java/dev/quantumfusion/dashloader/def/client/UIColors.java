@@ -1,6 +1,6 @@
 package dev.quantumfusion.dashloader.def.client;
 
-import dev.quantumfusion.dashloader.core.client.config.DashConfig;
+import dev.quantumfusion.dashloader.core.config.DashConfig;
 
 import java.awt.Color;
 import java.util.HashMap;

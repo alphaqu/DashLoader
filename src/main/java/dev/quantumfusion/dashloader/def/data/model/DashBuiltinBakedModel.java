@@ -1,9 +1,9 @@
 package dev.quantumfusion.dashloader.def.data.model;
 
-import dev.quantumfusion.dashloader.core.api.annotation.DashDependencies;
-import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.api.DashDependencies;
+import dev.quantumfusion.dashloader.core.api.DashObject;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.data.image.DashSprite;
 import dev.quantumfusion.dashloader.def.data.model.components.DashModelOverrideList;
 import dev.quantumfusion.dashloader.def.data.model.components.DashModelTransformation;
@@ -32,7 +32,7 @@ public class DashBuiltinBakedModel implements DashModel {
 	}
 
 
-	public DashBuiltinBakedModel(BuiltinBakedModel builtinBakedModel, DashRegistryWriter writer) {
+	public DashBuiltinBakedModel(BuiltinBakedModel builtinBakedModel, RegistryWriter writer) {
 		BuiltinBakedModelAccessor access = ((BuiltinBakedModelAccessor) builtinBakedModel);
 		final ModelTransformation transformation = access.getTransformation();
 		this.transformation = DashModelTransformation.createDashOrReturnNullIfDefault(transformation);
@@ -43,14 +43,14 @@ public class DashBuiltinBakedModel implements DashModel {
 
 
 	@Override
-	public BuiltinBakedModel export(DashRegistryReader reader) {
+	public BuiltinBakedModel export(RegistryReader reader) {
 		Sprite sprite = reader.get(spritePointer);
 		return new BuiltinBakedModel(DashModelTransformation.exportOrDefault(transformation), itemPropertyOverrides.export(reader), sprite, sideLit);
 	}
 
 	@Override
-	public void apply(DashRegistryReader handler) {
-		itemPropertyOverrides.applyOverrides(handler);
+	public void postExport(RegistryReader reader) {
+		itemPropertyOverrides.applyOverrides(reader);
 	}
 
 }

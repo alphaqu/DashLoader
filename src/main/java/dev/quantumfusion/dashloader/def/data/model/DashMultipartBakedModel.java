@@ -1,11 +1,11 @@
 package dev.quantumfusion.dashloader.def.data.model;
 
-import dev.quantumfusion.dashloader.core.api.annotation.DashDependencies;
-import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.api.DashDependencies;
+import dev.quantumfusion.dashloader.core.api.DashObject;
 import dev.quantumfusion.dashloader.core.common.IntIntList;
 import dev.quantumfusion.dashloader.core.common.IntObjectList;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashAndPredicate;
@@ -41,7 +41,7 @@ public class DashMultipartBakedModel implements DashModel {
 		this.stateCache = stateCache;
 	}
 
-	public DashMultipartBakedModel(MultipartBakedModel model, DashRegistryWriter writer) {
+	public DashMultipartBakedModel(MultipartBakedModel model, RegistryWriter writer) {
 		final DashDataManager.DashWriteContextData writeContextData = DashLoader.getData().getWriteContextData();
 		var selectors = writeContextData.multipartPredicates.get(model);
 		var access = ((MultipartBakedModelAccessor) model);
@@ -60,7 +60,7 @@ public class DashMultipartBakedModel implements DashModel {
 	}
 
 	@Override
-	public MultipartBakedModel export(DashRegistryReader reader) {
+	public MultipartBakedModel export(RegistryReader reader) {
 		MultipartBakedModel model = UnsafeHelper.allocateInstance(cls);
 
 		Map<BlockState, BitSet> stateCacheOut = new Reference2ObjectOpenHashMap<>();
@@ -72,11 +72,11 @@ public class DashMultipartBakedModel implements DashModel {
 	}
 
 	@Override
-	public void apply(DashRegistryReader handler) {
+	public void postExport(RegistryReader reader) {
 		var access = ((MultipartBakedModelAccessor) toApply);
 
 		List<Pair<Predicate<BlockState>, BakedModel>> componentsOut = new ArrayList<>();
-		components.forEach((key, value) -> componentsOut.add(Pair.of(handler.get(key), handler.get(value))));
+		components.forEach((key, value) -> componentsOut.add(Pair.of(reader.get(key), reader.get(value))));
 
 		var bakedModel = componentsOut.iterator().next().getRight();
 		access.setComponents(componentsOut);

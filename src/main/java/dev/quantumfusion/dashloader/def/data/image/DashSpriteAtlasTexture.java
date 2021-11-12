@@ -2,8 +2,8 @@ package dev.quantumfusion.dashloader.def.data.image;
 
 import dev.quantumfusion.dashloader.core.Dashable;
 import dev.quantumfusion.dashloader.core.common.IntIntList;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.AbstractTextureAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAccessor;
@@ -27,11 +27,11 @@ public record DashSpriteAtlasTexture(
 		DashSpriteAtlasTextureData data
 ) implements Dashable<SpriteAtlasTexture> {
 
-	public DashSpriteAtlasTexture(SpriteAtlasTexture spriteAtlasTexture, DashSpriteAtlasTextureData data, DashRegistryWriter writer) {
+	public DashSpriteAtlasTexture(SpriteAtlasTexture spriteAtlasTexture, DashSpriteAtlasTextureData data, RegistryWriter writer) {
 		this(spriteAtlasTexture, (SpriteAtlasTextureAccessor) spriteAtlasTexture, data, writer);
 	}
 
-	private DashSpriteAtlasTexture(SpriteAtlasTexture spriteAtlasTexture, SpriteAtlasTextureAccessor spriteTextureAccess, DashSpriteAtlasTextureData data, DashRegistryWriter writer) {
+	private DashSpriteAtlasTexture(SpriteAtlasTexture spriteAtlasTexture, SpriteAtlasTextureAccessor spriteTextureAccess, DashSpriteAtlasTextureData data, RegistryWriter writer) {
 		this(
 				writer.add(spriteAtlasTexture.getId()),
 				spriteTextureAccess.getMaxTextureSize(),
@@ -44,7 +44,7 @@ public record DashSpriteAtlasTexture(
 	}
 
 	@Override
-	public SpriteAtlasTexture export(DashRegistryReader reader) {
+	public SpriteAtlasTexture export(RegistryReader reader) {
 		final SpriteAtlasTexture spriteAtlasTexture = UnsafeHelper.allocateInstance(SpriteAtlasTexture.class);
 		final AbstractTextureAccessor access = ((AbstractTextureAccessor) spriteAtlasTexture);
 		access.setBilinear(bilinear);
@@ -68,7 +68,7 @@ public record DashSpriteAtlasTexture(
 		return spriteAtlasTexture;
 	}
 
-	private Sprite loadSprite(int spritePointer, DashRegistryReader exportHandler, SpriteAtlasTexture spriteAtlasTexture) {
+	private Sprite loadSprite(int spritePointer, RegistryReader exportHandler, SpriteAtlasTexture spriteAtlasTexture) {
 		Sprite sprite = exportHandler.get(spritePointer);
 		((SpriteAccessor) sprite).setAtlas(spriteAtlasTexture);
 		return sprite;

@@ -1,10 +1,10 @@
 package dev.quantumfusion.dashloader.def.data.model;
 
-import dev.quantumfusion.dashloader.core.api.annotation.DashDependencies;
-import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
+import dev.quantumfusion.dashloader.core.api.DashDependencies;
+import dev.quantumfusion.dashloader.core.api.DashObject;
 import dev.quantumfusion.dashloader.core.common.ObjectObjectList;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.data.image.DashSprite;
 import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.def.data.model.components.DashModelOverrideList;
@@ -52,7 +52,7 @@ public final class DashBasicBakedModel implements DashModel {
 	}
 
 
-	public DashBasicBakedModel(BasicBakedModel basicBakedModel, DashRegistryWriter writer) {
+	public DashBasicBakedModel(BasicBakedModel basicBakedModel, RegistryWriter writer) {
 		BasicBakedModelAccessor access = ((BasicBakedModelAccessor) basicBakedModel);
 		this.quads = new ArrayList<>();
 		for (var quad : access.getQuads()) quads.add(writer.add(quad));
@@ -74,7 +74,7 @@ public final class DashBasicBakedModel implements DashModel {
 
 
 	@Override
-	public BasicBakedModel export(final DashRegistryReader reader) {
+	public BasicBakedModel export(final RegistryReader reader) {
 		final Sprite sprite = reader.get(spritePointer);
 
 		var quadsOut = new ArrayList<BakedQuad>();
@@ -91,7 +91,7 @@ public final class DashBasicBakedModel implements DashModel {
 	}
 
 	@Override
-	public void apply(DashRegistryReader registry) {
-		itemPropertyOverrides.applyOverrides(registry);
+	public void postExport(RegistryReader reader) {
+		itemPropertyOverrides.applyOverrides(reader);
 	}
 }

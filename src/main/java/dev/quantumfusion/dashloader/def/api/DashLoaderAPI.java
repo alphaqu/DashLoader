@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 public class DashLoaderAPI {
 	public static final Logger LOGGER = LogManager.getLogger("DashLoaderAPI");
-	public final List<Class<? extends Dashable<?>>> dashObjects;
+	public final List<Class<?>> dashObjects;
 	private boolean initialized = false;
 	private boolean failed = false;
 

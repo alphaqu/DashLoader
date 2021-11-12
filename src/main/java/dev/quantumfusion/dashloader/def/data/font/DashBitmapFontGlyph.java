@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.data.font;
 
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.mixin.accessor.BitmapFontGlyphAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.font.BitmapFont;
@@ -28,7 +28,7 @@ public class DashBitmapFontGlyph {
 		this.ascent = ascent;
 	}
 
-	public DashBitmapFontGlyph(BitmapFont.BitmapFontGlyph bitmapFontGlyph, DashRegistryWriter writer) {
+	public DashBitmapFontGlyph(BitmapFont.BitmapFontGlyph bitmapFontGlyph, RegistryWriter writer) {
 		BitmapFontGlyphAccessor font = ((BitmapFontGlyphAccessor) (Object) bitmapFontGlyph);
 		scaleFactor = font.getScaleFactor();
 		image = writer.add(font.getImage());
@@ -40,7 +40,7 @@ public class DashBitmapFontGlyph {
 		ascent = font.getAscent();
 	}
 
-	public BitmapFont.BitmapFontGlyph export(DashRegistryReader handler) {
+	public BitmapFont.BitmapFontGlyph export(RegistryReader handler) {
 		return BitmapFontGlyphAccessor.init(scaleFactor, handler.get(image), x, y, width, height, advance, ascent);
 	}
 }

@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.corehook;
 
-import dev.quantumfusion.dashloader.core.registry.ChunkDataHolder;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.ChunkHolder;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.core.registry.chunk.data.AbstractDataChunk;
 import dev.quantumfusion.dashloader.def.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 @Data
-public class RegistryData implements ChunkDataHolder {
+public class RegistryData implements ChunkHolder {
 	public final AbstractDataChunk<BlockState, DashBlockState> blockStateRegistryData;
 	public final AbstractDataChunk<Font, DashFont> fontRegistryData;
 	public final AbstractDataChunk<Sprite, DashSprite> spriteRegistryData;
@@ -40,7 +40,7 @@ public class RegistryData implements ChunkDataHolder {
 	}
 
 	@SuppressWarnings("unchecked")
-	public RegistryData(DashRegistryWriter writer) {
+	public RegistryData(RegistryWriter writer) {
 		this.blockStateRegistryData = writer.getChunk(DashBlockState.class).exportData();
 		this.fontRegistryData = writer.getChunk(DashFont.class).exportData();
 		this.spriteRegistryData = writer.getChunk(DashSprite.class).exportData();
@@ -54,7 +54,7 @@ public class RegistryData implements ChunkDataHolder {
 
 
 	@Override
-	public Collection<AbstractDataChunk<?, ?>> getChunks() {
-		return List.of(blockStateRegistryData, fontRegistryData, spriteRegistryData, predicateRegistryData);
+	public AbstractDataChunk<?, ?>[] getChunks() {
+		return new AbstractDataChunk[]{blockStateRegistryData, fontRegistryData, spriteRegistryData, predicateRegistryData};
 	}
 }

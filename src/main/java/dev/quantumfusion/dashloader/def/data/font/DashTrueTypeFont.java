@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.data.font;
 
-import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
+import dev.quantumfusion.dashloader.core.api.DashObject;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.TrueTypeFontAccessor;
 import dev.quantumfusion.dashloader.def.util.IOHelper;
@@ -62,7 +62,7 @@ public class DashTrueTypeFont implements DashFont {
 	}
 
 	@Override
-	public TrueTypeFont export(DashRegistryReader handler) {
+	public TrueTypeFont export(RegistryReader handler) {
 		STBTTFontinfo sTBTTFontinfo = STBTTFontinfo.malloc();
 		ByteBuffer byteBuffer2 = ByteBuffer.allocateDirect(ttfBuffer.length);
 		byteBuffer2.put(ttfBuffer);

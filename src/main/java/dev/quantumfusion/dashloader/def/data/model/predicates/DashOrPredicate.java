@@ -1,9 +1,9 @@
 package dev.quantumfusion.dashloader.def.data.model.predicates;
 
-import dev.quantumfusion.dashloader.core.api.annotation.DashDependencies;
-import dev.quantumfusion.dashloader.core.api.annotation.DashObject;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.api.DashDependencies;
+import dev.quantumfusion.dashloader.core.api.DashObject;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.mixin.accessor.OrMultipartModelSelectorAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.block.BlockState;
@@ -27,7 +27,7 @@ public class DashOrPredicate implements DashPredicate {
 		this.identifier = identifier;
 	}
 
-	public DashOrPredicate(OrMultipartModelSelector selector, DashRegistryWriter writer) {
+	public DashOrPredicate(OrMultipartModelSelector selector, RegistryWriter writer) {
 		OrMultipartModelSelectorAccessor access = ((OrMultipartModelSelectorAccessor) selector);
 		this.identifier = writer.add(DashSimplePredicate.getStateManagerIdentifier(selector));
 
@@ -38,7 +38,7 @@ public class DashOrPredicate implements DashPredicate {
 	}
 
 	@Override
-	public Predicate<BlockState> export(DashRegistryReader handler) {
+	public Predicate<BlockState> export(RegistryReader handler) {
 		final ArrayList<MultipartModelSelector> selectors = new ArrayList<>();
 		for (DashPredicate accessSelector : this.selectors){
 			final Predicate<BlockState> export = accessSelector.export(handler);

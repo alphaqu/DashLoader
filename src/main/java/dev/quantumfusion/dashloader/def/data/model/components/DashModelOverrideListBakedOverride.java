@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.def.data.model.components;
 
-import dev.quantumfusion.dashloader.core.registry.DashRegistryReader;
-import dev.quantumfusion.dashloader.core.registry.DashRegistryWriter;
+import dev.quantumfusion.dashloader.core.registry.RegistryReader;
+import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.core.util.DashUtil;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ModelOverrideListBakedOverrideAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
@@ -20,7 +20,7 @@ public final class DashModelOverrideListBakedOverride {
 		this.model = model;
 	}
 
-	public DashModelOverrideListBakedOverride(ModelOverrideList.BakedOverride override, DashRegistryWriter writer) {
+	public DashModelOverrideListBakedOverride(ModelOverrideList.BakedOverride override, RegistryWriter writer) {
 		final ModelOverrideList.InlinedCondition[] conditionsIn = ((ModelOverrideListBakedOverrideAccessor) override).getConditions();
 		this.model = DashUtil.nullable(((ModelOverrideListBakedOverrideAccessor) override).getModel(), writer::add);
 
@@ -29,7 +29,7 @@ public final class DashModelOverrideListBakedOverride {
 			this.conditions[i] = new DashModelOverrideListInlinedCondition(conditionsIn[i]);
 	}
 
-	public ModelOverrideList.BakedOverride export(DashRegistryReader reader) {
+	public ModelOverrideList.BakedOverride export(RegistryReader reader) {
 		var conditionsOut = new ModelOverrideList.InlinedCondition[conditions.length];
 		for (int i = 0; i < conditions.length; i++)
 			conditionsOut[i] = conditions[i].export();

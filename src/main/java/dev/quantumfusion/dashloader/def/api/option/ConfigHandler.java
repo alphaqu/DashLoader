@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.def.api.option;
 
-import dev.quantumfusion.dashloader.core.client.config.DashConfigHandler;
 import dev.quantumfusion.dashloader.def.DashConstants;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import net.fabricmc.loader.api.FabricLoader;
@@ -8,7 +7,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.util.EnumMap;
 
 public class ConfigHandler {
-	public static boolean pathSet = false;
+
 	private static final EnumMap<Option, Boolean> OPTION_ACTIVE = new EnumMap<>(Option.class);
 	private static final String OPTION_TAG = DashConstants.DASH_OPTION_TAG;
 
@@ -30,12 +29,6 @@ public class ConfigHandler {
 			}
 		}
 
-		if (!pathSet) {
-			DashConfigHandler.INSTANCE.setConfigPath(DashLoader.DASH_CONFIG_FOLDER.resolve("dashloader.json"));
-		}
-
-		System.out.println("Reloading config");
-		DashConfigHandler.INSTANCE.reloadConfig();
 	}
 
 	public static boolean shouldApplyMixin(String name) {
