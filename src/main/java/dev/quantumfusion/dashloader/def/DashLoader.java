@@ -71,8 +71,11 @@ public class DashLoader {
 			var api = new DashLoaderAPI();
 			api.initAPI();
 			metadata.setModHash(FabricLoader.getInstance());
-			final Logger dlcLogger = LogManager.getLogger("DashLoaderCore");
-			DashLoaderCore.initialize(DASH_CACHE_FOLDER.resolve("mods-" + metadata.modInfo + "/"), DASH_CONFIG_FOLDER.resolve("dashloader.json"), api.dashObjects, dlcLogger::info);
+			final Logger dlcLogger = LogManager.getLogger("dl-core");
+			DashLoaderCore.initialize(DASH_CACHE_FOLDER.resolve("mods-" + metadata.modInfo + "/"),
+									  DASH_CONFIG_FOLDER.resolve("dashloader.json"),
+									  api.dashObjects,
+									  new DashLoaderCore.Printer(dlcLogger::info, dlcLogger::warn, dlcLogger::error));
 
 			DashLoaderCore.CONFIG.reloadConfig();
 
