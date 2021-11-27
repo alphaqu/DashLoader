@@ -38,15 +38,11 @@ public class DashCachingScreen extends Screen {
 	private boolean debug;
 	private int padding;
 	private int progressBarHeight = 0;
-	private int progressBarSpeedDivision = 0;
 	private float lineSpeedDifference = 0;
-	private int lineAmount = 100;
 
 	private boolean configRequiresUpdate = false;
-
 	private final String fact = HahaManager.getFact();
 
-	private double currentProgress = 0;
 	private long oldTime = System.currentTimeMillis();
 
 	public DashCachingScreen(Screen previousScreen) {
@@ -54,17 +50,7 @@ public class DashCachingScreen extends Screen {
 		UIColors.loadConfig(DashLoaderCore.CONFIG.config);
 		this.previousScreen = previousScreen;
 		drawer.update(MinecraftClient.getInstance(), this::fillGradient);
-		createLines();
 		updateConfig();
-	}
-
-	private void createLines() {
-		lines.clear();
-		final DashConfig config = DashLoaderCore.CONFIG.config;
-
-		for (int i = 0; i < config.lineAmount; i++) {
-			lines.add(new Line());
-		}
 	}
 
 	private void updateConfig() {
@@ -74,9 +60,8 @@ public class DashCachingScreen extends Screen {
 		this.padding = config.paddingSize;
 		this.debug = config.debugMode;
 		this.progressBarHeight = config.progressBarHeight;
-		this.lineSpeedDifference = config.progressBarSpeedDivision;
-		this.lineAmount = config.lineAmount;
-		this.progressBarSpeedDivision = config.progressBarSpeedDivision;
+		this.lineSpeedDifference = config.lineSpeedDifference;
+		int lineAmount = config.lineAmount;
 
 		// lines
 		weight = 0;
@@ -170,14 +155,24 @@ public class DashCachingScreen extends Screen {
 			configRequiresUpdate = false;
 		}
 
+
 		drawer.push(matrices, textRenderer);
 		final int width = drawer.getWidth();
 		final int height = drawer.getHeight();
 
+		double currentProgress = DashLoaderCore.PROGRESS.getProgress();
+		if (debug) {
+			currentProgress = Math.max(Math.min(1, mouseX / (double) width), 0);
+		}
+
 
 		drawer.drawQuad(BACKGROUND_COLOR, 0, 0, width, height);
-		currentProgress = DashLoaderCore.PROGRESS.getProgress();
 
+		while (oldTime < System.currentTimeMillis()) {
+			for (Line line : lines) line.tick();
+			// about 60fps
+			oldTime += 17;
+		}
 
 		drawLines(lines, matrices);
 		final int barY = height - padding - progressBarHeight;
