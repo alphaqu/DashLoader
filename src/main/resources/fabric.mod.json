@@ -28,7 +28,8 @@
 	"custom": {
 		"sodium:options": {
 			"mixin.features.model": false,
-			"mixin.features.shader": false
+			"mixin.features.shader": false,
+			"mixin.features.texture_updates": false
 		},
 		"dashloader:dashobject" : [
 			"dev.quantumfusion.dashloader.def.data.DashIdentifier",
