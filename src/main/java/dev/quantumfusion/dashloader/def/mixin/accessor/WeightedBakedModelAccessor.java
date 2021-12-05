@@ -16,10 +16,4 @@ public interface WeightedBakedModelAccessor {
 
 	@Accessor
 	void setModels(List<Weighted.Present<BakedModel>> models);
-
-	@Accessor
-	void setTotalWeight(int totalWeight);
-
-	@Accessor
-	void setDefaultModel(BakedModel defaultModel);
 }

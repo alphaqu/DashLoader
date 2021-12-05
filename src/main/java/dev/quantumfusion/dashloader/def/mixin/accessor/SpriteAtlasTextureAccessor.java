@@ -23,14 +23,8 @@ public interface SpriteAtlasTextureAccessor {
 	void setSprites(Map<Identifier, Sprite> sprites);
 
 	@Accessor
-	List<TextureTickListener> getAnimatedSprites();
-
-	@Accessor
 	@Mutable
 	void setAnimatedSprites(List<TextureTickListener> animatedSprites);
-
-	@Accessor
-	Set<Identifier> getSpritesToLoad();
 
 	@Accessor
 	@Mutable

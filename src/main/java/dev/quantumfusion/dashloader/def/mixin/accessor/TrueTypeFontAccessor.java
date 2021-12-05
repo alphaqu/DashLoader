@@ -11,10 +11,6 @@ import java.nio.ByteBuffer;
 
 @Mixin(TrueTypeFont.class)
 public interface TrueTypeFontAccessor {
-
-	@Accessor
-	ByteBuffer getBuffer();
-
 	@Accessor
 	@Mutable
 	void setBuffer(ByteBuffer thing);
