@@ -36,61 +36,14 @@ public interface ModelLoaderAccessor {
 
 	@Accessor
 	@Mutable
-	void setUnbakedModels(Map<Identifier, UnbakedModel> unbakedModels);
-
-	@Accessor
-	@Mutable
-	void setModelsToLoad(Set<Identifier> modelsToLoad);
-
-	@Accessor
-	@Mutable
-	void setBakedModelCache(Map<Triple<Identifier, AffineTransformation, Boolean>, BakedModel> bakedModelCache);
-
-	@Accessor
-	@Mutable
-	void setModelsToBake(Map<Identifier, UnbakedModel> modelsToBake);
-
-	@Accessor
-	@Mutable
 	Map<Identifier, UnbakedModel> getModelsToBake();
-
-	@Accessor
-	@Mutable
-	void setBakedModels(Map<Identifier, BakedModel> modelsToBake);
-
-	@Accessor
-	@Mutable
-	void setSpriteAtlasData(Map<Identifier, Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data>> spriteAtlasData);
 
 	@Accessor
 	@Mutable
 	void setResourceManager(ResourceManager resourceManager);
 
-	@Accessor
-	@Mutable
-	void setBlockColors(BlockColors blockColors);
-
-	@Accessor
-	@Mutable
-	void setStateLookup(Object2IntMap<BlockState> blockColors);
-
-	@Accessor
-	@Mutable
-	void setVariantMapDeserializationContext(ModelVariantMap.DeserializationContext deserializationContext);
-
-	@Invoker("addModel")
-	void invokeAddModel(ModelIdentifier modelId);
-
 	@Accessor("ITEM_FRAME_STATE_FACTORY")
 	static StateManager<Block, BlockState> getTheItemFrameThing() {
 		throw new HyphenException("froge", "your dad");
 	}
-
-	@Accessor("STATIC_DEFINITIONS")
-	static Map<Identifier, StateManager<Block, BlockState>> getTheItemFrameThingMap() {
-		throw new HyphenException("froge", "your dad");
-	}
-
-
-
 }

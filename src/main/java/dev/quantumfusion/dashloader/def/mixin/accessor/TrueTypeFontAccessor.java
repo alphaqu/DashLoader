@@ -13,9 +13,6 @@ import java.nio.ByteBuffer;
 public interface TrueTypeFontAccessor {
 
 	@Accessor
-	ByteBuffer getBuffer();
-
-	@Accessor
 	@Mutable
 	void setBuffer(ByteBuffer thing);
 

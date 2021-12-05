@@ -11,17 +11,8 @@ import java.util.List;
 public interface AnimationResourceMetadataAccessor {
 
 	@Accessor
-	List<AnimationFrameResourceMetadata> getFrames();
-
-	@Accessor
 	int getWidth();
 
 	@Accessor
 	int getHeight();
-
-	@Accessor
-	int getDefaultFrameTime();
-
-	@Accessor
-	boolean getInterpolate();
 }

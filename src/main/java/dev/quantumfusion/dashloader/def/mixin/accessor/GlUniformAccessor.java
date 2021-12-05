@@ -12,10 +12,6 @@ import java.nio.IntBuffer;
 @Mixin(GlUniform.class)
 public interface GlUniformAccessor {
 
-
-	@Accessor
-	void setLocation(int location);
-
 	@Accessor
 	@Mutable
 	void setCount(int count);

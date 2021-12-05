@@ -18,9 +18,5 @@ public interface NativeImageAccessor {
 	long getPointer();
 
 	@Accessor
-	long getSizeBytes();
-
-
-	@Accessor
 	boolean getIsStbImage();
 }

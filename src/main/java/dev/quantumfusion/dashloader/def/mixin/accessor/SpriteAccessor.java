@@ -24,10 +24,6 @@ public interface SpriteAccessor {
 	void setAnimation(Sprite.Animation animation);
 
 	@Accessor
-	@Mutable
-	Sprite.Animation getAnimation();
-
-	@Accessor
 	NativeImage[] getImages();
 
 	@Accessor

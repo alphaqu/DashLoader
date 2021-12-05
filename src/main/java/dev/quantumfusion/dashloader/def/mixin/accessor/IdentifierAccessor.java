@@ -12,8 +12,4 @@ public interface IdentifierAccessor {
 	static Identifier init(String[] strings) {
 		throw new AssertionError();
 	}
-
-
-	@Accessor("path")
-	void setPath(String path);
 }
