@@ -51,7 +51,7 @@ public class UIDrawer {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		fillGradient(orientation, ms.peek().getModel(), bufferBuilder, startX, startY, endX, endY, colorStart, colorEnd);
+		fillGradient(orientation, ms.peek().getPositionMatrix(), bufferBuilder, startX, startY, endX, endY, colorStart, colorEnd);
 		tessellator.draw();
 		RenderSystem.disableBlend();
 		RenderSystem.enableTexture();

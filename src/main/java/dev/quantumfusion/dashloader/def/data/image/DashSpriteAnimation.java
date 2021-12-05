@@ -7,7 +7,7 @@ import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAnimationAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.texture.Sprite;
-
+import net.minecraft.client.texture.Sprite.AnimationFrame;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class DashSpriteAnimation {
 
 
 	public Sprite.Animation export(Sprite owner, RegistryReader registry) {
-		var framesOut = new ArrayList<Sprite.AnimationFrame>();
+		var framesOut = new ArrayList<AnimationFrame>();
 		for (var frame : this.frames) {
 			framesOut.add(frame.export(registry));
 		}

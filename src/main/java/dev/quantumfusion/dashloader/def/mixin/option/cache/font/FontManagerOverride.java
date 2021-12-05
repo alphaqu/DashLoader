@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.def.mixin.option.cache.font;
 
 import com.google.common.collect.Lists;
+import dev.quantumfusion.dashloader.def.DashDataManager.DashDataHandler;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.FontManagerAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.FontStorageAccessor;

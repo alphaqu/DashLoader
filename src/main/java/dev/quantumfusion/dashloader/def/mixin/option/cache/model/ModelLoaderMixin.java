@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.def.mixin.option.cache.model;
 
 import com.mojang.datafixers.util.Pair;
+import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.fallback.MissingDashModel;
 import dev.quantumfusion.dashloader.def.fallback.UnbakedBakedModel;

@@ -3,7 +3,9 @@ package dev.quantumfusion.dashloader.def.api.option;
 import dev.quantumfusion.dashloader.def.DashConstants;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import net.fabricmc.loader.api.FabricLoader;
-
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.metadata.CustomValue;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 import java.util.EnumMap;
 
 public class ConfigHandler {

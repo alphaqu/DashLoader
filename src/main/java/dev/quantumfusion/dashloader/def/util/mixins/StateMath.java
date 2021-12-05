@@ -149,7 +149,7 @@ public final class StateMath {
 		return Codec.mapPair(mapCodec,
 							 property.getValueCodec().fieldOf(string).setPartial(
 									 () -> property.createValue(supplier.get()))).xmap(
-				(pair) -> pair.getFirst().with(property, pair.getSecond().getValue()),
+				(pair) -> pair.getFirst().with(property, pair.getSecond().value()),
 				(state) -> Pair.of(state, property.createValue(state))
 		);
 	}

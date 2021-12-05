@@ -17,6 +17,7 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.MultipartBakedModel;
+import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
 

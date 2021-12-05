@@ -53,7 +53,6 @@
     "accessor.VertexFormatAccessor",
     "accessor.WeightedBakedModelAccessor",
     "accessor.WeightedBakedModelEntryAccessor",
-    "accessor.WeightedPickerEntryAccessor",
     "main.BootstrapMixin",
     "main.MainMixin",
     "main.MinecraftClientMixin",

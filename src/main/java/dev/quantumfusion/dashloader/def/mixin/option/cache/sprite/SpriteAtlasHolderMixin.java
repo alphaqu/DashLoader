@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.def.mixin.option.cache.sprite;
 
+import dev.quantumfusion.dashloader.def.DashDataManager.DashReadContextData.DashAtlasManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import net.minecraft.client.texture.SpriteAtlasHolder;
 import net.minecraft.client.texture.SpriteAtlasTexture;

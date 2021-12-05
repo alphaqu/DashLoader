@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -204,7 +205,7 @@ public class DashCachingScreen extends Screen {
 		for (Line line : lines) {
 			final Color color = line.color;
 			Color end = new Color(color.getRed(), color.getGreen(), color.getBlue(), 0);
-			fillGradient(line.orientation, ms.peek().getModel(), bufferBuilder, (int) line.x, (int) line.y, (int) line.x + line.width, (int) line.y + line.height, color, end);
+			fillGradient(line.orientation, ms.peek().getPositionMatrix(), bufferBuilder, (int) line.x, (int) line.y, (int) line.x + line.width, (int) line.y + line.height, color, end);
 		}
 
 		tessellator.draw();

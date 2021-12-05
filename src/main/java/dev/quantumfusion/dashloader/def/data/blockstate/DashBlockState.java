@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.def.data.blockstate;
 
+import com.google.common.collect.ImmutableList;
 import dev.quantumfusion.dashloader.core.Dashable;
 import dev.quantumfusion.dashloader.core.api.DashDependencies;
 import dev.quantumfusion.dashloader.core.api.DashObject;
@@ -9,6 +10,7 @@ import dev.quantumfusion.dashloader.def.data.DashIdentifier;
 import dev.quantumfusion.dashloader.def.data.DashModelIdentifier;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ModelLoaderAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;

@@ -2,6 +2,8 @@ package dev.quantumfusion.dashloader.def.mixin.option.cache;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import dev.quantumfusion.dashloader.def.DashDataManager;
+import dev.quantumfusion.dashloader.def.DashDataManager.DashDataHandler;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.option.Option;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ParticleManagerSimpleSpriteProviderAccessor;

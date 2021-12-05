@@ -10,7 +10,7 @@ import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.WeightedBakedModel;
 import net.minecraft.util.collection.Weighted;
-
+import net.minecraft.util.collection.Weighted.Present;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +32,7 @@ public final class DashWeightedBakedModel implements DashModel {
 
 	@Override
 	public WeightedBakedModel export(RegistryReader reader) {
-		var modelsOut = new ArrayList<Weighted.Present<BakedModel>>();
+		var modelsOut = new ArrayList<Present<BakedModel>>();
 		for (DashWeightedModelEntry model : models) modelsOut.add(model.export(reader));
 		return new WeightedBakedModel(modelsOut);
 	}

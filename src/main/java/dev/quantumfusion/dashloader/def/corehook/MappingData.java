@@ -8,6 +8,7 @@ import dev.quantumfusion.dashloader.core.registry.RegistryReader;
 import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.core.util.DashUtil;
 import dev.quantumfusion.dashloader.def.DashDataManager;
+import dev.quantumfusion.dashloader.def.DashDataManager.DashReadContextData.DashAtlasManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.option.ConfigHandler;
 import dev.quantumfusion.dashloader.def.api.option.Option;
