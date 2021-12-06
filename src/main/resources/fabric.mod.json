@@ -63,7 +63,6 @@
 		]
 	},
 	"breaks" : {
-		"sodium" : "<=0.1.0",
-		"hydrogen" : "*"
+		"sodium" : "<=0.1.0"
 	}
 }
