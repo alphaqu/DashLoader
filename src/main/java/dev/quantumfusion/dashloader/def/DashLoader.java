@@ -53,30 +53,34 @@ public class DashLoader {
 	public static long EXPORT_END = 0;
 	private boolean shouldReload = true;
 	private final DashMetadata metadata = new DashMetadata();
-	private DashLoaderCore core;
 	private DashDataManager dataManager;
 	private Status status;
 
+	private DashLoader() {
+	}
+
+	public static void prepare() {
+		LOGGER.info("Preparing DashLoader " + VERSION + ".");
+		INSTANCE.prepareInternal();
+	}
+
 	public static void init() {
 		LOGGER.info("Initializing DashLoader " + VERSION + ".");
-		INSTANCE.initialize(Thread.currentThread().getContextClassLoader());
+		INSTANCE.initInternal(Thread.currentThread().getContextClassLoader());
 	}
 
-	private DashLoader() {
-
+	private void prepareInternal() {
+		metadata.setModHash(FabricLoader.getInstance());
+		final var dlcLogger = LogManager.getLogger("dl-core");
+		DashLoaderCore.initialize(DASH_CACHE_FOLDER.resolve("mods-" + metadata.modInfo + "/"), DASH_CONFIG_FOLDER.resolve("dashloader.json"), new DashLoaderCore.Printer(dlcLogger::info, dlcLogger::warn, dlcLogger::error));
+		DashLoaderCore.CORE.prepareCore();
 	}
 
-	private void initialize(ClassLoader classLoader) {
+	private void initInternal(ClassLoader classLoader) {
 		try {
 			var api = new DashLoaderAPI();
 			api.initAPI();
-			metadata.setModHash(FabricLoader.getInstance());
-			final Logger dlcLogger = LogManager.getLogger("dl-core");
-			DashLoaderCore.initialize(DASH_CACHE_FOLDER.resolve("mods-" + metadata.modInfo + "/"),
-									  DASH_CONFIG_FOLDER.resolve("dashloader.json"),
-									  api.dashObjects,
-									  new DashLoaderCore.Printer(dlcLogger::info, dlcLogger::warn, dlcLogger::error));
-
+			DashLoaderCore.CORE.launchCore(api.dashObjects);
 			DashLoaderCore.CONFIG.reloadConfig();
 
 			final FabricLoader instance = FabricLoader.getInstance();

@@ -1,29 +1,41 @@
 package dev.quantumfusion.dashloader.def.api.option;
 
+import dev.quantumfusion.dashloader.core.DashLoaderCore;
 import dev.quantumfusion.dashloader.def.DashConstants;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.metadata.CustomValue;
-import net.fabricmc.loader.api.metadata.ModMetadata;
+
 import java.util.EnumMap;
 
 public class ConfigHandler {
 
 	private static final EnumMap<Option, Boolean> OPTION_ACTIVE = new EnumMap<>(Option.class);
-	private static final String OPTION_TAG = DashConstants.DASH_OPTION_TAG;
+	private static final String DISABLE_OPTION_TAG = DashConstants.DASH_DISABLE_OPTION_TAG;
 
 	public static void update() {
 		// update all fabric mods and such, config has priority
+		OPTION_ACTIVE.put(Option.FAST_STATE_INIT, false);
+
+		DashLoaderCore.CONFIG.reloadConfig();
+		DashLoaderCore.CONFIG.config.options.forEach((s, aBoolean) -> {
+			try {
+				var option = Option.valueOf(s.toUpperCase());
+				OPTION_ACTIVE.put(option, false);
+				DashLoader.LOGGER.warn("Disabled Optional Feature {} from DashLoader config.", s);
+			} catch (IllegalArgumentException illegalArgumentException) {
+				DashLoader.LOGGER.error("Could not disable Optional Feature {} as it does not exist.", s);
+			}
+		});
+
 		for (var modContainer : FabricLoader.getInstance().getAllMods()) {
 			var mod = modContainer.getMetadata();
-			if (mod.containsCustomValue(OPTION_TAG)) {
-				for (var value : mod.getCustomValue(OPTION_TAG).getAsArray()) {
+			if (mod.containsCustomValue(DISABLE_OPTION_TAG)) {
+				for (var value : mod.getCustomValue(DISABLE_OPTION_TAG).getAsArray()) {
 					final String feature = value.getAsString();
 					try {
 						var option = Option.valueOf(feature.toUpperCase());
 						OPTION_ACTIVE.put(option, false);
-						DashLoader.LOGGER.warn("Disable Optional Feature {} from {} config. {}", feature, mod.getId(), mod.getName());
+						DashLoader.LOGGER.warn("Disabled Optional Feature {} from {} config. {}", feature, mod.getId(), mod.getName());
 					} catch (IllegalArgumentException illegalArgumentException) {
 						DashLoader.LOGGER.error("Could not disable Optional Feature {} as it does not exist.", feature);
 					}

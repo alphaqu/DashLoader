@@ -31,6 +31,9 @@
 			"mixin.features.shader": false,
 			"mixin.features.texture_updates": false
 		},
+		"dashloader:disableoption": [
+			"FAST_STATE_INIT"
+		],
 		"dashloader:dashobject" : [
 			"dev.quantumfusion.dashloader.def.data.DashIdentifier",
 			"dev.quantumfusion.dashloader.def.data.DashModelIdentifier",
@@ -63,7 +66,6 @@
 		]
 	},
 	"breaks" : {
-		"sodium" : "<=0.1.0",
-		"hydrogen" : "*"
+		"sodium" : "<=0.1.0"
 	}
 }

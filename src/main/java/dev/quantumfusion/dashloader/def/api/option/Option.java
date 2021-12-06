@@ -2,10 +2,10 @@ package dev.quantumfusion.dashloader.def.api.option;
 
 public enum Option {
 	CACHE_MODEL_LOADER(
-			"option.cache.model",
+			"cache.model",
 			"Caches BakedModels and Sprite/Atlases which allows the game to load extremely fast", Impact.EXTREME),
 	CACHE_FONT(
-			"option.cache.font",
+			"cache.font",
 			"Caches all of the fonts and their images.", Impact.HIGH),
 	CACHE_PARTICLE(
 			"cache.ParticleManagerMixin",
@@ -14,15 +14,20 @@ public enum Option {
 			"cache.SplashTextResourceSupplierMixin",
 			"Caches the splash texts from the main screen.", Impact.SMALL),
 	CACHE_SHADER(
-			"shader",
+			"cache.shader",
 			"Caches the GL Shaders.", Impact.MEDIUM),
-
 	FAST_SOUND_FILE_SKIP(
 			"misc.SoundManagerMixin",
 			"Disables if file exists check on Sound Files.", Impact.HIGH),
 	FAST_MODEL_IDENTIFIER_EQUALS(
 			"misc.ModelIdentifierMixin",
 			"Use a much faster .equals() on the ModelIdentifiers", Impact.MEDIUM),
+	FAST_STATE_INIT(
+			"state",
+			"Highly unsafe but makes blocks init way faster.", Impact.MEDIUM),
+	FAST_WALL_BLOCK(
+			"WallBlockMixin",
+			"Caches the 2 most common blockstates for wall blocks.", Impact.MEDIUM),
 	FAST_UNICODE_FONT_GET_ID(
 			"misc.UnicodeTextureFontMixin",
 			"Use a much faster .getId() on Unicode fonts", Impact.HIGH),
@@ -32,7 +37,6 @@ public enum Option {
 	WATERMARK(
 			"misc.TitleScreenMixin",
 			"DashLoader watermark. If you want to remove this please mind supporting me at https://ko-fi.com/notequalalpha instead and help this project grow.", Impact.NONE);
-
 
 	public final String mixinContains;
 	public final String description;

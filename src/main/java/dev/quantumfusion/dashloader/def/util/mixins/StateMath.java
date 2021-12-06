@@ -145,13 +145,9 @@ public final class StateMath {
 		return resultLists;
 	}
 
-	public static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> createCodec(MapCodec<S> mapCodec, Supplier<S> supplier, String string, Property<T> property) {
-		return Codec.mapPair(mapCodec,
-							 property.getValueCodec().fieldOf(string).setPartial(
-									 () -> property.createValue(supplier.get()))).xmap(
-				(pair) -> pair.getFirst().with(property, pair.getSecond().value()),
-				(state) -> Pair.of(state, property.createValue(state))
-		);
+	public static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> createCodec(MapCodec<S> mapCodec, Supplier<S> defaultStateGetter, String key, Property<T> property) {
+		return Codec.mapPair(mapCodec, property.getValueCodec().fieldOf(key).orElseGet(string -> {}, () -> property.createValue(defaultStateGetter.get()))).xmap(pair -> pair.getFirst().with(property, (pair.getSecond()).value()), state -> Pair.of(state, property.createValue(state)));
+
 	}
 
 	public static Comparable<?>[][] createPropertyValues(Property<?>[] properties) {
