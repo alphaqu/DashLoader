@@ -31,6 +31,9 @@
 			"mixin.features.shader": false,
 			"mixin.features.texture_updates": false
 		},
+		"dashloader:disableoption": [
+			"FAST_STATE_INIT"
+		],
 		"dashloader:dashobject" : [
 			"dev.quantumfusion.dashloader.def.data.DashIdentifier",
 			"dev.quantumfusion.dashloader.def.data.DashModelIdentifier",

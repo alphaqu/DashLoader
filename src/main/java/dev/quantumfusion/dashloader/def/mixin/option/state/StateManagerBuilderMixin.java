@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.def.mixin.option.cache;
+package dev.quantumfusion.dashloader.def.mixin.option.state;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSortedMap;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
-import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.StateManagerAccessor;
 import dev.quantumfusion.dashloader.def.util.UnsafeHelper;
 import dev.quantumfusion.dashloader.def.util.mixins.StateDuck;

@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.def.mixin.option.cache;
+package dev.quantumfusion.dashloader.def.mixin.option.state;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Table;
