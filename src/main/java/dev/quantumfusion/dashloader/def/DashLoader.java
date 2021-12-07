@@ -155,6 +155,7 @@ public class DashLoader {
 
 	@SuppressWarnings("RedundantTypeArguments")
 	public void saveDashCache() {
+		LOGGER.info("Starting DashLoader Caching");
 		long start = System.currentTimeMillis();
 
 		final ProgressHandler progress = DashLoaderCore.PROGRESS;

@@ -134,7 +134,9 @@ public class DashCachingScreen extends Screen {
 		}
 	}
 
-	public void start() {
+
+	@Override
+	protected void init() {
 		if (!debug) {
 			final Thread thread = new Thread(DashLoader.INSTANCE::saveDashCache);
 			thread.setName("dld-thread");
