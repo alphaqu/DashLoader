@@ -17,16 +17,24 @@ import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 @Data
 @DataNullable
 public class MappingData {
+	@Nullable
 	public DashBlockStateData blockStateData;
+	@Nullable
 	public DashFontManagerData fontManagerData;
+	@Nullable
 	public DashModelData modelData;
+	@Nullable
 	public DashParticleData particleData;
+	@Nullable
 	public DashSplashTextData splashTextData;
+	@Nullable
 	public DashSpriteAtlasData spriteAtlasData;
+	@Nullable
 	public DashShaderData shaderData;
 
 	public MappingData() {
@@ -113,10 +121,14 @@ public class MappingData {
 		data.spriteAtlasManager.setCacheResultData(DashUtil.nullable(spriteData, Pair::getLeft));
 		data.particleAtlas.setCacheResultData(DashUtil.nullable(particleData, Pair::getRight));
 		data.particleSprites.setCacheResultData(DashUtil.nullable(particleData, Pair::getLeft));
-		data.shaders.setCacheResultData(DashUtil.nullable(shaderData, DashShaderData::export));
+
+		if (shaderData != null) {
+			data.shaders.setCacheResultData(DashUtil.nullable(shaderData, DashShaderData::export));
+			data.getReadContextData().shaderData.addAll(shaderData.shaders.values());
+		}
+
 		data.splashText.setCacheResultData(DashUtil.nullable(splashTextData, DashSplashTextData::export));
 
-		data.getReadContextData().shaderData.addAll(shaderData.shaders.values());
 		if (spriteData != null) {
 			for (SpriteAtlasTexture atlas : spriteData.getValue()) {
 				atlasManager.addAtlas(Option.CACHE_MODEL_LOADER, atlas);
