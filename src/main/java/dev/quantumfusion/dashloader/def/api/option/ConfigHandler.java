@@ -52,6 +52,25 @@ public class ConfigHandler {
 		return true;
 	}
 
+	public static String getJsonName(Option option) {
+		final char[] name = option.name().toCharArray();
+		StringBuilder sb = new StringBuilder();
+		boolean nextHighCase = false;
+		for (char c : name) {
+			if (c == '_') {
+				nextHighCase = true;
+			} else {
+				if (nextHighCase) {
+					sb.append(Character.toUpperCase(c));
+					nextHighCase = false;
+				} else {
+					sb.append(Character.toLowerCase(c));
+				}
+			}
+		}
+		return sb.toString();
+	}
+
 	public static boolean optionActive(Option option) {
 		return OPTION_ACTIVE.get(option);
 	}
