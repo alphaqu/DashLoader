@@ -32,9 +32,6 @@ public abstract class BakedModelManagerOverride {
 	@Shadow
 	@Nullable
 	private SpriteAtlasManager atlasManager;
-	@Shadow
-	@Final
-	private TextureManager textureManager;
 
 	@Shadow
 	private Map<Identifier, BakedModel> models;
@@ -42,66 +39,15 @@ public abstract class BakedModelManagerOverride {
 	@Shadow
 	private Object2IntMap<BlockState> stateLookup;
 
-	@Shadow
-	private BakedModel missingModel;
-
-	@Shadow
-	@Final
-	private BlockModels blockModelCache;
-
 	@Inject(method = "apply*",
-			at = @At(value = "HEAD"), cancellable = true)
+			at = @At(value = "RETURN"))
 	private void applyStage(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		profiler.startTick();
-		profiler.push("upload");
-		final DashDataManager data = DashLoader.getData();
 		if (DashLoader.isWrite() || !ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
-			//serialization
-			this.atlasManager = modelLoader.upload(this.textureManager, profiler);
-			this.models = modelLoader.getBakedModelMap();
-			this.stateLookup = modelLoader.getStateLookup();
-
+			final DashDataManager data = DashLoader.getData();
 			data.spriteAtlasManager.setMinecraftData(atlasManager);
 			data.bakedModels.setMinecraftData(models);
 			data.modelStateLookup.setMinecraftData(stateLookup);
-		} else {
-			//cache go brr
-			DashLoader.LOGGER.info("Starting apply stage.");
-			//register textures
-			profiler.push("atlas");
-			data.getReadContextData().dashAtlasManager.registerAtlases(textureManager, Option.CACHE_MODEL_LOADER);
-			profiler.swap("baking");
-			profiler.pop();
-
-
-			var access = (ModelLoaderAccessor) modelLoader;
-
-			this.atlasManager = data.spriteAtlasManager.getCacheResultData();
-			this.models = data.bakedModels.getCacheResultData();
-			final Map<Identifier, UnbakedModel> modelsToBake = access.getModelsToBake();
-			access.setSpriteAtlasManager(this.atlasManager);
-
-			DashLoader.LOGGER.info("Baking fallback models.");
-			AtomicInteger fallback = new AtomicInteger();
-			modelsToBake.forEach((identifier, unbakedModel) -> {
-				if (!(unbakedModel instanceof UnbakedBakedModel)) {
-					this.models.put(identifier, modelLoader.bake(identifier, ModelRotation.X0_Y0));
-					if (!identifier.equals(ModelLoader.MISSING_ID)) {
-						fallback.getAndIncrement();
-					}
-				}
-			});
-
-			final int size = this.models.size();
-			DashLoader.LOGGER.info("Baked {} out of {} models with fallback system. ({}% cache coverage)", fallback.get(), size, (int) ((1 - (fallback.get() / (float) size)) * 100));
-			this.stateLookup = modelLoader.getStateLookup();
 		}
-		this.missingModel = this.models.get(ModelLoader.MISSING_ID);
-		profiler.swap("cache");
-		this.blockModelCache.reload();
-		profiler.pop();
-		profiler.endTick();
-		ci.cancel();
 	}
 
 }

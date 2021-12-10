@@ -50,11 +50,9 @@
     "main.MinecraftClientMixin",
     "main.ReloadableResourceManagerImplMixin",
     "main.SplashScreenMixin",
+    "option.WallBlockMixin",
     "option.cache.ParticleManagerMixin",
     "option.cache.SplashTextResourceSupplierMixin",
-    "option.state.StateManagerBuilderMixin",
-    "option.state.StateMixin",
-    "option.WallBlockMixin",
     "option.cache.font.FontManagerOverride",
     "option.cache.font.FontManagerOverride$LeoFontSolution",
     "option.cache.font.TrueTypeFontLoaderMixin",
@@ -71,7 +69,9 @@
     "option.misc.ModelIdentifierMixin",
     "option.misc.SoundManagerMixin",
     "option.misc.TitleScreenMixin",
-    "option.misc.UnicodeTextureFontMixin"
+    "option.misc.UnicodeTextureFontMixin",
+    "option.state.StateManagerBuilderMixin",
+    "option.state.StateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
