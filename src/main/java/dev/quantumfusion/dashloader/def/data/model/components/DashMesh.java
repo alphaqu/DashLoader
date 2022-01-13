@@ -20,7 +20,7 @@ public record DashMesh(int[] data, String className) {
 			field.setAccessible(true);
 			data = (int[]) field.get(mesh);
 		} catch (IllegalAccessException | NoSuchFieldException e) {
-			throw new RuntimeException("shit", e);
+			throw new RuntimeException("Could not use Mesh field hack. ", e);
 		}
 		return data;
 	}
@@ -34,7 +34,7 @@ public record DashMesh(int[] data, String className) {
 			data.setAccessible(true);
 			data.set(mesh, this.data);
 		} catch (IllegalAccessException | NoSuchFieldException e) {
-			throw new RuntimeException("shit", e);
+			throw new RuntimeException("Could not use Mesh field hack. ", e);
 		}
 		return mesh;
 	}
