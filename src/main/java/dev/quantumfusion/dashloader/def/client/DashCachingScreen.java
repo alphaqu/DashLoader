@@ -123,7 +123,7 @@ public class DashCachingScreen extends Screen {
 			if (countWeight >= target)
 				return item.getKey();
 		}
-		throw new RuntimeException("what");
+		throw new RuntimeException("Could not get line color.");
 	}
 
 	static {
