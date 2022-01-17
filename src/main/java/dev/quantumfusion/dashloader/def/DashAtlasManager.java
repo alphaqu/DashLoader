@@ -54,14 +54,13 @@ public class DashAtlasManager {
 	public void registerAtlas(SpriteAtlasTexture atlasTexture, DashSpriteAtlasTextureData data, TextureManager textureManager) {
 		//atlas registration
 		final Identifier id = atlasTexture.getId();
-		final int glId = TextureUtil.generateTextureId();
 		final int width = data.width();
 		final int maxLevel = data.maxLevel();
 		final int height = data.height();
-		((AbstractTextureAccessor) atlasTexture).setGlId(glId);
+		((AbstractTextureAccessor) atlasTexture).setGlId(-1);
 		//ding dong lwjgl here are their styles
 
-		TextureUtil.prepareImage(glId, maxLevel, width, height);
+		TextureUtil.prepareImage(atlasTexture.getGlId(), maxLevel, width, height);
 		final Map<Identifier, Sprite> sprites = ((SpriteAtlasTextureAccessor) atlasTexture).getSprites();
 		sprites.forEach((identifier, sprite) -> {
 			final SpriteAccessor access = (SpriteAccessor) sprite;
