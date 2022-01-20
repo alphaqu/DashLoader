@@ -28,5 +28,8 @@ If applicable, add screenshots to help explain your problem.
  - Minecraft: [e.g. 1.17.1, 1.18]
  - Mods [e.g. Fabric API, Better End]
 
+**Full crash log (if relevant)**
+https://pastebin.com/ ... 
+
 **Additional context**
 Add any other context about the problem here.
