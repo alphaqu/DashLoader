@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceReload;
+import net.minecraft.util.Language;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -17,7 +18,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.util.HashMap;
 
 
 @Mixin(value = SplashOverlay.class, priority = 69420)
@@ -48,7 +51,15 @@ public class SplashScreenMixin {
 				}
 			}
 		} else {
-			this.client.currentScreen = new DashCachingScreen(this.client.currentScreen);
+			String langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
+			ClassLoader loader = this.getClass().getClassLoader();
+			InputStream stream = loader.getResourceAsStream("assets/dashloader/lang/" + langCode + ".json");
+			HashMap<String, String> map = new HashMap<>();
+			if (stream != null) {
+				Language.load(stream, map::put);
+			}
+
+			this.client.currentScreen = new DashCachingScreen(this.client.currentScreen, map);
 		}
 		DashLoader.LOGGER.info("</> ==> Minecraft Reload time {}", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
 		DashLoader.LOGGER.info("</> ==> Minecraft Bootstrap time {}", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));

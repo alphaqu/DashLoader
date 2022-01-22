@@ -161,7 +161,7 @@ public class DashLoader {
 		final ProgressHandler progress = DashLoaderCore.PROGRESS;
 		CountTask main = new CountTask(12);
 		progress.setTask(main);
-		progress.setCurrentTask("Initializing");
+		progress.setCurrentTask("initializing");
 
 		// missing model callback
 		DashLoaderCore.REGISTRY.<BakedModel, DashModel>addCallback(DashModel.class, (rraw, registry) -> {
@@ -189,15 +189,15 @@ public class DashLoader {
 		// export
 		List<ChunkHolder> holders = new ArrayList<>();
 
-		progress.setCurrentTask("Exporting Images");
+		progress.setCurrentTask("export.image");
 		main.task(() -> holders.add(new ImageData(writer)));
-		progress.setCurrentTask("Exporting Models");
+		progress.setCurrentTask("export.model");
 		main.task(() -> holders.add(new ModelData(writer)));
-		progress.setCurrentTask("Exporting Registry");
+		progress.setCurrentTask("export.registry");
 		main.task(() -> holders.add(new RegistryData(writer)));
-		progress.setCurrentTask("Exporting Identifiers");
+		progress.setCurrentTask("export.identifier");
 		main.task(() -> holders.add(new IdentifierData(writer)));
-		progress.setCurrentTask("Exporting BakedQuads");
+		progress.setCurrentTask("export.quad");
 		main.task(() -> holders.add(new BakedQuadData(writer)));
 
 		final IOHandler io = DashLoaderCore.IO;

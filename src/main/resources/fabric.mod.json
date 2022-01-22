@@ -14,7 +14,7 @@
 		"sources" : "https://github.com/QuantumFusionMC/DashLoader-Definition"
 	},
 	"license" : "LGPL-3.0-only",
-	"icon" : "assets/dashloader/def/textures/icon.png",
+	"icon" : "assets/dashloader/textures/icon.png",
 	"environment" : "*",
 	"accessWidener" : "dashloader.accesswidener",
 	"mixins" : [

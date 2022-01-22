@@ -8,6 +8,7 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Language;
 import net.minecraft.util.math.Matrix4f;
 
 import java.awt.Color;
@@ -68,7 +69,6 @@ public class UIDrawer {
 	private static void drawVertex(Matrix4f m4f, BufferBuilder bb, int x, int y, Color color) {
 		bb.vertex(m4f, (float) x, (float) y, 0f).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
 	}
-
 
 	public void drawText(TextOrientation orientation, String text, Color color, int x, int y) {
 		switch (orientation) {
