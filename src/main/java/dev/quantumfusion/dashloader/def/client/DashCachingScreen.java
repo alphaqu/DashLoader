@@ -7,6 +7,7 @@ import dev.quantumfusion.dashloader.def.DashLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Matrix4f;
@@ -14,13 +15,9 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static dev.quantumfusion.dashloader.def.client.UIColors.*;
 import static dev.quantumfusion.dashloader.def.client.UIDrawer.TextOrientation.TEXT_LEFT;
@@ -45,9 +42,11 @@ public class DashCachingScreen extends Screen {
 	private final String fact = HahaManager.getFact();
 
 	private long oldTime = System.currentTimeMillis();
+	private final HashMap<String, String> translations;
 
-	public DashCachingScreen(Screen previousScreen) {
+	public DashCachingScreen(Screen previousScreen, HashMap<String, String> translations) {
 		super(Text.of("Caching"));
+		this.translations = translations;
 		UIColors.loadConfig(DashLoaderCore.CONFIG.config);
 		this.previousScreen = previousScreen;
 		drawer.update(MinecraftClient.getInstance(), this::fillGradient);
@@ -181,8 +180,8 @@ public class DashCachingScreen extends Screen {
 		final int barY = height - padding - progressBarHeight;
 		drawer.drawQuad(PROGRESS_LANE_COLOR, 0, barY, width, progressBarHeight); // progress back
 		drawer.drawQuad(getProgressColor(currentProgress), 0, barY, (int) (width * currentProgress), progressBarHeight); // the progress bar
-		drawer.drawText(TEXT_LEFT, debug ? "Debug mode is activated in DashLoader config." : DashLoaderCore.PROGRESS.getCurrentTask(), TEXT_COLOR, padding, barY - padding); // current task
-
+		String currentText = debug ? "debug" : DashLoaderCore.PROGRESS.getCurrentTask();
+		drawer.drawText(TEXT_LEFT, translations.getOrDefault(currentText, currentText), TEXT_COLOR, padding, barY - padding); // current task
 
 		// fun fact
 		drawer.drawText(TEXT_LEFT, fact, TEXT_COLOR, padding, padding + textRenderer.fontHeight);

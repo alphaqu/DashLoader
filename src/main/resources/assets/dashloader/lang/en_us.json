@@ -1,0 +1,17 @@
+{
+  "initializing": "Initializing",
+  "debug": "Debug Mode is active in config.",
+  "mapping": "Mapping",
+  "mapping.blockstate": "Mapping Blockstates",
+  "mapping.model": "Mapping Models",
+  "mapping.sprite": "Mapping Sprites",
+  "mapping.particle": "Mapping Particles",
+  "mapping.font": "Mapping Fonts",
+  "mapping.splashtext": "Mapping Splash Text",
+  "mapping.shader": "Mapping Shaders",
+  "export.image": "Exporting Images",
+  "export.model": "Exporting Models",
+  "export.registry": "Exporting Registry",
+  "export.identifier": "Exporting Identifiers",
+  "export.quad": "Exporting Quads"
+}
