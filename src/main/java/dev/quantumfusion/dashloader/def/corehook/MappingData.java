@@ -63,7 +63,7 @@ public class MappingData {
 			throw new RuntimeException("Tried to map data when DashDataManager is in Read mode");
 
 		final ProgressHandler progress = DashLoaderCore.PROGRESS;
-		progress.setCurrentTask("mapping");
+		progress.setCurrentTask("convert");
 		CountTask mapping = new CountTask(7);
 		task.setSubtask(mapping);
 
@@ -71,39 +71,39 @@ public class MappingData {
 		final DashDataManager dataManager = DashLoader.getData();
 		if (ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
 
-			progress.setCurrentTask("mapping.blockstate");
+			progress.setCurrentTask("convert.blockstate");
 			blockStateData = new DashBlockStateData(dataManager, registry);
 			mapping.completedTask();
 
-			progress.setCurrentTask("mapping.model");
+			progress.setCurrentTask("convert.model");
 			modelData = new DashModelData(dataManager, registry);
 			mapping.completedTask();
 
-			progress.setCurrentTask("mapping.sprite");
+			progress.setCurrentTask("convert.image");
 			spriteAtlasData = new DashSpriteAtlasData(dataManager, registry);
 			mapping.completedTask();
 		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_PARTICLE)) {
-			progress.setCurrentTask("mapping.particle");
+			progress.setCurrentTask("convert.particle");
 			particleData = new DashParticleData(dataManager, registry);
 			mapping.completedTask();
 		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_FONT)) {
-			progress.setCurrentTask("mapping.font");
+			progress.setCurrentTask("convert.font");
 			fontManagerData = new DashFontManagerData(dataManager, registry);
 			mapping.completedTask();
 		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_SPLASH_TEXT)) {
-			progress.setCurrentTask("mapping.splashtext");
+			progress.setCurrentTask("convert.splashtext");
 			splashTextData = new DashSplashTextData(dataManager);
 			mapping.completedTask();
 		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_SHADER)) {
-			progress.setCurrentTask("mapping.shader");
+			progress.setCurrentTask("convert.shader");
 			shaderData = new DashShaderData(dataManager);
 			mapping.completedTask();
 		}
