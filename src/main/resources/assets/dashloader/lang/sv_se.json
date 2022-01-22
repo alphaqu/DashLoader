@@ -1,0 +1,17 @@
+{
+  "initializing": "Påbörjar",
+  "debug": "Debug läge är aktivt i configen.",
+  "mapping": "Mappar",
+  "mapping.blockstate": "Mappar Blockstater",
+  "mapping.model": "Mappar Modeller",
+  "mapping.sprite": "Mappar Bilder",
+  "mapping.particle": "Mappar Partiklar",
+  "mapping.font": "Mappar Fonter",
+  "mapping.splashtext": "Mappar Splash Text",
+  "mapping.shader": "Mappar Skuggor",
+  "export.image": "Exporterar Bilder",
+  "export.model": "Exporterar Modeller",
+  "export.registry": "Exporterar Register",
+  "export.identifier": "Exporterar Identifierare",
+  "export.quad": "Exporterar Quads"
+}
