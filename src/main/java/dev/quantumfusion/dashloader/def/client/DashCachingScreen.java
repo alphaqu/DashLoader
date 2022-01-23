@@ -42,11 +42,9 @@ public class DashCachingScreen extends Screen {
 	private final String fact = HahaManager.getFact();
 
 	private long oldTime = System.currentTimeMillis();
-	private final HashMap<String, String> translations;
 
-	public DashCachingScreen(Screen previousScreen, HashMap<String, String> translations) {
+	public DashCachingScreen(Screen previousScreen) {
 		super(Text.of("Caching"));
-		this.translations = translations;
 		UIColors.loadConfig(DashLoaderCore.CONFIG.config);
 		this.previousScreen = previousScreen;
 		drawer.update(MinecraftClient.getInstance(), this::fillGradient);
@@ -104,6 +102,7 @@ public class DashCachingScreen extends Screen {
 
 
 		if (this.debug) {
+			DashLoaderCore.PROGRESS.setCurrentTask("debug");
 			DashLoaderCore.CONFIG.addListener(listener -> configRequiresUpdate = true);
 		}
 
@@ -180,8 +179,7 @@ public class DashCachingScreen extends Screen {
 		final int barY = height - padding - progressBarHeight;
 		drawer.drawQuad(PROGRESS_LANE_COLOR, 0, barY, width, progressBarHeight); // progress back
 		drawer.drawQuad(getProgressColor(currentProgress), 0, barY, (int) (width * currentProgress), progressBarHeight); // the progress bar
-		String currentText = debug ? "debug" : DashLoaderCore.PROGRESS.getCurrentTask();
-		drawer.drawText(TEXT_LEFT, translations.getOrDefault(currentText, currentText), TEXT_COLOR, padding, barY - padding); // current task
+		drawer.drawText(TEXT_LEFT, DashLoaderCore.PROGRESS.getCurrentTask(), TEXT_COLOR, padding, barY - padding); // current task
 
 		// fun fact
 		drawer.drawText(TEXT_LEFT, fact, TEXT_COLOR, padding, padding + textRenderer.fontHeight);

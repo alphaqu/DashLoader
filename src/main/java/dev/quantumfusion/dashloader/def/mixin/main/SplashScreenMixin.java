@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.def.mixin.main;
 
+import dev.quantumfusion.dashloader.core.DashLoaderCore;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.client.DashCachingScreen;
 import dev.quantumfusion.dashloader.def.util.TimeUtil;
@@ -52,14 +53,14 @@ public class SplashScreenMixin {
 			}
 		} else {
 			String langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
-			ClassLoader loader = this.getClass().getClassLoader();
-			InputStream stream = loader.getResourceAsStream("assets/dashloader/lang/" + langCode + ".json");
+			InputStream stream = this.getClass().getClassLoader().getResourceAsStream("assets/dashloader/lang/" + langCode + ".json");
 			HashMap<String, String> map = new HashMap<>();
 			if (stream != null) {
 				Language.load(stream, map::put);
 			}
+			DashLoaderCore.PROGRESS.setTranslations(map);
 
-			this.client.currentScreen = new DashCachingScreen(this.client.currentScreen, map);
+			this.client.currentScreen = new DashCachingScreen(this.client.currentScreen);
 		}
 		DashLoader.LOGGER.info("</> ==> Minecraft Reload time {}", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
 		DashLoader.LOGGER.info("</> ==> Minecraft Bootstrap time {}", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
