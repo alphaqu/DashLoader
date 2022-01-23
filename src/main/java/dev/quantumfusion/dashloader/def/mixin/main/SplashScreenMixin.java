@@ -52,9 +52,10 @@ public class SplashScreenMixin {
 				}
 			}
 		} else {
-			String langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
-			InputStream stream = this.getClass().getClassLoader().getResourceAsStream("assets/dashloader/lang/" + langCode + ".json");
-			HashMap<String, String> map = new HashMap<>();
+			// Yes this is bad. But it makes us not require Fabric API
+			var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
+			var stream = this.getClass().getClassLoader().getResourceAsStream("assets/dashloader/lang/" + langCode + ".json");
+			var map = new HashMap<String, String>();
 			if (stream != null) {
 				Language.load(stream, map::put);
 			}
