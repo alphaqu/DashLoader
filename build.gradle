@@ -41,21 +41,21 @@ dependencies {
     // TODO jákob if you need modmenu uncomment this and in gradle.properties - !alpha
     // modImplementation "com.terraformersmc:modmenu:$project.modmenu_version"
 
-    modApi "dev.quantumfusion.dashloader:dashloader-core:$project.dashloader_core_version"
+    implementation "dev.quantumfusion.dashloader:dashloader-core:$project.dashloader_core_version"
     include "dev.quantumfusion.dashloader:dashloader-core:$project.dashloader_core_version"
 
-    modApi "dev.quantumfusion:hyphen:0.1"
-    include "dev.quantumfusion:hyphen:0.1"
+    implementation "dev.quantumfusion:hyphen:0.2.0"
+    include "dev.quantumfusion:hyphen:0.2.0"
 
-    modApi 'io.airlift:aircompressor:0.21'
+    implementation 'io.airlift:aircompressor:0.21'
     include 'io.airlift:aircompressor:0.21'
 
 
     testImplementation(platform('org.junit:junit-bom:5.7.2'))
     testImplementation('org.junit.jupiter:junit-jupiter:5.7.2')
 
-    modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.36.1+1.17");
-    modCompileOnly fabricApi.module("fabric-textures-v0", "0.36.1+1.17");
+    modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.44.0+1.18");
+    modCompileOnly fabricApi.module("fabric-textures-v0", "0.44.0+1.18");
 }
 
 test {
@@ -95,3 +95,10 @@ jar {
     }
 }
 
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
