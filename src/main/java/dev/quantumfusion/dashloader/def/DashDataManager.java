@@ -89,7 +89,6 @@ public class DashDataManager {
 
 		// Model related
 		public final Object2ObjectMap<BakedModel, DashMissingDashModel> missingModelsWrite = new Object2ObjectOpenHashMap<>();
-		public final Object2ObjectMap<Identifier, BlockState> modelIdentifierBlockStateMap = new Object2ObjectOpenHashMap<>();
 		public final Object2ObjectMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>> multipartPredicates = new Object2ObjectOpenHashMap<>();
 		public final Object2ObjectMap<MultipartModelSelector, StateManager<Block, BlockState>> stateManagers = new Object2ObjectOpenHashMap<>();
 

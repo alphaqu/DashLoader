@@ -14,16 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class BlockModelsMixin {
 
 	@Inject(
-			method = "getModelId(Lnet/minecraft/util/Identifier;Lnet/minecraft/block/BlockState;)Lnet/minecraft/client/util/ModelIdentifier;",
-			at = @At(value = "RETURN")
-	)
-	private static void snagModelId(Identifier id, BlockState state, CallbackInfoReturnable<ModelIdentifier> cir) {
-		if (DashLoader.isWrite()) {
-			DashLoader.getData().getWriteContextData().modelIdentifierBlockStateMap.put(cir.getReturnValue(), state);
-		}
-	}
-
-	@Inject(
 			method = "getModelId(Lnet/minecraft/block/BlockState;)Lnet/minecraft/client/util/ModelIdentifier;",
 			at = @At(value = "HEAD"),
 			cancellable = true
