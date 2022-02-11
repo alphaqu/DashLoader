@@ -6,14 +6,18 @@ import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.def.mixin.accessor.AbstractTextureAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasTextureAccessor;
+import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +79,10 @@ public class DashAtlasManager {
 		//helu textures here are the atlases
 		textureManager.registerTexture(id, atlasTexture);
 		atlasTexture.setFilter(false, maxLevel > 0);
+		if (FabricLoader.getInstance().isModLoaded("fabric-textures-v0"))  {
+			var registry = new ClientSpriteRegistryCallback.Registry(new HashMap<>(), (javaSucks) -> {});
+			ClientSpriteRegistryCallback.event(id).invoker().registerSprites(atlasTexture, registry);
+		}
 		DashLoader.LOGGER.info("Allocated: {}x{}x{} {}-atlas", width, height, maxLevel, id);
 	}
 
