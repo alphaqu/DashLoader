@@ -44,14 +44,12 @@ public abstract class GameRendererMixin {
 				var shader = shaders.getCacheResultData().get(name);
 				if (shader != null) {
 					// Loads OpenGL shader.
-					DashLoader.LOGGER.info("Loaded shader \"{}\"", name);
 					data.getReadContextData().shaderData.get(name).apply();
 					return shader;
 				}
 			} else if (DashLoader.isWrite()) {
 				// Create a shader and cache it.
 				var shader = new Shader(factory, name, format);
-				DashLoader.LOGGER.info("Cached shader \"{}\"", name);
 				shaders.getMinecraftData().put(name, shader);
 				return shader;
 			}
