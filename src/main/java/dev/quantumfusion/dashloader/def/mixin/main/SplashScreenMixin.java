@@ -1,16 +1,11 @@
 package dev.quantumfusion.dashloader.def.mixin.main;
 
-import dev.quantumfusion.dashloader.core.DashLoaderCore;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.client.DashCachingScreen;
-import dev.quantumfusion.dashloader.def.util.TimeUtil;
-import dev.quantumfusion.dashloader.def.util.mixins.MixinThings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceReload;
-import net.minecraft.util.Language;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -18,9 +13,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.lang.management.ManagementFactory;
-import java.util.HashMap;
 
 
 @Mixin(value = SplashOverlay.class, priority = 69420)
@@ -45,37 +37,15 @@ public class SplashScreenMixin {
 			method = "render(Lnet/minecraft/client/util/math/MatrixStack;IIF)V",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J", shift = At.Shift.BEFORE, ordinal = 1)
 	)
-	private void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-		DashLoader.LOGGER.info("</> DashLoader Profiled {}", "Times"); // ij labels plz show
-
-		if (DashLoader.EXPORT_END != -1) {
-			DashLoader.LOGGER.info("</> ==> DashLoader Export time {}", TimeUtil.getTimeString(DashLoader.EXPORT_END - DashLoader.EXPORT_START));
-			DashLoader.EXPORT_END = -1;
-		}
-
-		this.client.setOverlay(null);
+	private void done(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+		client.setOverlay(null);
 		if (client.currentScreen != null) {
-			if (this.client.currentScreen instanceof TitleScreen) {
-				this.client.currentScreen = new TitleScreen(false);
+			if (client.currentScreen instanceof TitleScreen) {
+				client.currentScreen = new TitleScreen(false);
 			}
 		}
 
-		if (DashLoader.isWrite()) {
-			// Yes this is bad. But it makes us not require Fabric API
-			var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
-			var stream = this.getClass().getClassLoader().getResourceAsStream("assets/dashloader/lang/" + langCode + ".json");
-			var map = new HashMap<String, String>();
-			if (stream != null) {
-				Language.load(stream, map::put);
-			}
-			DashLoaderCore.PROGRESS.setTranslations(map);
-
-			this.client.currentScreen = new DashCachingScreen(this.client.currentScreen);
-		}
-
-		DashLoader.LOGGER.info("</> ==> Minecraft Reload time {}", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
-		DashLoader.LOGGER.info("</> ==> Minecraft Bootstrap time {}", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
-		DashLoader.LOGGER.info("</> ==> Total Loading time {}", TimeUtil.getTimeString(ManagementFactory.getRuntimeMXBean().getUptime()));
+		DashLoader.INSTANCE.complete(this.client);
 	}
 
 	@Inject(

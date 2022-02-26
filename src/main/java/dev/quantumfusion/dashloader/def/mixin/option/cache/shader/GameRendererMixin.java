@@ -33,23 +33,20 @@ public abstract class GameRendererMixin {
 	)
 	private Shader shaderCreation(ResourceFactory factory, String name, VertexFormat format) throws IOException {
 		// Checks if DashLoader is active
-		if (DashLoader.dataManagerActive()) {
+		if (DashLoader.isRead()) {
 			var data = DashLoader.getData();
-			var shaders = data.shaders;
-			if (DashLoader.isRead()) {
-				// If we are reading from cache load the shader and check if its cached.
-				var shader = shaders.getCacheResultData().get(name);
-				if (shader != null) {
-					// Loads OpenGL shader.
-					data.getReadContextData().shaderData.get(name).apply();
-					return shader;
-				}
-			} else if (DashLoader.isWrite()) {
-				// Create a shader and cache it.
-				var shader = new Shader(factory, name, format);
-				shaders.getMinecraftData().put(name, shader);
+			// If we are reading from cache load the shader and check if its cached.
+			var shader = data.shaders.getCacheResultData().get(name);
+			if (shader != null) {
+				// Loads OpenGL shader.
+				data.getReadContextData().shaderData.get(name).apply();
 				return shader;
 			}
+		} else if (DashLoader.isWrite()) {
+			// Create a shader and cache it.
+			var shader = new Shader(factory, name, format);
+			DashLoader.getData().shaders.getMinecraftData().put(name, shader);
+			return shader;
 		}
 
 		return new Shader(factory, name, format);
