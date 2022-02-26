@@ -22,17 +22,22 @@ import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashPredicate;
 import dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel;
 import dev.quantumfusion.dashloader.def.util.TimeUtil;
+import dev.quantumfusion.dashloader.def.util.mixins.MixinThings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Language;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,8 +54,10 @@ public class DashLoader {
 	public static final Path DASH_CACHE_FOLDER = Path.of("./dashloader-cache/");
 	public static final DashLoader INSTANCE = new DashLoader();
 	public static long RELOAD_START = 0;
-	public static long EXPORT_START = 0;
-	public static long EXPORT_END = -1;
+	public static long EXPORT_TIME = -1;
+	public static long EXPORT_READING_TIME = -1;
+	public static long EXPORT_EXPORTING_TIME = -1;
+	public static long EXPORT_LOADING_TIME = -1;
 	private static Status STATUS = Status.NONE;
 	private boolean shouldReload = true;
 	private final DashMetadata metadata = new DashMetadata();
@@ -105,19 +112,11 @@ public class DashLoader {
 		}
 	}
 
-	public static boolean dataManagerActive() {
-		return INSTANCE.dataManager != null;
-	}
-
 	public static DashDataManager getData() {
 		final DashDataManager dataManager = INSTANCE.dataManager;
-		if (!dataManagerActive())
+		if (INSTANCE.dataManager == null)
 			throw new NullPointerException("No dataManager active");
 		return dataManager;
-	}
-
-	public void requestReload() {
-		shouldReload = true;
 	}
 
 	public void reload(List<String> resourcePacks) {
@@ -126,11 +125,10 @@ public class DashLoader {
 			DashLoaderCore.IO.setSubCacheArea(metadata.resourcePacks);
 			LOGGER.info("Reloading DashLoader. [mod-hash: {}] [resource-hash: {}]", metadata.modInfo, metadata.resourcePacks);
 			if (DashLoaderCore.IO.cacheExists()) {
-				STATUS = Status.READ;
+				this.setStatus(Status.READ);
 				loadDashCache();
 			} else {
-				STATUS = Status.WRITE;
-				this.dataManager = new DashDataManager(new DashDataManager.DashWriteContextData());
+				this.setStatus(Status.WRITE);
 			}
 
 			LOGGER.info("Reloaded DashLoader");
@@ -138,11 +136,12 @@ public class DashLoader {
 		}
 	}
 
-	public void resetDashLoader() {
-		LOGGER.info("Reload Complete.");
+	public void requestReload() {
+		shouldReload = true;
+	}
 
-		STATUS = Status.NONE;
-		this.dataManager = null;
+	public void resetDashLoader() {
+		this.setStatus(Status.NONE);
 	}
 
 	@SuppressWarnings("RedundantTypeArguments")
@@ -181,7 +180,6 @@ public class DashLoader {
 
 			// export
 			List<ChunkHolder> holders = new ArrayList<>();
-
 			progress.setCurrentTask("export.image");
 			main.task(() -> holders.add(new ImageData(writer)));
 			progress.setCurrentTask("export.model");
@@ -201,13 +199,13 @@ public class DashLoader {
 			DashCachingScreen.CACHING_COMPLETE = true;
 			LOGGER.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
 		} catch (Throwable thr) {
-			STATUS = Status.NONE;
+			this.setStatus(Status.NONE);
 			LOGGER.error("Failed caching", thr);
 		}
 	}
 
 	public void loadDashCache() {
-		EXPORT_START = System.currentTimeMillis();
+		var start = System.currentTimeMillis();
 		final IOHandler io = DashLoaderCore.IO;
 		io.setSubCacheArea(metadata.resourcePacks);
 		LOGGER.info("Starting DashLoader Deserialization");
@@ -216,6 +214,7 @@ public class DashLoader {
 			ChunkHolder[] registryDataObjects = new ChunkHolder[5];
 
 
+			var start2 = System.currentTimeMillis();
 			DashLoaderCore.THREAD.parallelRunnable(
 					() -> registryDataObjects[0] = (io.load(RegistryData.class)),
 					() -> registryDataObjects[1] = (io.load(ImageData.class)),
@@ -224,6 +223,7 @@ public class DashLoader {
 					() -> registryDataObjects[4] = (io.load(BakedQuadData.class)),
 					() -> mappingsReference.set(io.load(MappingData.class))
 			);
+			EXPORT_READING_TIME = System.currentTimeMillis() - start2;
 
 			MappingData mappings = mappingsReference.get();
 			assert mappings != null;
@@ -233,20 +233,61 @@ public class DashLoader {
 
 			this.dataManager = new DashDataManager(new DashDataManager.DashReadContextData());
 
+			start2 = System.currentTimeMillis();
 			LOGGER.info("Exporting Mappings");
 			reader.export();
+			EXPORT_EXPORTING_TIME = System.currentTimeMillis() - start2;
 
+			start2 = System.currentTimeMillis();
 			LOGGER.info("Loading Mappings");
 			mappings.export(reader, this.dataManager);
+			EXPORT_LOADING_TIME = System.currentTimeMillis() - start2;
 
-			EXPORT_END = System.currentTimeMillis();
-			LOGGER.info("Loaded DashLoader in {}", TimeUtil.getTimeString(EXPORT_END - EXPORT_START));
+
+			EXPORT_TIME = System.currentTimeMillis() - start;
+			LOGGER.info("Loaded DashLoader in {}", EXPORT_TIME);
 		} catch (Exception e) {
-			LOGGER.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(EXPORT_START), e);
-			STATUS = Status.NONE;
+			LOGGER.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(start), e);
+			this.setStatus(Status.NONE);
 			if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
 				// TODO REMOVE FILES IF IT CRASHED
 			}
+		}
+	}
+
+	public void complete(MinecraftClient client) {
+		LOGGER.info("┏ DashLoader Profiler Times.");
+		if (EXPORT_TIME != -1) {
+			LOGGER.info("┠──┬ {} DashLoader Load", TimeUtil.getTimeString(EXPORT_TIME));
+			LOGGER.info("┃  ├── {} File Reading", TimeUtil.getTimeString(EXPORT_READING_TIME));
+			LOGGER.info("┃  ├── {} Asset Exporting", TimeUtil.getTimeString(EXPORT_EXPORTING_TIME));
+			LOGGER.info("┃  └── {} Asset Loading", TimeUtil.getTimeString(EXPORT_LOADING_TIME));
+			EXPORT_TIME = -1;
+		}
+		LOGGER.info("┠── {} Minecraft Client Reload", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
+		LOGGER.info("┠── {} Minecraft Bootstrap", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
+		LOGGER.info("┠── {} Total Loading", TimeUtil.getTimeString(ManagementFactory.getRuntimeMXBean().getUptime()));
+
+		if (DashLoader.isWrite()) {
+			// Yes this is bad. But it makes us not require Fabric API
+			var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
+			var stream = this.getClass().getClassLoader().getResourceAsStream("assets/dashloader/lang/" + langCode + ".json");
+			var map = new HashMap<String, String>();
+			if (stream != null) {
+				Language.load(stream, map::put);
+			}
+			DashLoaderCore.PROGRESS.setTranslations(map);
+			client.currentScreen = new DashCachingScreen(client.currentScreen);
+		}
+	}
+
+	private void setStatus(Status status) {
+		LOGGER.info("\u001B[46m\u001B[30m DashLoader Status change {}\n\u001B[0m", status);
+		STATUS = status;
+		switch (status) {
+			case NONE -> this.dataManager = null;
+			case READ -> this.dataManager = new DashDataManager(new DashDataManager.DashReadContextData());
+			case WRITE -> this.dataManager = new DashDataManager(new DashDataManager.DashWriteContextData());
 		}
 	}
 
