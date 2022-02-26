@@ -1,288 +1,63 @@
 package dev.quantumfusion.dashloader.def.mixin.option.cache.shader;
 
-import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.data.image.shader.DashShader;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Shader;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import java.util.List;
-import java.util.Map;
 
-@Mixin(GameRenderer.class)
+import java.io.IOException;
+
+@Mixin(value = GameRenderer.class, priority = 69)
 public abstract class GameRendererMixin {
-
-	@Shadow
-	@Nullable
-	private static Shader positionShader;
-	@Shadow
-	@Nullable
-	private static Shader positionColorShader;
-	@Shadow
-	@Nullable
-	private static Shader positionColorTexShader;
-	@Shadow
-	@Nullable
-	private static Shader positionTexShader;
-	@Shadow
-	@Nullable
-	private static Shader positionTexColorShader;
-	@Shadow
-	@Nullable
-	private static Shader blockShader;
-	@Shadow
-	@Nullable
-	private static Shader newEntityShader;
-	@Shadow
-	@Nullable
-	private static Shader particleShader;
-	@Shadow
-	@Nullable
-	private static Shader positionColorLightmapShader;
-	@Shadow
-	@Nullable
-	private static Shader positionColorTexLightmapShader;
-	@Shadow
-	@Nullable
-	private static Shader positionTexColorNormalShader;
-	@Shadow
-	@Nullable
-	private static Shader positionTexLightmapColorShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeSolidShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeCutoutMippedShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeCutoutShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeTranslucentShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeTranslucentMovingBlockShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeTranslucentNoCrumblingShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeArmorCutoutNoCullShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntitySolidShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityCutoutShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityCutoutNoNullShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityCutoutNoNullZOffsetShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeItemEntityTranslucentCullShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityTranslucentCullShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityTranslucentShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntitySmoothCutoutShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeBeaconBeamShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityDecalShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityNoOutlineShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityShadowShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityAlphaShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEyesShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEnergySwirlShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeLeashShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeWaterMaskShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeOutlineShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeArmorGlintShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeArmorEntityGlintShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeGlintTranslucentShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeGlintShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeGlintDirectShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityGlintShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEntityGlintDirectShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeTextShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeTextIntensityShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeTextSeeThroughShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeTextIntensitySeeThroughShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeLightningShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeTripwireShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEndPortalShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeEndGatewayShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeLinesShader;
-	@Shadow
-	@Nullable
-	private static Shader renderTypeCrumblingShader;
-
-	@Shadow
-	@Final
-	private Map<String, Shader> shaders;
-
-	@Shadow
-	protected abstract void clearShaders();
-
-
-	@Inject(
-			method = "loadShaders",
-			at = @At(value = "HEAD"),
-			cancellable = true
-	)
-	private void loadShaders(ResourceManager manager, CallbackInfo ci) {
-		if (DashLoader.isRead() && DashLoader.dataManagerActive()) {
-			dashReload();
-			ci.cancel();
+	@Inject(method = "loadShaders(Lnet/minecraft/resource/ResourceManager;)V", at = @At(value = "HEAD"))
+	private void prepareCache(ResourceManager manager, CallbackInfo ci) {
+		if (DashLoader.dataManagerActive()) {
+			var data = DashLoader.getData();
+			if (DashLoader.isWrite()) {
+				data.shaders.setMinecraftData(new Object2ObjectOpenHashMap<>());
+			}
 		}
 	}
 
-	@Inject(
-			method = "loadShaders",
-			at = @At(value = "TAIL")
+	@Redirect(
+			method = "loadShaders(Lnet/minecraft/resource/ResourceManager;)V",
+			at = @At(
+					value = "NEW",
+					target = "Lnet/minecraft/client/render/Shader;<init>"
+			)
 	)
-	private void reloadEnd(ResourceManager manager, CallbackInfo ci) {
-		if (DashLoader.isWrite() && DashLoader.dataManagerActive()) {
-			final DashDataManager instance = DashLoader.getData();
-			instance.shaders.setMinecraftData(shaders);
+	private Shader shaderCreation(ResourceFactory factory, String name, VertexFormat format) throws IOException {
+		// Checks if DashLoader is active
+		if (DashLoader.dataManagerActive()) {
+			var data = DashLoader.getData();
+			var shaders = data.shaders;
+			if (DashLoader.isRead()) {
+				// If we are reading from cache load the shader and check if its cached.
+				var shader = shaders.getCacheResultData().get(name);
+				if (shader != null) {
+					// Loads OpenGL shader.
+					DashLoader.LOGGER.info("Loaded shader \"{}\"", name);
+					data.getReadContextData().shaderData.get(name).apply();
+					return shader;
+				}
+			} else if (DashLoader.isWrite()) {
+				// Create a shader and cache it.
+				var shader = new Shader(factory, name, format);
+				DashLoader.LOGGER.info("Cached shader \"{}\"", name);
+				shaders.getMinecraftData().put(name, shader);
+				return shader;
+			}
 		}
-	}
 
-	private void dashReload() {
-		var manager = DashLoader.getData();
-		var shaders = manager.getReadContextData().shaderData;
-		int size = shaders.size();
-
-		DashLoader.LOGGER.info("Applying {} shaders.", size);
-		shaders.forEach(DashShader::apply);
-
-		DashLoader.LOGGER.info("Setting {} shaders.", size);
-		var shaderData = manager.shaders.getCacheResultData();
-		blockShader = shaderData.get("block");
-		newEntityShader = shaderData.get("new_entity");
-		particleShader = shaderData.get("particle");
-		positionShader = shaderData.get("position");
-		positionColorShader = shaderData.get("position_color");
-		positionColorLightmapShader = shaderData.get("position_color_lightmap");
-		positionColorTexShader = shaderData.get("position_color_tex");
-		positionColorTexLightmapShader = shaderData.get("position_color_tex_lightmap");
-		positionTexShader = shaderData.get("position_tex");
-		positionTexColorShader = shaderData.get("position_tex_color");
-		positionTexColorNormalShader = shaderData.get("position_tex_color_normal");
-		positionTexLightmapColorShader = shaderData.get("position_tex_lightmap_color");
-		renderTypeSolidShader = shaderData.get("rendertype_solid");
-		renderTypeCutoutMippedShader = shaderData.get("rendertype_cutout_mipped");
-		renderTypeCutoutShader = shaderData.get("rendertype_cutout");
-		renderTypeTranslucentShader = shaderData.get("rendertype_translucent");
-		renderTypeTranslucentMovingBlockShader = shaderData.get("rendertype_translucent_moving_block");
-		renderTypeTranslucentNoCrumblingShader = shaderData.get("rendertype_translucent_no_crumbling");
-		renderTypeArmorCutoutNoCullShader = shaderData.get("rendertype_armor_cutout_no_cull");
-		renderTypeEntitySolidShader = shaderData.get("rendertype_entity_solid");
-		renderTypeEntityCutoutShader = shaderData.get("rendertype_entity_cutout");
-		renderTypeEntityCutoutNoNullShader = shaderData.get("rendertype_entity_cutout_no_cull");
-		renderTypeEntityCutoutNoNullZOffsetShader = shaderData.get("rendertype_entity_cutout_no_cull_z_offset");
-		renderTypeItemEntityTranslucentCullShader = shaderData.get("rendertype_item_entity_translucent_cull");
-		renderTypeEntityTranslucentCullShader = shaderData.get("rendertype_entity_translucent_cull");
-		renderTypeEntityTranslucentShader = shaderData.get("rendertype_entity_translucent");
-		renderTypeEntitySmoothCutoutShader = shaderData.get("rendertype_entity_smooth_cutout");
-		renderTypeBeaconBeamShader = shaderData.get("rendertype_beacon_beam");
-		renderTypeEntityDecalShader = shaderData.get("rendertype_entity_decal");
-		renderTypeEntityNoOutlineShader = shaderData.get("rendertype_entity_no_outline");
-		renderTypeEntityShadowShader = shaderData.get("rendertype_entity_shadow");
-		renderTypeEntityAlphaShader = shaderData.get("rendertype_entity_alpha");
-		renderTypeEyesShader = shaderData.get("rendertype_eyes");
-		renderTypeEnergySwirlShader = shaderData.get("rendertype_energy_swirl");
-		renderTypeLeashShader = shaderData.get("rendertype_leash");
-		renderTypeWaterMaskShader = shaderData.get("rendertype_water_mask");
-		renderTypeOutlineShader = shaderData.get("rendertype_outline");
-		renderTypeArmorGlintShader = shaderData.get("rendertype_armor_glint");
-		renderTypeArmorEntityGlintShader = shaderData.get("rendertype_armor_entity_glint");
-		renderTypeGlintTranslucentShader = shaderData.get("rendertype_glint_translucent");
-		renderTypeGlintShader = shaderData.get("rendertype_glint");
-		renderTypeGlintDirectShader = shaderData.get("rendertype_glint_direct");
-		renderTypeEntityGlintShader = shaderData.get("rendertype_entity_glint");
-		renderTypeEntityGlintDirectShader = shaderData.get("rendertype_entity_glint_direct");
-		renderTypeTextShader = shaderData.get("rendertype_text");
-		renderTypeTextIntensityShader = shaderData.get("rendertype_text_intensity");
-		renderTypeTextSeeThroughShader = shaderData.get("rendertype_text_see_through");
-		renderTypeTextIntensitySeeThroughShader = shaderData.get("rendertype_text_intensity_see_through");
-		renderTypeLightningShader = shaderData.get("rendertype_lightning");
-		renderTypeTripwireShader = shaderData.get("rendertype_tripwire");
-		renderTypeEndPortalShader = shaderData.get("rendertype_end_portal");
-		renderTypeEndGatewayShader = shaderData.get("rendertype_end_gateway");
-		renderTypeLinesShader = shaderData.get("rendertype_lines");
-		renderTypeCrumblingShader = shaderData.get("rendertype_crumbling");
-
-		DashLoader.LOGGER.info("Replacing {} shaders", size);
-		clearShaders();
-		this.shaders.putAll(shaderData);
-		DashLoader.LOGGER.info("Shader reload complete.");
-
+		return new Shader(factory, name, format);
 	}
 
 

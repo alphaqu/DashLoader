@@ -32,7 +32,7 @@ public class FontManagerOverride {
 
 
 	@Inject(
-			method = {"method_18638", "prepare"},
+			method = {"method_18638", "prepare*"},
 			at = @At(value = "HEAD"),
 			cancellable = true
 	)
@@ -52,7 +52,7 @@ public class FontManagerOverride {
 
 
 	@Inject(
-			method = {"method_18635", "apply"},
+			method = {"method_18635", "apply*"},
 			at = @At(value = "HEAD"),
 			cancellable = true
 	)
@@ -80,7 +80,7 @@ public class FontManagerOverride {
 		}
 	}
 
-	@Inject(method = {"method_18635", "apply"}, at = @At(value = "TAIL"))
+	@Inject(method = {"method_18635", "apply*"}, at = @At(value = "TAIL"))
 	private void applyInject(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
 		if (DashLoader.isWrite()) {
 			DashLoader.getData().fonts.setMinecraftData(map);
@@ -98,7 +98,7 @@ public class FontManagerOverride {
 	}
 
 	private void computeFontStorages(FontStorageAccessor access, List<Font> fonts) {
-		final Glyph space = access.getSPACE();
+		final Glyph space = FontStorageAccessor.getSPACE();
 
 		final IntSet intSet = new IntOpenHashSet();
 		final IntFunction<IntList> creatIntArrayListFunc = (i) -> new IntArrayList();

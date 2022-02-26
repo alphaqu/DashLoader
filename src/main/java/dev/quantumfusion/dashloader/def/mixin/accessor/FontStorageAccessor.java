@@ -32,7 +32,9 @@ public interface FontStorageAccessor {
 	Int2ObjectMap<IntList> getCharactersByWidth();
 
 	@Accessor
-	Glyph getSPACE();
+	static Glyph getSPACE() {
+		return null;
+	}
 
 
 	@Accessor

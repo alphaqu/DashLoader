@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.stb.STBTTFontinfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -115,11 +116,11 @@ public class DashDataManager {
 		public final DashAtlasManager dashAtlasManager;
 
 		// Shader related
-		public final List<DashShader> shaderData;
+		public final Map<String, DashShader> shaderData;
 
 		public DashReadContextData() {
 			this.dashAtlasManager = new DashAtlasManager(this);
-			this.shaderData = new ArrayList<>();
+			this.shaderData = new Object2ObjectOpenHashMap<>();
 		}
 
 	}

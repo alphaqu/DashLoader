@@ -156,57 +156,61 @@ public class DashLoader {
 	@SuppressWarnings("RedundantTypeArguments")
 	public void saveDashCache() {
 		LOGGER.info("Starting DashLoader Caching");
-		long start = System.currentTimeMillis();
+		try {
+			long start = System.currentTimeMillis();
 
-		final ProgressHandler progress = DashLoaderCore.PROGRESS;
-		CountTask main = new CountTask(12);
-		progress.setTask(main);
-		progress.setCurrentTask("initializing");
+			final ProgressHandler progress = DashLoaderCore.PROGRESS;
+			CountTask main = new CountTask(12);
+			progress.setTask(main);
+			progress.setCurrentTask("initializing");
 
-		// missing model callback
-		DashLoaderCore.REGISTRY.<BakedModel, DashModel>addCallback(DashModel.class, (rraw, registry) -> {
-			final DashDataManager.DashWriteContextData writeContextData = getData().getWriteContextData();
-			if (writeContextData.missingModelsWrite.containsKey(rraw)) {
-				return writeContextData.missingModelsWrite.get(rraw);
-			}
-			final DashMissingDashModel value = new DashMissingDashModel();
-			writeContextData.missingModelsWrite.put(rraw, value);
-			return value;
-		});
+			// missing model callback
+			DashLoaderCore.REGISTRY.<BakedModel, DashModel>addCallback(DashModel.class, (rraw, registry) -> {
+				final DashDataManager.DashWriteContextData writeContextData = getData().getWriteContextData();
+				if (writeContextData.missingModelsWrite.containsKey(rraw)) {
+					return writeContextData.missingModelsWrite.get(rraw);
+				}
+				final DashMissingDashModel value = new DashMissingDashModel();
+				writeContextData.missingModelsWrite.put(rraw, value);
+				return value;
+			});
 
-		DashLoaderCore.REGISTRY.<Identifier, DashIdentifierInterface>addCallback(DashIdentifierInterface.class, (rraw, registry) -> {
-			if (rraw instanceof ModelIdentifier m) return new DashModelIdentifier(m);
-			else return new DashIdentifier(rraw);
-		});
-		// creation
-		RegistryWriter writer = DashLoaderCore.REGISTRY.createWriter();
+			DashLoaderCore.REGISTRY.<Identifier, DashIdentifierInterface>addCallback(DashIdentifierInterface.class, (rraw, registry) -> {
+				if (rraw instanceof ModelIdentifier m) return new DashModelIdentifier(m);
+				else return new DashIdentifier(rraw);
+			});
+			// creation
+			RegistryWriter writer = DashLoaderCore.REGISTRY.createWriter();
 
-		// mapping
-		MappingData mappings = new MappingData();
-		mappings.map(writer, main);
-		main.completedTask();
+			// mapping
+			MappingData mappings = new MappingData();
+			mappings.map(writer, main);
+			main.completedTask();
 
-		// export
-		List<ChunkHolder> holders = new ArrayList<>();
+			// export
+			List<ChunkHolder> holders = new ArrayList<>();
 
-		progress.setCurrentTask("export.image");
-		main.task(() -> holders.add(new ImageData(writer)));
-		progress.setCurrentTask("export.model");
-		main.task(() -> holders.add(new ModelData(writer)));
-		progress.setCurrentTask("export.registry");
-		main.task(() -> holders.add(new RegistryData(writer)));
-		progress.setCurrentTask("export.identifier");
-		main.task(() -> holders.add(new IdentifierData(writer)));
-		progress.setCurrentTask("export.quad");
-		main.task(() -> holders.add(new BakedQuadData(writer)));
+			progress.setCurrentTask("export.image");
+			main.task(() -> holders.add(new ImageData(writer)));
+			progress.setCurrentTask("export.model");
+			main.task(() -> holders.add(new ModelData(writer)));
+			progress.setCurrentTask("export.registry");
+			main.task(() -> holders.add(new RegistryData(writer)));
+			progress.setCurrentTask("export.identifier");
+			main.task(() -> holders.add(new IdentifierData(writer)));
+			progress.setCurrentTask("export.quad");
+			main.task(() -> holders.add(new BakedQuadData(writer)));
 
-		final IOHandler io = DashLoaderCore.IO;
-		// serialization
-		holders.forEach(holder -> main.task(() -> io.save(holder)));
-		main.task(() -> io.save(mappings));
+			final IOHandler io = DashLoaderCore.IO;
+			// serialization
+			holders.forEach(holder -> main.task(() -> io.save(holder)));
+			main.task(() -> io.save(mappings));
 
-		DashCachingScreen.CACHING_COMPLETE = true;
-		LOGGER.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
+			DashCachingScreen.CACHING_COMPLETE = true;
+			LOGGER.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
+		} catch (Throwable thr) {
+			LOGGER.error("Failed caching", thr);
+		}
 	}
 
 	public void loadDashCache() {

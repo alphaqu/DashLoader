@@ -123,7 +123,7 @@ public class MappingData {
 
 		if (shaderData != null) {
 			data.shaders.setCacheResultData(DashUtil.nullable(shaderData, DashShaderData::export));
-			data.getReadContextData().shaderData.addAll(shaderData.shaders.values());
+			data.getReadContextData().shaderData.putAll(shaderData.shaders);
 		}
 
 		data.splashText.setCacheResultData(DashUtil.nullable(splashTextData, DashSplashTextData::export));
