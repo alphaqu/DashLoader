@@ -50,11 +50,11 @@ public class DashLoader {
 	public static final DashLoader INSTANCE = new DashLoader();
 	public static long RELOAD_START = 0;
 	public static long EXPORT_START = 0;
-	public static long EXPORT_END = 0;
+	public static long EXPORT_END = -1;
+	private static Status STATUS = Status.NONE;
 	private boolean shouldReload = true;
 	private final DashMetadata metadata = new DashMetadata();
 	private DashDataManager dataManager;
-	private Status status;
 
 	private DashLoader() {
 	}
@@ -97,8 +97,6 @@ public class DashLoader {
 			io.addSerializer(BakedQuadData.class, DashBakedQuad.class);
 			io.addSerializer(MappingData.class);
 
-			status = Status.WRITE;
-			dataManager = new DashDataManager(new DashDataManager.DashWriteContextData());
 			LOGGER.info("Created DashLoader with {}.", classLoader.getClass().getSimpleName());
 			LOGGER.info("Initialized DashLoader");
 		} catch (Exception e) {
@@ -118,14 +116,6 @@ public class DashLoader {
 		return dataManager;
 	}
 
-	public static boolean isWrite() {
-		return INSTANCE.status != Status.READ;
-	}
-
-	public static boolean isRead() {
-		return INSTANCE.status == Status.READ;
-	}
-
 	public void requestReload() {
 		shouldReload = true;
 	}
@@ -135,22 +125,24 @@ public class DashLoader {
 			metadata.setResourcePackHash(resourcePacks);
 			DashLoaderCore.IO.setSubCacheArea(metadata.resourcePacks);
 			LOGGER.info("Reloading DashLoader. [mod-hash: {}] [resource-hash: {}]", metadata.modInfo, metadata.resourcePacks);
-			if (DashLoaderCore.IO.cacheExists()) loadDashCache();
-			else cacheEmpty();
+			if (DashLoaderCore.IO.cacheExists()) {
+				STATUS = Status.READ;
+				loadDashCache();
+			} else {
+				STATUS = Status.WRITE;
+				this.dataManager = new DashDataManager(new DashDataManager.DashWriteContextData());
+			}
 
 			LOGGER.info("Reloaded DashLoader");
 			shouldReload = false;
 		}
 	}
 
-	public void reloadComplete() {
-		LOGGER.info("Reload complete");
-		this.dataManager = null;
-	}
+	public void resetDashLoader() {
+		LOGGER.info("Reload Complete.");
 
-	private void cacheEmpty() {
-		this.status = Status.WRITE;
-		this.dataManager = new DashDataManager(new DashDataManager.DashWriteContextData());
+		STATUS = Status.NONE;
+		this.dataManager = null;
 	}
 
 	@SuppressWarnings("RedundantTypeArguments")
@@ -209,6 +201,7 @@ public class DashLoader {
 			DashCachingScreen.CACHING_COMPLETE = true;
 			LOGGER.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
 		} catch (Throwable thr) {
+			STATUS = Status.NONE;
 			LOGGER.error("Failed caching", thr);
 		}
 	}
@@ -238,7 +231,6 @@ public class DashLoader {
 			LOGGER.info("Creating Registry");
 			final RegistryReader reader = DashLoaderCore.REGISTRY.createReader(registryDataObjects);
 
-			status = Status.READ;
 			this.dataManager = new DashDataManager(new DashDataManager.DashReadContextData());
 
 			LOGGER.info("Exporting Mappings");
@@ -251,22 +243,30 @@ public class DashLoader {
 			LOGGER.info("Loaded DashLoader in {}", TimeUtil.getTimeString(EXPORT_END - EXPORT_START));
 		} catch (Exception e) {
 			LOGGER.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(EXPORT_START), e);
-			status = Status.CRASHLOADER;
+			STATUS = Status.NONE;
 			if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
 				// TODO REMOVE FILES IF IT CRASHED
 			}
 		}
 	}
 
-	public Status getStatus() {
-		return status;
+	public static boolean isWrite() {
+		return STATUS == Status.WRITE;
+	}
+
+	public static boolean isRead() {
+		return STATUS == Status.READ;
+	}
+
+	public static Status getStatus() {
+		return STATUS;
 	}
 
 
 	public enum Status {
+		NONE,
 		READ,
-		CRASHLOADER,
-		WRITE
+		WRITE,
 	}
 
 	public static class DashMetadata {

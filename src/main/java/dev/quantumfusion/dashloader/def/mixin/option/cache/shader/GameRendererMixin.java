@@ -19,11 +19,8 @@ import java.io.IOException;
 public abstract class GameRendererMixin {
 	@Inject(method = "loadShaders(Lnet/minecraft/resource/ResourceManager;)V", at = @At(value = "HEAD"))
 	private void prepareCache(ResourceManager manager, CallbackInfo ci) {
-		if (DashLoader.dataManagerActive()) {
-			var data = DashLoader.getData();
-			if (DashLoader.isWrite()) {
-				data.shaders.setMinecraftData(new Object2ObjectOpenHashMap<>());
-			}
+		if (DashLoader.isWrite()) {
+			DashLoader.getData().shaders.setMinecraftData(new Object2ObjectOpenHashMap<>());
 		}
 	}
 

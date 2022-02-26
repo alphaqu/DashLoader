@@ -7,7 +7,6 @@ import dev.quantumfusion.dashloader.def.DashLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Matrix4f;
@@ -147,7 +146,7 @@ public class DashCachingScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (CACHING_COMPLETE && !debug) {
 			MinecraftClient.getInstance().setScreen(this.previousScreen);
-			DashLoader.INSTANCE.reloadComplete();
+			DashLoader.INSTANCE.resetDashLoader();
 			CACHING_COMPLETE = false;
 		}
 

@@ -54,16 +54,16 @@ public class DashDataManager {
 
 	DashDataManager(DashWriteContextData writeContextData) {
 		DashLoader.LOGGER.info("Created WRITE data manager");
-		if (!DashLoader.isWrite())
-			throw new RuntimeException("Wrong mode " + DashLoader.INSTANCE.getStatus() + " for WRITE data manager");
+		if (DashLoader.getStatus() != DashLoader.Status.WRITE)
+			throw new RuntimeException("Wrong mode " + DashLoader.getStatus() + " for WRITE data manager");
 		this.writeContextData = writeContextData;
 		this.readContextData = null;
 	}
 
 	DashDataManager(DashReadContextData readContextData) {
 		DashLoader.LOGGER.info("Created READ data manager");
-		if (!DashLoader.isRead())
-			throw new RuntimeException("Wrong mode " + DashLoader.INSTANCE.getStatus() + " for WRITE data manager");
+		if (DashLoader.getStatus() != DashLoader.Status.READ)
+			throw new RuntimeException("Wrong mode " + DashLoader.getStatus() + " for WRITE data manager");
 		this.writeContextData = null;
 		this.readContextData = readContextData;
 	}
@@ -139,24 +139,32 @@ public class DashDataManager {
 		}
 
 		public O getCacheResultData() {
-			if (!DashLoader.isRead()) throw new RuntimeException("Trying to get cache-loaded data on write.");
+			if (DashLoader.getStatus() != DashLoader.Status.READ) {
+				throw new RuntimeException("Invalid status.");
+			}
 			return data;
 		}
 
 		public void setCacheResultData(O data) {
-			if (!DashLoader.isRead()) throw new RuntimeException("Trying to set mc-loaded data on read.");
+			if (DashLoader.getStatus() != DashLoader.Status.READ) {
+				throw new RuntimeException("Invalid status.");
+			}
 			this.data = data;
 
 		}
 
 		public void setMinecraftData(O data) {
-			if (!DashLoader.isWrite()) throw new RuntimeException("Trying to set mc-loaded data on read.");
+			if (DashLoader.getStatus() != DashLoader.Status.WRITE) {
+				throw new RuntimeException("Invalid status.");
+			}
 			this.data = data;
 
 		}
 
 		public O getMinecraftData() {
-			if (!DashLoader.isWrite()) throw new RuntimeException("Trying to get cache-loaded data on write.");
+			if (DashLoader.getStatus() != DashLoader.Status.WRITE) {
+				throw new RuntimeException("Invalid status.");
+			}
 			return data;
 		}
 
