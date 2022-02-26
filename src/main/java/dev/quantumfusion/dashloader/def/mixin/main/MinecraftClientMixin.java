@@ -26,7 +26,7 @@ public abstract class MinecraftClientMixin {
 	@Inject(method = "reloadResources(Z)Ljava/util/concurrent/CompletableFuture;", at = @At(value = "RETURN"))
 	private void reloadComplete(boolean thing, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
 		cir.getReturnValue().thenRun(() -> {
-			if (DashLoader.isRead()) DashLoader.INSTANCE.reloadComplete();
+			if (DashLoader.isRead()) DashLoader.INSTANCE.resetDashLoader();
 		});
 	}
 

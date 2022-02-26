@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 
@@ -30,12 +29,17 @@ public class SplashScreenMixin {
 	@Final
 	private MinecraftClient client;
 
-	@Shadow private long reloadCompleteTime;
+	@Shadow
+	private long reloadCompleteTime;
 
-	@Shadow @Final private ResourceReload reload;
+	@Shadow
+	@Final
+	private ResourceReload reload;
 
 	@Mutable
-	@Shadow @Final private boolean reloading;
+	@Shadow
+	@Final
+	private boolean reloading;
 
 	@Inject(
 			method = "render(Lnet/minecraft/client/util/math/MatrixStack;IIF)V",
@@ -43,15 +47,20 @@ public class SplashScreenMixin {
 	)
 	private void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		DashLoader.LOGGER.info("</> DashLoader Profiled {}", "Times"); // ij labels plz show
+
+		if (DashLoader.EXPORT_END != -1) {
+			DashLoader.LOGGER.info("</> ==> DashLoader Export time {}", TimeUtil.getTimeString(DashLoader.EXPORT_END - DashLoader.EXPORT_START));
+			DashLoader.EXPORT_END = -1;
+		}
+
 		this.client.setOverlay(null);
-		if (DashLoader.INSTANCE.getStatus() == DashLoader.Status.READ) {
-			if (client.currentScreen != null) {
-				if (this.client.currentScreen instanceof TitleScreen) {
-					DashLoader.LOGGER.info("</> ==> DashLoader Export time {}", TimeUtil.getTimeString(DashLoader.EXPORT_END - DashLoader.EXPORT_START));
-					this.client.currentScreen = new TitleScreen(false);
-				}
+		if (client.currentScreen != null) {
+			if (this.client.currentScreen instanceof TitleScreen) {
+				this.client.currentScreen = new TitleScreen(false);
 			}
-		} else {
+		}
+
+		if (DashLoader.isWrite()) {
 			// Yes this is bad. But it makes us not require Fabric API
 			var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
 			var stream = this.getClass().getClassLoader().getResourceAsStream("assets/dashloader/lang/" + langCode + ".json");
@@ -63,6 +72,7 @@ public class SplashScreenMixin {
 
 			this.client.currentScreen = new DashCachingScreen(this.client.currentScreen);
 		}
+
 		DashLoader.LOGGER.info("</> ==> Minecraft Reload time {}", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
 		DashLoader.LOGGER.info("</> ==> Minecraft Bootstrap time {}", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
 		DashLoader.LOGGER.info("</> ==> Total Loading time {}", TimeUtil.getTimeString(ManagementFactory.getRuntimeMXBean().getUptime()));
