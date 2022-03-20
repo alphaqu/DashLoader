@@ -3,6 +3,9 @@ package dev.quantumfusion.dashloader.def.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.quantumfusion.dashloader.core.DashLoaderCore;
 import dev.quantumfusion.dashloader.core.config.DashConfig;
+import dev.quantumfusion.dashloader.core.progress.task.CountTask;
+import dev.quantumfusion.dashloader.core.progress.task.DummyTask;
+import dev.quantumfusion.dashloader.core.progress.task.Task;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -11,6 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Matrix4f;
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.glfw.GLFW;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -23,7 +27,8 @@ import static dev.quantumfusion.dashloader.def.client.UIDrawer.TextOrientation.T
 
 public class DashCachingScreen extends Screen {
 	public static final List<String> SUPPORTERS = new ArrayList<>();
-	public static boolean CACHING_COMPLETE = false;
+	public static Status STATUS = Status.IDLE;
+	private static Color FAILED_COLOR = new Color(255, 75, 69);
 
 	private final Screen previousScreen;
 
@@ -143,11 +148,19 @@ public class DashCachingScreen extends Screen {
 	}
 
 	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == GLFW.GLFW_KEY_ENTER && STATUS == Status.CRASHED) {
+			STATUS = Status.DONE;
+		}
+		return super.keyPressed(keyCode, scanCode, modifiers);
+	}
+
+	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		if (CACHING_COMPLETE && !debug) {
+		if ((STATUS == Status.DONE) && !debug) {
 			MinecraftClient.getInstance().setScreen(this.previousScreen);
 			DashLoader.INSTANCE.resetDashLoader();
-			CACHING_COMPLETE = false;
+			STATUS = Status.IDLE;
 		}
 
 		if (configRequiresUpdate) {
@@ -159,12 +172,22 @@ public class DashCachingScreen extends Screen {
 		drawer.push(matrices, textRenderer);
 		final int width = drawer.getWidth();
 		final int height = drawer.getHeight();
+		final int barY = height - padding - progressBarHeight;
 
-		double currentProgress = DashLoaderCore.PROGRESS.getProgress();
+		double currentProgress;
+		Color currentProgressColor;
 		if (debug) {
 			currentProgress = Math.max(Math.min(1, mouseX / (double) width), 0);
+			currentProgressColor = getProgressColor(currentProgress);
+		} else if (STATUS == Status.CRASHED) {
+			DashLoaderCore.PROGRESS.setTask(DummyTask.FULL);
+			DashLoaderCore.PROGRESS.setCurrentTask("Internal crash. Please check logs or press ENTER.");
+			currentProgress = DashLoaderCore.PROGRESS.getProgress();
+			currentProgressColor = FAILED_COLOR;
+		} else {
+			currentProgress = DashLoaderCore.PROGRESS.getProgress();
+			currentProgressColor = getProgressColor(currentProgress);
 		}
-
 
 		drawer.drawQuad(BACKGROUND_COLOR, 0, 0, width, height);
 
@@ -175,9 +198,8 @@ public class DashCachingScreen extends Screen {
 		}
 
 		drawLines(lines, matrices);
-		final int barY = height - padding - progressBarHeight;
 		drawer.drawQuad(PROGRESS_LANE_COLOR, 0, barY, width, progressBarHeight); // progress back
-		drawer.drawQuad(getProgressColor(currentProgress), 0, barY, (int) (width * currentProgress), progressBarHeight); // the progress bar
+		drawer.drawQuad(currentProgressColor, 0, barY, (int) (width * currentProgress), progressBarHeight); // the progress bar
 		drawer.drawText(TEXT_LEFT, DashLoaderCore.PROGRESS.getCurrentTask(), TEXT_COLOR, padding, barY - padding); // current task
 
 		// fun fact
@@ -201,8 +223,11 @@ public class DashCachingScreen extends Screen {
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		for (Line line : lines) {
-			final Color color = line.color;
+			Color color = line.color;
 			Color end = new Color(color.getRed(), color.getGreen(), color.getBlue(), 0);
+			if (STATUS == Status.CRASHED) {
+				color = FAILED_COLOR.darker().darker();
+			}
 			fillGradient(line.orientation, ms.peek().getPositionMatrix(), bufferBuilder, (int) line.x, (int) line.y, (int) line.x + line.width, (int) line.y + line.height, color, end);
 		}
 
@@ -287,6 +312,13 @@ public class DashCachingScreen extends Screen {
 			this.xStep = (orientation.xDir * (speed * (1 + (random.nextFloat() * lineSpeedDifference)))) / 2f;
 			this.yStep = (orientation.yDir * (speed * (1 + (random.nextFloat() * lineSpeedDifference)))) / 2f;
 		}
+	}
+
+	public enum Status {
+		IDLE,
+		CACHING,
+		CRASHED,
+		DONE
 	}
 
 }

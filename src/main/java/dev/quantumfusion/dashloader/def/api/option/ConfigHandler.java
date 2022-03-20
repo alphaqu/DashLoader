@@ -42,8 +42,6 @@ public class ConfigHandler {
 				}
 			}
 		}
-		DashLoader.LOGGER.info("Done");
-
 	}
 
 	public static boolean shouldApplyMixin(String name) {

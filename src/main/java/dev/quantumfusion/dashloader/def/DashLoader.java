@@ -28,12 +28,12 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -142,6 +142,7 @@ public class DashLoader {
 
 	@SuppressWarnings("RedundantTypeArguments")
 	public void saveDashCache() {
+		DashCachingScreen.STATUS = DashCachingScreen.Status.CACHING;
 		LOGGER.info("Starting DashLoader Caching");
 		try {
 			long start = System.currentTimeMillis();
@@ -192,11 +193,14 @@ public class DashLoader {
 			holders.forEach(holder -> main.task(() -> io.save(holder)));
 			main.task(() -> io.save(mappings));
 
-			DashCachingScreen.CACHING_COMPLETE = true;
 			LOGGER.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
+			DashCachingScreen.STATUS = DashCachingScreen.Status.DONE;
+			throw new RuntimeException("Haha funny");
 		} catch (Throwable thr) {
 			this.setStatus(Status.NONE);
 			LOGGER.error("Failed caching", thr);
+			DashCachingScreen.STATUS = DashCachingScreen.Status.CRASHED;
+			DashLoaderCore.IO.clearCache();
 		}
 	}
 
@@ -245,9 +249,7 @@ public class DashLoader {
 		} catch (Exception e) {
 			LOGGER.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(start), e);
 			this.setStatus(Status.NONE);
-			if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
-				// TODO REMOVE FILES IF IT CRASHED
-			}
+			DashLoaderCore.IO.clearCache();
 		}
 	}
 
