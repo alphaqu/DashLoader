@@ -22,22 +22,18 @@ import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashPredicate;
 import dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel;
 import dev.quantumfusion.dashloader.def.util.TimeUtil;
-import dev.quantumfusion.dashloader.def.util.mixins.MixinThings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Language;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -252,32 +248,6 @@ public class DashLoader {
 			if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
 				// TODO REMOVE FILES IF IT CRASHED
 			}
-		}
-	}
-
-	public void complete(MinecraftClient client) {
-		LOGGER.info("┏ DashLoader Profiler Times.");
-		if (EXPORT_TIME != -1) {
-			LOGGER.info("┠──┬ {} DashLoader Load", TimeUtil.getTimeString(EXPORT_TIME));
-			LOGGER.info("┃  ├── {} File Reading", TimeUtil.getTimeString(EXPORT_READING_TIME));
-			LOGGER.info("┃  ├── {} Asset Exporting", TimeUtil.getTimeString(EXPORT_EXPORTING_TIME));
-			LOGGER.info("┃  └── {} Asset Loading", TimeUtil.getTimeString(EXPORT_LOADING_TIME));
-			EXPORT_TIME = -1;
-		}
-		LOGGER.info("┠── {} Minecraft Client Reload", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
-		LOGGER.info("┠── {} Minecraft Bootstrap", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
-		LOGGER.info("┠── {} Total Loading", TimeUtil.getTimeString(ManagementFactory.getRuntimeMXBean().getUptime()));
-
-		if (DashLoader.isWrite()) {
-			// Yes this is bad. But it makes us not require Fabric API
-			var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
-			var stream = this.getClass().getClassLoader().getResourceAsStream("assets/dashloader/lang/" + langCode + ".json");
-			var map = new HashMap<String, String>();
-			if (stream != null) {
-				Language.load(stream, map::put);
-			}
-			DashLoaderCore.PROGRESS.setTranslations(map);
-			client.currentScreen = new DashCachingScreen(client.currentScreen);
 		}
 	}
 

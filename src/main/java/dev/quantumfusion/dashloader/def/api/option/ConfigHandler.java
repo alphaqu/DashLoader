@@ -42,6 +42,7 @@ public class ConfigHandler {
 				}
 			}
 		}
+		DashLoader.LOGGER.info("Done");
 
 	}
 

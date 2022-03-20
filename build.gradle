@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'fabric-loom' version '0.11-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -29,7 +29,7 @@ repositories {
     }
 }
 
-minecraft {
+loom {
     accessWidenerPath  = file("src/main/resources/dashloader.accesswidener")
 }
 
@@ -56,8 +56,8 @@ dependencies {
     testImplementation(platform('org.junit:junit-bom:5.7.2'))
     testImplementation('org.junit.jupiter:junit-jupiter:5.7.2')
 
-    modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.44.0+1.18");
-    modCompileOnly fabricApi.module("fabric-textures-v0", "0.44.0+1.18");
+    modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.48.0+1.18.2");
+    modCompileOnly fabricApi.module("fabric-textures-v0", "0.48.0+1.18.2");
 }
 
 test {
