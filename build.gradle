@@ -48,8 +48,9 @@ dependencies {
     implementation "dev.quantumfusion:hyphen:0.2.0"
     include "dev.quantumfusion:hyphen:0.2.0"
 
-    implementation 'io.airlift:aircompressor:0.21'
-    include 'io.airlift:aircompressor:0.21'
+    implementation 'com.github.luben:zstd-jni:1.5.2-2'
+    include 'com.github.luben:zstd-jni:1.5.2-2'
+
 
 
     testImplementation(platform('org.junit:junit-bom:5.7.2'))
