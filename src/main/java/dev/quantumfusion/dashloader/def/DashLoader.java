@@ -24,6 +24,7 @@ import dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel;
 import dev.quantumfusion.dashloader.def.util.TimeUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
@@ -34,6 +35,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -287,20 +290,28 @@ public class DashLoader {
 		public String resourcePacks;
 
 		public void setModHash(FabricLoader loader) {
-			long modInfoData = 420;
+			ArrayList<ModMetadata> versions = new ArrayList<>();
 			for (ModContainer mod : loader.getAllMods()) {
-				for (char c : mod.getMetadata().getVersion().getFriendlyString().toCharArray()) {
-					modInfoData += c;
-				}
+				ModMetadata metadata = mod.getMetadata();
+				versions.add(metadata);
 			}
-			this.modInfo = Long.toHexString(modInfoData + 0x69).toUpperCase();
+
+			versions.sort(Comparator.comparing(ModMetadata::getId));
+
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < versions.size(); i++) {
+				ModMetadata metadata = versions.get(i);
+				stringBuilder.append(i).append("$").append(metadata.getId()).append('&').append(metadata.getVersion().getFriendlyString());
+			}
+
+			this.modInfo = DigestUtils.md5Hex(stringBuilder.toString()).toUpperCase();
 		}
 
 		public void setResourcePackHash(List<String> resourcePacks) {
 			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < resourcePacks.size(); i++) {
 				String resourcePack = resourcePacks.get(i);
-				stringBuilder.append(i).append(". ").append(resourcePack);
+				stringBuilder.append(i).append("$").append(resourcePack);
 			}
 
 			this.resourcePacks = DigestUtils.md5Hex(stringBuilder.toString()).toUpperCase();
