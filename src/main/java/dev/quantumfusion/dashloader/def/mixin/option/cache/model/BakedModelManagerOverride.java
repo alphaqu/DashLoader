@@ -31,19 +31,16 @@ public abstract class BakedModelManagerOverride {
 	@Shadow
 	private Map<Identifier, BakedModel> models;
 
-	@Shadow
-	private Object2IntMap<BlockState> stateLookup;
-
 	@Inject(method = "apply*",
-			at = @At(value = "RETURN")
+			at = @At(value = "TAIL")
 	)
+
 	private void yankAssets(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
 		if (DashLoader.isWrite()) {
 			final DashDataManager data = DashLoader.getData();
 			DashLoader.LOGGER.info("Yanking Minecraft Assets");
 			data.spriteAtlasManager.setMinecraftData(atlasManager);
 			data.bakedModels.setMinecraftData(models);
-			data.modelStateLookup.setMinecraftData(stateLookup);
 		}
 	}
 

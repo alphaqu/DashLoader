@@ -24,8 +24,9 @@ import java.util.function.Function;
 public class UnbakedBakedModel extends JsonUnbakedModel implements UnbakedModel {
 	private final BakedModel bakedModel;
 
-	public UnbakedBakedModel(BakedModel bakedModel) {
-		super(null, List.of(), Map.of(), false, GuiLight.ITEM, ModelTransformation.NONE, List.of());
+	public UnbakedBakedModel(BakedModel bakedModel, Identifier identifier) {
+		super(null, List.of(), Map.of(), bakedModel.useAmbientOcclusion(), GuiLight.ITEM, ModelTransformation.NONE, List.of());
+		this.id = identifier.toString();
 		this.bakedModel = bakedModel;
 	}
 

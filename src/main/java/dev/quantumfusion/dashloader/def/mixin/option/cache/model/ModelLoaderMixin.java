@@ -46,11 +46,6 @@ public abstract class ModelLoaderMixin {
 	@Final
 	private Map<Identifier, UnbakedModel> unbakedModels;
 
-	@Mutable
-	@Shadow
-	@Final
-	private Object2IntMap<BlockState> stateLookup;
-
 	@Shadow
 	protected abstract void method_4716(BlockState blockState);
 
@@ -68,14 +63,11 @@ public abstract class ModelLoaderMixin {
 	@Final
 	private Map<Identifier, Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data>> spriteAtlasData;
 
-	@Mutable
-	@Shadow @Final private Map<Identifier, BakedModel> bakedModels;
-
 	@Shadow @Final private ResourceManager resourceManager;
 
 	@Inject(
 			method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
-			at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V", args = "ldc=missing_model", shift = At.Shift.AFTER)
+			at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=static_definitions", shift = At.Shift.AFTER)
 	)
 	private void injectLoadedModels(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int i, CallbackInfo ci) {
 		if (DashLoader.isRead()) {
@@ -84,13 +76,14 @@ public abstract class ModelLoaderMixin {
 			DashLoader.LOGGER.info("Injecting {} Cached Models", dashModels.size());
 			this.unbakedModels = new Object2ObjectOpenHashMap<>(this.unbakedModels);
 			this.modelsToBake = new Object2ObjectOpenHashMap<>(this.modelsToBake);
-			this.modelsToLoad = new ObjectOpenHashSet<>();
+			this.modelsToLoad = new ObjectOpenHashSet<>(this.modelsToLoad);
 			dashModels.forEach((identifier, bakedModel) -> {
-				if (!(bakedModel instanceof MissingDashModel)) {
-					this.unbakedModels.put(identifier, new UnbakedBakedModel(bakedModel));
+				if (!(bakedModel instanceof MissingDashModel) && !unbakedModels.containsKey(identifier) && !modelsToBake.containsKey(identifier)) {
+					UnbakedBakedModel unbakedBakedModel = new UnbakedBakedModel(bakedModel, identifier);
+					this.unbakedModels.put(identifier, unbakedBakedModel);
+					this.modelsToBake.put(identifier, unbakedBakedModel);
 				}
 			});
-			this.stateLookup = data.modelStateLookup.getCacheResultData();
 		}
 	}
 
@@ -146,27 +139,6 @@ public abstract class ModelLoaderMixin {
 				DashLoader.LOGGER.info("Injected {} atlas.", id);
 				spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, Stream.empty(), profiler, pair.getRight().mipLevel())));
 			});
-		}
-	}
-
-
-	@Inject(
-			method = "upload",
-			at = @At(
-					value = "INVOKE_STRING",
-					target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V",
-					args = "ldc=baking",
-					shift = At.Shift.AFTER
-			)
-	)
-	private void modelInject(TextureManager textureManager, Profiler profiler, CallbackInfoReturnable<SpriteAtlasManager> cir) {
-		if (DashLoader.isRead()) {
-			DashLoader.LOGGER.info("Swapping Models");
-
-			final var data = DashLoader.getData();
-			final var models = data.bakedModels.getCacheResultData();
-			models.putAll(this.bakedModels);
-			this.bakedModels = models;
 		}
 	}
 }
