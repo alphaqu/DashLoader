@@ -49,8 +49,12 @@ public class HahaManager {
 			"Minecraft fact of the day was a thing.",
 			":tnypotat:",
 			"418 I'm a teapot is a real error",
+			"mld hrdr - leocth 2022",
 			// HiItsDevin
-			"Devin beat 7C after 5 1/2 hours"
+			"Devin beat 7C after 5 1/2 hours",
+			// shedaniel
+			"Look at me, I am vibing up here",
+			"Doesn't break REI"
 	};
 
 	public static String getFact() {
