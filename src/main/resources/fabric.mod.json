@@ -32,7 +32,8 @@
 			"mixin.features.texture_updates": false
 		},
 		"dashloader:disableoption": [
-			"FAST_STATE_INIT"
+			"FAST_STATE_INIT",
+			"CACHE_PARTICLE"
 		],
 		"dashloader:dashobject" : [
 			"dev.quantumfusion.dashloader.def.data.DashIdentifier",
@@ -42,7 +43,7 @@
 			"dev.quantumfusion.dashloader.def.data.model.DashBuiltinBakedModel",
 			"dev.quantumfusion.dashloader.def.data.model.DashMultipartBakedModel",
 			"dev.quantumfusion.dashloader.def.data.model.DashWeightedBakedModel",
-			"dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel",
+			"dev.quantumfusion.dashloader.def.fallback.model.DashMissingDashModel",
 
 			"dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad",
 

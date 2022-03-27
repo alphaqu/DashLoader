@@ -20,7 +20,7 @@ import dev.quantumfusion.dashloader.def.data.image.DashSprite;
 import dev.quantumfusion.dashloader.def.data.model.DashModel;
 import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashPredicate;
-import dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel;
+import dev.quantumfusion.dashloader.def.fallback.model.DashMissingDashModel;
 import dev.quantumfusion.dashloader.def.util.TimeUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -29,14 +29,12 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -198,7 +196,6 @@ public class DashLoader {
 
 			LOGGER.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
 			DashCachingScreen.STATUS = DashCachingScreen.Status.DONE;
-			throw new RuntimeException("Haha funny");
 		} catch (Throwable thr) {
 			this.setStatus(Status.NONE);
 			LOGGER.error("Failed caching", thr);

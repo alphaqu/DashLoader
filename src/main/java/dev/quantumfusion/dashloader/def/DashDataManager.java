@@ -2,7 +2,7 @@ package dev.quantumfusion.dashloader.def;
 
 import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.def.data.image.shader.DashShader;
-import dev.quantumfusion.dashloader.def.fallback.DashMissingDashModel;
+import dev.quantumfusion.dashloader.def.fallback.model.DashMissingDashModel;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -108,7 +108,6 @@ public class DashDataManager {
 		public final Object2ObjectMap<BlockState, Identifier> missingModelsRead = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
 
 		// Atlas related SAME THING IN WRITE
-		public final List<SpriteAtlasTexture> extraAtlases = new ArrayList<>();
 		public final Object2ObjectMap<SpriteAtlasTexture, DashSpriteAtlasTextureData> atlasData = new Object2ObjectOpenHashMap<>();
 
 		// Atlas related unique

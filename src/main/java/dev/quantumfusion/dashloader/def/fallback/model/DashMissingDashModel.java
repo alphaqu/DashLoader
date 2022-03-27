@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.def.fallback;
+package dev.quantumfusion.dashloader.def.fallback.model;
 
 import dev.quantumfusion.dashloader.core.api.DashObject;
 import dev.quantumfusion.dashloader.core.registry.RegistryReader;

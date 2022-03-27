@@ -19,29 +19,5 @@ public interface SpriteAtlasTextureAccessor {
 	Map<Identifier, Sprite> getSprites();
 
 	@Accessor
-	@Mutable
-	void setSprites(Map<Identifier, Sprite> sprites);
-
-	@Accessor
-	@Mutable
-	void setAnimatedSprites(List<TextureTickListener> animatedSprites);
-
-	@Accessor
-	@Mutable
-	void setSpritesToLoad(Set<Identifier> spritesToLoad);
-
-	@Accessor
 	Identifier getId();
-
-	@Accessor
-	@Mutable
-	void setId(Identifier id);
-
-	@Accessor
-	int getMaxTextureSize();
-
-	@Accessor
-	@Mutable
-	void setMaxTextureSize(int maxTextureSize);
-
 }

@@ -4,8 +4,10 @@ import com.mojang.datafixers.util.Pair;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.option.Option;
-import dev.quantumfusion.dashloader.def.fallback.MissingDashModel;
-import dev.quantumfusion.dashloader.def.fallback.UnbakedBakedModel;
+import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
+import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
+import dev.quantumfusion.dashloader.def.fallback.model.MissingDashModel;
+import dev.quantumfusion.dashloader.def.fallback.model.UnbakedBakedModel;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -34,6 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @Mixin(value = ModelLoader.class, priority = 69420)
 public abstract class ModelLoaderMixin {
@@ -67,6 +70,8 @@ public abstract class ModelLoaderMixin {
 
 	@Mutable
 	@Shadow @Final private Map<Identifier, BakedModel> bakedModels;
+
+	@Shadow @Final private ResourceManager resourceManager;
 
 	@Inject(
 			method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
@@ -135,8 +140,12 @@ public abstract class ModelLoaderMixin {
 	private void atlasInject(TextureManager textureManager, Profiler profiler, CallbackInfoReturnable<SpriteAtlasManager> cir) {
 		if (DashLoader.isRead()) {
 			DashLoader.LOGGER.info("Uploading Atlases");
-			spriteAtlasData.clear();
-			DashLoader.getData().getReadContextData().dashAtlasManager.registerAtlases(textureManager, Option.CACHE_MODEL_LOADER);
+			DashLoader.getData().getReadContextData().dashAtlasManager.consumeAtlases(Option.CACHE_MODEL_LOADER, (pair) ->  {
+				SpriteAtlasTexture atlas = pair.getLeft();
+				Identifier id = atlas.getId();
+				DashLoader.LOGGER.info("Injected {} atlas.", id);
+				spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, Stream.empty(), profiler, pair.getRight().mipLevel())));
+			});
 		}
 	}
 
@@ -158,18 +167,6 @@ public abstract class ModelLoaderMixin {
 			final var models = data.bakedModels.getCacheResultData();
 			models.putAll(this.bakedModels);
 			this.bakedModels = models;
-		}
-	}
-
-	@Redirect(method = "upload", at = @At(value = "NEW", target = "Lnet/minecraft/client/render/model/SpriteAtlasManager;<init>"))
-	private SpriteAtlasManager overwriteAtlasManager(Collection<SpriteAtlasTexture> atlases) {
-		if (DashLoader.isRead()) {
-			DashLoader.LOGGER.info("Applying Atlas Manager");
-			final DashDataManager data = DashLoader.getData();
-			return data.spriteAtlasManager.getCacheResultData();
-		} else {
-			DashLoader.LOGGER.info("Creating Atlas Manager");
-			return new SpriteAtlasManager(atlases);
 		}
 	}
 }
