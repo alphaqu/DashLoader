@@ -72,7 +72,7 @@ public class MappingData {
 		if (ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
 
 			progress.setCurrentTask("convert.blockstate");
-			blockStateData = new DashBlockStateData(dataManager, registry);
+			//blockStateData = new DashBlockStateData(dataManager, registry);
 			mapping.completedTask();
 
 			progress.setCurrentTask("convert.model");
@@ -114,7 +114,7 @@ public class MappingData {
 		var particleData = DashUtil.nullable(this.particleData, registry, DashParticleData::export);
 
 		var atlasManager = data.getReadContextData().dashAtlasManager;
-		data.modelStateLookup.setCacheResultData(DashUtil.nullable(blockStateData, registry, DashBlockStateData::export));
+	//	data.modelStateLookup.setCacheResultData(DashUtil.nullable(blockStateData, registry, DashBlockStateData::export));
 		data.bakedModels.setCacheResultData(DashUtil.nullable(modelData, registry, DashModelData::export));
 		data.fonts.setCacheResultData(DashUtil.nullable(fontManagerData, registry, DashFontManagerData::export));
 		data.spriteAtlasManager.setCacheResultData(DashUtil.nullable(spriteData, Pair::getLeft));
