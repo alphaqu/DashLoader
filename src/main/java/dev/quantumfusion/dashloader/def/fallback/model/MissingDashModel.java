@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.def.fallback;
+package dev.quantumfusion.dashloader.def.fallback.model;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;

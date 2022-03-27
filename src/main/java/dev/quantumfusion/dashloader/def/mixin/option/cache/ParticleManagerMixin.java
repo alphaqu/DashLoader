@@ -2,10 +2,11 @@ package dev.quantumfusion.dashloader.def.mixin.option.cache;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import dev.quantumfusion.dashloader.def.DashDataManager;
-import dev.quantumfusion.dashloader.def.DashDataManager.DashDataHandler;
+import com.mojang.datafixers.util.Pair;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.option.Option;
+import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
+import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ParticleManagerSimpleSpriteProviderAccessor;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
@@ -21,6 +22,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -37,6 +39,7 @@ public abstract class ParticleManagerMixin {
 	@Shadow
 	@Final
 	private Map<Identifier, ParticleManager.SimpleSpriteProvider> spriteAwareFactories;
+	@Mutable
 	@Shadow
 	@Final
 	private SpriteAtlasTexture particleAtlasTexture;
@@ -51,6 +54,7 @@ public abstract class ParticleManagerMixin {
 	protected abstract void loadTextureList(ResourceManager resourceManager, Identifier id, Map<Identifier, List<Identifier>> result);
 
 	// TODO remake this
+	// TODO still remake this
 	@Inject(
 			method = "reload(Lnet/minecraft/resource/ResourceReloader$Synchronizer;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;Lnet/minecraft/util/profiler/Profiler;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;",
 			at = @At(value = "HEAD"),
@@ -61,14 +65,14 @@ public abstract class ParticleManagerMixin {
 
 		var data = DashLoader.getData();
 		var particleSprites = data.particleSprites;
-		if (particleSprites.dataAvailable() && DashLoader.isRead()) {
+		if (false && particleSprites.dataAvailable() && DashLoader.isRead()) {
 			// DASHLOADER THINGS
-			data.getReadContextData().dashAtlasManager.registerAtlases(textureManager, Option.CACHE_PARTICLE);
+
 			final Runnable runnable = () -> particleSprites.getCacheResultData().forEach(
 					(identifier, sprites) -> spriteAwareFactories.get(identifier).setSprites(sprites)
 			);
 			cir.setReturnValue(CompletableFuture.runAsync(runnable).thenCompose(synchronizer::whenPrepared));
-
+			throw new RuntimeException("");
 		} else {
 			Map<Identifier, List<Identifier>> map = Maps.newConcurrentMap();
 			CompletableFuture<?>[] completableFutures = Registry.PARTICLE_TYPE.getIds().stream().map(
@@ -107,16 +111,24 @@ public abstract class ParticleManagerMixin {
 				applyProfiler.pop();
 				applyProfiler.endTick();
 
-
-				// DASHLOADER THINGS
-				var particles = new HashMap<Identifier, List<Sprite>>();
-				spriteAwareFactories.forEach(
-						(identifier, simpleSpriteProvider) -> particles.put(identifier, ((ParticleManagerSimpleSpriteProviderAccessor) simpleSpriteProvider).getSprites()));
-
-				particleSprites.setMinecraftData(particles);
-				data.particleAtlas.setMinecraftData(particleAtlasTexture);
 			}, applyExecutor));
 		}
 		cir.cancel();
 	}
+
+	@Inject(
+			method = "reload(Lnet/minecraft/resource/ResourceReloader$Synchronizer;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;Lnet/minecraft/util/profiler/Profiler;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;",
+			at = @At(value = "TAIL"),
+			cancellable = true
+	)
+	private void cacheParticles(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+		if (DashLoader.isWrite()) {
+			var particles = new HashMap<Identifier, List<Sprite>>();
+			spriteAwareFactories.forEach(
+					(identifier, simpleSpriteProvider) -> particles.put(identifier, ((ParticleManagerSimpleSpriteProviderAccessor) simpleSpriteProvider).getSprites()));
+			DashLoader.getData().particleSprites.setMinecraftData(particles);
+			DashLoader.getData().particleAtlas.setMinecraftData(particleAtlasTexture);
+		}
+	}
+
 }

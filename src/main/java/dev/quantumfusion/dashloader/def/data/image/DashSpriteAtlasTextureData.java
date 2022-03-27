@@ -5,7 +5,7 @@ import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 
 @Data
-public record DashSpriteAtlasTextureData(int width, int height, int maxLevel) {
+public record DashSpriteAtlasTextureData(int width, int height, int mipLevel) {
 	public DashSpriteAtlasTextureData(SpriteAtlasTexture.Data data) {
 		this((SpriteAtlasTextureDataAccessor) data);
 	}
