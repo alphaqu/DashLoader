@@ -8,6 +8,8 @@ import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
 import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.def.fallback.model.MissingDashModel;
 import dev.quantumfusion.dashloader.def.fallback.model.UnbakedBakedModel;
+import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasTextureAccessor;
+import dev.quantumfusion.dashloader.def.util.mixins.SpriteAtlasTextureDuck;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -137,7 +139,7 @@ public abstract class ModelLoaderMixin {
 				SpriteAtlasTexture atlas = pair.getLeft();
 				Identifier id = atlas.getId();
 				DashLoader.LOGGER.info("Injected {} atlas.", id);
-				spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, Stream.empty(), profiler, pair.getRight().mipLevel())));
+				spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, ((SpriteAtlasTextureDuck) atlas).getCachedSprites().keySet().stream(), profiler, pair.getRight().mipLevel())));
 			});
 		}
 	}
