@@ -1,35 +1,38 @@
 package dev.quantumfusion.dashloader.def.mixin.option.cache.font;
 
 import com.google.common.collect.Lists;
-import dev.quantumfusion.dashloader.def.DashDataManager.DashDataHandler;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.FontManagerAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.FontStorageAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.UnicodeTextureFontAccessor;
 import dev.quantumfusion.dashloader.def.util.mixins.MixinThings;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.font.*;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
+import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 
 @Mixin(targets = "net/minecraft/client/font/FontManager$1")
 public class FontManagerOverride {
-
+	private Map<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> cache;
 
 	@Inject(
 			method = {"method_18638", "prepare*"},
@@ -46,8 +49,26 @@ public class FontManagerOverride {
 						}
 					}
 			));
+
+			prepareFonts(cacheResultData);
 			cir.setReturnValue(cacheResultData);
 		}
+	}
+
+	@Inject(
+			method = {"method_18638", "prepare*"},
+			at = @At(value = "TAIL"),
+			cancellable = true
+	)
+	private void prepareOffthread(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<Map<Identifier, List<Font>>> cir) {
+		prepareFonts(cir.getReturnValue());
+	}
+
+	private void prepareFonts(Map<Identifier, List<Font>> map) {
+		DashLoader.LOGGER.info("Preparing fonts off-thread");
+		Map<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> cache = new Object2ObjectOpenHashMap<>();
+		map.forEach((identifier, fonts) -> cache.put(identifier, computeFonts(Lists.reverse(fonts))));
+		this.cache = cache;
 	}
 
 
@@ -67,11 +88,21 @@ public class FontManagerOverride {
 			fontStorages.values().forEach(FontStorage::close);
 			fontStorages.clear();
 
+			DashLoader.LOGGER.info("Applying fonts off-thread");
 			profiler.swap("reloading");
-			map.forEach((identifier,  fontList) -> {
+			this.cache.forEach((identifier, entry) -> {
 				FontStorage fontStorage = new FontStorage(fontManagerAccessor.getTextureManager(), identifier);
 				FontStorageAccessor access = (FontStorageAccessor) fontStorage;
-				computeFontStorages(access, Lists.reverse(fontList));
+				access.callCloseFonts();
+				access.callCloseGlyphAtlases();
+				access.getGlyphRendererCache().clear();
+				access.getGlyphCache().clear();
+				access.getCharactersByWidth().clear();
+				access.setBlankGlyphRenderer(access.callGetGlyphRenderer(BlankGlyph.INSTANCE));
+				access.setWhiteRectangleGlyphRenderer(access.callGetGlyphRenderer(WhiteRectangleGlyph.INSTANCE));
+
+				access.getCharactersByWidth().putAll(entry.getKey());
+				access.getFonts().addAll(entry.getValue());
 				fontStorages.put(identifier, fontStorage);
 			});
 
@@ -88,14 +119,9 @@ public class FontManagerOverride {
 		}
 	}
 
-	private void computeFontStorages(FontStorageAccessor access, List<Font> fonts) {
-		access.callCloseFonts();
-		access.callCloseGlyphAtlases();
-		access.getGlyphRendererCache().clear();
-		access.getGlyphCache().clear();
-		access.getCharactersByWidth().clear();
-		access.setBlankGlyphRenderer(access.callGetGlyphRenderer(BlankGlyph.INSTANCE));
-		access.setWhiteRectangleGlyphRenderer(access.callGetGlyphRenderer(WhiteRectangleGlyph.INSTANCE));
+	private Pair<Int2ObjectMap<IntList>, List<Font>> computeFonts(List<Font> fonts) {
+		Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<>();
+		List<Font> fontsOut = new ArrayList<>();
 
 		final Glyph space = FontStorageAccessor.getSPACE();
 
@@ -107,13 +133,16 @@ public class FontManagerOverride {
 				Glyph glyph = codePoint == 32 ? space : font.getGlyph(codePoint);
 				if (glyph != null) {
 					if (glyph != BlankGlyph.INSTANCE) {
-						access.getCharactersByWidth().computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), creatIntArrayListFunc).add(codePoint);
+						charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), creatIntArrayListFunc).add(codePoint);
 					}
-					access.getFonts().add(font);
+					fontsOut.add(font);
 					break;
 				}
 			}
 		}));
+
+
+		return Pair.of(charactersByWidth, fontsOut);
 	}
 
 
