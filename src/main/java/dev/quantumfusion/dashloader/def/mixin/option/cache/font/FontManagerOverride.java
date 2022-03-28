@@ -62,18 +62,19 @@ public class FontManagerOverride {
 			profiler.startTick();
 			profiler.push("closing");
 			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) MixinThings.FONTMANAGER;
-			fontManagerAccessor.getFontStorages().values().forEach(FontStorage::close);
-			fontManagerAccessor.getFontStorages().clear();
+			final Map<Identifier, FontStorage> fontStorages = fontManagerAccessor.getFontStorages();
+
+			fontStorages.values().forEach(FontStorage::close);
+			fontStorages.clear();
+
 			profiler.swap("reloading");
-			Map<FontStorage, List<Font>> fontMap = new LinkedHashMap<>();
-			map.forEach((identifier, fontList) -> {
+			map.forEach((identifier,  fontList) -> {
 				FontStorage fontStorage = new FontStorage(fontManagerAccessor.getTextureManager(), identifier);
-				prepareFontStorage(((FontStorageAccessor) fontStorage));
-				fontManagerAccessor.getFontStorages().put(identifier, fontStorage);
-				fontMap.put(fontStorage, fontList);
+				FontStorageAccessor access = (FontStorageAccessor) fontStorage;
+				computeFontStorages(access, Lists.reverse(fontList));
+				fontStorages.put(identifier, fontStorage);
 			});
 
-			fontMap.entrySet().parallelStream().forEach(entry -> computeFontStorages(((FontStorageAccessor) entry.getKey()), Lists.reverse(entry.getValue())));
 			profiler.pop();
 			profiler.endTick();
 			ci.cancel();
@@ -87,7 +88,7 @@ public class FontManagerOverride {
 		}
 	}
 
-	private void prepareFontStorage(FontStorageAccessor access) {
+	private void computeFontStorages(FontStorageAccessor access, List<Font> fonts) {
 		access.callCloseFonts();
 		access.callCloseGlyphAtlases();
 		access.getGlyphRendererCache().clear();
@@ -95,30 +96,24 @@ public class FontManagerOverride {
 		access.getCharactersByWidth().clear();
 		access.setBlankGlyphRenderer(access.callGetGlyphRenderer(BlankGlyph.INSTANCE));
 		access.setWhiteRectangleGlyphRenderer(access.callGetGlyphRenderer(WhiteRectangleGlyph.INSTANCE));
-	}
 
-	private void computeFontStorages(FontStorageAccessor access, List<Font> fonts) {
 		final Glyph space = FontStorageAccessor.getSPACE();
 
-		final IntSet intSet = new IntOpenHashSet();
 		final IntFunction<IntList> creatIntArrayListFunc = (i) -> new IntArrayList();
-		fonts.forEach(font -> intSet.addAll(font.getProvidedGlyphs()));
 
-		final Set<Font> set = new HashSet<>();
-		intSet.forEach((IntConsumer) (codePoint) -> {
-			for (Font font : fonts) {
+		fonts.forEach(currentFont -> currentFont.getProvidedGlyphs().forEach((IntConsumer) codePoint -> {
+			for (int i = 0, fontsSize = fonts.size(); i < fontsSize; i++) {
+				Font font = fonts.get(i);
 				Glyph glyph = codePoint == 32 ? space : font.getGlyph(codePoint);
 				if (glyph != null) {
-					set.add(font);
 					if (glyph != BlankGlyph.INSTANCE) {
 						access.getCharactersByWidth().computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), creatIntArrayListFunc).add(codePoint);
 					}
+					access.getFonts().add(font);
 					break;
 				}
 			}
-
-		});
-		fonts.stream().filter(set::contains).forEach(access.getFonts()::add);
+		}));
 	}
 
 
