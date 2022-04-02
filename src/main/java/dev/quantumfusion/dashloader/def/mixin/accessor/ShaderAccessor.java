@@ -91,59 +91,6 @@ public interface ShaderAccessor {
 	@Mutable
 	void setFormat(VertexFormat format);
 
-	@Accessor
-	@Mutable
-	void setModelViewMat(GlUniform modelViewMat);
-
-	@Accessor
-	@Mutable
-	void setProjectionMat(GlUniform projectionMat);
-
-	@Accessor
-	@Mutable
-	void setTextureMat(GlUniform textureMat);
-
-	@Accessor
-	@Mutable
-	void setScreenSize(GlUniform screenSize);
-
-	@Accessor
-	@Mutable
-	void setColorModulator(GlUniform colorModulator);
-
-	@Accessor
-	@Mutable
-	void setLight0Direction(GlUniform light0Direction);
-
-	@Accessor
-	@Mutable
-	void setLight1Direction(GlUniform light1Direction);
-
-	@Accessor
-	@Mutable
-	void setFogStart(GlUniform fogStart);
-
-	@Accessor
-	@Mutable
-	void setFogEnd(GlUniform fogEnd);
-
-	@Accessor
-	@Mutable
-	void setFogColor(GlUniform fogColor);
-
-	@Accessor
-	@Mutable
-	void setLineWidth(GlUniform lineWidth);
-
-	@Accessor
-	@Mutable
-	void setGameTime(GlUniform gameTime);
-
-	@Accessor
-	@Mutable
-	void setChunkOffset(GlUniform chunkOffset);
-
-
 	@Invoker("loadReferences")
 	void loadref();
 }

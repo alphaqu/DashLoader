@@ -105,19 +105,19 @@ public class DashShader {
 		final GlUniform chunkOffsetOut  = uniformsOut.get("ChunkOffset");
 
 		toApply.markUniformsDirty();
-		shaderAccess.setModelViewMat(modelViewMatOut);
-		shaderAccess.setProjectionMat(projectionMatOut);
-		shaderAccess.setTextureMat(textureMatOut);
-		shaderAccess.setScreenSize(screenSizeOut);
-		shaderAccess.setColorModulator(colorModulatorOut);
-		shaderAccess.setLight0Direction(light0DirectionOut);
-		shaderAccess.setLight1Direction(light1DirectionOut);
-		shaderAccess.setFogStart(fogStartOut);
-		shaderAccess.setFogEnd(fogEndOut);
-		shaderAccess.setFogColor(fogColorOut);
-		shaderAccess.setLineWidth(lineWidthOut);
-		shaderAccess.setGameTime(gameTimeOut);
-		shaderAccess.setChunkOffset(chunkOffsetOut);
+		toApply.modelViewMat = modelViewMatOut;
+		toApply.projectionMat = projectionMatOut;
+		toApply.textureMat = textureMatOut;
+		toApply.screenSize = screenSizeOut;
+		toApply.colorModulator = colorModulatorOut;
+		toApply.light0Direction = light0DirectionOut;
+		toApply.light1Direction = light1DirectionOut;
+		toApply.fogStart = fogStartOut;
+		toApply.fogEnd = fogEndOut;
+		toApply.fogColor = fogColorOut;
+		toApply.lineWidth = lineWidthOut;
+		toApply.gameTime = gameTimeOut;
+		toApply.chunkOffset = chunkOffsetOut;
 		return toApply;
 	}
 

@@ -6,3 +6,18 @@ accessible class net/minecraft/client/particle/ParticleManager$SimpleSpriteProvi
 accessible class net/minecraft/client/font/BitmapFont$BitmapFontGlyph
 accessible class net/minecraft/client/render/model/json/ModelOverrideList$BakedOverride
 accessible class net/minecraft/client/render/model/json/ModelOverrideList$InlinedCondition
+mutable field net/minecraft/client/render/Shader modelViewMat Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader projectionMat Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader viewRotationMat Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader textureMat Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader screenSize Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader colorModulator Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader light0Direction Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader light1Direction Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader fogStart Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader fogEnd Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader fogColor Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader fogShape Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader lineWidth Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader gameTime Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/render/Shader chunkOffset Lnet/minecraft/client/gl/GlUniform;
