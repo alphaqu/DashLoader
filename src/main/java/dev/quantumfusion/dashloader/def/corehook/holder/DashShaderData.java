@@ -1,10 +1,11 @@
 package dev.quantumfusion.dashloader.def.corehook.holder;
 
 import dev.quantumfusion.dashloader.core.DashLoaderCore;
-import dev.quantumfusion.dashloader.core.progress.task.CountTask;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.data.image.shader.DashShader;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
+import dev.quantumfusion.taski.TaskUtil;
+import dev.quantumfusion.taski.builtin.StepTask;
 import net.minecraft.client.render.Shader;
 
 import java.util.ArrayList;
@@ -21,15 +22,15 @@ public class DashShaderData {
 		this.shaders = shaders;
 	}
 
-	public DashShaderData(DashDataManager data) {
+	public DashShaderData(DashDataManager data, StepTask parent) {
 		this.shaders = new HashMap<>();
 		final Map<String, Shader> minecraftData = data.shaders.getMinecraftData();
-		CountTask task = new CountTask(minecraftData.size());
-		DashLoaderCore.PROGRESS.getCurrentContext().setSubtask(task);
-		minecraftData.forEach((s, shader) -> {
-			this.shaders.put(s, new DashShader(shader));
-			task.completedTask();
-		});
+
+		parent.run(new StepTask("Shaders"), (task) -> TaskUtil.forEach(task, minecraftData, (s, shader) -> {
+					this.shaders.put(s, new DashShader(shader));
+				})
+		);
+
 	}
 
 	public Map<String, Shader> export() {

@@ -3,10 +3,9 @@ package dev.quantumfusion.dashloader.def.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.quantumfusion.dashloader.core.DashLoaderCore;
 import dev.quantumfusion.dashloader.core.config.DashConfig;
-import dev.quantumfusion.dashloader.core.progress.task.CountTask;
-import dev.quantumfusion.dashloader.core.progress.task.DummyTask;
-import dev.quantumfusion.dashloader.core.progress.task.Task;
+import dev.quantumfusion.dashloader.core.progress.ProgressHandler;
 import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.taski.builtin.StaticTask;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
@@ -16,11 +15,14 @@ import net.minecraft.util.math.Matrix4f;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import static dev.quantumfusion.dashloader.def.client.UIColors.*;
 import static dev.quantumfusion.dashloader.def.client.UIDrawer.TextOrientation.TEXT_LEFT;
@@ -180,7 +182,7 @@ public class DashCachingScreen extends Screen {
 			currentProgress = Math.max(Math.min(1, mouseX / (double) width), 0);
 			currentProgressColor = getProgressColor(currentProgress);
 		} else if (STATUS == Status.CRASHED) {
-			DashLoaderCore.PROGRESS.setTask(DummyTask.FULL);
+			ProgressHandler.TASK = new StaticTask("Crash", 1);
 			DashLoaderCore.PROGRESS.setCurrentTask("Internal crash. Please check logs or press ENTER.");
 			currentProgress = DashLoaderCore.PROGRESS.getProgress();
 			currentProgressColor = FAILED_COLOR;

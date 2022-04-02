@@ -3,11 +3,12 @@ package dev.quantumfusion.dashloader.def;
 import dev.quantumfusion.dashloader.core.DashLoaderCore;
 import dev.quantumfusion.dashloader.core.io.IOHandler;
 import dev.quantumfusion.dashloader.core.progress.ProgressHandler;
-import dev.quantumfusion.dashloader.core.progress.task.CountTask;
 import dev.quantumfusion.dashloader.core.registry.ChunkHolder;
 import dev.quantumfusion.dashloader.core.registry.RegistryReader;
 import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.api.DashLoaderAPI;
+import dev.quantumfusion.dashloader.def.api.hook.LoadCacheHook;
+import dev.quantumfusion.dashloader.def.api.hook.SaveCacheHook;
 import dev.quantumfusion.dashloader.def.client.DashCachingScreen;
 import dev.quantumfusion.dashloader.def.corehook.*;
 import dev.quantumfusion.dashloader.def.data.DashIdentifier;
@@ -22,6 +23,10 @@ import dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashPredicate;
 import dev.quantumfusion.dashloader.def.fallback.model.DashMissingDashModel;
 import dev.quantumfusion.dashloader.def.util.TimeUtil;
+import dev.quantumfusion.taski.Task;
+import dev.quantumfusion.taski.builtin.StageTask;
+import dev.quantumfusion.taski.builtin.StaticTask;
+import dev.quantumfusion.taski.builtin.StepTask;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -31,6 +36,7 @@ import net.minecraft.util.Identifier;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -58,6 +64,7 @@ public class DashLoader {
 	private static Status STATUS = Status.NONE;
 	private boolean shouldReload = true;
 	private final DashMetadata metadata = new DashMetadata();
+	private final DashLoaderAPI api = new DashLoaderAPI();
 	private DashDataManager dataManager;
 
 	private DashLoader() {
@@ -82,7 +89,6 @@ public class DashLoader {
 
 	private void initInternal(ClassLoader classLoader) {
 		try {
-			var api = new DashLoaderAPI();
 			api.initAPI();
 			DashLoaderCore.CORE.launchCore(api.dashObjects);
 			DashLoaderCore.CONFIG.reloadConfig();
@@ -143,14 +149,17 @@ public class DashLoader {
 
 	@SuppressWarnings("RedundantTypeArguments")
 	public void saveDashCache() {
+		api.callHook(SaveCacheHook.class, SaveCacheHook::saveCacheStart);
 		DashCachingScreen.STATUS = DashCachingScreen.Status.CACHING;
 		LOGGER.info("Starting DashLoader Caching");
 		try {
 			long start = System.currentTimeMillis();
 
 			final ProgressHandler progress = DashLoaderCore.PROGRESS;
-			CountTask main = new CountTask(12);
-			progress.setTask(main);
+			StepTask main = new StepTask("Creating DashCache", 12);
+			api.callHook(SaveCacheHook.class, hook -> hook.saveCacheTask(main));
+
+			ProgressHandler.TASK = main;
 			progress.setCurrentTask("initializing");
 
 			// missing model callback
@@ -168,34 +177,44 @@ public class DashLoader {
 				if (rraw instanceof ModelIdentifier m) return new DashModelIdentifier(m);
 				else return new DashIdentifier(rraw);
 			});
+
+			api.callHook(SaveCacheHook.class, hook -> hook.saveCacheRegistryInit(DashLoaderCore.REGISTRY));
+
 			// creation
 			RegistryWriter writer = DashLoaderCore.REGISTRY.createWriter();
+			api.callHook(SaveCacheHook.class, hook -> hook.saveCacheRegistryWriterInit(writer));
 
 			// mapping
 			MappingData mappings = new MappingData();
+			api.callHook(SaveCacheHook.class, hook -> hook.saveCacheMappingStart(writer, mappings));
 			mappings.map(writer, main);
-			main.completedTask();
+			api.callHook(SaveCacheHook.class, hook -> hook.saveCacheMappingEnd(writer, mappings));
 
 			// export
 			List<ChunkHolder> holders = new ArrayList<>();
 			progress.setCurrentTask("export.image");
-			main.task(() -> holders.add(new ImageData(writer)));
+			main.run(() -> holders.add(new ImageData(writer)));
 			progress.setCurrentTask("export.model");
-			main.task(() -> holders.add(new ModelData(writer)));
+			main.run(() -> holders.add(new ModelData(writer)));
 			progress.setCurrentTask("export.registry");
-			main.task(() -> holders.add(new RegistryData(writer)));
+			main.run(() -> holders.add(new RegistryData(writer)));
 			progress.setCurrentTask("export.identifier");
-			main.task(() -> holders.add(new IdentifierData(writer)));
+			main.run(() -> holders.add(new IdentifierData(writer)));
 			progress.setCurrentTask("export.quad");
-			main.task(() -> holders.add(new BakedQuadData(writer)));
+			main.run(() -> holders.add(new BakedQuadData(writer)));
+			api.callHook(SaveCacheHook.class, hook -> hook.saveCachePopulateHolders(writer, mappings, holders));
+
 
 			final IOHandler io = DashLoaderCore.IO;
 			// serialization
-			holders.forEach(holder -> main.task(() -> io.save(holder)));
-			main.task(() -> io.save(mappings));
+			holders.forEach(holder -> main.run(() -> io.save(holder, main::setSubTask)));
+			main.run(() -> io.save(mappings, main::setSubTask));
+			api.callHook(SaveCacheHook.class, hook -> hook.saveCacheSerialize(writer, mappings, holders));
+
 
 			LOGGER.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
 			DashCachingScreen.STATUS = DashCachingScreen.Status.DONE;
+			api.callHook(SaveCacheHook.class, SaveCacheHook::saveCacheEnd);
 		} catch (Throwable thr) {
 			this.setStatus(Status.NONE);
 			LOGGER.error("Failed caching", thr);
@@ -205,47 +224,70 @@ public class DashLoader {
 	}
 
 	public void loadDashCache() {
+		api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheStart);
+
+
 		var start = System.currentTimeMillis();
 		final IOHandler io = DashLoaderCore.IO;
 		io.setSubCacheArea(metadata.resourcePacks);
 		LOGGER.info("Starting DashLoader Deserialization");
 		try {
+			StepTask task = new StepTask("Loading DashCache", 3);
+			api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheTask(task));
+			ProgressHandler.TASK = task;
+
 			AtomicReference<MappingData> mappingsReference = new AtomicReference<>();
 			ChunkHolder[] registryDataObjects = new ChunkHolder[5];
 
-
-			var start2 = System.currentTimeMillis();
-			DashLoaderCore.THREAD.parallelRunnable(
-					() -> registryDataObjects[0] = (io.load(RegistryData.class)),
-					() -> registryDataObjects[1] = (io.load(ImageData.class)),
-					() -> registryDataObjects[2] = (io.load(ModelData.class)),
-					() -> registryDataObjects[3] = (io.load(IdentifierData.class)),
-					() -> registryDataObjects[4] = (io.load(BakedQuadData.class)),
-					() -> mappingsReference.set(io.load(MappingData.class))
-			);
-			EXPORT_READING_TIME = System.currentTimeMillis() - start2;
+			var tempStart = System.currentTimeMillis();
+			// Deserialize / Decompress all registries and mappings.
+			List<@Nullable Task> stages = new ArrayList<>();
+			for (int i = 0; i < 6; i++) {
+				stages.add(StaticTask.EMPTY);
+			}
+			task.run(new StageTask("Deserialization", stages), (subTask) -> {
+				api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheDeserialization);
+				DashLoaderCore.THREAD.parallelRunnable(
+						() -> registryDataObjects[0] = (io.load(RegistryData.class, (t) -> stages.set(0, t))),
+						() -> registryDataObjects[1] = (io.load(ImageData.class, (t) -> stages.set(1, t))),
+						() -> registryDataObjects[2] = (io.load(ModelData.class, (t) -> stages.set(2, t))),
+						() -> registryDataObjects[3] = (io.load(IdentifierData.class, (t) -> stages.set(3, t))),
+						() -> registryDataObjects[4] = (io.load(BakedQuadData.class, (t) -> stages.set(4, t))),
+						() -> mappingsReference.set(io.load(MappingData.class, (t) -> stages.set(5, t)))
+				);
+			});
+			EXPORT_READING_TIME = System.currentTimeMillis() - tempStart;
 
 			MappingData mappings = mappingsReference.get();
 			assert mappings != null;
 
+			// Initialize systems
 			LOGGER.info("Creating Registry");
 			final RegistryReader reader = DashLoaderCore.REGISTRY.createReader(registryDataObjects);
-
 			this.dataManager = new DashDataManager(new DashDataManager.DashReadContextData());
+			api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheRegistryInit(reader, dataManager, mappings));
 
-			start2 = System.currentTimeMillis();
+			tempStart = System.currentTimeMillis();
 			LOGGER.info("Exporting Mappings");
-			reader.export();
-			EXPORT_EXPORTING_TIME = System.currentTimeMillis() - start2;
+			task.run(() -> {
+				reader.export(task::setSubTask);
+				api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheExported(reader, dataManager, mappings));
+			});
+			EXPORT_EXPORTING_TIME = System.currentTimeMillis() - tempStart;
 
-			start2 = System.currentTimeMillis();
+
+			tempStart = System.currentTimeMillis();
 			LOGGER.info("Loading Mappings");
-			mappings.export(reader, this.dataManager);
-			EXPORT_LOADING_TIME = System.currentTimeMillis() - start2;
+			task.run(() -> {
+				mappings.export(reader, this.dataManager, task::setSubTask);
+				api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheMapped(reader, dataManager, mappings));
+			});
+			EXPORT_LOADING_TIME = System.currentTimeMillis() - tempStart;
 
 
 			EXPORT_TIME = System.currentTimeMillis() - start;
 			LOGGER.info("Loaded DashLoader in {}", EXPORT_TIME);
+			api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheEnd);
 		} catch (Exception e) {
 			LOGGER.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(start), e);
 			this.setStatus(Status.NONE);

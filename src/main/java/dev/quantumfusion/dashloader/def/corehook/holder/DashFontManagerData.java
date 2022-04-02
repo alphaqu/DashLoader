@@ -1,13 +1,12 @@
 package dev.quantumfusion.dashloader.def.corehook.holder;
 
-import dev.quantumfusion.dashloader.core.DashLoaderCore;
 import dev.quantumfusion.dashloader.core.Dashable;
 import dev.quantumfusion.dashloader.core.common.IntObjectList;
-import dev.quantumfusion.dashloader.core.progress.task.CountTask;
 import dev.quantumfusion.dashloader.core.registry.RegistryReader;
 import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
+import dev.quantumfusion.taski.builtin.StepTask;
 import net.minecraft.client.font.Font;
 import net.minecraft.util.Identifier;
 
@@ -24,15 +23,15 @@ public class DashFontManagerData implements Dashable<Map<Identifier, List<Font>>
 		this.fontMap = fontMap;
 	}
 
-	public DashFontManagerData(DashDataManager data, RegistryWriter writer) {
+	public DashFontManagerData(DashDataManager data, RegistryWriter writer, StepTask parent) {
 		fontMap = new IntObjectList<>();
-		CountTask task = new CountTask(data.fonts.getMinecraftData().size());
-		DashLoaderCore.PROGRESS.getCurrentContext().setSubtask(task);
-		data.fonts.getMinecraftData().forEach((identifier, fontList) -> {
-			List<Integer> fontsOut = new ArrayList<>();
-			fontList.forEach(font -> fontsOut.add(writer.add(font)));
-			fontMap.put(writer.add(identifier), fontsOut);
-			task.completedTask();
+		parent.run(new StepTask("Fonts", data.fonts.getMinecraftData().size()), (task) -> {
+			data.fonts.getMinecraftData().forEach((identifier, fontList) -> {
+				List<Integer> fontsOut = new ArrayList<>();
+				fontList.forEach(font -> fontsOut.add(writer.add(font)));
+				fontMap.put(writer.add(identifier), fontsOut);
+				task.next();
+			});
 		});
 	}
 

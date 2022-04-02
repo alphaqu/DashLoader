@@ -8,11 +8,6 @@ import org.junit.jupiter.api.Test;
 public class MappingDataTest {
 
 	@Test
-	public void testDashBlockStateDataSerialization() {
-		TestUtils.testCreation(DashBlockStateData.class);
-	}
-
-	@Test
 	public void testDashFontManagerDataSerialization() {
 		TestUtils.testCreation(DashFontManagerData.class);
 	}
