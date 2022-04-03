@@ -55,17 +55,25 @@ public class SplashScreenMixin {
 			}
 		}
 
-		LOGGER.info("┏ DashLoader Profiler Times.");
+		LOGGER.info("┏ DashLoader Statistics.");
 		if (EXPORT_TIME != -1) {
-			LOGGER.info("┠──┬ {} DashLoader Load", TimeUtil.getTimeString(EXPORT_TIME));
-			LOGGER.info("┃  ├── {} File Reading", TimeUtil.getTimeString(EXPORT_READING_TIME));
-			LOGGER.info("┃  ├── {} Asset Exporting", TimeUtil.getTimeString(EXPORT_EXPORTING_TIME));
-			LOGGER.info("┃  └── {} Asset Loading", TimeUtil.getTimeString(EXPORT_LOADING_TIME));
+			LOGGER.info("┠──┬ {} DashLoader load", TimeUtil.getTimeString(EXPORT_TIME));
+			LOGGER.info("┃  ├── {} File reading", TimeUtil.getTimeString(EXPORT_READING_TIME));
+			LOGGER.info("┃  ├── {} Asset exporting", TimeUtil.getTimeString(EXPORT_EXPORTING_TIME));
+			LOGGER.info("┃  └── {} Asset loading", TimeUtil.getTimeString(EXPORT_LOADING_TIME));
 			EXPORT_TIME = -1;
 		}
-		LOGGER.info("┠── {} Minecraft Client Reload", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
-		LOGGER.info("┠── {} Minecraft Bootstrap", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
-		LOGGER.info("┠── {} Total Loading", TimeUtil.getTimeString(ManagementFactory.getRuntimeMXBean().getUptime()));
+		if (MixinThings.FALLBACK_MODELS_COUNT != -1) {
+			long totalModels = MixinThings.CACHED_MODELS_COUNT + MixinThings.FALLBACK_MODELS_COUNT;
+			LOGGER.info("┠──┬ {}% Cache coverage", (int)(((MixinThings.CACHED_MODELS_COUNT / (float)totalModels) * 100)));
+			LOGGER.info("┃  ├── {} Fallback models", MixinThings.FALLBACK_MODELS_COUNT);
+			LOGGER.info("┃  └── {} Cached models", MixinThings.CACHED_MODELS_COUNT);
+			MixinThings.CACHED_MODELS_COUNT = -1;
+			MixinThings.FALLBACK_MODELS_COUNT = -1;
+		}
+		LOGGER.info("┠── {} Minecraft client reload", TimeUtil.getTimeStringFromStart(DashLoader.RELOAD_START));
+		LOGGER.info("┠── {} Minecraft bootstrap", TimeUtil.getTimeString(MixinThings.BOOTSTRAP_END - MixinThings.BOOTSTRAP_START));
+		LOGGER.info("┖── {} Total loading", TimeUtil.getTimeString(ManagementFactory.getRuntimeMXBean().getUptime()));
 
 		if (DashLoader.isWrite()) {
 			// Yes this is bad. But it makes us not require Fabric API

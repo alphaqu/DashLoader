@@ -17,8 +17,9 @@ public class MixinThings {
 	public static FontManager FONTMANAGER;
 	public static long BOOTSTRAP_START;
 	public static long BOOTSTRAP_END;
-	public static long TOTAL;
-	public static long CACHED;
+
+	public static long FALLBACK_MODELS_COUNT = -1;
+	public static long CACHED_MODELS_COUNT = -1;
 
 
 	public static <M extends MultipartModelSelector> void addPredicates(Iterable<M> multipartModelSelectors, StateManager<Block, BlockState> stateStateManager) {

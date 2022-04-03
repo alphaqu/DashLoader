@@ -57,16 +57,13 @@ public abstract class WallBlockMixin extends Block implements Waterloggable {
 
 	@Inject(method = "getShapeMap", at = @At(value = "HEAD"), cancellable = true)
 	private void getShapeMapCache(float f, float g, float h, float i, float j, float k, CallbackInfoReturnable<Map<BlockState, VoxelShape>> cir) {
-		MixinThings.TOTAL++;
 		if (isCommon(f, g, h, i, j, k)) {
 			if (isShape(f, g, h, i, j, k)) {
 				if (SHAPE_CACHE != null) {
-					MixinThings.CACHED++;
 					cir.setReturnValue(createFromCache(SHAPE_CACHE));
 				}
 			} else if (isCollision(f, g, h, i, j, k)) {
 				if (COLLISION_CACHE != null) {
-					MixinThings.CACHED++;
 					cir.setReturnValue(createFromCache(COLLISION_CACHE));
 				}
 			}

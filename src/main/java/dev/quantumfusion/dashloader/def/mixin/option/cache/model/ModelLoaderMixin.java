@@ -9,6 +9,7 @@ import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.def.fallback.model.MissingDashModel;
 import dev.quantumfusion.dashloader.def.fallback.model.UnbakedBakedModel;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasTextureAccessor;
+import dev.quantumfusion.dashloader.def.util.mixins.MixinThings;
 import dev.quantumfusion.dashloader.def.util.mixins.SpriteAtlasTextureDuck;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
@@ -25,7 +26,9 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.profiler.Profiler;
+import org.apache.commons.lang3.tuple.Triple;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -67,6 +70,8 @@ public abstract class ModelLoaderMixin {
 
 	@Shadow @Final private ResourceManager resourceManager;
 
+	@Shadow @Final private Map<Triple<Identifier, AffineTransformation, Boolean>, BakedModel> bakedModelCache;
+
 	@Inject(
 			method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
 			at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=static_definitions", shift = At.Shift.AFTER)
@@ -99,13 +104,11 @@ public abstract class ModelLoaderMixin {
 	private boolean loadMissingModels(Iterator instance) {
 		if (DashLoader.isRead()) {
 			final Object2ObjectMap<BlockState, Identifier> missingModelsRead = DashLoader.getData().getReadContextData().missingModelsRead;
-			DashLoader.LOGGER.info("Loading {} unsupported models.", missingModelsRead.size());
 			for (BlockState blockState : missingModelsRead.keySet()) {
 				// load thing lambda
 				method_4716(blockState);
 			}
 			DashLoader.LOGGER.info("Loaded {} unsupported models.", missingModelsRead.size());
-
 			return false;
 		}
 		return instance.hasNext();
@@ -141,6 +144,19 @@ public abstract class ModelLoaderMixin {
 				DashLoader.LOGGER.info("Injected {} atlas.", id);
 				spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, ((SpriteAtlasTextureDuck) atlas).getCachedSprites().keySet().stream(), profiler, pair.getRight().mipLevel())));
 			});
+
+			// Cache stats
+			int cachedModels = 0;
+			int fallbackModels = 0;
+			for (UnbakedModel value : this.modelsToBake.values()) {
+				if (value instanceof UnbakedBakedModel) {
+					cachedModels += 1;
+				} else {
+					fallbackModels += 1;
+				}
+			}
+			MixinThings.CACHED_MODELS_COUNT = cachedModels;
+			MixinThings.FALLBACK_MODELS_COUNT = fallbackModels;
 		}
 	}
 }
