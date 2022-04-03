@@ -2,7 +2,10 @@ package dev.quantumfusion.dashloader.def.mixin;
 
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.option.ConfigHandler;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -44,6 +47,16 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-
+		//if (targetClassName.equals("net.minecraft.client.render.model.ModelLoader")) {
+		//	for (MethodNode method : targetClass.methods) {
+		//		if (method.name.endsWith("onFinishAddingModels")) {
+		//			for (int i = 0; i < 20; i++) {
+		//				DashLoader.LOGGER.info("YOUR MOM");
+		//			}
+		//			method.instructions.clear();
+		//			method.instructions.add(new InsnNode(Opcodes.RETURN));
+		//		}
+		//	}
+		//}
 	}
 }

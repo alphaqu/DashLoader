@@ -21,6 +21,7 @@ import net.minecraft.util.math.Direction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 @Data
 @DashObject(BasicBakedModel.class)
@@ -56,6 +57,7 @@ public final class DashBasicBakedModel implements DashModel {
 	public DashBasicBakedModel(BasicBakedModel basicBakedModel, RegistryWriter writer) {
 		BasicBakedModelAccessor access = ((BasicBakedModelAccessor) basicBakedModel);
 		this.quads = new ArrayList<>();
+		basicBakedModel.getQuads(null, null, new Random());
 		for (var quad : access.getQuads()) quads.add(writer.add(quad));
 
 		this.faceQuads = new ObjectObjectList<>();

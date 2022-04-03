@@ -40,6 +40,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -67,10 +68,6 @@ public abstract class ModelLoaderMixin {
 	@Shadow
 	@Final
 	private Map<Identifier, Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data>> spriteAtlasData;
-
-	@Shadow @Final private ResourceManager resourceManager;
-
-	@Shadow @Final private Map<Triple<Identifier, AffineTransformation, Boolean>, BakedModel> bakedModelCache;
 
 	@Inject(
 			method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
@@ -116,14 +113,23 @@ public abstract class ModelLoaderMixin {
 
 	@Inject(
 			method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
-			at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=stitching"),
+			at = @At(value = "INVOKE", target = "Ljava/util/Map;entrySet()Ljava/util/Set;", shift = At.Shift.BEFORE),
 			locals = LocalCapture.CAPTURE_FAILHARD
 	)
 	private void onFinishAddingModels(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int mipmap, CallbackInfo ci,
 			Set<Pair<String, String>> thing,
 			Set<SpriteIdentifier> thing2,
 			Map<Identifier, List<SpriteIdentifier>> map) {
-		if (DashLoader.isRead()) map.clear();
+		if (DashLoader.isRead()) {
+			DashLoader.LOGGER.info("Injecting Atlases");
+			DashLoader.getData().getReadContextData().dashAtlasManager.consumeAtlases(Option.CACHE_MODEL_LOADER, (pair) ->  {
+				SpriteAtlasTexture atlas = pair.getLeft();
+				Identifier id = atlas.getId();
+				DashLoader.LOGGER.info("Injected {} atlas.", id);
+				spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, ((SpriteAtlasTextureDuck) atlas).getCachedSprites().keySet().stream(), profiler, pair.getRight().mipLevel())));
+			});
+			map.clear();
+		}
 	}
 
 	@Inject(
@@ -137,14 +143,6 @@ public abstract class ModelLoaderMixin {
 	)
 	private void atlasInject(TextureManager textureManager, Profiler profiler, CallbackInfoReturnable<SpriteAtlasManager> cir) {
 		if (DashLoader.isRead()) {
-			DashLoader.LOGGER.info("Uploading Atlases");
-			DashLoader.getData().getReadContextData().dashAtlasManager.consumeAtlases(Option.CACHE_MODEL_LOADER, (pair) ->  {
-				SpriteAtlasTexture atlas = pair.getLeft();
-				Identifier id = atlas.getId();
-				DashLoader.LOGGER.info("Injected {} atlas.", id);
-				spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, ((SpriteAtlasTextureDuck) atlas).getCachedSprites().keySet().stream(), profiler, pair.getRight().mipLevel())));
-			});
-
 			// Cache stats
 			int cachedModels = 0;
 			int fallbackModels = 0;
