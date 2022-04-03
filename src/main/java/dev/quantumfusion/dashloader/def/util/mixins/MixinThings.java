@@ -10,8 +10,6 @@ import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
 import net.minecraft.state.StateManager;
-import net.minecraft.util.Identifier;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class MixinThings {
 	public static FontManager FONTMANAGER;

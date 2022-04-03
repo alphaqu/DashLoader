@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.def.mixin.option.misc;
 
-import dev.quantumfusion.dashloader.def.DashLoader;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;

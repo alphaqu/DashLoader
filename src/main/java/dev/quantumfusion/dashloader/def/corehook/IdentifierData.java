@@ -7,9 +7,6 @@ import dev.quantumfusion.dashloader.def.data.DashIdentifierInterface;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.util.Identifier;
 
-import java.util.Collection;
-import java.util.List;
-
 @Data
 public class IdentifierData implements ChunkHolder {
 	public final AbstractDataChunk<Identifier, DashIdentifierInterface> identifierData;

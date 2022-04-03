@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.def.fallback.sprite;
 
-import dev.quantumfusion.dashloader.def.DashLoader;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureStitcher;

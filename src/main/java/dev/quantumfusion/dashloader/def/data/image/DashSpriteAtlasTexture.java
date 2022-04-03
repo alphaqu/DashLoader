@@ -6,19 +6,17 @@ import dev.quantumfusion.dashloader.core.registry.RegistryReader;
 import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.mixin.accessor.AbstractTextureAccessor;
-import dev.quantumfusion.dashloader.def.mixin.accessor.NativeImageAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAccessor;
 import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasTextureAccessor;
-import dev.quantumfusion.dashloader.def.util.UnsafeHelper;
 import dev.quantumfusion.dashloader.def.util.mixins.SpriteAtlasTextureDuck;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.texture.TextureTickListener;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public final class DashSpriteAtlasTexture implements Dashable<SpriteAtlasTexture> {

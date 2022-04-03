@@ -2,7 +2,6 @@ package dev.quantumfusion.dashloader.def.mixin.accessor;
 
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Identifier.class)

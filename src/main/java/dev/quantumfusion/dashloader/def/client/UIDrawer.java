@@ -8,10 +8,9 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Language;
 import net.minecraft.util.math.Matrix4f;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class UIDrawer {
 	private MatrixStack ms;

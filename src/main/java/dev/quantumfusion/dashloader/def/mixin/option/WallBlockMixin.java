@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader.def.mixin.option;
 
 import com.google.common.collect.ImmutableMap;
-import dev.quantumfusion.dashloader.def.util.mixins.MixinThings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBlock;

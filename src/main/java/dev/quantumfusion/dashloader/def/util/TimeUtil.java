@@ -1,7 +1,5 @@
 package dev.quantumfusion.dashloader.def.util;
 
-import java.lang.management.ManagementFactory;
-
 public class TimeUtil {
 
 	public static String getTimeStringFromStart(long start) {

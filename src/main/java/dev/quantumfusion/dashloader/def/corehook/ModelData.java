@@ -7,9 +7,6 @@ import dev.quantumfusion.dashloader.def.data.model.DashModel;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.model.BakedModel;
 
-import java.util.Collection;
-import java.util.List;
-
 @Data
 public class ModelData implements ChunkHolder {
 	public final AbstractDataChunk<BakedModel, DashModel> modelData;

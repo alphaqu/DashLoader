@@ -2,8 +2,8 @@ package dev.quantumfusion.dashloader.def.api;
 
 import dev.quantumfusion.dashloader.core.Dashable;
 import dev.quantumfusion.dashloader.def.DashConstants;
-import dev.quantumfusion.dashloader.def.api.hook.SaveCacheHook;
 import dev.quantumfusion.dashloader.def.api.hook.LoadCacheHook;
+import dev.quantumfusion.dashloader.def.api.hook.SaveCacheHook;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;

@@ -8,6 +8,7 @@ import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.Sprite.AnimationFrame;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -8,11 +8,7 @@ import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;
-import org.apache.commons.io.IOUtils;
-import org.lwjgl.system.MemoryUtil;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.List;
 
 @Data

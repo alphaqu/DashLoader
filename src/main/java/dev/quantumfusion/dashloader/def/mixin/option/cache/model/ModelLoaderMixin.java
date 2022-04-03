@@ -1,23 +1,17 @@
 package dev.quantumfusion.dashloader.def.mixin.option.cache.model;
 
 import com.mojang.datafixers.util.Pair;
-import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.api.option.Option;
-import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
-import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.def.fallback.model.MissingDashModel;
 import dev.quantumfusion.dashloader.def.fallback.model.UnbakedBakedModel;
-import dev.quantumfusion.dashloader.def.mixin.accessor.SpriteAtlasTextureAccessor;
 import dev.quantumfusion.dashloader.def.util.mixins.MixinThings;
 import dev.quantumfusion.dashloader.def.util.mixins.SpriteAtlasTextureDuck;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.render.model.UnbakedModel;
@@ -26,9 +20,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.profiler.Profiler;
-import org.apache.commons.lang3.tuple.Triple;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -40,9 +32,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Mixin(value = ModelLoader.class, priority = 69420)
 public abstract class ModelLoaderMixin {

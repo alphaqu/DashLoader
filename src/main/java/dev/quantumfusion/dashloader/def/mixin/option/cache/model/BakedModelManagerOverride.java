@@ -2,10 +2,6 @@ package dev.quantumfusion.dashloader.def.mixin.option.cache.model;
 
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.api.option.ConfigHandler;
-import dev.quantumfusion.dashloader.def.api.option.Option;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.ModelLoader;

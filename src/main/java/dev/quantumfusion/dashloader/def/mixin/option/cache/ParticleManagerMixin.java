@@ -2,11 +2,7 @@ package dev.quantumfusion.dashloader.def.mixin.option.cache;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.util.Pair;
 import dev.quantumfusion.dashloader.def.DashLoader;
-import dev.quantumfusion.dashloader.def.api.option.Option;
-import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTexture;
-import dev.quantumfusion.dashloader.def.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ParticleManagerSimpleSpriteProviderAccessor;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;

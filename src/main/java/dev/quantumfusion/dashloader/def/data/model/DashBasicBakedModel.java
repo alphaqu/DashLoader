@@ -3,7 +3,6 @@ package dev.quantumfusion.dashloader.def.data.model;
 import dev.quantumfusion.dashloader.core.api.DashDependencies;
 import dev.quantumfusion.dashloader.core.api.DashObject;
 import dev.quantumfusion.dashloader.core.common.ObjectObjectList;
-import dev.quantumfusion.dashloader.core.common.ObjectObjectList.ObjectObjectEntry;
 import dev.quantumfusion.dashloader.core.registry.RegistryReader;
 import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.data.image.DashSprite;

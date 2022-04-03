@@ -9,8 +9,8 @@ import dev.quantumfusion.dashloader.def.mixin.accessor.WeightedBakedModelAccesso
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.WeightedBakedModel;
-import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.collection.Weighted.Present;
+
 import java.util.ArrayList;
 import java.util.List;
 
