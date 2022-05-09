@@ -8,7 +8,9 @@ import dev.quantumfusion.dashloader.core.registry.RegistryReader;
 import dev.quantumfusion.dashloader.core.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.def.DashDataManager;
 import dev.quantumfusion.dashloader.def.DashLoader;
+import dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState;
 import dev.quantumfusion.dashloader.def.data.model.predicates.DashAndPredicate;
+import dev.quantumfusion.dashloader.def.data.model.predicates.DashPredicate;
 import dev.quantumfusion.dashloader.def.mixin.accessor.MultipartBakedModelAccessor;
 import dev.quantumfusion.dashloader.def.util.RegistryUtil;
 import dev.quantumfusion.dashloader.def.util.UnsafeHelper;
@@ -27,7 +29,7 @@ import java.util.function.Predicate;
 
 @Data
 @DashObject(MultipartBakedModel.class)
-@DashDependencies({DashWeightedBakedModel.class, DashAndPredicate.class})
+@DashDependencies({DashWeightedBakedModel.class, DashPredicate.class, DashBlockState.class})
 public class DashMultipartBakedModel implements DashModel {
 	private static final Class<MultipartBakedModel> cls = MultipartBakedModel.class;
 	//identifier baked model

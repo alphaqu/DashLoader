@@ -3,6 +3,7 @@ package dev.quantumfusion.dashloader.def.data.image.shader;
 import com.google.common.collect.UnmodifiableIterator;
 import com.mojang.blaze3d.platform.GlStateManager;
 import dev.quantumfusion.dashloader.def.mixin.accessor.ShaderAccessor;
+import dev.quantumfusion.dashloader.def.util.MissingDataException;
 import dev.quantumfusion.dashloader.def.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
@@ -39,7 +40,7 @@ public class DashShader {
 		this.samplerNames = samplerNames;
 	}
 
-	public DashShader(Shader shader) {
+	public DashShader(Shader shader) throws MissingDataException {
 		ShaderAccessor shaderAccess = (ShaderAccessor) shader;
 
 		this.samplers = new LinkedHashMap<>();

@@ -2,7 +2,9 @@ package dev.quantumfusion.dashloader.def.corehook.holder;
 
 import dev.quantumfusion.dashloader.core.DashLoaderCore;
 import dev.quantumfusion.dashloader.def.DashDataManager;
+import dev.quantumfusion.dashloader.def.DashLoader;
 import dev.quantumfusion.dashloader.def.data.image.shader.DashShader;
+import dev.quantumfusion.dashloader.def.util.MissingDataException;
 import dev.quantumfusion.hyphen.scan.annotations.Data;
 import dev.quantumfusion.taski.TaskUtil;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -27,7 +29,11 @@ public class DashShaderData {
 		final Map<String, Shader> minecraftData = data.shaders.getMinecraftData();
 
 		parent.run(new StepTask("Shaders"), (task) -> TaskUtil.forEach(task, minecraftData, (s, shader) -> {
-					this.shaders.put(s, new DashShader(shader));
+					try {
+						this.shaders.put(s, new DashShader(shader));
+					} catch (MissingDataException e) {
+						DashLoader.LOGGER.warn("Skipping shader {}", s);
+					}
 				})
 		);
 

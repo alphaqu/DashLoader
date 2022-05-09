@@ -223,7 +223,7 @@ public class DashLoader {
 		}
 	}
 
-	public void loadDashCache() {
+	private void loadDashCache() {
 		api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheStart);
 
 
@@ -264,7 +264,6 @@ public class DashLoader {
 			// Initialize systems
 			LOGGER.info("Creating Registry");
 			final RegistryReader reader = DashLoaderCore.REGISTRY.createReader(registryDataObjects);
-			this.dataManager = new DashDataManager(new DashDataManager.DashReadContextData());
 			api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheRegistryInit(reader, dataManager, mappings));
 
 			tempStart = System.currentTimeMillis();

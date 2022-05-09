@@ -45,8 +45,8 @@ dependencies {
     implementation "dev.quantumfusion.dashloader:dashloader-core:$project.dashloader_core_version"
     include "dev.quantumfusion.dashloader:dashloader-core:$project.dashloader_core_version"
 
-    implementation "dev.quantumfusion:hyphen:0.2.0"
-    include "dev.quantumfusion:hyphen:0.2.0"
+    implementation "dev.quantumfusion:Hyphen:0.2.1"
+    include "dev.quantumfusion:Hyphen:0.2.1"
 
     implementation "dev.quantumfusion:Taski:1.1.0"
     include "dev.quantumfusion:Taski:1.1.0"
