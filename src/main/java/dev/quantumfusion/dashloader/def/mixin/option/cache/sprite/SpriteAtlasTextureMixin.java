@@ -61,8 +61,8 @@ public class SpriteAtlasTextureMixin implements SpriteAtlasTextureDuck {
 	private void loadSpriteInfo(Identifier identifier, ResourceManager resourceManager, Queue<Sprite.Info> queue, CallbackInfo ci) {
 		if (dashLoaded) {
 			MutablePair<Sprite, Sprite.Info> entry = cachedSprites.get(identifier);
-			Sprite cached = entry.left;
-			if (cached != null) {
+			if (entry != null) {
+				Sprite cached = entry.left;
 				// lets hope animations are not important
 				Sprite.Info info = new Sprite.Info(identifier, cached.getWidth(), cached.getHeight(), AnimationResourceMetadata.EMPTY);
 				((SpriteInfoDuck) (Object) info).setCached(cached);
