@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public record
-ObjectObjectList<K, V>(List<ObjectObjectEntry<K, V>> list) {
+public record ObjectObjectList<K, V>(List<ObjectObjectEntry<K, V>> list) {
 	public ObjectObjectList() {
 		this(new ArrayList<>());
 	}

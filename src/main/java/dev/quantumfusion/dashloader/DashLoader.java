@@ -228,7 +228,7 @@ public class DashLoader {
 			DashCachingScreen.STATUS = DashCachingScreen.Status.DONE;
 			this.api.callHook(SaveCacheHook.class, SaveCacheHook::saveCacheEnd);
 		} catch (Throwable thr) {
-			this.setStatus(Status.NONE);
+			this.setStatus(Status.WRITE);
 			LOGGER.error("Failed caching", thr);
 			DashCachingScreen.STATUS = DashCachingScreen.Status.CRASHED;
 			this.io.clearCache();
@@ -243,64 +243,65 @@ public class DashLoader {
 		this.io.setSubCacheArea(this.metadata.resourcePacks);
 		LOGGER.info("Starting DashLoader Deserialization");
 		try {
-			StepTask task = new StepTask("Loading DashCache", 3);
-			this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheTask(task));
-			ProgressHandler.TASK = task;
-
-			AtomicReference<MappingData> mappingsReference = new AtomicReference<>();
-			ChunkHolder[] registryDataObjects = new ChunkHolder[5];
-
-			var tempStart = System.currentTimeMillis();
-			// Deserialize / Decompress all registries and mappings.
-			List<@Nullable Task> stages = new ArrayList<>();
-			for (int i = 0; i < 6; i++) {
-				stages.add(StaticTask.EMPTY);
-			}
-			task.run(new StageTask("Deserialization", stages), (subTask) -> {
-				this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheDeserialization);
-				this.thread.parallelRunnable(
-						() -> registryDataObjects[0] = (this.io.load(RegistryData.class, (t) -> stages.set(0, t))),
-						() -> registryDataObjects[1] = (this.io.load(ImageData.class, (t) -> stages.set(1, t))),
-						() -> registryDataObjects[2] = (this.io.load(ModelData.class, (t) -> stages.set(2, t))),
-						() -> registryDataObjects[3] = (this.io.load(IdentifierData.class, (t) -> stages.set(3, t))),
-						() -> registryDataObjects[4] = (this.io.load(BakedQuadData.class, (t) -> stages.set(4, t))),
-						() -> mappingsReference.set(this.io.load(MappingData.class, (t) -> stages.set(5, t)))
-				);
-			});
-			EXPORT_READING_TIME = System.currentTimeMillis() - tempStart;
-
-			MappingData mappings = mappingsReference.get();
-			assert mappings != null;
-
-			// Initialize systems
-			LOGGER.info("Creating Registry");
-			final RegistryReader reader = this.registry.createReader(registryDataObjects);
-			this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheRegistryInit(reader, this.dataManager, mappings));
-
-			tempStart = System.currentTimeMillis();
-			LOGGER.info("Exporting Mappings");
-			task.run(() -> {
-				reader.export(task::setSubTask);
-				this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheExported(reader, this.dataManager, mappings));
-			});
-			EXPORT_EXPORTING_TIME = System.currentTimeMillis() - tempStart;
-
-
-			tempStart = System.currentTimeMillis();
-			LOGGER.info("Loading Mappings");
-			task.run(() -> {
-				mappings.export(reader, this.dataManager, task::setSubTask);
-				this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheMapped(reader, this.dataManager, mappings));
-			});
-			EXPORT_LOADING_TIME = System.currentTimeMillis() - tempStart;
-
-
-			EXPORT_TIME = System.currentTimeMillis() - start;
-			LOGGER.info("Loaded DashLoader in {}", EXPORT_TIME);
-			this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheEnd);
+			throw new RuntimeException();
+			// StepTask task = new StepTask("Loading DashCache", 3);
+			//			this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheTask(task));
+			//			ProgressHandler.TASK = task;
+			//
+			//			AtomicReference<MappingData> mappingsReference = new AtomicReference<>();
+			//			ChunkHolder[] registryDataObjects = new ChunkHolder[5];
+			//
+			//			var tempStart = System.currentTimeMillis();
+			//			// Deserialize / Decompress all registries and mappings.
+			//			List<@Nullable Task> stages = new ArrayList<>();
+			//			for (int i = 0; i < 6; i++) {
+			//				stages.add(StaticTask.EMPTY);
+			//			}
+			//			task.run(new StageTask("Deserialization", stages), (subTask) -> {
+			//				this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheDeserialization);
+			//				this.thread.parallelRunnable(
+			//						() -> registryDataObjects[0] = (this.io.load(RegistryData.class, (t) -> stages.set(0, t))),
+			//						() -> registryDataObjects[1] = (this.io.load(ImageData.class, (t) -> stages.set(1, t))),
+			//						() -> registryDataObjects[2] = (this.io.load(ModelData.class, (t) -> stages.set(2, t))),
+			//						() -> registryDataObjects[3] = (this.io.load(IdentifierData.class, (t) -> stages.set(3, t))),
+			//						() -> registryDataObjects[4] = (this.io.load(BakedQuadData.class, (t) -> stages.set(4, t))),
+			//						() -> mappingsReference.set(this.io.load(MappingData.class, (t) -> stages.set(5, t)))
+			//				);
+			//			});
+			//			EXPORT_READING_TIME = System.currentTimeMillis() - tempStart;
+			//
+			//			MappingData mappings = mappingsReference.get();
+			//			assert mappings != null;
+			//
+			//			// Initialize systems
+			//			LOGGER.info("Creating Registry");
+			//			final RegistryReader reader = this.registry.createReader(registryDataObjects);
+			//			this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheRegistryInit(reader, this.dataManager, mappings));
+			//
+			//			tempStart = System.currentTimeMillis();
+			//			LOGGER.info("Exporting Mappings");
+			//			task.run(() -> {
+			//				reader.export(task::setSubTask);
+			//				this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheExported(reader, this.dataManager, mappings));
+			//			});
+			//			EXPORT_EXPORTING_TIME = System.currentTimeMillis() - tempStart;
+			//
+			//
+			//			tempStart = System.currentTimeMillis();
+			//			LOGGER.info("Loading Mappings");
+			//			task.run(() -> {
+			//				mappings.export(reader, this.dataManager, task::setSubTask);
+			//				this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheMapped(reader, this.dataManager, mappings));
+			//			});
+			//			EXPORT_LOADING_TIME = System.currentTimeMillis() - tempStart;
+			//
+			//
+			//			EXPORT_TIME = System.currentTimeMillis() - start;
+			//			LOGGER.info("Loaded DashLoader in {}", EXPORT_TIME);
+			//			this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheEnd);
 		} catch (Exception e) {
 			LOGGER.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(start), e);
-			this.setStatus(Status.NONE);
+			this.setStatus(Status.WRITE);
 			this.io.clearCache();
 		}
 	}

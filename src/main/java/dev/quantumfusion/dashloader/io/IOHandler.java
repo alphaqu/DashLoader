@@ -4,6 +4,7 @@ import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.io.serializer.DashSerializer;
 import dev.quantumfusion.taski.Task;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -44,15 +45,7 @@ public final class IOHandler {
 
 	public void clearCache() {
 		try {
-			Path dir = this.getCurrentSubCacheDir();
-			Files.list(dir).forEach(path -> {
-				try {
-					Files.delete(path);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-			Files.delete(dir);
+			FileUtils.deleteDirectory(this.getCurrentSubCacheDir().toFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
