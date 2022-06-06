@@ -1,10 +1,9 @@
 package dev.quantumfusion.dashloader.api.option;
 
 import dev.quantumfusion.dashloader.DashConstants;
-import dev.quantumfusion.dashloader.DashLoader;
-import net.fabricmc.loader.api.FabricLoader;
-
 import java.util.EnumMap;
+import net.fabricmc.loader.api.FabricLoader;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class ConfigHandler {
 
@@ -15,14 +14,14 @@ public class ConfigHandler {
 		// update all fabric mods and such, config has priority
 		OPTION_ACTIVE.put(Option.FAST_STATE_INIT, false);
 
-		DashLoader.INSTANCE.config.reloadConfig();
-		DashLoader.INSTANCE.config.config.options.forEach((s, aBoolean) -> {
+		DL.config.reloadConfig();
+		DL.config.config.options.forEach((s, aBoolean) -> {
 			try {
 				var option = Option.valueOf(s.toUpperCase());
 				OPTION_ACTIVE.put(option, false);
-				DashLoader.LOGGER.warn("Disabled Optional Feature {} from DashLoader config.", s);
+				DL.log.warn("Disabled Optional Feature {} from DashLoader config.", s);
 			} catch (IllegalArgumentException illegalArgumentException) {
-				DashLoader.LOGGER.error("Could not disable Optional Feature {} as it does not exist.", s);
+				DL.log.error("Could not disable Optional Feature {} as it does not exist.", s);
 			}
 		});
 
@@ -34,9 +33,9 @@ public class ConfigHandler {
 					try {
 						var option = Option.valueOf(feature.toUpperCase());
 						OPTION_ACTIVE.put(option, false);
-						DashLoader.LOGGER.warn("Disabled Optional Feature {} from {} config. {}", feature, mod.getId(), mod.getName());
+						DL.log.warn("Disabled Optional Feature {} from {} config. {}", feature, mod.getId(), mod.getName());
 					} catch (IllegalArgumentException illegalArgumentException) {
-						DashLoader.LOGGER.error("Could not disable Optional Feature {} as it does not exist.", feature);
+						DL.log.error("Could not disable Optional Feature {} as it does not exist.", feature);
 					}
 				}
 			}

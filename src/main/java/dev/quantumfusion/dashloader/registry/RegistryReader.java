@@ -1,13 +1,13 @@
 package dev.quantumfusion.dashloader.registry;
 
 
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @SuppressWarnings("FinalMethodInFinalClass")
 public final class RegistryReader {
@@ -33,7 +33,7 @@ public final class RegistryReader {
 			var dataObjects = new Object[size];
 			this.data[i] = dataObjects;
 			task.run(new StepTask(chunk.name, 3), (subTask) -> {
-				DashLoader.LOGGER.info("Loading " + size + " " + chunk.name + "s");
+				DL.log.info("Loading " + size + " " + chunk.name + "s");
 				chunk.preExport(this);
 				subTask.next();
 				chunk.export(dataObjects, this);

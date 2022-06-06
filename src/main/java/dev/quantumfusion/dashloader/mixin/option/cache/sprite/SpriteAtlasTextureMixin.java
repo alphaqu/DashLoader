@@ -1,11 +1,13 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.sprite;
 
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.fallback.sprite.FakeTextureStitcher;
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAccessor;
 import dev.quantumfusion.dashloader.util.mixins.SpriteAtlasTextureDuck;
 import dev.quantumfusion.dashloader.util.mixins.SpriteInfoDuck;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -19,10 +21,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(SpriteAtlasTexture.class)
 public class SpriteAtlasTextureMixin implements SpriteAtlasTextureDuck {
@@ -36,8 +35,8 @@ public class SpriteAtlasTextureMixin implements SpriteAtlasTextureDuck {
 			at = @At(value = "HEAD")
 	)
 	private void saveAtlasInfo(SpriteAtlasTexture.Data data, CallbackInfo ci) {
-		if (DashLoader.isWrite()) {
-			DashLoader.getData().getWriteContextData().atlasData.put((SpriteAtlasTexture) (Object) this, new DashSpriteAtlasTextureData(data));
+		if (DL.isWrite()) {
+			DL.getData().getWriteContextData().atlasData.put((SpriteAtlasTexture) (Object) this, new DashSpriteAtlasTextureData(data));
 		}
 	}
 
@@ -72,7 +71,7 @@ public class SpriteAtlasTextureMixin implements SpriteAtlasTextureDuck {
 				queue.add(info);
 				ci.cancel();
 			} else {
-				DashLoader.LOGGER.warn("Could not find cached sprite {}. This may cause huge visual issues and/or NPE.", identifier);
+				DL.log.warn("Could not find cached sprite {}. This may cause huge visual issues and/or NPE.", identifier);
 			}
 		}
 	}

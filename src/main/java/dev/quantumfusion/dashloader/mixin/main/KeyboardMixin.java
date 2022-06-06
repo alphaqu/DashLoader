@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static dev.quantumfusion.dashloader.DashLoader.DL;
+
 /**
  * Makes f3 + t reset the cache. Also makes shift + f3 + t not reset it.
  */
@@ -27,8 +29,8 @@ public class KeyboardMixin {
 	)
 	private void f3tReloadWorld(int key, CallbackInfoReturnable<Boolean> cir) {
 		if (!this.shiftHeld) {
-			DashLoader.LOGGER.info("Clearing cache.");
-			DashLoader.INSTANCE.io.clearCache();
+			DL.log.info("Clearing cache.");
+			DashLoader.DL.io.clearCache();
 		}
 	}
 

@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.data.model.predicates;
 
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
@@ -9,6 +8,7 @@ import dev.quantumfusion.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.SimpleMultipartModelSelectorAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
+import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
@@ -17,8 +17,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Predicate;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 
 @DashObject(SimpleMultipartModelSelector.class)
@@ -48,7 +47,7 @@ public class DashSimplePredicate implements DashPredicate {
 
 	@NotNull
 	public static Identifier getStateManagerIdentifier(MultipartModelSelector multipartModelSelector) {
-		StateManager<Block, BlockState> stateManager = DashLoader.getData().getWriteContextData().stateManagers.get(multipartModelSelector);
+		StateManager<Block, BlockState> stateManager = DL.getData().getWriteContextData().stateManagers.get(multipartModelSelector);
 		Identifier identifier;
 		if (stateManager == ModelLoaderAccessor.getTheItemFrameThing()) {
 			identifier = DashBlockState.ITEM_FRAME;

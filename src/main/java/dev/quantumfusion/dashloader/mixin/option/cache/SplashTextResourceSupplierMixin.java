@@ -1,7 +1,13 @@
 package dev.quantumfusion.dashloader.mixin.option.cache;
 
 import dev.quantumfusion.dashloader.DashDataManager;
-import dev.quantumfusion.dashloader.DashLoader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.resource.Resource;
@@ -14,14 +20,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(SplashTextResourceSupplier.class)
 public class SplashTextResourceSupplierMixin {
@@ -38,8 +37,8 @@ public class SplashTextResourceSupplierMixin {
 	private void applySplashCache(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<List<String>> cir) {
 		try {
 
-			final DashDataManager.DashDataHandler<List<String>> splashText = DashLoader.getData().splashText;
-			if (DashLoader.isRead() && splashText.dataAvailable()) {
+			final DashDataManager.DashDataHandler<List<String>> splashText = DL.getData().splashText;
+			if (DL.isRead() && splashText.dataAvailable()) {
 				cir.setReturnValue(splashText.getCacheResultData());
 			} else {
 				Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(RESOURCE_ID);

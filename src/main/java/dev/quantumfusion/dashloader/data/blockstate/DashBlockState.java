@@ -15,7 +15,7 @@ import net.minecraft.util.registry.Registry;
 @DashObject(BlockState.class)
 @DashDependencies({DashIdentifier.class, DashModelIdentifier.class})
 public final class DashBlockState implements Dashable<BlockState> {
-	public transient static final Identifier ITEM_FRAME = new Identifier("dashloader:itemframewhy");
+	public static final Identifier ITEM_FRAME = new Identifier("dashloader:itemframewhy");
 	public final int owner;
 	public final int pos;
 

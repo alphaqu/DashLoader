@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader.corehook.holder;
 
 import dev.quantumfusion.dashloader.DashDataManager;
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.common.IntIntList;
 import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
@@ -19,6 +18,7 @@ import net.minecraft.util.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 
 public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
@@ -53,9 +53,9 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 		final HashMap<Identifier, BakedModel> out = new HashMap<>();
 		this.models.forEach((key, value) -> out.put(reader.get(key), reader.get(value)));
 
-		var missingModelsRead = DashLoader.getData().getReadContextData().missingModelsRead;
+		var missingModelsRead = DL.getData().getReadContextData().missingModelsRead;
 		var tasks = new ArrayList<Runnable>();
-		DashLoader.LOGGER.info("Scanning Blocks");
+		DL.log.info("Scanning Blocks");
 		for (Block block : Registry.BLOCK) {
 			tasks.add(() -> block.getStateManager().getStates().forEach((blockState) -> {
 				final ModelIdentifier modelId = BlockModels.getModelId(blockState);
@@ -65,9 +65,9 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 			}));
 		}
 
-		DashLoader.LOGGER.info("Verifying {} BlockStates", tasks.size());
-		DashLoader.INSTANCE.thread.parallelRunnable(tasks);
-		DashLoader.LOGGER.info("Found {} Missing BlockState Models", missingModelsRead.size());
+		DL.log.info("Verifying {} BlockStates", tasks.size());
+		DL.thread.parallelRunnable(tasks);
+		DL.log.info("Found {} Missing BlockState Models", missingModelsRead.size());
 		return out;
 	}
 

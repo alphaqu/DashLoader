@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.api;
 
 import dev.quantumfusion.dashloader.DashConstants;
+import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.hook.LoadCacheHook;
 import dev.quantumfusion.dashloader.api.hook.SaveCacheHook;
@@ -19,21 +20,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class DashLoaderAPI {
+public class APIHandler {
 	public static final Logger LOGGER = LogManager.getLogger("DashLoaderAPI");
 	public static final Class<?>[] HOOK_CLASSES = {SaveCacheHook.class, LoadCacheHook.class};
 	private final Map<Class<?>, List<Object>> hookSubscribers;
-	public final List<Class<?>> dashObjects;
+	private final List<DashObjectClass<?, ?>> dashObjects;
 	private boolean initialized = false;
 	private boolean failed = false;
 
-	public DashLoaderAPI() {
+	public APIHandler() {
 		this.dashObjects = new ArrayList<>();
 		this.hookSubscribers = new HashMap<>();
-	}
-
-	private void clearAPI() {
-		this.dashObjects.clear();
 	}
 
 	public <F, D extends Dashable<F>> void registerDashObject(Class<D> dashClass) {
@@ -43,7 +40,7 @@ public class DashLoaderAPI {
 			this.failed = true;
 			return;
 		}
-		this.dashObjects.add(dashClass);
+		this.dashObjects.add(new DashObjectClass(dashClass));
 	}
 
 	public <H> void registerHook(Class<H> hookClass) {
@@ -82,7 +79,7 @@ public class DashLoaderAPI {
 	public void initAPI() {
 		if (!this.initialized) {
 			Instant start = Instant.now();
-			this.clearAPI();
+			this.dashObjects.clear();
 			FabricLoader.getInstance().getAllMods().forEach(modContainer -> {
 				final ModMetadata metadata = modContainer.getMetadata();
 				if (metadata.getCustomValues().size() != 0) {
@@ -117,5 +114,9 @@ public class DashLoaderAPI {
 				}
 			}
 		}
+	}
+
+	public List<DashObjectClass<?, ?>> getDashObjects() {
+		return this.dashObjects;
 	}
 }

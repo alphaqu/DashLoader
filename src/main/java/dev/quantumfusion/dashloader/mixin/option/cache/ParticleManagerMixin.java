@@ -2,8 +2,11 @@ package dev.quantumfusion.dashloader.mixin.option.cache;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.mixin.accessor.ParticleManagerSimpleSpriteProviderAccessor;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.stream.Stream;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.particle.ParticleTextureSheet;
@@ -23,11 +26,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.stream.Stream;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(ParticleManager.class)
 public abstract class ParticleManagerMixin {
@@ -59,9 +58,9 @@ public abstract class ParticleManagerMixin {
 	private void reloadParticlesFast(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
 
 
-		var data = DashLoader.getData();
+		var data = DL.getData();
 		var particleSprites = data.particleSprites;
-		if (false && particleSprites.dataAvailable() && DashLoader.isRead()) {
+		if (false && particleSprites.dataAvailable() && DL.isRead()) {
 			// DASHLOADER THINGS
 
 			final Runnable runnable = () -> particleSprites.getCacheResultData().forEach(
@@ -118,12 +117,12 @@ public abstract class ParticleManagerMixin {
 			cancellable = true
 	)
 	private void cacheParticles(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-		if (DashLoader.isWrite()) {
+		if (DL.isWrite()) {
 			var particles = new HashMap<Identifier, List<Sprite>>();
 			this.spriteAwareFactories.forEach(
 					(identifier, simpleSpriteProvider) -> particles.put(identifier, ((ParticleManagerSimpleSpriteProviderAccessor) simpleSpriteProvider).getSprites()));
-			DashLoader.getData().particleSprites.setMinecraftData(particles);
-			DashLoader.getData().particleAtlas.setMinecraftData(this.particleAtlasTexture);
+			DL.getData().particleSprites.setMinecraftData(particles);
+			DL.getData().particleAtlas.setMinecraftData(this.particleAtlasTexture);
 		}
 	}
 

@@ -1,15 +1,14 @@
 package dev.quantumfusion.dashloader.data.image.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.mixin.accessor.EffectProgramAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.ProgramAccessor;
 import dev.quantumfusion.dashloader.util.MissingDataException;
+import java.util.List;
 import net.minecraft.client.gl.EffectProgram;
 import net.minecraft.client.gl.Program;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.List;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public final class DashProgram {
 	public final Program.Type shaderType;
@@ -26,7 +25,7 @@ public final class DashProgram {
 		ProgramAccessor access = (ProgramAccessor) program;
 		this.shaderType = access.getShaderType();
 		this.name = program.getName();
-		List<String> shader = DashLoader.getData().getWriteContextData().programData.get(access.getShaderRef());
+		List<String> shader = DL.getData().getWriteContextData().programData.get(access.getShaderRef());
 		if (shader == null) {
 			throw new MissingDataException();
 		}

@@ -71,7 +71,6 @@
     "option.misc.ModelIdentifierMixin",
     "option.misc.SearchManagerMixin",
     "option.misc.SoundManagerMixin",
-    "option.misc.TitleScreenMixin",
     "option.misc.UnicodeTextureFontMixin",
     "option.state.StateManagerBuilderMixin",
     "option.state.StateMixin"

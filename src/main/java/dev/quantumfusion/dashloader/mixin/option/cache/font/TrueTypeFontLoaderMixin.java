@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.font;
 
-import dev.quantumfusion.dashloader.DashLoader;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.TrueTypeFontLoader;
 import net.minecraft.resource.ResourceManager;
@@ -13,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(TrueTypeFontLoader.class)
 public class TrueTypeFontLoaderMixin {
@@ -28,8 +28,8 @@ public class TrueTypeFontLoaderMixin {
 			locals = LocalCapture.CAPTURE_FAILSOFT
 	)
 	private void loadInject(ResourceManager manager, CallbackInfoReturnable<Font> cir, STBTTFontinfo sTBTTFontinfo) {
-		if (DashLoader.isWrite()) {
-			DashLoader.getData().getWriteContextData().fontData.put(sTBTTFontinfo, this.filename);
+		if (DL.isWrite()) {
+			DL.getData().getWriteContextData().fontData.put(sTBTTFontinfo, this.filename);
 		}
 	}
 }

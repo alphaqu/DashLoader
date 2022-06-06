@@ -1,8 +1,10 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.model;
 
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.mixin.accessor.MultipartModelComponentAccessor;
 import dev.quantumfusion.dashloader.util.mixins.MixinThings;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.*;
@@ -20,10 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(MultipartUnbakedModel.class)
 public class MultipartUnbakedModelMixin {
@@ -44,12 +43,12 @@ public class MultipartUnbakedModelMixin {
 			cancellable = true
 	)
 	private void addPredicateInfo(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId, CallbackInfoReturnable<BakedModel> cir, MultipartBakedModel.Builder builder) {
-		if (DashLoader.isWrite()) {
+		if (DL.isWrite()) {
 			var bakedModel = (MultipartBakedModel) builder.build();
 			var outSelectors = new ArrayList<MultipartModelSelector>();
 
 			this.components.forEach(multipartModelComponent -> outSelectors.add(((MultipartModelComponentAccessor) multipartModelComponent).getSelector()));
-			DashLoader.getData().getWriteContextData().multipartPredicates.put(bakedModel, Pair.of(outSelectors, this.stateFactory));
+			DL.getData().getWriteContextData().multipartPredicates.put(bakedModel, Pair.of(outSelectors, this.stateFactory));
 			MixinThings.addPredicates(outSelectors, this.stateFactory);
 			cir.setReturnValue(bakedModel);
 		}

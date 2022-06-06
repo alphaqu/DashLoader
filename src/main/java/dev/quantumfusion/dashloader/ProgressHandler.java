@@ -1,10 +1,10 @@
-package dev.quantumfusion.dashloader.progress;
+package dev.quantumfusion.dashloader;
 
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StaticTask;
 
 import java.util.HashMap;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public final class ProgressHandler {
 	public static Task TASK = new StaticTask("Idle", 0);
@@ -24,7 +24,7 @@ public final class ProgressHandler {
 
 	private void tickProgress() {
 		final double actualProgress = TASK.getProgress();
-		final double divisionSpeed = (actualProgress < this.currentProgress) ? 3 : DashLoader.INSTANCE.config.config.progressBarSpeedDivision;
+		final double divisionSpeed = (actualProgress < this.currentProgress) ? 3 : DL.config.config.progressBarSpeedDivision;
 		this.currentProgress += (actualProgress - this.currentProgress) / divisionSpeed;
 	}
 

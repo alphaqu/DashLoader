@@ -1,19 +1,9 @@
 package dev.quantumfusion.dashloader.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.quantumfusion.dashloader.DashLoader;
+import dev.quantumfusion.dashloader.ProgressHandler;
 import dev.quantumfusion.dashloader.config.DashConfig;
-import dev.quantumfusion.dashloader.progress.ProgressHandler;
 import dev.quantumfusion.taski.builtin.StaticTask;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Matrix4f;
-import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.glfw.GLFW;
-
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URI;
@@ -22,14 +12,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.*;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.Matrix4f;
+import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.glfw.GLFW;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 import static dev.quantumfusion.dashloader.client.UIColors.*;
 import static dev.quantumfusion.dashloader.client.UIDrawer.TextOrientation.TEXT_LEFT;
 
 public class DashCachingScreen extends Screen {
 	public static final List<String> SUPPORTERS = new ArrayList<>();
 	public static Status STATUS = Status.IDLE;
-	private static Color FAILED_COLOR = new Color(255, 75, 69);
+	private static final Color FAILED_COLOR = new Color(255, 75, 69);
 
 	private final Screen previousScreen;
 
@@ -50,14 +48,14 @@ public class DashCachingScreen extends Screen {
 
 	public DashCachingScreen(Screen previousScreen) {
 		super(Text.of("Caching"));
-		UIColors.loadConfig(DashLoader.INSTANCE.config.config);
+		UIColors.loadConfig(DL.config.config);
 		this.previousScreen = previousScreen;
 		this.drawer.update(MinecraftClient.getInstance(), this::fillGradient);
 		this.updateConfig();
 	}
 
 	private void updateConfig() {
-		final DashConfig config = DashLoader.INSTANCE.config.config;
+		final DashConfig config = DL.config.config;
 		UIColors.loadConfig(config);
 
 		this.padding = config.paddingSize;
@@ -82,7 +80,7 @@ public class DashCachingScreen extends Screen {
 			case "LEFT" -> lineOrientation = UIDrawer.GradientOrientation.GRADIENT_LEFT;
 			case "RIGHT" -> lineOrientation = UIDrawer.GradientOrientation.GRADIENT_RIGHT;
 			case "DOWN" -> lineOrientation = UIDrawer.GradientOrientation.GRADIENT_DOWN;
-			default -> DashLoader.LOGGER.error("Direction {} does not exist. (LEFT, RIGHT, UP, DOWN)", lineDirection);
+			default -> DL.log.error("Direction {} does not exist. (LEFT, RIGHT, UP, DOWN)", lineDirection);
 		}
 
 		this.lineSpeedDifference = config.lineSpeedDifference;
@@ -109,8 +107,8 @@ public class DashCachingScreen extends Screen {
 
 
 		if (this.debug) {
-			DashLoader.INSTANCE.progress.setCurrentTask("debug");
-			DashLoader.INSTANCE.config.addListener(listener -> this.configRequiresUpdate = true);
+			DL.progress.setCurrentTask("debug");
+			DL.config.addListener(listener -> this.configRequiresUpdate = true);
 		}
 
 	}
@@ -145,7 +143,7 @@ public class DashCachingScreen extends Screen {
 	@Override
 	protected void init() {
 		if (!this.debug) {
-			final Thread thread = new Thread(DashLoader.INSTANCE::saveDashCache);
+			final Thread thread = new Thread(DL::saveDashCache);
 			thread.setName("dld-thread");
 			thread.start();
 		}
@@ -163,7 +161,7 @@ public class DashCachingScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if ((STATUS == Status.DONE) && !this.debug) {
 			MinecraftClient.getInstance().setScreen(this.previousScreen);
-			DashLoader.INSTANCE.resetDashLoader();
+			DL.resetDashLoader();
 			STATUS = Status.IDLE;
 		}
 
@@ -185,11 +183,11 @@ public class DashCachingScreen extends Screen {
 			currentProgressColor = getProgressColor(currentProgress);
 		} else if (STATUS == Status.CRASHED) {
 			ProgressHandler.TASK = new StaticTask("Crash", 1);
-			DashLoader.INSTANCE.progress.setCurrentTask("Internal crash. Please check logs or press ENTER.");
-			currentProgress = DashLoader.INSTANCE.progress.getProgress();
+			DL.progress.setCurrentTask("Internal crash. Please check logs or press ENTER.");
+			currentProgress = DL.progress.getProgress();
 			currentProgressColor = FAILED_COLOR;
 		} else {
-			currentProgress = DashLoader.INSTANCE.progress.getProgress();
+			currentProgress = DL.progress.getProgress();
 			currentProgressColor = getProgressColor(currentProgress);
 		}
 
@@ -206,7 +204,7 @@ public class DashCachingScreen extends Screen {
 		this.drawLines(this.lines, matrices);
 		this.drawer.drawQuad(PROGRESS_LANE_COLOR, 0, barY, width, this.progressBarHeight); // progress back
 		this.drawer.drawQuad(currentProgressColor, 0, barY, (int) (width * currentProgress), this.progressBarHeight); // the progress bar
-		this.drawer.drawText(TEXT_LEFT, DashLoader.INSTANCE.progress.getCurrentTask(), TEXT_COLOR, this.padding, barY - this.padding); // current task
+		this.drawer.drawText(TEXT_LEFT, DL.progress.getCurrentTask(), TEXT_COLOR, this.padding, barY - this.padding); // current task
 
 		// fun fact
 		this.drawer.drawText(TEXT_LEFT, this.fact, TEXT_COLOR, this.padding, this.padding + this.textRenderer.fontHeight);

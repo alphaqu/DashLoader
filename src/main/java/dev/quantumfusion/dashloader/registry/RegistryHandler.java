@@ -13,13 +13,6 @@ import java.util.*;
 import java.util.function.Function;
 
 public final class RegistryHandler {
-	private final Collection<DashObjectClass<?, ?>> dashObjects;
-	private final Map<Class<?>, DashFactory.FailCallback<?, ?>> callbacks = new HashMap<>();
-
-	public RegistryHandler(Collection<DashObjectClass<?, ?>> dashObjects) {
-		this.dashObjects = dashObjects;
-	}
-
 	private static <O> List<O> calculateBuildOrder(List<Holder<O>> elements) {
 		final int elementsSize = elements.size();
 		final var mapping = new HashMap<Class<?>, Holder<O>>();
@@ -68,11 +61,7 @@ public final class RegistryHandler {
 		return out;
 	}
 
-	public <R, D extends Dashable<R>> void addCallback(Class<D> dashTag, DashFactory.FailCallback<R, D> callback) {
-		this.callbacks.put(dashTag, callback);
-	}
-
-	public dev.quantumfusion.dashloader.registry.RegistryReader createReader(ChunkHolder... holders) {
+	public RegistryReader createReader(ChunkHolder... holders) {
 		var dataChunks = new ArrayList<AbstractDataChunk<?, ?>>();
 		for (var holder : holders) {
 			Collections.addAll(dataChunks, holder.getChunks());
@@ -85,9 +74,9 @@ public final class RegistryHandler {
 
 	}
 
-	public <R, D extends Dashable<R>> dev.quantumfusion.dashloader.registry.RegistryWriter createWriter() {
+	public <R, D extends Dashable<R>> RegistryWriter createWriter(Map<Class<?>, DashFactory.FailCallback<?, ?>> callbacks, Collection<DashObjectClass<?, ?>> dashObjects) {
 		Map<Class<?>, DashObjectGroup<R, D>> groups = new HashMap<>();
-		for (DashObjectClass<?, ?> raw : this.dashObjects) {
+		for (DashObjectClass<?, ?> raw : dashObjects) {
 			DashObjectClass<R, D> dashObject = (DashObjectClass<R, D>) raw;
 			var group = groups.computeIfAbsent(dashObject.getTag(), aClass -> new DashObjectGroup<>(dashObject.getTag()));
 			group.addDashObject(dashObject);
@@ -102,7 +91,7 @@ public final class RegistryHandler {
 
 		//noinspection unchecked
 		AbstractWriteChunk<R, D>[] chunks = new AbstractWriteChunk[groupOrder.size()];
-		dev.quantumfusion.dashloader.registry.RegistryWriter writer = new dev.quantumfusion.dashloader.registry.RegistryWriter(chunks);
+		RegistryWriter writer = new RegistryWriter(chunks);
 
 		if (groupOrder.size() > 63) {
 			throw new RuntimeException("Hit group limit of 63. Please contact QuantumFusion if you hit this limit!");
@@ -110,7 +99,7 @@ public final class RegistryHandler {
 
 		for (int i = 0; i < groupOrder.size(); i++) {
 			final DashObjectGroup<R, D> group = groupOrder.get(i);
-			chunks[i] = group.createWriteChunk((byte) i, writer);
+			chunks[i] = group.createWriteChunk((byte) i, writer, callbacks);
 			writer.addChunkMapping(group.dashTag, (byte) i);
 		}
 
@@ -138,7 +127,7 @@ public final class RegistryHandler {
 		}
 	}
 
-	private final class DashObjectGroup<R, D extends Dashable<R>> {
+	private static final class DashObjectGroup<R, D extends Dashable<R>> {
 		private final Class<? extends Dashable<?>> dashTag;
 		// enforce list on stagedWriter and force collection here to prevent this used when sorted build order is required.
 		private final Collection<DashObjectClass<R, D>> dashObjects;
@@ -184,8 +173,8 @@ public final class RegistryHandler {
 		}
 
 		@SuppressWarnings("unchecked")
-		public AbstractWriteChunk<R, D> createWriteChunk(byte pos, RegistryWriter writer) {
-			var callback = ((Map<Class<?>, DashFactory.FailCallback<R, D>>) (Map<?, ?>) RegistryHandler.this.callbacks).getOrDefault(this.dashTag, (raw, writer1) -> {
+		public AbstractWriteChunk<R, D> createWriteChunk(byte pos, RegistryWriter writer, Map<Class<?>, DashFactory.FailCallback<?, ?>> callbacks) {
+			var callback = ((Map<Class<?>, DashFactory.FailCallback<R, D>>) (Map<?, ?>) callbacks).getOrDefault(this.dashTag, (raw, writer1) -> {
 				throw new RuntimeException("Cannot create " + raw);
 			});
 

@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader.corehook.holder;
 
 import dev.quantumfusion.dashloader.DashDataManager;
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.data.image.shader.DashShader;
 import dev.quantumfusion.dashloader.util.MissingDataException;
 import dev.quantumfusion.taski.TaskUtil;
@@ -13,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class DashShaderData {
 	public final Map<String, DashShader> shaders;
@@ -29,7 +29,7 @@ public class DashShaderData {
 					try {
 						this.shaders.put(s, new DashShader(shader));
 					} catch (MissingDataException e) {
-						DashLoader.LOGGER.warn("Skipping shader {}", s);
+						DL.log.warn("Skipping shader {}", s);
 					}
 				})
 		);
@@ -40,7 +40,7 @@ public class DashShaderData {
 		Map<String, Shader> out = new ConcurrentHashMap<>();
 		List<Runnable> runnables = new ArrayList<>();
 		this.shaders.forEach((key, value) -> runnables.add(() -> out.put(key, value.export())));
-		DashLoader.INSTANCE.thread.parallelRunnable(runnables);
+		DL.thread.parallelRunnable(runnables);
 		return out;
 	}
 }

@@ -1,11 +1,9 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.model;
 
 import com.mojang.datafixers.util.Pair;
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.api.option.Option;
 import dev.quantumfusion.dashloader.fallback.model.MissingDashModel;
 import dev.quantumfusion.dashloader.fallback.model.UnbakedBakedModel;
-import dev.quantumfusion.dashloader.util.mixins.MixinThings;
 import dev.quantumfusion.dashloader.util.mixins.SpriteAtlasTextureDuck;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -36,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(value = ModelLoader.class, priority = 69420)
 public abstract class ModelLoaderMixin {
@@ -67,10 +66,10 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=static_definitions", shift = At.Shift.AFTER)
 	)
 	private void injectLoadedModels(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int i, CallbackInfo ci) {
-		if (DashLoader.isRead()) {
-			var data = DashLoader.getData();
+		if (DL.isRead()) {
+			var data = DL.getData();
 			var dashModels = data.bakedModels.getCacheResultData();
-			DashLoader.LOGGER.info("Injecting {} Cached Models", dashModels.size());
+			DL.log.info("Injecting {} Cached Models", dashModels.size());
 			this.unbakedModels = new Object2ObjectOpenHashMap<>(this.unbakedModels);
 			this.modelsToBake = new Object2ObjectOpenHashMap<>(this.modelsToBake);
 			this.modelsToLoad = new ObjectOpenHashSet<>(this.modelsToLoad);
@@ -92,13 +91,13 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE", target = "Ljava/util/Iterator;hasNext()Z", ordinal = 0)
 	)
 	private boolean loadMissingModels(Iterator instance) {
-		if (DashLoader.isRead()) {
-			final Object2ObjectMap<BlockState, Identifier> missingModelsRead = DashLoader.getData().getReadContextData().missingModelsRead;
+		if (DL.isRead()) {
+			final Object2ObjectMap<BlockState, Identifier> missingModelsRead = DL.getData().getReadContextData().missingModelsRead;
 			for (BlockState blockState : missingModelsRead.keySet()) {
 				// load thing lambda
 				this.method_4716(blockState);
 			}
-			DashLoader.LOGGER.info("Loaded {} unsupported models.", missingModelsRead.size());
+			DL.log.info("Loaded {} unsupported models.", missingModelsRead.size());
 			return false;
 		}
 		return instance.hasNext();
@@ -113,12 +112,12 @@ public abstract class ModelLoaderMixin {
 									  Set<Pair<String, String>> thing,
 									  Set<SpriteIdentifier> thing2,
 									  Map<Identifier, List<SpriteIdentifier>> map) {
-		if (DashLoader.isRead()) {
-			DashLoader.LOGGER.info("Injecting Atlases");
-			DashLoader.getData().getReadContextData().dashAtlasManager.consumeAtlases(Option.CACHE_MODEL_LOADER, (pair) -> {
+		if (DL.isRead()) {
+			DL.log.info("Injecting Atlases");
+			DL.getData().getReadContextData().dashAtlasManager.consumeAtlases(Option.CACHE_MODEL_LOADER, (pair) -> {
 				SpriteAtlasTexture atlas = pair.getLeft();
 				Identifier id = atlas.getId();
-				DashLoader.LOGGER.info("Injected {} atlas.", id);
+				DL.log.info("Injected {} atlas.", id);
 				this.spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, ((SpriteAtlasTextureDuck) atlas).getCachedSprites().keySet().stream(), profiler, pair.getRight().mipLevel())));
 			});
 			map.clear();
@@ -135,7 +134,7 @@ public abstract class ModelLoaderMixin {
 			)
 	)
 	private void atlasInject(TextureManager textureManager, Profiler profiler, CallbackInfoReturnable<SpriteAtlasManager> cir) {
-		if (DashLoader.isRead()) {
+		if (DL.isRead()) {
 			// Cache stats
 			int cachedModels = 0;
 			int fallbackModels = 0;
@@ -146,8 +145,8 @@ public abstract class ModelLoaderMixin {
 					fallbackModels += 1;
 				}
 			}
-			MixinThings.CACHED_MODELS_COUNT = cachedModels;
-			MixinThings.FALLBACK_MODELS_COUNT = fallbackModels;
+			DL.profilerHandler.cached_models_count = cachedModels;
+			DL.profilerHandler.fallback_models_count = fallbackModels;
 		}
 	}
 }

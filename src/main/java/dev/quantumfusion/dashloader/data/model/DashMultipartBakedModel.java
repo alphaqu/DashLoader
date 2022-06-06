@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader.data.model;
 
 import dev.quantumfusion.dashloader.DashDataManager;
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.common.IntIntList;
@@ -14,16 +13,16 @@ import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.util.RegistryUtil;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.MultipartBakedModel;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.MultipartBakedModel;
+import org.apache.commons.lang3.tuple.Pair;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @DashObject(MultipartBakedModel.class)
 @DashDependencies({DashWeightedBakedModel.class, DashPredicate.class, DashBlockState.class})
@@ -40,7 +39,7 @@ public class DashMultipartBakedModel implements DashModel {
 	}
 
 	public DashMultipartBakedModel(MultipartBakedModel model, RegistryWriter writer) {
-		final DashDataManager.DashWriteContextData writeContextData = DashLoader.getData().getWriteContextData();
+		final DashDataManager.DashWriteContextData writeContextData = DL.getData().getWriteContextData();
 		var selectors = writeContextData.multipartPredicates.get(model);
 		var access = ((MultipartBakedModelAccessor) model);
 		var accessComponents = access.getComponents();

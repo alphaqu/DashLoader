@@ -1,22 +1,21 @@
 package dev.quantumfusion.dashloader.corehook;
 
 import dev.quantumfusion.dashloader.DashDataManager;
-import dev.quantumfusion.dashloader.DashLoader;
+import dev.quantumfusion.dashloader.ProgressHandler;
 import dev.quantumfusion.dashloader.api.option.ConfigHandler;
 import dev.quantumfusion.dashloader.api.option.Option;
 import dev.quantumfusion.dashloader.corehook.holder.*;
-import dev.quantumfusion.dashloader.progress.ProgressHandler;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.util.DashUtil;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
+import java.util.function.Consumer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @DataNullable
 public class MappingData {
@@ -54,16 +53,16 @@ public class MappingData {
 
 
 	public void map(RegistryWriter registry, StepTask parent) {
-		if (DashLoader.isRead()) {
+		if (DL.isRead()) {
 			throw new RuntimeException("Tried to map data when DashDataManager is in Read mode");
 		}
 
-		final ProgressHandler progress = DashLoader.INSTANCE.progress;
+		final ProgressHandler progress = DL.progress;
 		progress.setCurrentTask("convert");
 
 		parent.run(new StepTask("Mapping Assets", 6), (task) -> {
 
-			final DashDataManager dataManager = DashLoader.getData();
+			final DashDataManager dataManager = DL.getData();
 			if (ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
 				progress.setCurrentTask("convert.model");
 				this.modelData = new DashModelData(dataManager, registry, task);

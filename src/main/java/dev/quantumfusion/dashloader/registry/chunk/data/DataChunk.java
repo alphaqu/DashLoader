@@ -1,8 +1,8 @@
 package dev.quantumfusion.dashloader.registry.chunk.data;
 
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class DataChunk<R, D extends Dashable<R>> extends AbstractDataChunk<R, D> {
 	public final D[] dashables;
@@ -21,7 +21,7 @@ public class DataChunk<R, D extends Dashable<R>> extends AbstractDataChunk<R, D>
 
 	@Override
 	public void export(Object[] data, RegistryReader registry) {
-		DashLoader.INSTANCE.thread.parallelExport(this.dashables, data, registry);
+		DL.thread.parallelExport(this.dashables, data, registry);
 	}
 
 	@Override

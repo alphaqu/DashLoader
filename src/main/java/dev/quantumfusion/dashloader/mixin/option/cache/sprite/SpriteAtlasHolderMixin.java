@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.sprite;
 
-import dev.quantumfusion.dashloader.DashLoader;
 import net.minecraft.client.texture.SpriteAtlasHolder;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.ResourceManager;
@@ -13,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 
 @Mixin(SpriteAtlasHolder.class)
@@ -28,8 +28,8 @@ public class SpriteAtlasHolderMixin {
 			cancellable = true
 	)
 	private void prepareOverride(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<SpriteAtlasTexture.Data> cir) {
-		if (DashLoader.isRead()) {
-			var dashAtlasManager = DashLoader.getData().getReadContextData().dashAtlasManager;
+		if (DL.isRead()) {
+			var dashAtlasManager = DL.getData().getReadContextData().dashAtlasManager;
 			if (dashAtlasManager.getAtlas(this.atlas.getId()) != null) {
 				cir.setReturnValue(null);
 			}
@@ -43,8 +43,8 @@ public class SpriteAtlasHolderMixin {
 			cancellable = true
 	)
 	private void applyOverride(SpriteAtlasTexture.Data data, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		if (DashLoader.isRead()) {
-			var dashAtlasManager = DashLoader.getData().getReadContextData().dashAtlasManager;
+		if (DL.isRead()) {
+			var dashAtlasManager = DL.getData().getReadContextData().dashAtlasManager;
 			final SpriteAtlasTexture atlas = dashAtlasManager.getAtlas(this.atlas.getId());
 			if (atlas != null) {
 				this.atlas = atlas;
@@ -59,10 +59,10 @@ public class SpriteAtlasHolderMixin {
 			cancellable = true
 	)
 	private void applyCreate(SpriteAtlasTexture.Data data, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		if (DashLoader.isRead()) {
+		if (DL.isRead()) {
 			ci.cancel();
 		} else {
-			DashLoader.getData().getWriteContextData().extraAtlases.add(this.atlas);
+			DL.getData().getWriteContextData().extraAtlases.add(this.atlas);
 		}
 	}
 }

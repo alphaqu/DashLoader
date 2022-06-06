@@ -1,23 +1,22 @@
 package dev.quantumfusion.dashloader.data.font;
 
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.mixin.accessor.TrueTypeFontAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.util.IOHelper;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TrueTypeFont;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @DashObject(TrueTypeFont.class)
 public class DashTrueTypeFont implements DashFont {
@@ -42,7 +41,7 @@ public class DashTrueTypeFont implements DashFont {
 
 	public DashTrueTypeFont(TrueTypeFont font) {
 		TrueTypeFontAccessor fontAccess = (TrueTypeFontAccessor) font;
-		final Identifier ttFont = DashLoader.getData().getWriteContextData().fontData.get(fontAccess.getInfo());
+		final Identifier ttFont = DL.getData().getWriteContextData().fontData.get(fontAccess.getInfo());
 		byte[] data = null;
 		try {
 			Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(new Identifier(ttFont.getNamespace(), "font/" + ttFont.getPath()));
