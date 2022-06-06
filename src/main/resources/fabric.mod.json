@@ -3,11 +3,10 @@
 	"id" : "dashloader",
 	"version" : "${version}",
 	"name" : "DashLoader",
-	"description" : "Launch at the speed of Light.\n Made with love by the QuantumFusion team.\n",
+	"description" : "Launch at the speed of Light.",
 	"authors" : [
 		"!alpha",
-		"leocth",
-		"jákob"
+		"leocth"
 	],
 	"contact" : {
 		"homepage" : "https://discord.gg/VeFTrtCkrb",
