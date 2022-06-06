@@ -14,7 +14,7 @@
 	},
 	"license" : "LGPL-3.0-only",
 	"icon" : "dashloader/textures/icon.png",
-	"environment" : "*",
+	"environment" : "client",
 	"accessWidener" : "dashloader.accesswidener",
 	"mixins" : [
 		"dashloader.mixins.json"
