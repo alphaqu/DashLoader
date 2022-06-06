@@ -9,4 +9,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'dashloader-definitions'
+rootProject.name = 'dashloader'

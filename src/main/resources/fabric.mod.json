@@ -14,7 +14,7 @@
 		"sources" : "https://github.com/QuantumFusionMC/DashLoader-Definition"
 	},
 	"license" : "LGPL-3.0-only",
-	"icon" : "assets/dashloader/textures/icon.png",
+	"icon" : "dashloader/textures/icon.png",
 	"environment" : "*",
 	"accessWidener" : "dashloader.accesswidener",
 	"mixins" : [
@@ -36,34 +36,27 @@
 			"CACHE_PARTICLE"
 		],
 		"dashloader:dashobject" : [
-			"dev.quantumfusion.dashloader.def.data.DashIdentifier",
-			"dev.quantumfusion.dashloader.def.data.DashModelIdentifier",
-
-			"dev.quantumfusion.dashloader.def.data.model.DashBasicBakedModel",
-			"dev.quantumfusion.dashloader.def.data.model.DashBuiltinBakedModel",
-			"dev.quantumfusion.dashloader.def.data.model.DashMultipartBakedModel",
-			"dev.quantumfusion.dashloader.def.data.model.DashWeightedBakedModel",
-			"dev.quantumfusion.dashloader.def.fallback.model.DashMissingDashModel",
-
-			"dev.quantumfusion.dashloader.def.data.model.components.DashBakedQuad",
-
-			"dev.quantumfusion.dashloader.def.data.model.predicates.DashAndPredicate",
-			"dev.quantumfusion.dashloader.def.data.model.predicates.DashOrPredicate",
-			"dev.quantumfusion.dashloader.def.data.model.predicates.DashSimplePredicate",
-			"dev.quantumfusion.dashloader.def.data.model.predicates.DashStaticPredicate",
-
-			"dev.quantumfusion.dashloader.def.data.image.DashImage",
-			"dev.quantumfusion.dashloader.def.data.image.DashSpriteImpl",
-			"dev.quantumfusion.dashloader.def.data.image.DashMissingSprite",
-			"dev.quantumfusion.dashloader.def.data.image.DashFabricSprite",
-
-
-			"dev.quantumfusion.dashloader.def.data.font.DashBitmapFont",
-			"dev.quantumfusion.dashloader.def.data.font.DashBlankFont",
-			"dev.quantumfusion.dashloader.def.data.font.DashTrueTypeFont",
-			"dev.quantumfusion.dashloader.def.data.font.DashUnicodeFont",
-
-			"dev.quantumfusion.dashloader.def.data.blockstate.DashBlockState"
+			"dev.quantumfusion.dashloader.data.DashIdentifier",
+			"dev.quantumfusion.dashloader.data.DashModelIdentifier",
+			"dev.quantumfusion.dashloader.data.model.DashBasicBakedModel",
+			"dev.quantumfusion.dashloader.data.model.DashBuiltinBakedModel",
+			"dev.quantumfusion.dashloader.data.model.DashMultipartBakedModel",
+			"dev.quantumfusion.dashloader.data.model.DashWeightedBakedModel",
+			"dev.quantumfusion.dashloader.fallback.model.DashMissingDashModel",
+			"dev.quantumfusion.dashloader.data.model.components.DashBakedQuad",
+			"dev.quantumfusion.dashloader.data.model.predicates.DashAndPredicate",
+			"dev.quantumfusion.dashloader.data.model.predicates.DashOrPredicate",
+			"dev.quantumfusion.dashloader.data.model.predicates.DashSimplePredicate",
+			"dev.quantumfusion.dashloader.data.model.predicates.DashStaticPredicate",
+			"dev.quantumfusion.dashloader.data.image.DashImage",
+			"dev.quantumfusion.dashloader.data.image.DashSpriteImpl",
+			"dev.quantumfusion.dashloader.data.image.DashMissingSprite",
+			"dev.quantumfusion.dashloader.data.image.DashFabricSprite",
+			"dev.quantumfusion.dashloader.data.font.DashBitmapFont",
+			"dev.quantumfusion.dashloader.data.font.DashBlankFont",
+			"dev.quantumfusion.dashloader.data.font.DashTrueTypeFont",
+			"dev.quantumfusion.dashloader.data.font.DashUnicodeFont",
+			"dev.quantumfusion.dashloader.data.blockstate.DashBlockState"
 		]
 	},
 	"breaks" : {

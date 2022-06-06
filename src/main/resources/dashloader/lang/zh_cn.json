@@ -1,0 +1,17 @@
+{
+  "initializing": "正在初始化",
+  "debug": "已在设置中开启调试模式。",
+  "convert": "正在转化游戏文件",
+  "convert.blockstate": "正在转化方块状态",
+  "convert.model": "正在转化模型文件",
+  "convert.image": "正在转化贴图文件",
+  "convert.particle": "正在转化粒子效果",
+  "convert.font": "正在转化字体文件",
+  "convert.splashtext": "正在转化闪烁标语",
+  "convert.shader": "正在转化光影文件",
+  "export.model": "正在导出模型文件",
+  "export.image": "正在导出贴图文件",
+  "export.registry": "正在导出注册表",
+  "export.identifier": "正在导出注册ID",
+  "export.quad": "正在导出四边形"
+}
