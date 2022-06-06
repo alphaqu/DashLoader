@@ -86,11 +86,6 @@ public class DashLoaderAPI {
 			FabricLoader.getInstance().getAllMods().forEach(modContainer -> {
 				final ModMetadata metadata = modContainer.getMetadata();
 				if (metadata.getCustomValues().size() != 0) {
-					CustomValue value = metadata.getCustomValue("dashloader:customobject");
-					if (value != null) {
-						LOGGER.error("Found DashLoader 2.0 mod: " + modContainer.getMetadata().getId());
-					}
-
 					this.applyForClassesInValue(metadata, DashConstants.DASH_OBJECT_TAG, this::registerDashObject);
 					this.applyForClassesInValue(metadata, DashConstants.DASH_HOOK_TAG, this::registerHook);
 				}
