@@ -4,7 +4,7 @@ import dev.quantumfusion.dashloader.mixin.accessor.GlBlendStateAccessor;
 import net.minecraft.client.gl.GlBlendState;
 
 public record DashGlBlendState(
-		int srcRgb, int srcAlpha, int dstRgb, int dstAlpha, int func, boolean separateBlend, boolean blendDisabled) {
+		int srcRgb, int srcAlpha, int dstRgb, int dstAlpha, int mode, boolean separateBlend, boolean blendDisabled) {
 
 
 	public DashGlBlendState(GlBlendStateAccessor blendStateAccess) {
@@ -13,7 +13,7 @@ public record DashGlBlendState(
 				blendStateAccess.getSrcAlpha(),
 				blendStateAccess.getDstRgb(),
 				blendStateAccess.getDstAlpha(),
-				blendStateAccess.getFunc(),
+				blendStateAccess.getMode(),
 				blendStateAccess.getSeparateBlend(),
 				blendStateAccess.getBlendDisabled());
 	}
@@ -23,6 +23,6 @@ public record DashGlBlendState(
 	}
 
 	public GlBlendState export() {
-		return GlBlendStateAccessor.create(this.separateBlend, this.blendDisabled, this.srcRgb, this.dstRgb, this.srcAlpha, this.dstAlpha, this.func);
+		return GlBlendStateAccessor.create(this.separateBlend, this.blendDisabled, this.srcRgb, this.dstRgb, this.srcAlpha, this.dstAlpha, this.mode);
 	}
 }

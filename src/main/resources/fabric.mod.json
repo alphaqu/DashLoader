@@ -21,8 +21,8 @@
 	],
 	"depends" : {
 		"fabricloader" : ">=0.11.3",
-		"minecraft" : "1.18.x",
-		"java" : ">=16"
+		"minecraft" : "1.19.x",
+		"java" : ">=17"
 	},
 	"custom": {
 		"sodium:options": {
@@ -53,6 +53,7 @@
 			"dev.quantumfusion.dashloader.data.image.DashFabricSprite",
 			"dev.quantumfusion.dashloader.data.font.DashBitmapFont",
 			"dev.quantumfusion.dashloader.data.font.DashBlankFont",
+			"dev.quantumfusion.dashloader.data.font.DashSpaceFont",
 			"dev.quantumfusion.dashloader.data.font.DashTrueTypeFont",
 			"dev.quantumfusion.dashloader.data.font.DashUnicodeFont",
 			"dev.quantumfusion.dashloader.data.blockstate.DashBlockState"

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface GlBlendStateAccessor {
 
 	@Invoker("<init>")
-	static GlBlendState create(boolean separateBlend, boolean blendDisabled, int srcRgb, int dstRgb, int srcAlpha, int dstAlpha, int func) {
+	static GlBlendState create(boolean separateBlend, boolean blendDisabled, int srcRgb, int dstRgb, int srcAlpha, int dstAlpha, int mode) {
 		throw new AssertionError();
 	}
 
@@ -26,7 +26,7 @@ public interface GlBlendStateAccessor {
 	int getDstAlpha();
 
 	@Accessor
-	int getFunc();
+	int getMode();
 
 	@Accessor
 	boolean getSeparateBlend();

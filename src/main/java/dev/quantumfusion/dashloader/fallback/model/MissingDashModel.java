@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.fallback.model;
 
+import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
@@ -7,10 +8,8 @@ import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Random;
 
 public class MissingDashModel implements BakedModel {
 
@@ -18,6 +17,7 @@ public class MissingDashModel implements BakedModel {
 	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
 		return List.of();
 	}
+
 
 	@Override
 	public boolean useAmbientOcclusion() {

@@ -102,8 +102,8 @@ public class FontManagerOverride {
 					access.getGlyphRendererCache().clear();
 					access.getGlyphCache().clear();
 					access.getCharactersByWidth().clear();
-					access.setBlankGlyphRenderer(access.callGetGlyphRenderer(BlankGlyph.INSTANCE));
-					access.setWhiteRectangleGlyphRenderer(access.callGetGlyphRenderer(WhiteRectangleGlyph.INSTANCE));
+					access.setBlankGlyphRenderer(BuiltinEmptyGlyph.MISSING.bake(access::callGetGlyphRenderer));
+					access.setWhiteRectangleGlyphRenderer(BuiltinEmptyGlyph.WHITE.bake(access::callGetGlyphRenderer));
 
 					access.getCharactersByWidth().putAll(entry.getKey());
 					access.getFonts().addAll(entry.getValue());
@@ -129,16 +129,13 @@ public class FontManagerOverride {
 		Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<>();
 		List<Font> fontsOut = new ArrayList<>();
 
-		final Glyph space = FontStorageAccessor.getSPACE();
-
 		final IntFunction<IntList> creatIntArrayListFunc = (i) -> new IntArrayList();
-
 		fonts.forEach(currentFont -> currentFont.getProvidedGlyphs().forEach((IntConsumer) codePoint -> {
 			for (int i = 0, fontsSize = fonts.size(); i < fontsSize; i++) {
 				Font font = fonts.get(i);
-				Glyph glyph = codePoint == 32 ? space : font.getGlyph(codePoint);
+				Glyph glyph = font.getGlyph(codePoint);
 				if (glyph != null) {
-					if (glyph != BlankGlyph.INSTANCE) {
+					if (glyph != BuiltinEmptyGlyph.MISSING) {
 						charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), creatIntArrayListFunc).add(codePoint);
 					}
 					fontsOut.add(font);

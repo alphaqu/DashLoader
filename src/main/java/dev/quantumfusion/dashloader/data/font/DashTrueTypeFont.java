@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TrueTypeFont;
 import net.minecraft.resource.Resource;
@@ -44,8 +45,10 @@ public class DashTrueTypeFont implements DashFont {
 		final Identifier ttFont = DL.getData().getWriteContextData().fontData.get(fontAccess.getInfo());
 		byte[] data = null;
 		try {
-			Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(new Identifier(ttFont.getNamespace(), "font/" + ttFont.getPath()));
-			data = IOHelper.streamToArray(resource.getInputStream());
+			Optional<Resource> resource = MinecraftClient.getInstance().getResourceManager().getResource(new Identifier(ttFont.getNamespace(), "font/" + ttFont.getPath()));
+			if (resource.isPresent()) {
+				data = IOHelper.streamToArray(resource.get().getInputStream());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

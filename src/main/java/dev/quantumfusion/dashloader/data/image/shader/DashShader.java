@@ -134,7 +134,7 @@ public class DashShader {
 
 		if (this.attributeNames != null) {
 			int l = 0;
-			for (UnmodifiableIterator<String> var35 = this.format.getFormat().getShaderAttributes().iterator(); var35.hasNext(); ++l) {
+			for (UnmodifiableIterator<String> var35 = this.format.getFormat().getAttributeNames().iterator(); var35.hasNext(); ++l) {
 				String string3 = var35.next();
 				GlUniform.bindAttribLocation(programId, l, string3);
 				loadedAttributeIds.add(l);

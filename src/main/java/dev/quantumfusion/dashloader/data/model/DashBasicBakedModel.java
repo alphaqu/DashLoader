@@ -19,7 +19,7 @@ import net.minecraft.util.math.Direction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import net.minecraft.util.math.random.Random;
 
 @DashObject(BasicBakedModel.class)
 @DashDependencies({DashSprite.class, DashBakedQuad.class})
@@ -54,7 +54,7 @@ public final class DashBasicBakedModel implements DashModel {
 	public DashBasicBakedModel(BasicBakedModel basicBakedModel, RegistryWriter writer) {
 		BasicBakedModelAccessor access = ((BasicBakedModelAccessor) basicBakedModel);
 		this.quads = new ArrayList<>();
-		basicBakedModel.getQuads(null, null, new Random());
+		basicBakedModel.getQuads(null, null, Random.create());
 		for (var quad : access.getQuads()) {
 			this.quads.add(writer.add(quad));
 		}
