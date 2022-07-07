@@ -2,7 +2,7 @@ package dev.quantumfusion.dashloader.corehook.holder;
 
 import dev.quantumfusion.dashloader.DashDataManager;
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.common.IntIntList;
+import dev.quantumfusion.dashloader.data.common.IntIntList;
 import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.data.model.DashModel;
 import dev.quantumfusion.dashloader.registry.RegistryReader;

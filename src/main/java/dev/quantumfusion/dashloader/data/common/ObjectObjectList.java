@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.common;
+package dev.quantumfusion.dashloader.data.common;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,7 +2,7 @@ package dev.quantumfusion.dashloader.data.model;
 
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.common.ObjectObjectList;
+import dev.quantumfusion.dashloader.data.common.ObjectObjectList;
 import dev.quantumfusion.dashloader.data.image.DashSprite;
 import dev.quantumfusion.dashloader.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.data.model.components.DashModelOverrideList;

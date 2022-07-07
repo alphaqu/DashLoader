@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.data.image;
 
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.common.IntIntList;
+import dev.quantumfusion.dashloader.data.common.IntIntList;
 import dev.quantumfusion.dashloader.mixin.accessor.AbstractTextureAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAtlasTextureAccessor;

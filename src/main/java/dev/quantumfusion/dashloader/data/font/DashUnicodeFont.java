@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.data.font;
 
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.common.IntIntList;
+import dev.quantumfusion.dashloader.data.common.IntIntList;
 import dev.quantumfusion.dashloader.mixin.accessor.UnicodeTextureFontAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;

@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.corehook.holder;
 
 import dev.quantumfusion.dashloader.DashDataManager;
-import dev.quantumfusion.dashloader.common.ObjectObjectList;
+import dev.quantumfusion.dashloader.data.common.ObjectObjectList;
 import dev.quantumfusion.dashloader.data.image.DashSpriteAtlasTexture;
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAtlasManagerAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
