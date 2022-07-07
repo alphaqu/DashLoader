@@ -14,7 +14,7 @@ import net.minecraft.client.render.VertexFormat;
 
 import java.util.*;
 
-public class DashShader {
+public final class DashShader {
 	public final Map<String, Sampler> samplers;
 	public final String name;
 	public final DashGlBlendState blendState;

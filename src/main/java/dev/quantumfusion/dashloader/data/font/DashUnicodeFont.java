@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @DashObject(UnicodeTextureFont.class)
-public class DashUnicodeFont implements DashFont {
+public final class DashUnicodeFont implements DashFont {
 	public final IntIntList images;
 	public final byte[] sizes;
 	public final String template;

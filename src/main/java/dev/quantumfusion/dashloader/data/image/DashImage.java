@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 @DashObject(NativeImage.class)
-public class DashImage implements Dashable<NativeImage> {
+public final class DashImage implements Dashable<NativeImage> {
 	public final byte[] image;
 	public final NativeImage.Format format;
 	public final boolean useSTB;

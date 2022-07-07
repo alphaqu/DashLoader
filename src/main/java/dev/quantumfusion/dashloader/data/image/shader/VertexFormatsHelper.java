@@ -3,7 +3,7 @@ package dev.quantumfusion.dashloader.data.image.shader;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 
-public class VertexFormatsHelper {
+public final class VertexFormatsHelper {
 
 	public static Value getEnum(VertexFormat format) {
 		//i tried having a cache but mojang does not calculate order in their hashCode impl which lead to POSITION_TEXTURE_COLOR merging with POSITION_COLOR_TEXTURE
@@ -68,7 +68,7 @@ public class VertexFormatsHelper {
 		POSITION_TEXTURE_LIGHT_COLOR(VertexFormats.POSITION_TEXTURE_LIGHT_COLOR),
 		POSITION_TEXTURE_COLOR_NORMAL(VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
 
-		VertexFormat format;
+		final VertexFormat format;
 
 		Value(VertexFormat format) {
 			this.format = format;

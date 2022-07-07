@@ -6,7 +6,7 @@ import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.util.Identifier;
 
-public class DashModelOverrideList {
+public final class DashModelOverrideList {
 	public final DashModelOverrideListBakedOverride[] overrides;
 	public final Integer[] conditionTypes; //identifiers
 

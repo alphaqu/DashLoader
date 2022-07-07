@@ -19,7 +19,7 @@ import org.lwjgl.stb.STBTruetype;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @DashObject(TrueTypeFont.class)
-public class DashTrueTypeFont implements DashFont {
+public final class DashTrueTypeFont implements DashFont {
 	public final byte[] ttfBuffer;
 	public final float oversample;
 	public final List<Integer> excludedCharacters;

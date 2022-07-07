@@ -5,7 +5,7 @@ import dev.quantumfusion.dashloader.mixin.accessor.SpriteAnimationFrameAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import net.minecraft.client.texture.Sprite;
 
-public class DashSpriteAnimationFrame implements Dashable<Sprite.AnimationFrame> {
+public final class DashSpriteAnimationFrame implements Dashable<Sprite.AnimationFrame> {
 	public final int index;
 	public final int time;
 

@@ -9,13 +9,12 @@ import net.minecraft.client.render.model.json.MultipartModelSelector;
 import java.util.function.Predicate;
 
 @DashObject(BooleanSelector.class)
-public class DashStaticPredicate implements DashPredicate {
+public final class DashStaticPredicate implements DashPredicate {
 	public final boolean value;
 
 	public DashStaticPredicate(boolean value) {
 		this.value = value;
 	}
-
 
 	public DashStaticPredicate(BooleanSelector multipartModelSelector) {
 		this.value = multipartModelSelector.selector;

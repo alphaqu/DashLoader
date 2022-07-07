@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 
 @DashObject(OrMultipartModelSelector.class)
 @DashDependencies(DashSimplePredicate.class)
-public class DashOrPredicate implements DashPredicate {
+public final class DashOrPredicate implements DashPredicate {
 	public final List<DashPredicate> selectors;
 	public final int identifier;
 

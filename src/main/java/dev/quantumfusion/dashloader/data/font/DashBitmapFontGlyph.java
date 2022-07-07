@@ -5,7 +5,7 @@ import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import net.minecraft.client.font.BitmapFont;
 
-public class DashBitmapFontGlyph {
+public final class DashBitmapFontGlyph {
 	public final float scaleFactor;
 	public final int image;
 	public final int x;
