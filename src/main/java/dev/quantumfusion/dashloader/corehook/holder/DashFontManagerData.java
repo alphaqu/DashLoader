@@ -2,7 +2,7 @@ package dev.quantumfusion.dashloader.corehook.holder;
 
 import dev.quantumfusion.dashloader.DashDataManager;
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.common.IntObjectList;
+import dev.quantumfusion.dashloader.data.common.IntObjectList;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.taski.builtin.StepTask;

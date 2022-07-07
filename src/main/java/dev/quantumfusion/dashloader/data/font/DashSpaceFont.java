@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.data.font;
 
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.common.IntObjectList;
+import dev.quantumfusion.dashloader.data.common.IntObjectList;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import it.unimi.dsi.fastutil.ints.Int2FloatArrayMap;
 import net.minecraft.client.font.Font;

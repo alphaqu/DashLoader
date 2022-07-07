@@ -2,7 +2,7 @@ package dev.quantumfusion.dashloader.data.font;
 
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.common.IntObjectList;
+import dev.quantumfusion.dashloader.data.common.IntObjectList;
 import dev.quantumfusion.dashloader.data.image.DashImage;
 import dev.quantumfusion.dashloader.mixin.accessor.BitmapFontAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
