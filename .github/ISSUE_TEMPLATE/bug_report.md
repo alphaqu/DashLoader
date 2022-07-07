@@ -27,5 +27,9 @@ If applicable, add screenshots to help explain your problem.
  - DashLoader Version [e.g. 3.0-rc14]
  - Minecraft Version [e.g. 1.18.1]
 
+**Full Logs**
+Please always provide your entire minecraft logs when you report an issue to dashloader. 
+Upload them to sites like pastebin.com or paste.gg and then put the link here.
+
 **Additional context**
 Add any other context about the problem here.
