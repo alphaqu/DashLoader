@@ -27,7 +27,6 @@ import static dev.quantumfusion.dashloader.DashLoader.DL;
 @DashObject(MultipartBakedModel.class)
 @DashDependencies({DashWeightedBakedModel.class, DashPredicate.class, DashBlockState.class})
 public class DashMultipartBakedModel implements DashModel {
-	private static final Class<MultipartBakedModel> cls = MultipartBakedModel.class;
 	//identifier baked model
 	public final IntIntList components;
 	public final IntObjectList<byte[]> stateCache;
@@ -58,7 +57,7 @@ public class DashMultipartBakedModel implements DashModel {
 
 	@Override
 	public MultipartBakedModel export(RegistryReader reader) {
-		MultipartBakedModel model = UnsafeHelper.allocateInstance(cls);
+		MultipartBakedModel model = UnsafeHelper.allocateInstance(MultipartBakedModel.class);
 
 		Map<BlockState, BitSet> stateCacheOut = new Reference2ObjectOpenHashMap<>();
 		this.stateCache.forEach((blockstate, bitSet) -> stateCacheOut.put(reader.get(blockstate), BitSet.valueOf(bitSet)));

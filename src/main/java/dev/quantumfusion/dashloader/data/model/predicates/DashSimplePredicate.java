@@ -22,7 +22,7 @@ import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @DashObject(SimpleMultipartModelSelector.class)
 @DashDependencies(DashIdentifierInterface.class)
-public class DashSimplePredicate implements DashPredicate {
+public final class DashSimplePredicate implements DashPredicate {
 	public final String key;
 	public final String valueString;
 	public final int identifier;

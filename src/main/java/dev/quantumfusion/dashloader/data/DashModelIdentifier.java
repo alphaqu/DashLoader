@@ -9,7 +9,7 @@ import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 
 @DashObject(ModelIdentifier.class)
-public class DashModelIdentifier implements DashIdentifierInterface {
+public final class DashModelIdentifier implements DashIdentifierInterface {
 	public final String @DataFixedArraySize(3) [] strings;
 
 	public DashModelIdentifier(String[] strings) {

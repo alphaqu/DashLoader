@@ -15,7 +15,7 @@ import net.minecraft.client.texture.Sprite;
 
 @DashObject(BuiltinBakedModel.class)
 @DashDependencies(DashSprite.class)
-public class DashBuiltinBakedModel implements DashModel {
+public final class DashBuiltinBakedModel implements DashModel {
 	@DataNullable
 	public final DashModelTransformation transformation;
 	public final DashModelOverrideList itemPropertyOverrides;
@@ -28,7 +28,6 @@ public class DashBuiltinBakedModel implements DashModel {
 		this.spritePointer = spritePointer;
 		this.sideLit = sideLit;
 	}
-
 
 	public DashBuiltinBakedModel(BuiltinBakedModel builtinBakedModel, RegistryWriter writer) {
 		BuiltinBakedModelAccessor access = ((BuiltinBakedModelAccessor) builtinBakedModel);
@@ -50,5 +49,4 @@ public class DashBuiltinBakedModel implements DashModel {
 	public void postExport(RegistryReader reader) {
 		this.itemPropertyOverrides.applyOverrides(reader);
 	}
-
 }

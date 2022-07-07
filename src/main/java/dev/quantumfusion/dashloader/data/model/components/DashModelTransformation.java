@@ -6,7 +6,7 @@ import net.minecraft.client.render.model.json.Transformation;
 import org.jetbrains.annotations.Nullable;
 
 @DataNullable
-public class DashModelTransformation {
+public final class DashModelTransformation {
 	public final DashTransformation thirdPersonLeftHand;
 	public final DashTransformation thirdPersonRightHand;
 	public final DashTransformation firstPersonLeftHand;
@@ -17,7 +17,6 @@ public class DashModelTransformation {
 	public final DashTransformation fixed;
 
 	public transient int nullTransformations = 0;
-
 
 	public DashModelTransformation(@Nullable DashTransformation thirdPersonLeftHand, @Nullable DashTransformation thirdPersonRightHand, @Nullable DashTransformation firstPersonLeftHand, @Nullable DashTransformation firstPersonRightHand, @Nullable DashTransformation head, @Nullable DashTransformation gui, @Nullable DashTransformation ground, @Nullable DashTransformation fixed) {
 		this.thirdPersonLeftHand = thirdPersonLeftHand;

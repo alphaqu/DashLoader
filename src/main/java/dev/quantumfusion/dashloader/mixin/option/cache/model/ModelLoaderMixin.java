@@ -118,7 +118,7 @@ public abstract class ModelLoaderMixin {
 				SpriteAtlasTexture atlas = pair.getLeft();
 				Identifier id = atlas.getId();
 				DL.log.info("Injected {} atlas.", id);
-				this.spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, ((SpriteAtlasTextureDuck) atlas).getCachedSprites().keySet().stream(), profiler, pair.getRight().mipLevel())));
+				this.spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, ((SpriteAtlasTextureDuck) atlas).getCachedSprites().keySet().stream(), profiler, pair.getRight().mipLevel)));
 			});
 			map.clear();
 		}

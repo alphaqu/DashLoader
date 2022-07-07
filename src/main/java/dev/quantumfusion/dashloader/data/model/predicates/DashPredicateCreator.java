@@ -7,8 +7,7 @@ import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
 
-public class DashPredicateCreator {
-
+public final class DashPredicateCreator {
 	public static DashPredicate create(MultipartModelSelector selector, RegistryWriter writer) {
 		if (selector == MultipartModelSelector.TRUE) {
 			return new DashStaticPredicate(true);

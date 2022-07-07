@@ -3,7 +3,15 @@ package dev.quantumfusion.dashloader.data.model.components;
 import dev.quantumfusion.dashloader.mixin.accessor.ModelOverrideListInlinedCondition;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 
-public record DashModelOverrideListInlinedCondition(int index, float threshold) {
+public final class DashModelOverrideListInlinedCondition {
+	public final int index;
+	public final float threshold;
+
+	public DashModelOverrideListInlinedCondition(int index, float threshold) {
+		this.index = index;
+		this.threshold = threshold;
+	}
+
 	public DashModelOverrideListInlinedCondition(ModelOverrideList.InlinedCondition inlinedCondition) {
 		this(inlinedCondition.index, inlinedCondition.threshold);
 	}

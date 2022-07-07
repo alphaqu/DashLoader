@@ -11,7 +11,7 @@ import net.minecraft.client.texture.Sprite.AnimationFrame;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DashSpriteAnimation {
+public final class DashSpriteAnimation {
 	public final List<DashSpriteAnimationFrame> frames;
 	public final int frameCount;
 	@DataNullable

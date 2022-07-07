@@ -9,7 +9,7 @@ import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.SpaceFont;
 
 @DashObject(SpaceFont.class)
-public class DashSpaceFont implements DashFont{
+public final class DashSpaceFont implements DashFont{
 	public final IntObjectList<Float> glyphs;
 
 	public DashSpaceFont(SpaceFont font) {

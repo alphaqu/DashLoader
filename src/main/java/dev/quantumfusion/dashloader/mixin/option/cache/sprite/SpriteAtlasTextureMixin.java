@@ -47,7 +47,7 @@ public class SpriteAtlasTextureMixin implements SpriteAtlasTextureDuck {
 	private TextureStitcher textureStitcher(int maxWidth, int maxHeight, int mipLevel) {
 		// If its not cached then upload the sprite. In a cached state everything gets uploaded at once.
 		if (this.dashLoaded) {
-			return new FakeTextureStitcher(this.data.width(), this.data.height(), this.data.mipLevel(), this.cachedSprites);
+			return new FakeTextureStitcher(this.data.width, this.data.height, this.data.mipLevel, this.cachedSprites);
 		}
 		return new TextureStitcher(maxWidth, maxHeight, mipLevel);
 	}

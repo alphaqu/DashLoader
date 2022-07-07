@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 @DashObject(BitmapFont.class)
 @DashDependencies(DashImage.class)
-public class DashBitmapFont implements DashFont {
+public final class DashBitmapFont implements DashFont {
 	public final int image;
 	public final IntObjectList<DashBitmapFontGlyph> glyphs;
 

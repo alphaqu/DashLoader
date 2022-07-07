@@ -10,7 +10,7 @@ import net.minecraft.client.gl.GlUniform;
 
 import java.util.List;
 
-public class DashGlUniform {
+public final class DashGlUniform {
 	public final int count;
 	public final int dataType;
 	@DataNullable

@@ -8,7 +8,7 @@ import dev.quantumfusion.dashloader.util.mixins.SpriteInterpolationDuck;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
 
-public class DashSpriteInterpolation {
+public final class DashSpriteInterpolation {
 	public final int[] images;
 
 	public DashSpriteInterpolation(int[] images) {
