@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.corehook;
+package dev.quantumfusion.dashloader.data.registry;
 
 import dev.quantumfusion.dashloader.data.blockstate.DashBlockState;
 import dev.quantumfusion.dashloader.data.font.DashFont;

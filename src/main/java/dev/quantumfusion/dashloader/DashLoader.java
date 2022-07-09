@@ -5,10 +5,10 @@ import dev.quantumfusion.dashloader.api.hook.LoadCacheHook;
 import dev.quantumfusion.dashloader.api.hook.SaveCacheHook;
 import dev.quantumfusion.dashloader.client.DashCachingScreen;
 import dev.quantumfusion.dashloader.config.ConfigHandler;
-import dev.quantumfusion.dashloader.corehook.*;
 import dev.quantumfusion.dashloader.data.DashIdentifier;
 import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.data.DashModelIdentifier;
+import dev.quantumfusion.dashloader.data.MappingData;
 import dev.quantumfusion.dashloader.data.blockstate.DashBlockState;
 import dev.quantumfusion.dashloader.data.font.DashFont;
 import dev.quantumfusion.dashloader.data.image.DashImage;
@@ -16,6 +16,7 @@ import dev.quantumfusion.dashloader.data.image.DashSprite;
 import dev.quantumfusion.dashloader.data.model.DashModel;
 import dev.quantumfusion.dashloader.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.data.model.predicates.DashPredicate;
+import dev.quantumfusion.dashloader.data.registry.*;
 import dev.quantumfusion.dashloader.fallback.model.DashMissingDashModel;
 import dev.quantumfusion.dashloader.io.IOHandler;
 import dev.quantumfusion.dashloader.registry.ChunkHolder;
@@ -25,10 +26,10 @@ import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.registry.factory.DashFactory;
 import dev.quantumfusion.dashloader.thread.ThreadHandler;
 import dev.quantumfusion.dashloader.util.TimeUtil;
-import dev.quantumfusion.taski.Task;
-import dev.quantumfusion.taski.builtin.StageTask;
-import dev.quantumfusion.taski.builtin.StaticTask;
 import dev.quantumfusion.taski.builtin.StepTask;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -38,11 +39,6 @@ import net.minecraft.util.Identifier;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
-
-import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class DashLoader {
@@ -244,21 +240,15 @@ public class DashLoader {
 
 			var tempStart = System.currentTimeMillis();
 			// Deserialize / Decompress all registries and mappings.
-			List<@Nullable Task> stages = new ArrayList<>();
-			for (int i = 0; i < 6; i++) {
-				stages.add(StaticTask.EMPTY);
-			}
-			task.run(new StageTask("Deserialization", stages), (subTask) -> {
 				this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheDeserialization);
 				this.thread.parallelRunnable(
-						() -> registryDataObjects[0] = (this.io.load(RegistryData.class, (t) -> stages.set(0, t))),
-						() -> registryDataObjects[1] = (this.io.load(ImageData.class, (t) -> stages.set(1, t))),
-						() -> registryDataObjects[2] = (this.io.load(ModelData.class, (t) -> stages.set(2, t))),
-						() -> registryDataObjects[3] = (this.io.load(IdentifierData.class, (t) -> stages.set(3, t))),
-						() -> registryDataObjects[4] = (this.io.load(BakedQuadData.class, (t) -> stages.set(4, t))),
-						() -> mappingsReference.set(this.io.load(MappingData.class, (t) -> stages.set(5, t)))
+						() -> registryDataObjects[0] = (this.io.load(RegistryData.class)),
+						() -> registryDataObjects[1] = (this.io.load(ImageData.class)),
+						() -> registryDataObjects[2] = (this.io.load(ModelData.class)),
+						() -> registryDataObjects[3] = (this.io.load(IdentifierData.class)),
+						() -> registryDataObjects[4] = (this.io.load(BakedQuadData.class)),
+						() -> mappingsReference.set(this.io.load(MappingData.class))
 				);
-			});
 			this.profilerHandler.export_file_reading_time = System.currentTimeMillis() - tempStart;
 
 			MappingData mappings = mappingsReference.get();

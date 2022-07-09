@@ -78,6 +78,7 @@ public abstract class ModelLoaderMixin {
 					UnbakedBakedModel unbakedBakedModel = new UnbakedBakedModel(bakedModel, identifier);
 					this.unbakedModels.put(identifier, unbakedBakedModel);
 					this.modelsToBake.put(identifier, unbakedBakedModel);
+					this.modelsToLoad.remove(identifier);
 				}
 			});
 		}

@@ -142,36 +142,25 @@ public class DashSerializer<O> {
 		return subCache.resolve(this.dataClass.getSimpleName().toLowerCase() + ".dld");
 	}
 
-	public O decode(Path subCache, @Nullable Consumer<Task> taskConsumer) throws IOException {
-		prepareFile(subCache);
-
-		StepTask task = new StepTask(this.dataClass.getSimpleName(), 4);
-		if (taskConsumer != null) {
-			taskConsumer.accept(task);
-		}
-
+	public O decode(Path subCache) throws IOException {
+		long start = System.currentTimeMillis();
 		try (FileChannel channel = FileChannel.open(this.getFilePath(subCache))) {
-			task.next();
 			var buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).order(ByteOrder.LITTLE_ENDIAN);
-			task.next();
+			DL.log.info("Read {} in {}ms", this.dataClass.getSimpleName(), System.currentTimeMillis() - start);
+			start = System.currentTimeMillis();
 
-			byte compression = buffer.get();
-			if (compression > 0) {
+			// Check compression
+			if (buffer.get() > 0) {
 				final int size = buffer.getInt();
 				final var dst = ByteBufferIO.createDirect(size);
 				Zstd.decompress(dst.byteBuffer, buffer);
-				task.next();
 				dst.rewind();
 				O object = this.serializer.get(dst);
-				task.next();
 				dst.close();
-
+				DL.log.info("Decompressed {} in {}ms", this.dataClass.getSimpleName(), System.currentTimeMillis() - start);
 				return object;
 			} else {
-				task.next();
-				O object = this.serializer.get(ByteBufferIO.wrap(buffer));
-				task.next();
-				return object;
+				return this.serializer.get(ByteBufferIO.wrap(buffer));
 			}
 		}
 	}

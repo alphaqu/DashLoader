@@ -55,9 +55,9 @@ public final class IOHandler {
 		return Files.exists(this.getCurrentSubCacheDir());
 	}
 
-	public <O> O load(Class<O> dataObject, @Nullable Consumer<Task> task) {
+	public <O> O load(Class<O> dataObject) {
 		try {
-			return (O) this.serializers.get(dataObject).decode(this.getCurrentSubCacheDir(), task);
+			return (O) this.serializers.get(dataObject).decode(this.getCurrentSubCacheDir());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

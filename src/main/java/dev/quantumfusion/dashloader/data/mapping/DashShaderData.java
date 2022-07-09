@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.corehook.holder;
+package dev.quantumfusion.dashloader.data.mapping;
 
 import dev.quantumfusion.dashloader.DashDataManager;
 import dev.quantumfusion.dashloader.data.image.shader.DashShader;
