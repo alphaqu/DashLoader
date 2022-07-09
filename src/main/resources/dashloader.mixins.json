@@ -69,7 +69,6 @@
     "option.cache.sprite.SpriteInterpolationMixin",
     "option.misc.DirectoryResourcePackMixin",
     "option.misc.ModelIdentifierMixin",
-    "option.misc.SearchManagerMixin",
     "option.misc.SoundManagerMixin",
     "option.misc.UnicodeTextureFontMixin",
     "option.state.StateManagerBuilderMixin",
