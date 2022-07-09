@@ -8,6 +8,10 @@ import dev.quantumfusion.dashloader.util.mixins.SpriteAtlasTextureDuck;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.model.ModelLoader;
@@ -29,11 +33,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(value = ModelLoader.class, priority = 69420)
@@ -73,12 +72,15 @@ public abstract class ModelLoaderMixin {
 			this.unbakedModels = new Object2ObjectOpenHashMap<>(this.unbakedModels);
 			this.modelsToBake = new Object2ObjectOpenHashMap<>(this.modelsToBake);
 			this.modelsToLoad = new ObjectOpenHashSet<>(this.modelsToLoad);
+
+			ObjectOpenHashSet<Identifier> filter = new ObjectOpenHashSet<>(this.unbakedModels.size() + this.modelsToBake.size());
+			filter.addAll(this.unbakedModels.keySet());
+			filter.addAll(this.modelsToBake.keySet());
 			dashModels.forEach((identifier, bakedModel) -> {
-				if (!(bakedModel instanceof MissingDashModel) && !this.unbakedModels.containsKey(identifier) && !this.modelsToBake.containsKey(identifier)) {
+				if (!(bakedModel instanceof MissingDashModel) && !filter.contains(identifier)) {
 					UnbakedBakedModel unbakedBakedModel = new UnbakedBakedModel(bakedModel, identifier);
 					this.unbakedModels.put(identifier, unbakedBakedModel);
 					this.modelsToBake.put(identifier, unbakedBakedModel);
-					this.modelsToLoad.remove(identifier);
 				}
 			});
 		}
