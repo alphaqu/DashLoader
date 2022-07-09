@@ -2,6 +2,7 @@ package dev.quantumfusion.dashloader.data.image;
 
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
+import dev.quantumfusion.dashloader.mixin.accessor.MipmapHelperAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
@@ -16,7 +17,9 @@ import net.minecraft.client.texture.Sprite;
 public class DashSpriteImpl implements DashSprite {
 	@DataNullable
 	public final DashSpriteAnimation animation;
-	public final int[] images;
+	public final int image;
+	public final boolean imageTransparent;
+	public final int images;
 	public final int x;
 	public final int y;
 	public final int width;
@@ -26,10 +29,16 @@ public class DashSpriteImpl implements DashSprite {
 	public final float vMin;
 	public final float vMax;
 
-	public DashSpriteImpl(DashSpriteAnimation animation, int[] images,
-						  int x, int y, int width, int height, float uMin, float uMax, float vMin,
-						  float vMax) {
+	public DashSpriteImpl(DashSpriteAnimation animation,
+						  int image,
+						  boolean imageTransparent,
+						  int images,
+						  int x, int y, int width, int height,
+						  float uMin, float uMax, float vMin, float vMax
+	) {
 		this.animation = animation;
+		this.image = image;
+		this.imageTransparent = imageTransparent;
 		this.images = images;
 		this.x = x;
 		this.y = y;
@@ -42,28 +51,59 @@ public class DashSpriteImpl implements DashSprite {
 	}
 
 	public DashSpriteImpl(Sprite sprite, RegistryWriter writer) {
-		this(DashUtil.nullable((Sprite.Animation) sprite.getAnimation(), animation1 -> new DashSpriteAnimation(animation1, writer)),
-				convertImages((SpriteAccessor) sprite, writer), sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight(), sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
-	}
+		this.animation = DashUtil.nullable(sprite.getAnimation(), animation -> new DashSpriteAnimation((Sprite.Animation) animation, writer));
 
-	private static int[] convertImages(SpriteAccessor sprite, RegistryWriter writer) {
-		final NativeImage[] images = sprite.getImages();
-		var imageOut = new int[images.length];
-		for (int i = 0; i < images.length; i++) {
-			imageOut[i] = writer.add(images[i]);
+		NativeImage[] images = ((SpriteAccessor) sprite).getImages();
+		NativeImage image = images[0];
+		this.image = writer.add(image);
+
+		boolean transparent = false;
+		check:
+		for (int x = 0; x < image.getWidth(); x++) {
+			for (int y = 0; y < image.getHeight(); y++) {
+				if (image.getColor(x, y) >> 24 == 0) {
+					transparent = true;
+					break check;
+				}
+			}
 		}
-		return imageOut;
+		this.imageTransparent = transparent;
+		this.images = images.length;
+
+		this.x = sprite.getX();
+		this.y = sprite.getY();
+		this.width = sprite.getWidth();
+		this.height = sprite.getHeight();
+		this.uMin = sprite.getMinU();
+		this.uMax = sprite.getMaxU();
+		this.vMin = sprite.getMinV();
+		this.vMax = sprite.getMaxV();
 	}
 
 	@Override
 	public Sprite export(final RegistryReader registry) {
 		final Sprite out = UnsafeHelper.allocateInstance(Sprite.class);
 		final SpriteAccessor spriteAccessor = ((SpriteAccessor) out);
-		final NativeImage[] imagesOut = new NativeImage[this.images.length];
-		for (int i = 0; i < this.images.length; i++) {
-			imagesOut[i] = registry.get(this.images[i]);
+
+
+		final NativeImage[] images = new NativeImage[this.images];
+		images[0] = registry.get(this.image);
+		for (int i = 1; i <= (this.images - 1); ++i) {
+			NativeImage oldLevel = images[i - 1];
+			NativeImage newLevel = new NativeImage(oldLevel.getWidth() >> 1, oldLevel.getHeight() >> 1, false);
+			int width = newLevel.getWidth();
+			int height = newLevel.getHeight();
+
+			for (int x = 0; x < width; ++x) {
+				for (int y = 0; y < height; ++y) {
+					newLevel.setColor(x, y, MipmapHelperAccessor.blend(oldLevel.getColor(x * 2, y * 2), oldLevel.getColor(x * 2 + 1, y * 2), oldLevel.getColor(x * 2, y * 2 + 1), oldLevel.getColor(x * 2 + 1, y * 2 + 1), this.imageTransparent));
+				}
+			}
+
+			images[i] = newLevel;
 		}
-		spriteAccessor.setImages(imagesOut);
+
+		spriteAccessor.setImages(images);
 		spriteAccessor.setX(this.x);
 		spriteAccessor.setY(this.y);
 		spriteAccessor.setWidth(this.width);

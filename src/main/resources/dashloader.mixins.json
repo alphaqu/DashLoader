@@ -70,9 +70,12 @@
     "option.misc.DirectoryResourcePackMixin",
     "option.misc.ModelIdentifierMixin",
     "option.misc.SoundManagerMixin",
-    "option.misc.UnicodeTextureFontMixin",
+    "option.misc.UnicodeTextureFontMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "client": [
+    "accessor.MipmapHelperAccessor"
+  ]
 }
