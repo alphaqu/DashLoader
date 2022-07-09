@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.corehook;
+package dev.quantumfusion.dashloader.data.registry;
 
 import dev.quantumfusion.dashloader.data.image.DashImage;
 import dev.quantumfusion.dashloader.registry.ChunkHolder;

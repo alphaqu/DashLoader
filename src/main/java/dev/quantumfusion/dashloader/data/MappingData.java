@@ -1,10 +1,10 @@
-package dev.quantumfusion.dashloader.corehook;
+package dev.quantumfusion.dashloader.data;
 
 import dev.quantumfusion.dashloader.DashDataManager;
 import dev.quantumfusion.dashloader.ProgressHandler;
 import dev.quantumfusion.dashloader.api.option.ConfigHandler;
 import dev.quantumfusion.dashloader.api.option.Option;
-import dev.quantumfusion.dashloader.corehook.holder.*;
+import dev.quantumfusion.dashloader.data.mapping.*;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.util.DashUtil;

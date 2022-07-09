@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.api.hook;
 
 import dev.quantumfusion.dashloader.DashDataManager;
-import dev.quantumfusion.dashloader.corehook.MappingData;
+import dev.quantumfusion.dashloader.data.MappingData;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.taski.builtin.StepTask;
 

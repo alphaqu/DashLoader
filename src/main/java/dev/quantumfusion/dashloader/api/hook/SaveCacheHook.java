@@ -1,6 +1,6 @@
 package dev.quantumfusion.dashloader.api.hook;
 
-import dev.quantumfusion.dashloader.corehook.MappingData;
+import dev.quantumfusion.dashloader.data.MappingData;
 import dev.quantumfusion.dashloader.registry.ChunkHolder;
 import dev.quantumfusion.dashloader.registry.RegistryHandler;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
