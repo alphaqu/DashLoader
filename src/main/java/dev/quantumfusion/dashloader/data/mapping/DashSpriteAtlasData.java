@@ -28,18 +28,18 @@ public class DashSpriteAtlasData {
 
 		parent.run(new StepTask("Atlas", atlases.size() + extraAtlases.size()), task -> {
 			atlases.forEach((identifier, spriteAtlasTexture) -> {
-				this.addAtlas(data, writer, spriteAtlasTexture, 0);
+				this.addAtlas(writer, spriteAtlasTexture, 0);
 				task.next();
 			});
 			extraAtlases.forEach(spriteAtlasTexture -> {
-				this.addAtlas(data, writer, spriteAtlasTexture, 1);
+				this.addAtlas(writer, spriteAtlasTexture, 1);
 				task.next();
 			});
 		});
 	}
 
-	private void addAtlas(DashDataManager data, RegistryWriter writer, SpriteAtlasTexture texture, int i) {
-		this.atlases.put(new DashSpriteAtlasTexture(texture, data.getWriteContextData().atlasData.get(texture), writer), i);
+	private void addAtlas(RegistryWriter writer, SpriteAtlasTexture texture, int i) {
+		this.atlases.put(new DashSpriteAtlasTexture(texture, writer), i);
 	}
 
 

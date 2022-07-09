@@ -22,9 +22,6 @@ public enum Option {
 	FAST_MODEL_IDENTIFIER_EQUALS(
 			"misc.ModelIdentifierMixin",
 			"Use a much faster .equals() on the ModelIdentifiers", Impact.MEDIUM),
-	FAST_STATE_INIT(
-			"state",
-			"Highly unsafe but makes blocks init way faster.", Impact.MEDIUM),
 	FAST_WALL_BLOCK(
 			"WallBlockMixin",
 			"Caches the 2 most common blockstates for wall blocks.", Impact.MEDIUM),
