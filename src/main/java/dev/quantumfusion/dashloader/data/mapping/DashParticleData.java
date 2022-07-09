@@ -42,7 +42,7 @@ public class DashParticleData implements Dashable<Pair<Map<Identifier, List<Spri
 		});
 
 		final SpriteAtlasTexture particleAtlas = data.particleAtlas.getMinecraftData();
-		this.atlasTexture = new DashSpriteAtlasTexture(particleAtlas, data.getWriteContextData().atlasData.get(particleAtlas), writer);
+		this.atlasTexture = new DashSpriteAtlasTexture(particleAtlas, writer);
 	}
 
 

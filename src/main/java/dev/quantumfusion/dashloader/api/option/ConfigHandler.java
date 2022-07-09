@@ -11,9 +11,6 @@ public class ConfigHandler {
 	private static final String DISABLE_OPTION_TAG = DashConstants.DASH_DISABLE_OPTION_TAG;
 
 	public static void update() {
-		// update all fabric mods and such, config has priority
-		OPTION_ACTIVE.put(Option.FAST_STATE_INIT, false);
-
 		DL.config.reloadConfig();
 		DL.config.config.options.forEach((s, aBoolean) -> {
 			try {

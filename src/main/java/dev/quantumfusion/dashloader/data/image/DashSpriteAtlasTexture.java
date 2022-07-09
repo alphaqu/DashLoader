@@ -37,7 +37,7 @@ public final class DashSpriteAtlasTexture implements Dashable<SpriteAtlasTexture
 		this.data = data;
 	}
 
-	public DashSpriteAtlasTexture(SpriteAtlasTexture spriteAtlasTexture, DashSpriteAtlasTextureData data, RegistryWriter writer) {
+	public DashSpriteAtlasTexture(SpriteAtlasTexture spriteAtlasTexture, RegistryWriter writer) {
 		AbstractTextureAccessor access = (AbstractTextureAccessor) spriteAtlasTexture;
 
 		this.id = writer.add(spriteAtlasTexture.getId());
@@ -46,7 +46,7 @@ public final class DashSpriteAtlasTexture implements Dashable<SpriteAtlasTexture
 
 		this.bilinear = access.getBilinear();
 		this.mipmap = access.getMipmap();
-		this.data = data;
+		this.data = DL.getData().getWriteContextData().atlasData.get(spriteAtlasTexture);
 
 	}
 

@@ -71,8 +71,6 @@
     "option.misc.ModelIdentifierMixin",
     "option.misc.SoundManagerMixin",
     "option.misc.UnicodeTextureFontMixin",
-    "option.state.StateManagerBuilderMixin",
-    "option.state.StateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
