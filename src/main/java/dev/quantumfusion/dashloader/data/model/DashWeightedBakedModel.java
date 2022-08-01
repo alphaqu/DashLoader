@@ -23,7 +23,7 @@ public final class DashWeightedBakedModel implements DashModel {
 
 	public DashWeightedBakedModel(WeightedBakedModel model, RegistryWriter writer) {
 		this.models = new ArrayList<>();
-		for (var weightedModel : ((WeightedBakedModelAccessor) model).getModels()) {
+		for (var weightedModel : ((WeightedBakedModelAccessor) model).getBakedModels()) {
 			this.models.add(new DashWeightedModelEntry(weightedModel, writer));
 		}
 	}
