@@ -3,6 +3,7 @@ package dev.quantumfusion.dashloader.data.image;
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.mixin.accessor.MipmapHelperAccessor;
+import dev.quantumfusion.dashloader.mixin.accessor.NativeImageAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
@@ -89,14 +90,23 @@ public class DashSpriteImpl implements DashSprite {
 		final NativeImage[] images = new NativeImage[this.images];
 		images[0] = registry.get(this.image);
 		for (int i = 1; i <= (this.images - 1); ++i) {
-			NativeImage oldLevel = images[i - 1];
-			NativeImage newLevel = new NativeImage(oldLevel.getWidth() >> 1, oldLevel.getHeight() >> 1, false);
-			int width = newLevel.getWidth();
-			int height = newLevel.getHeight();
+			final NativeImage oldLevel = images[i - 1];
+			final NativeImage newLevel = new NativeImage(oldLevel.getWidth() >> 1, oldLevel.getHeight() >> 1, false);
+			final int newWidth = newLevel.getWidth();
+			final int newHeight = newLevel.getHeight();
 
-			for (int x = 0; x < width; ++x) {
-				for (int y = 0; y < height; ++y) {
-					newLevel.setColor(x, y, MipmapHelperAccessor.blend(oldLevel.getColor(x * 2, y * 2), oldLevel.getColor(x * 2 + 1, y * 2), oldLevel.getColor(x * 2, y * 2 + 1), oldLevel.getColor(x * 2 + 1, y * 2 + 1), this.imageTransparent));
+			final long oldPtr = ((NativeImageAccessor)(Object) oldLevel).getPointer();
+			final long newPtr = ((NativeImageAccessor)(Object) newLevel).getPointer();
+
+			final int oldWidth = oldLevel.getWidth();
+			for (int x = 0; x < newWidth; ++x) {
+				for (int y = 0; y < newHeight; ++y) {
+					final int one = getColorUnsafe(oldPtr, oldWidth, x * 2, y * 2);
+					final int two = getColorUnsafe(oldPtr, oldWidth, x * 2 + 1, y * 2);
+					final int three = getColorUnsafe(oldPtr, oldWidth, x * 2, y * 2 + 1);
+					final int four = getColorUnsafe(oldPtr, oldWidth, x * 2 + 1, y * 2 + 1);
+					final int color = MipmapHelperAccessor.blend(one, two, three, four, this.imageTransparent);
+					setColorUnsafe(newPtr, newWidth, x, y, color);
 				}
 			}
 
@@ -115,4 +125,13 @@ public class DashSpriteImpl implements DashSprite {
 		spriteAccessor.setAnimation(DashUtil.nullable(this.animation, animation -> animation.export(out, registry)));
 		return out;
 	}
+
+	private final static int getColorUnsafe(final long ptr, final int oldWidth, final int x, final int y) {
+		return UnsafeHelper.UNSAFE.getInt(ptr + (((long)x + (long)y * (long)oldWidth) * 4L));
+	}
+
+	private final static void setColorUnsafe(final long ptr, final int width, final int x, final int y, final int color) {
+		UnsafeHelper.UNSAFE.putInt(ptr + (((long)x + (long)y * (long)width) * 4L), color);
+	}
+
 }
