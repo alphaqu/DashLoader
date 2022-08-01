@@ -1,6 +1,8 @@
 package dev.quantumfusion.dashloader.config;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DashConfig {
@@ -44,6 +46,9 @@ public class DashConfig {
 			"base2", 1000,
 			"blue", 50,
 			"red", 1);
+
+	public List<String> customSplashLines = new ArrayList<>();
+	public boolean addDefaultSplashLines = true;
 
 
 }

@@ -67,7 +67,6 @@ public class DashLoader {
 
 	// Initializes the static singleton
 	public static void bootstrap() {
-
 	}
 
 	private DashLoader() {

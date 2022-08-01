@@ -2,6 +2,10 @@ package dev.quantumfusion.dashloader.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dev.quantumfusion.dashloader.DashConstants;
+import dev.quantumfusion.dashloader.api.option.Option;
+import java.util.EnumMap;
+import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
@@ -15,9 +19,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.function.Consumer;
+import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class ConfigHandler {
-	private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private static final EnumMap<Option, Boolean> OPTION_ACTIVE = new EnumMap<>(Option.class);
+	private static final String DISABLE_OPTION_TAG = DashConstants.DASH_DISABLE_OPTION_TAG;
+	private final Gson gson = new GsonBuilder().setLenient().setPrettyPrinting().create();
 	private final Path configPath;
 	public DashConfig config = new DashConfig();
 
@@ -26,6 +33,32 @@ public class ConfigHandler {
 
 	public ConfigHandler(Path configPath) {
 		this.configPath = configPath;
+		this.reloadConfig();
+		this.config.options.forEach((s, aBoolean) -> {
+			try {
+				var option = Option.valueOf(s.toUpperCase());
+				OPTION_ACTIVE.put(option, false);
+				DL.log.warn("Disabled Optional Feature {} from DashLoader config.", s);
+			} catch (IllegalArgumentException illegalArgumentException) {
+				DL.log.error("Could not disable Optional Feature {} as it does not exist.", s);
+			}
+		});
+
+		for (var modContainer : FabricLoader.getInstance().getAllMods()) {
+			var mod = modContainer.getMetadata();
+			if (mod.containsCustomValue(DISABLE_OPTION_TAG)) {
+				for (var value : mod.getCustomValue(DISABLE_OPTION_TAG).getAsArray()) {
+					final String feature = value.getAsString();
+					try {
+						var option = Option.valueOf(feature.toUpperCase());
+						OPTION_ACTIVE.put(option, false);
+						DL.log.warn("Disabled Optional Feature {} from {} config. {}", feature, mod.getId(), mod.getName());
+					} catch (IllegalArgumentException illegalArgumentException) {
+						DL.log.error("Could not disable Optional Feature {} as it does not exist.", feature);
+					}
+				}
+			}
+		}
 	}
 
 
@@ -35,12 +68,11 @@ public class ConfigHandler {
 				final BufferedReader json = Files.newBufferedReader(this.configPath);
 				this.config = this.gson.fromJson(json, DashConfig.class);
 				json.close();
-				return;
 			}
-		} catch (Throwable ignored) {
+		} catch (Throwable err) {
+			DL.log.info("Config corrupted creating a new one.", err);
 		}
 
-		// if something fails or the file does not exist
 		this.saveConfig();
 	}
 
@@ -52,6 +84,26 @@ public class ConfigHandler {
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public static boolean shouldApplyMixin(String name) {
+		for (Option value : Option.values()) {
+			if (name.contains(value.mixinContains)) {
+				return OPTION_ACTIVE.get(value);
+			}
+		}
+		return true;
+	}
+
+	public static boolean optionActive(Option option) {
+		return OPTION_ACTIVE.get(option);
+	}
+
+
+	static {
+		for (Option value : Option.values()) {
+			OPTION_ACTIVE.put(value, true);
 		}
 	}
 
