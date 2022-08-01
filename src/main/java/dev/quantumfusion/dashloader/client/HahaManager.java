@@ -1,5 +1,10 @@
 package dev.quantumfusion.dashloader.client;
 
+import dev.quantumfusion.dashloader.DashLoader;
+import dev.quantumfusion.dashloader.config.DashConfig;
+import java.util.ArrayList;
+import java.util.List;
+
 public class HahaManager {
 	private static final String[] FACTS = {
 			"Did you know DashLoader was called Dash in the ancient days",
@@ -58,6 +63,17 @@ public class HahaManager {
 	};
 
 	public static String getFact() {
-		return FACTS[(int) (System.currentTimeMillis() % FACTS.length)];
+		DashConfig config = DashLoader.DL.config.config;
+		List<String> splashLines = new ArrayList<>(config.customSplashLines);
+		if (config.addDefaultSplashLines) {
+			splashLines.addAll(List.of(FACTS));
+		}
+
+		if (splashLines.isEmpty()) {
+			return "im empty over here!";
+		}
+
+
+		return splashLines.get((int) (System.currentTimeMillis() % splashLines.size()));
 	}
 }

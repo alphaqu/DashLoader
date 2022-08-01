@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.mixin;
 
 import dev.quantumfusion.dashloader.DashLoader;
-import dev.quantumfusion.dashloader.api.option.ConfigHandler;
+import dev.quantumfusion.dashloader.config.ConfigHandler;
 import java.util.List;
 import java.util.Set;
 import org.objectweb.asm.tree.ClassNode;
@@ -13,7 +13,6 @@ public class MixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public void onLoad(String mixinPackage) {
 		DashLoader.bootstrap();
-		ConfigHandler.update();
 	}
 
 	@Override
