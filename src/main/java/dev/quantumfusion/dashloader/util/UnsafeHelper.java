@@ -1,45 +1,41 @@
 package dev.quantumfusion.dashloader.util;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 public class UnsafeHelper {
 
-	private static final MethodHandle allocateInstance;
+	public static final sun.misc.Unsafe UNSAFE = getUnsafeInstance();
 
-	static {
-		try {
-			final Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
-			allocateInstance = MethodHandles.lookup().findVirtual(unsafeClass, "allocateInstance", MethodType.methodType(Object.class, Class.class)).bindTo(getUnsafe(unsafeClass));
-		} catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
-			throw new RuntimeException("Unable to bind AllocateInstance.");
+	private static sun.misc.Unsafe getUnsafeInstance() {
+		Class<sun.misc.Unsafe> clazz = sun.misc.Unsafe.class;
+		for (Field field : clazz.getDeclaredFields()) {
+			if (!field.getType().equals(clazz)) {
+				continue;
+			}
+			final int modifiers = field.getModifiers();
+			if (!(Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers))) {
+				continue;
+			}
+			try {
+				field.setAccessible(true);
+				return (sun.misc.Unsafe) field.get(null);
+			} catch (Exception ignored) {
+			}
+			break;
 		}
+
+		throw new IllegalStateException("Unsafe is unavailable.");
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <O> O allocateInstance(Class<O> closs) {
 		try {
-			return (O) allocateInstance.invokeExact(closs);
-		} catch (Throwable throwable) {
-			throw new RuntimeException(throwable);
+			return (O) UNSAFE.allocateInstance(closs);
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
-	private static Object getUnsafe(Class<?> unsafeClass) throws ClassNotFoundException, IllegalAccessException {
-		final int mods = Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL;
-		for (Field field : unsafeClass.getDeclaredFields()) {
-			if (field.getModifiers() == mods && field.getType() == unsafeClass) {
-				field.setAccessible(true);
-				final Object possibleUnsafe = field.get(null);
-				if (possibleUnsafe != null) {
-					return possibleUnsafe;
-				}
-			}
-		}
 
-		throw new RuntimeException("Unable to find Sun UnsafeHelper Library.");
-	}
 }
