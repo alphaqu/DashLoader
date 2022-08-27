@@ -16,6 +16,7 @@ public final class DashSpaceFont implements DashFont{
 		this.glyphs = new IntObjectList<>();
 		for (Integer providedGlyph : font.getProvidedGlyphs()) {
 			Glyph glyph = font.getGlyph(providedGlyph);
+			assert glyph != null;
 			this.glyphs.put(providedGlyph, glyph.getAdvance());
 		}
 	}
@@ -27,7 +28,7 @@ public final class DashSpaceFont implements DashFont{
 	@Override
 	public Font export(RegistryReader exportHandler) {
 		Int2FloatArrayMap int2FloatArrayMap = new Int2FloatArrayMap();
-		this.glyphs.forEach((key, value) -> int2FloatArrayMap.put((Integer) key, value));
+		this.glyphs.forEach((key, value) -> int2FloatArrayMap.put(key, (float) value));
 		return new SpaceFont(int2FloatArrayMap);
 	}
 }

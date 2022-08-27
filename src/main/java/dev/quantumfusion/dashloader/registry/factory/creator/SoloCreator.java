@@ -3,12 +3,11 @@ package dev.quantumfusion.dashloader.registry.factory.creator;
 import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import org.jetbrains.annotations.Nullable;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
+import org.jetbrains.annotations.Nullable;
 
 public class SoloCreator<R, D extends Dashable<R>> implements Creator<R, D> {
 	private final MethodHandle method;

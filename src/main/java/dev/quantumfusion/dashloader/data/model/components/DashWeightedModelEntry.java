@@ -22,6 +22,7 @@ public final class DashWeightedModelEntry {
 
 
 	public Weighted.Present<BakedModel> export(RegistryReader handler) {
+		//noinspection unchecked
 		return WeightedBakedModelEntryAccessor.init(handler.get(this.model), Weight.of(this.weight));
 	}
 }

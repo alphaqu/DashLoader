@@ -2,22 +2,21 @@ package dev.quantumfusion.dashloader.data.mapping;
 
 import dev.quantumfusion.dashloader.DashDataManager;
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.data.common.IntIntList;
 import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
+import dev.quantumfusion.dashloader.data.common.IntIntList;
 import dev.quantumfusion.dashloader.data.model.DashModel;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.taski.builtin.StepTask;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 

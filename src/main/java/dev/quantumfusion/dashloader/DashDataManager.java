@@ -5,7 +5,6 @@ import dev.quantumfusion.dashloader.data.image.shader.DashShader;
 import dev.quantumfusion.dashloader.fallback.model.DashMissingDashModel;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -19,7 +18,6 @@ import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
@@ -36,7 +34,6 @@ public class DashDataManager {
 	private final DashReadContextData readContextData;
 
 	// ModelLoader related
-	public final DashDataHandler<Object2IntMap<BlockState>> modelStateLookup = new DashDataHandler<>();
 	public final DashDataHandler<Map<Identifier, BakedModel>> bakedModels = new DashDataHandler<>();
 
 	// Font related
@@ -44,8 +41,6 @@ public class DashDataManager {
 
 	// Image related
 	public final DashDataHandler<SpriteAtlasManager> spriteAtlasManager = new DashDataHandler<>();
-	public final DashDataHandler<SpriteAtlasTexture> particleAtlas = new DashDataHandler<>();
-	public final DashDataHandler<Map<Identifier, List<Sprite>>> particleSprites = new DashDataHandler<>();
 	public final DashDataHandler<Map<String, Shader>> shaders = new DashDataHandler<>();
 
 	// Haha related

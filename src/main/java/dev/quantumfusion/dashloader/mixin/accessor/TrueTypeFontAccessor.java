@@ -1,13 +1,12 @@
 package dev.quantumfusion.dashloader.mixin.accessor;
 
 import it.unimi.dsi.fastutil.ints.IntSet;
+import java.nio.ByteBuffer;
 import net.minecraft.client.font.TrueTypeFont;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
-
-import java.nio.ByteBuffer;
 
 @Mixin(TrueTypeFont.class)
 public interface TrueTypeFontAccessor {

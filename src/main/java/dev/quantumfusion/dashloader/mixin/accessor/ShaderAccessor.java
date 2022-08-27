@@ -1,5 +1,7 @@
 package dev.quantumfusion.dashloader.mixin.accessor;
 
+import java.util.List;
+import java.util.Map;
 import net.minecraft.client.gl.GlBlendState;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.Program;
@@ -9,9 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
-
-import java.util.List;
-import java.util.Map;
 
 @Mixin(Shader.class)
 public interface ShaderAccessor {

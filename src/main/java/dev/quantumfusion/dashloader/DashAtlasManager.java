@@ -2,14 +2,13 @@ package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.dashloader.api.option.Option;
 import dev.quantumfusion.dashloader.data.image.DashSpriteAtlasTextureData;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class DashAtlasManager {
 	private final DashDataManager.DashReadContextData readContextData;

@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.dashloader.util.TimeUtil;
-
 import java.lang.management.ManagementFactory;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 

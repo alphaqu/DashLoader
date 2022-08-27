@@ -50,7 +50,7 @@ public class DashCachingScreen extends Screen {
 		super(Text.of("Caching"));
 		UIColors.loadConfig(DL.config.config);
 		this.previousScreen = previousScreen;
-		this.drawer.update(MinecraftClient.getInstance(), this::fillGradient);
+		this.drawer.update(MinecraftClient.getInstance());
 		this.updateConfig();
 	}
 
@@ -72,7 +72,7 @@ public class DashCachingScreen extends Screen {
 			this.lineColorSelectors.add(Pair.of(UIColors.parseColor(s), integer));
 		});
 
-		UIDrawer.GradientOrientation lineOrientation = UIDrawer.GradientOrientation.GRADIENT_LEFT;
+		UIDrawer.GradientOrientation lineOrientation = null;
 
 		final String lineDirection = config.lineDirection;
 		switch (lineDirection) {
@@ -214,7 +214,7 @@ public class DashCachingScreen extends Screen {
 	@Override
 	public void resize(MinecraftClient client, int width, int height) {
 		super.resize(client, width, height);
-		this.drawer.update(client, this::fillGradient);
+		this.drawer.update(client);
 	}
 
 
@@ -265,17 +265,13 @@ public class DashCachingScreen extends Screen {
 		public float yStep;
 
 		public Line() {
-			this(UIDrawer.GradientOrientation.GRADIENT_LEFT, -100, -100, 0, 0, Color.WHITE, 1);
-		}
-
-		private Line(UIDrawer.GradientOrientation orientation, float x, float y, int width, int height, Color color, float speed) {
-			this.orientation = orientation;
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
-			this.color = color;
-			this.speed = speed;
+			this.orientation = UIDrawer.GradientOrientation.GRADIENT_LEFT;
+			this.x = -100;
+			this.y = -100;
+			this.width = 0;
+			this.height = 0;
+			this.color = Color.WHITE;
+			this.speed = 1;
 		}
 
 		public void tick() {

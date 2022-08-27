@@ -6,7 +6,6 @@ import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
 import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
 import dev.quantumfusion.dashloader.registry.factory.DashFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +26,7 @@ public class WriteChunk<R, D extends Dashable<R>> extends AbstractWriteChunk<R, 
 
 	@Override
 	public AbstractDataChunk<R, D> exportData() {
+		//noinspection unchecked
 		final D[] dashables = (D[]) this.list.toArray(Dashable[]::new);
 		return new DataChunk<>(this.pos, this.name, dashables);
 	}

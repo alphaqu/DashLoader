@@ -66,6 +66,7 @@ public class DashLoader {
 	public final ProfilerHandler profilerHandler = new ProfilerHandler();
 
 	// Initializes the static singleton
+	@SuppressWarnings("EmptyMethod")
 	public static void bootstrap() {
 	}
 
@@ -76,7 +77,7 @@ public class DashLoader {
 		this.api = new APIHandler();
 		this.metadata.setModHash(FabricLoader.getInstance());
 		this.io = new IOHandler(Path.of("./dashloader-cache/"));
-		this.config = new ConfigHandler(FabricLoader.getInstance().getConfigDir().normalize().resolve("dashloader.json"));
+		this.config = new ConfigHandler(FabricLoader.getInstance().getConfigDir().normalize().resolve("dashloader.json"), 	this.log);
 		this.thread = new ThreadHandler();
 		this.progress = new ProgressHandler();
 		this.registry = new RegistryHandler();

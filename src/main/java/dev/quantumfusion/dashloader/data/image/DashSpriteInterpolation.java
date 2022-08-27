@@ -24,7 +24,8 @@ public final class DashSpriteInterpolation {
 
 	}
 
-	public final Sprite.Interpolation export(final Sprite owner, final RegistryReader registry) {
+	@SuppressWarnings("ConstantConditions")
+	public Sprite.Interpolation export(final Sprite owner, final RegistryReader registry) {
 		final Sprite.Interpolation spriteInterpolation = UnsafeHelper.allocateInstance(Sprite.Interpolation.class);
 		final SpriteInterpolationAccessor spriteInterpolationAccessor = ((SpriteInterpolationAccessor) (Object) spriteInterpolation);
 		final NativeImage[] nativeImages = new NativeImage[this.images.length];

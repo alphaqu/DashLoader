@@ -4,11 +4,9 @@ import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.mixin.accessor.NativeImageAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
+import java.nio.ByteBuffer;
 import net.minecraft.client.texture.NativeImage;
 import org.lwjgl.system.MemoryUtil;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
 
 @DashObject(NativeImage.class)
 public final class DashImage implements Dashable<NativeImage> {
@@ -19,16 +17,12 @@ public final class DashImage implements Dashable<NativeImage> {
 	public final int height;
 
 	public DashImage(NativeImage nativeImage) {
-		try {
-			NativeImageAccessor nativeImageAccess = (NativeImageAccessor) (Object) nativeImage;
-			this.format = nativeImage.getFormat();
-			this.width = nativeImage.getWidth();
-			this.height = nativeImage.getHeight();
-			this.image = this.write(nativeImageAccess.getPointer());
-			this.useSTB = nativeImageAccess.getIsStbImage();
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to create image. Reason: ", e);
-		}
+		NativeImageAccessor nativeImageAccess = (NativeImageAccessor) (Object) nativeImage;
+		this.format = nativeImage.getFormat();
+		this.width = nativeImage.getWidth();
+		this.height = nativeImage.getHeight();
+		this.image = this.write(nativeImageAccess.getPointer());
+		this.useSTB = nativeImageAccess.getIsStbImage();
 	}
 
 	public DashImage(byte[] image, NativeImage.Format format, boolean useSTB, int width, int height) {
@@ -40,7 +34,7 @@ public final class DashImage implements Dashable<NativeImage> {
 	}
 
 
-	private byte[] write(long pointer) throws IOException {
+	private byte[] write(long pointer) {
 		final int capacity = this.width * this.height * this.format.getChannelCount();
 		final var byteBuffer = MemoryUtil.memByteBuffer(pointer, capacity);
 		final byte[] bytes = new byte[capacity];
@@ -55,7 +49,7 @@ public final class DashImage implements Dashable<NativeImage> {
 	 * @return da image
 	 */
 	@Override
-	public final NativeImage export(final RegistryReader registry) {
+	public NativeImage export(final RegistryReader registry) {
 		final ByteBuffer buf = MemoryUtil.memAlloc(this.image.length);
 		buf.put(this.image);
 		buf.rewind();

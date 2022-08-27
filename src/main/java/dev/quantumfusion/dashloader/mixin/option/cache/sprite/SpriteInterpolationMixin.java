@@ -15,7 +15,7 @@ public class SpriteInterpolationMixin implements SpriteInterpolationDuck {
 	@Shadow
 	@Final
 	@Mutable
-	private Sprite field_21757;
+	Sprite field_21757;
 
 
 	@Override

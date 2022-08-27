@@ -1,21 +1,11 @@
 package dev.quantumfusion.dashloader.util;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 public final class DashUtil {
-	@Nullable
-	public static <I> void nullableC(@Nullable I in, @NotNull Consumer<I> func) {
-		if (in == null) {
-			return;
-		}
-		func.accept(in);
-	}
-
 	@Nullable
 	public static <I, O> O nullable(@Nullable I in, @NotNull Function<I, O> func) {
 		if (in == null) {

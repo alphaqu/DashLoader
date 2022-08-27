@@ -6,13 +6,12 @@ import dev.quantumfusion.dashloader.data.common.IntObjectList;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.taski.builtin.StepTask;
-import net.minecraft.client.font.Font;
-import net.minecraft.util.Identifier;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.client.font.Font;
+import net.minecraft.util.Identifier;
 
 public class DashFontManagerData implements Dashable<Map<Identifier, List<Font>>> {
 	public final IntObjectList<List<Integer>> fontMap;

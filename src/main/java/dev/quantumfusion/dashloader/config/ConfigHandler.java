@@ -4,13 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.quantumfusion.dashloader.DashConstants;
 import dev.quantumfusion.dashloader.api.option.Option;
-import java.util.EnumMap;
-import net.fabricmc.loader.api.FabricLoader;
-import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,7 +11,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.EnumMap;
 import java.util.function.Consumer;
+import net.fabricmc.loader.api.FabricLoader;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class ConfigHandler {
@@ -31,16 +31,16 @@ public class ConfigHandler {
 	@Nullable
 	private FileAlterationObserver observer;
 
-	public ConfigHandler(Path configPath) {
+	public ConfigHandler(Path configPath, Logger log) {
 		this.configPath = configPath;
 		this.reloadConfig();
 		this.config.options.forEach((s, aBoolean) -> {
 			try {
 				var option = Option.valueOf(s.toUpperCase());
 				OPTION_ACTIVE.put(option, false);
-				DL.log.warn("Disabled Optional Feature {} from DashLoader config.", s);
+				log.warn("Disabled Optional Feature {} from DashLoader config.", s);
 			} catch (IllegalArgumentException illegalArgumentException) {
-				DL.log.error("Could not disable Optional Feature {} as it does not exist.", s);
+				log.error("Could not disable Optional Feature {} as it does not exist.", s);
 			}
 		});
 
@@ -52,9 +52,9 @@ public class ConfigHandler {
 					try {
 						var option = Option.valueOf(feature.toUpperCase());
 						OPTION_ACTIVE.put(option, false);
-						DL.log.warn("Disabled Optional Feature {} from {} config. {}", feature, mod.getId(), mod.getName());
+						log.warn("Disabled Optional Feature {} from {} config. {}", feature, mod.getId(), mod.getName());
 					} catch (IllegalArgumentException illegalArgumentException) {
-						DL.log.error("Could not disable Optional Feature {} as it does not exist.", feature);
+						log.error("Could not disable Optional Feature {} as it does not exist.", feature);
 					}
 				}
 			}

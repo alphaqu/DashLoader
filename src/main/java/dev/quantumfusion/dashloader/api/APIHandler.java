@@ -5,12 +5,6 @@ import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.hook.LoadCacheHook;
 import dev.quantumfusion.dashloader.api.hook.SaveCacheHook;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.metadata.CustomValue;
-import net.fabricmc.loader.api.metadata.ModMetadata;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.Instant;
@@ -19,6 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.metadata.CustomValue;
+import net.fabricmc.loader.api.metadata.ModMetadata;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class APIHandler {
 	public static final Logger LOGGER = LogManager.getLogger("DashLoaderAPI");
@@ -40,7 +39,7 @@ public class APIHandler {
 			this.failed = true;
 			return;
 		}
-		this.dashObjects.add(new DashObjectClass(dashClass));
+		this.dashObjects.add(new DashObjectClass<>(dashClass));
 	}
 
 	public <H> void registerHook(Class<H> hookClass) {
@@ -72,6 +71,7 @@ public class APIHandler {
 	public <H> void callHook(Class<H> hookClass, Consumer<H> consumer) {
 		List<Object> objects = this.hookSubscribers.get(hookClass);
 		if (objects != null) {
+			//noinspection unchecked
 			objects.forEach(o -> consumer.accept((H) o));
 		}
 	}
@@ -104,6 +104,7 @@ public class APIHandler {
 			for (CustomValue customValue : value.getAsArray()) {
 				final String dashObject = customValue.getAsString();
 				try {
+					//noinspection unchecked
 					final Class<D> closs = (Class<D>) Class.forName(dashObject, true, Thread.currentThread().getContextClassLoader());
 					func.accept(closs);
 				} catch (ClassNotFoundException e) {

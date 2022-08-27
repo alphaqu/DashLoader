@@ -24,8 +24,6 @@ public class MappingData {
 	@Nullable
 	public DashModelData modelData;
 	@Nullable
-	public DashParticleData particleData;
-	@Nullable
 	public DashSplashTextData splashTextData;
 	@Nullable
 	public DashSpriteAtlasData spriteAtlasData;
@@ -37,15 +35,13 @@ public class MappingData {
 
 	@SuppressWarnings("unused") // hyphen
 	public MappingData(
-			DashFontManagerData fontManagerData,
-			DashModelData modelData,
-			DashParticleData particleData,
-			DashSplashTextData splashTextData,
-			DashSpriteAtlasData spriteAtlasData,
-			DashShaderData shaderData) {
+			@Nullable DashFontManagerData fontManagerData,
+			@Nullable DashModelData modelData,
+			@Nullable DashSplashTextData splashTextData,
+			@Nullable DashSpriteAtlasData spriteAtlasData,
+			@Nullable DashShaderData shaderData) {
 		this.fontManagerData = fontManagerData;
 		this.modelData = modelData;
-		this.particleData = particleData;
 		this.splashTextData = splashTextData;
 		this.spriteAtlasData = spriteAtlasData;
 		this.shaderData = shaderData;
@@ -60,7 +56,7 @@ public class MappingData {
 		final ProgressHandler progress = DL.progress;
 		progress.setCurrentTask("convert");
 
-		parent.run(new StepTask("Mapping Assets", 6), (task) -> {
+		parent.run(new StepTask("Mapping Assets", 5), (task) -> {
 
 			final DashDataManager dataManager = DL.getData();
 			if (ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
@@ -69,11 +65,6 @@ public class MappingData {
 
 				progress.setCurrentTask("convert.image");
 				this.spriteAtlasData = new DashSpriteAtlasData(dataManager, registry, task);
-			}
-
-			if (ConfigHandler.optionActive(Option.CACHE_PARTICLE)) {
-				progress.setCurrentTask("convert.particle");
-				this.particleData = new DashParticleData(dataManager, registry, task);
 			}
 
 			if (ConfigHandler.optionActive(Option.CACHE_FONT)) {
@@ -97,7 +88,7 @@ public class MappingData {
 	}
 
 	public void export(RegistryReader registry, DashDataManager data, @Nullable Consumer<Task> taskConsumer) {
-		StepTask task = new StepTask("Exporting Assets", 6);
+		StepTask task = new StepTask("Exporting Assets", 5);
 		if (taskConsumer != null) {
 			taskConsumer.accept(task);
 		}
@@ -105,18 +96,12 @@ public class MappingData {
 		var spriteData = DashUtil.nullable(this.spriteAtlasData, registry, DashSpriteAtlasData::export);
 		task.next();
 
-		var particleData = DashUtil.nullable(this.particleData, registry, DashParticleData::export);
-		task.next();
-
 		var atlasManager = data.getReadContextData().dashAtlasManager;
-		//	data.modelStateLookup.setCacheResultData(DashUtil.nullable(blockStateData, registry, DashBlockStateData::export));
 		data.bakedModels.setCacheResultData(DashUtil.nullable(this.modelData, registry, DashModelData::export));
 		task.next();
 		data.fonts.setCacheResultData(DashUtil.nullable(this.fontManagerData, registry, DashFontManagerData::export));
 		task.next();
 		data.spriteAtlasManager.setCacheResultData(DashUtil.nullable(spriteData, Pair::getLeft));
-		data.particleAtlas.setCacheResultData(DashUtil.nullable(particleData, Pair::getRight));
-		data.particleSprites.setCacheResultData(DashUtil.nullable(particleData, Pair::getLeft));
 
 		if (this.shaderData != null) {
 			data.shaders.setCacheResultData(DashUtil.nullable(this.shaderData, DashShaderData::export));
@@ -131,10 +116,6 @@ public class MappingData {
 			for (SpriteAtlasTexture atlas : spriteData.getValue()) {
 				atlasManager.addAtlas(Option.CACHE_MODEL_LOADER, atlas);
 			}
-		}
-
-		if (particleData != null) {
-			atlasManager.addAtlas(Option.CACHE_PARTICLE, particleData.getRight());
 		}
 
 		this.modelData = null;

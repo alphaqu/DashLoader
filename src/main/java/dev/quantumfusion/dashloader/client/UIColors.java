@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader.client;
 
 import dev.quantumfusion.dashloader.config.DashConfig;
-
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +10,7 @@ public class UIColors {
 	public static Color PROGRESS_LANE_COLOR = null;
 	public static Color TEXT_COLOR = null;
 
-	public static Map<String, Color> COLORS = new HashMap<>();
+	public final static Map<String, Color> COLORS = new HashMap<>();
 	public static Color[] PROGRESS_COLORS = null;
 
 	public static Color parseColor(String str) {

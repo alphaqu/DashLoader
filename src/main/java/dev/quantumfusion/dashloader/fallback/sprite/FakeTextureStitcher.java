@@ -1,12 +1,11 @@
 package dev.quantumfusion.dashloader.fallback.sprite;
 
+import java.util.Map;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureStitcher;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.MutablePair;
-
-import java.util.Map;
 
 public class FakeTextureStitcher extends TextureStitcher {
 	private final int width;

@@ -2,10 +2,9 @@ package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 
 /**
@@ -41,18 +40,23 @@ public final class DashObjectClass<R, D extends dev.quantumfusion.dashloader.Das
 			if (dashObjectAnnotation == null) {
 				throw new RuntimeException("Registered Class " + this.dashClass.getSimpleName() + " does not have a @DashObject annotation.");
 			}
+			//noinspection unchecked
 			this.targetClass = (Class<R>) dashObjectAnnotation.value();
 		}
 		return this.targetClass;
 	}
 
 	// lazy
+	@SuppressWarnings({"rawtypes", "RedundantSuppression", "RedundantCast"})
 	@NotNull
 	public Class<? extends dev.quantumfusion.dashloader.Dashable<?>> getTag() {
-		if (this.dashTag == null) {
+
+		if (this.dashTag == null)
+		{
 			Class<? extends dev.quantumfusion.dashloader.Dashable<?>> dashInterface = null;
 			for (Class<?> anInterface : this.dashClass.getInterfaces()) {
 				if (dev.quantumfusion.dashloader.Dashable.class.isAssignableFrom(anInterface)) {
+					//noinspection unchecked
 					dashInterface = (Class<? extends dev.quantumfusion.dashloader.Dashable<?>>) anInterface;
 					break;
 				}
@@ -63,7 +67,6 @@ public final class DashObjectClass<R, D extends dev.quantumfusion.dashloader.Das
 			}
 
 
-			//noinspection RedundantCast // very required
 			this.dashTag = (dashInterface == ((Class<? extends dev.quantumfusion.dashloader.Dashable>) Dashable.class) ? this.dashClass : dashInterface);
 		}
 		return this.dashTag;

@@ -18,7 +18,4 @@ public interface AbstractTextureAccessor {
 
 	@Accessor
 	void setMipmap(boolean mipmap);
-
-	@Accessor
-	void setGlId(int glId);
 }

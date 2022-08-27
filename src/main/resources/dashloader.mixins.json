@@ -52,7 +52,6 @@
     "main.ReloadableResourceManagerImplMixin",
     "main.SplashScreenMixin",
     "option.WallBlockMixin",
-    "option.cache.ParticleManagerMixin",
     "option.cache.SplashTextResourceSupplierMixin",
     "option.cache.font.FontManagerOverride",
     "option.cache.font.FontManagerOverride$LeoFontSolution",

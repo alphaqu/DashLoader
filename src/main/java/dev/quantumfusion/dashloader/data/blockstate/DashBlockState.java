@@ -64,7 +64,7 @@ public final class DashBlockState implements Dashable<BlockState> {
 	@Override
 	public BlockState export(final RegistryReader reader) {
 		final Identifier id = reader.get(this.owner);
-		// if its itemframe get its state from the modelloader as mojank is mojank
+		// if its item frame get its state from the model loader as mojank is mojank
 		if (id.equals(ITEM_FRAME)) {
 			return ModelLoaderAccessor.getTheItemFrameThing().getStates().get(this.pos);
 		} else {
