@@ -5,13 +5,12 @@ import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.mixin.accessor.AndMultipartModelSelectorAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.json.AndMultipartModelSelector;
-import net.minecraft.client.render.model.json.MultipartModelSelector;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.render.model.json.AndMultipartModelSelector;
+import net.minecraft.client.render.model.json.MultipartModelSelector;
 
 @DashObject(AndMultipartModelSelector.class)
 @DashDependencies(DashSimplePredicate.class)

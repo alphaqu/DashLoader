@@ -2,7 +2,6 @@ package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StaticTask;
-
 import java.util.HashMap;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
@@ -41,8 +40,7 @@ public final class ProgressHandler {
 		return this.currentTask;
 	}
 
-	public ProgressHandler setCurrentTask(String currentTask) {
+	public void setCurrentTask(String currentTask) {
 		this.currentTask = this.translations.getOrDefault(currentTask, currentTask);
-		return this;
 	}
 }

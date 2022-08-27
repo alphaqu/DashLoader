@@ -5,10 +5,9 @@ import dev.quantumfusion.dashloader.util.DashUtil;
 import dev.quantumfusion.dashloader.util.IOHelper;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import java.util.List;
 import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;
-
-import java.util.List;
 
 public final class DashGlUniform {
 	public final int count;

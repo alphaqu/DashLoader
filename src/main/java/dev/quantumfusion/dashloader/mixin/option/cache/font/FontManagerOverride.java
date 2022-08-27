@@ -57,21 +57,12 @@ public class FontManagerOverride {
 		}
 	}
 
-	@SuppressWarnings("UnresolvedMixinReference")
-	@Inject(
-			method = {"method_18638", "prepare*"},
-			at = @At(value = "TAIL"),
-			cancellable = true
-	)
-	private void prepareOffthread(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<Map<Identifier, List<Font>>> cir) {
-		this.prepareFonts(cir.getReturnValue());
-	}
-
 	private void prepareFonts(Map<Identifier, List<Font>> map) {
 		DL.log.info("Preparing fonts off-thread");
 		Map<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> cache = new Object2ObjectOpenHashMap<>();
 		map.forEach((identifier, fonts) -> cache.put(identifier, this.computeFonts(Lists.reverse(fonts))));
 		this.cache = cache;
+		throw new Error("your mom");
 	}
 
 
@@ -134,6 +125,7 @@ public class FontManagerOverride {
 		final IntFunction<IntList> creatIntArrayListFunc = (i) -> new IntArrayList();
 
 		fonts.forEach(currentFont -> currentFont.getProvidedGlyphs().forEach((IntConsumer) codePoint -> {
+			//noinspection ForLoopReplaceableByForEach
 			for (int i = 0, fontsSize = fonts.size(); i < fontsSize; i++) {
 				Font font = fonts.get(i);
 				Glyph glyph = codePoint == 32 ? space : font.getGlyph(codePoint);

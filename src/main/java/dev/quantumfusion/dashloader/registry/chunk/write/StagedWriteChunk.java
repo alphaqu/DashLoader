@@ -8,7 +8,6 @@ import dev.quantumfusion.dashloader.registry.chunk.data.StagedDataChunk;
 import dev.quantumfusion.dashloader.registry.factory.DashFactory;
 import dev.quantumfusion.dashloader.thread.IndexedArrayMapTask;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +31,13 @@ public class StagedWriteChunk<R, D extends Dashable<R>> extends AbstractWriteChu
 
 	@Override
 	public AbstractDataChunk<R, D> exportData() {
+		//noinspection unchecked
 		IndexedArrayMapTask.IndexedArrayEntry<D>[][] out = new IndexedArrayMapTask.IndexedArrayEntry[this.dashList.size()][];
 
 		int i = 0;
 		int size = 0;
 		for (List<IndexedArrayMapTask.IndexedArrayEntry<D>> value : this.dashList.values()) {
+			//noinspection unchecked
 			out[i++] = value.toArray(IndexedArrayMapTask.IndexedArrayEntry[]::new);
 			size += value.size();
 		}

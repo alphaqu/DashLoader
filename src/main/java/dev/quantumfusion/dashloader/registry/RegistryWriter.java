@@ -58,6 +58,7 @@ public final class RegistryWriter {
 	public <R, D extends Dashable<R>> int addDirect(AbstractWriteChunk<R, D> chunk, R object) {
 		final int objectPos = chunk.add(object);
 		final int pointer = createPointer(objectPos, chunk.pos);
+		//noinspection unchecked
 		((Object2IntMap<R>) this.dedup).put(object, pointer);
 		return pointer;
 	}

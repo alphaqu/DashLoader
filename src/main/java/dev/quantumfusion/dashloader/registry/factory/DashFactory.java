@@ -7,7 +7,6 @@ import dev.quantumfusion.dashloader.registry.factory.creator.CreationError;
 import dev.quantumfusion.dashloader.registry.factory.creator.Creator;
 import dev.quantumfusion.dashloader.registry.factory.creator.MultiCreator;
 import dev.quantumfusion.dashloader.registry.factory.creator.SoloCreator;
-
 import java.util.Collection;
 
 public final class DashFactory<R, D extends Dashable<R>> {
@@ -23,6 +22,7 @@ public final class DashFactory<R, D extends Dashable<R>> {
 		if (dashObjects.size() > 1) {
 			return new DashFactory<>(MultiCreator.create(dashObjects), failCallback);
 		} else {
+			//noinspection OptionalGetWithoutIsPresent
 			return new DashFactory<>(SoloCreator.create(dashObjects.stream().findFirst().get()), failCallback);
 		}
 	}

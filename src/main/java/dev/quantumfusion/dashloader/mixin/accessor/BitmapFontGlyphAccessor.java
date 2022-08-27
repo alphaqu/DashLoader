@@ -27,7 +27,6 @@ public interface BitmapFontGlyphAccessor {
 	@Accessor
 	float getScaleFactor();
 
-
 	@Accessor
 	int getWidth();
 

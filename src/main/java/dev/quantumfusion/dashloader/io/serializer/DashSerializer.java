@@ -46,6 +46,7 @@ public class DashSerializer<O> {
 			var classDefiner = new ClassDefiner(Thread.currentThread().getContextClassLoader());
 			try {
 				classDefiner.def(getSerializerName(holderClass), Files.readAllBytes(serializerFileLocation));
+				//noinspection unchecked
 				return new DashSerializer<>(holderClass, (HyphenSerializer<ByteBufferIO, F>) ClassDefiner.SERIALIZER);
 			} catch (IOException e) {
 				e.printStackTrace();

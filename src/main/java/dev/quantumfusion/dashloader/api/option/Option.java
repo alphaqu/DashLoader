@@ -7,9 +7,6 @@ public enum Option {
 	CACHE_FONT(
 			"cache.font",
 			"Caches all of the fonts and their images.", Impact.HIGH),
-	CACHE_PARTICLE(
-			"cache.ParticleManagerMixin",
-			"Caches the Particles and its Atlas for a much better Particle loading time", Impact.MEDIUM),
 	CACHE_SPLASH_TEXT(
 			"cache.SplashTextResourceSupplierMixin",
 			"Caches the splash texts from the main screen.", Impact.SMALL),

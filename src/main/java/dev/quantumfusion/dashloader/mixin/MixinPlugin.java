@@ -42,16 +42,6 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-		//if (targetClassName.equals("net.minecraft.client.render.model.ModelLoader")) {
-		//	for (MethodNode method : targetClass.methods) {
-		//		if (method.name.endsWith("onFinishAddingModels")) {
-		//			for (int i = 0; i < 20; i++) {
-		//				DashLoader.LOGGER.info("YOUR MOM");
-		//			}
-		//			method.instructions.clear();
-		//			method.instructions.add(new InsnNode(Opcodes.RETURN));
-		//		}
-		//	}
-		//}
+
 	}
 }

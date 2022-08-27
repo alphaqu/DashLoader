@@ -4,9 +4,6 @@ import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.io.serializer.DashSerializer;
 import dev.quantumfusion.taski.Task;
-import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The IO Module of DashLoaderCore. Handles Serializers and Caches.
@@ -57,6 +56,7 @@ public final class IOHandler {
 
 	public <O> O load(Class<O> dataObject) {
 		try {
+			//noinspection unchecked
 			return (O) this.serializers.get(dataObject).decode(this.getCurrentSubCacheDir());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -65,6 +65,7 @@ public final class IOHandler {
 
 	public <O> void save(O dataObject, @Nullable Consumer<Task> task) {
 		try {
+			//noinspection unchecked
 			((DashSerializer<O>) this.serializers.get(dataObject.getClass())).encode(dataObject, this.getCurrentSubCacheDir(), task);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

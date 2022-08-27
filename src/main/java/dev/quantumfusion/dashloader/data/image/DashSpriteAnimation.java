@@ -5,11 +5,10 @@ import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.util.DashUtil;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.Sprite.AnimationFrame;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.Sprite.AnimationFrame;
 
 public final class DashSpriteAnimation {
 	public final List<DashSpriteAnimationFrame> frames;

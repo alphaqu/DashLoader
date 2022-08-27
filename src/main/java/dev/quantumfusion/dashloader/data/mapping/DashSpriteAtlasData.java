@@ -7,12 +7,11 @@ import dev.quantumfusion.dashloader.mixin.accessor.SpriteAtlasManagerAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.taski.builtin.StepTask;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DashSpriteAtlasData {
 	public final ObjectObjectList<DashSpriteAtlasTexture, Integer> atlases;

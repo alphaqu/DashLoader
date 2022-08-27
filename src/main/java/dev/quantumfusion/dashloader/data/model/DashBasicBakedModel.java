@@ -11,14 +11,14 @@ import dev.quantumfusion.dashloader.mixin.accessor.BasicBakedModelAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 @DashObject(BasicBakedModel.class)

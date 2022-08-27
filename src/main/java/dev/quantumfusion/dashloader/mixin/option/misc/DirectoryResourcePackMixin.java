@@ -1,13 +1,12 @@
 package dev.quantumfusion.dashloader.mixin.option.misc;
 
 import com.google.common.base.CharMatcher;
+import java.io.File;
 import net.minecraft.resource.DirectoryResourcePack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-
-import java.io.File;
 
 @Mixin(DirectoryResourcePack.class)
 public class DirectoryResourcePackMixin {
@@ -23,6 +22,7 @@ public class DirectoryResourcePackMixin {
 
 	/**
 	 * @author notequalalpha
+	 * @reason _
 	 */
 	@Overwrite
 	public static boolean isValidPath(File file, String filename) {

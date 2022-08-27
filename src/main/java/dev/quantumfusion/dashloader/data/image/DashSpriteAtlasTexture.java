@@ -51,6 +51,7 @@ public final class DashSpriteAtlasTexture implements Dashable<SpriteAtlasTexture
 	}
 
 	@Override
+	@SuppressWarnings("ConstantConditions")
 	public SpriteAtlasTexture export(RegistryReader reader) {
 		final SpriteAtlasTexture spriteAtlasTexture = new SpriteAtlasTexture(reader.get(this.id));
 		final AbstractTextureAccessor access = ((AbstractTextureAccessor) spriteAtlasTexture);

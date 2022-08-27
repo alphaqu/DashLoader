@@ -55,7 +55,6 @@ public final class DashModelTransformation {
 		return out;
 	}
 
-	@Nullable
 	public static ModelTransformation exportOrDefault(@Nullable DashModelTransformation other) {
 		if (other == null) {
 			return ModelTransformation.NONE;

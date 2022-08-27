@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.awt.Color;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -10,17 +11,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Matrix4f;
 
-import java.awt.Color;
-
 public class UIDrawer {
 	private MatrixStack ms;
 	private TextRenderer tr;
 	private int width;
 	private int height;
-	private GradientConsumer gradientConsumer;
 
-	public void update(MinecraftClient client, GradientConsumer gradientConsumer) {
-		this.gradientConsumer = gradientConsumer;
+	public void update(MinecraftClient client) {
 		final Window window = client.getWindow();
 		this.width = window.getScaledWidth();
 		this.height = window.getScaledHeight();
@@ -109,10 +106,5 @@ public class UIDrawer {
 			this.xDir = xDir;
 			this.yDir = yDir;
 		}
-	}
-
-	@FunctionalInterface
-	public interface GradientConsumer {
-		void fillGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd);
 	}
 }

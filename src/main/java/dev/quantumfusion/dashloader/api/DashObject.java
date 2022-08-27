@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@SuppressWarnings("unused")
 public @interface DashObject {
 	/**
 	 * This is the Target Class. So if you are adding caching support to Integer, Your class would be named DashInteger and {@code @DashObject} value would be {@code Integer.class}

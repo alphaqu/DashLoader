@@ -8,7 +8,6 @@ import dev.quantumfusion.dashloader.registry.chunk.write.FloatingWriteChunk;
 import dev.quantumfusion.dashloader.registry.chunk.write.StagedWriteChunk;
 import dev.quantumfusion.dashloader.registry.chunk.write.WriteChunk;
 import dev.quantumfusion.dashloader.registry.factory.DashFactory;
-
 import java.util.*;
 import java.util.function.Function;
 
@@ -77,6 +76,7 @@ public final class RegistryHandler {
 	public <R, D extends Dashable<R>> RegistryWriter createWriter(Map<Class<?>, DashFactory.FailCallback<?, ?>> callbacks, Collection<DashObjectClass<?, ?>> dashObjects) {
 		Map<Class<?>, DashObjectGroup<R, D>> groups = new HashMap<>();
 		for (DashObjectClass<?, ?> raw : dashObjects) {
+			//noinspection unchecked
 			DashObjectClass<R, D> dashObject = (DashObjectClass<R, D>) raw;
 			var group = groups.computeIfAbsent(dashObject.getTag(), aClass -> new DashObjectGroup<>(dashObject.getTag()));
 			group.addDashObject(dashObject);

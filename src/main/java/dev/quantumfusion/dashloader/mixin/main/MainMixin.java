@@ -9,12 +9,16 @@ import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(Main.class)
 public class MainMixin {
+	private static boolean INITIALIZED = false;
 
 	@Inject(
-			method = "main([Ljava/lang/String;)V",
+			method = "main*",
 			at = @At(value = "HEAD")
 	)
 	private static void main(String[] args, CallbackInfo ci) {
-		DL.initialize();
+		if (!INITIALIZED)  {
+			DL.initialize();
+			INITIALIZED = true;
+		}
 	}
 }

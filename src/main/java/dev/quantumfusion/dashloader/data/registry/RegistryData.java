@@ -7,21 +7,16 @@ import dev.quantumfusion.dashloader.data.model.predicates.DashPredicate;
 import dev.quantumfusion.dashloader.registry.ChunkHolder;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
+import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.texture.Sprite;
-
-import java.util.function.Predicate;
 
 public class RegistryData implements ChunkHolder {
 	public final AbstractDataChunk<BlockState, DashBlockState> blockStateRegistryData;
 	public final AbstractDataChunk<Font, DashFont> fontRegistryData;
 	public final AbstractDataChunk<Sprite, DashSprite> spriteRegistryData;
 	public final AbstractDataChunk<Predicate<BlockState>, DashPredicate> predicateRegistryData;
-/*	@Serialize(order = 8)
-	@SerializeSubclasses(extraSubclassesId = "data", path = {0})
-	public final List<DashDataClass> dataClassList;*/
-
 
 	public RegistryData(AbstractDataChunk<BlockState, DashBlockState> blockStateRegistryData, AbstractDataChunk<Font, DashFont> fontRegistryData, AbstractDataChunk<Sprite, DashSprite> spriteRegistryData, AbstractDataChunk<Predicate<BlockState>, DashPredicate> predicateRegistryData) {
 		this.blockStateRegistryData = blockStateRegistryData;
@@ -36,11 +31,6 @@ public class RegistryData implements ChunkHolder {
 		this.fontRegistryData = writer.getChunk(DashFont.class).exportData();
 		this.spriteRegistryData = writer.getChunk(DashSprite.class).exportData();
 		this.predicateRegistryData = writer.getChunk(DashPredicate.class).exportData();
-
-		// TODO data classes
-/*
-		this.dataClassList = api.dataClasses;
-*/
 	}
 
 

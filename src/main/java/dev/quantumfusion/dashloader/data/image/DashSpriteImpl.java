@@ -91,6 +91,7 @@ public class DashSpriteImpl implements DashSprite {
 		images[0] = registry.get(this.image);
 		for (int i = 1; i <= (this.images - 1); ++i) {
 			final NativeImage oldLevel = images[i - 1];
+			//noinspection resource
 			final NativeImage newLevel = new NativeImage(oldLevel.getWidth() >> 1, oldLevel.getHeight() >> 1, false);
 			final int newWidth = newLevel.getWidth();
 			final int newHeight = newLevel.getHeight();
@@ -126,11 +127,11 @@ public class DashSpriteImpl implements DashSprite {
 		return out;
 	}
 
-	private final static int getColorUnsafe(final long ptr, final int oldWidth, final int x, final int y) {
+	private static int getColorUnsafe(final long ptr, final int oldWidth, final int x, final int y) {
 		return UnsafeHelper.UNSAFE.getInt(ptr + (((long)x + (long)y * (long)oldWidth) * 4L));
 	}
 
-	private final static void setColorUnsafe(final long ptr, final int width, final int x, final int y, final int color) {
+	private static void setColorUnsafe(final long ptr, final int width, final int x, final int y, final int color) {
 		UnsafeHelper.UNSAFE.putInt(ptr + (((long)x + (long)y * (long)width) * 4L), color);
 	}
 

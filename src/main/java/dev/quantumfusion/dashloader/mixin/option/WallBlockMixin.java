@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.mixin.option;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBlock;
@@ -15,8 +16,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Map;
 
 @Mixin(WallBlock.class)
 public abstract class WallBlockMixin extends Block implements Waterloggable {
@@ -45,23 +44,23 @@ public abstract class WallBlockMixin extends Block implements Waterloggable {
 	@Final
 	public static EnumProperty<WallShape> SOUTH_SHAPE;
 
-	public WallBlockMixin(Settings settings) {
-		super(settings);
-	}
-
 	@Shadow
 	@Final
 	public static BooleanProperty WATERLOGGED;
 
+	public WallBlockMixin(Settings settings) {
+		super(settings);
+	}
+
 
 	@Inject(method = "getShapeMap", at = @At(value = "HEAD"), cancellable = true)
 	private void getShapeMapCache(float f, float g, float h, float i, float j, float k, CallbackInfoReturnable<Map<BlockState, VoxelShape>> cir) {
-		if (this.isCommon(f, g, h, i, j, k)) {
-			if (this.isShape(f, g, h, i, j, k)) {
+		if (this.isCommon(f, g, i)) {
+			if (this.isShape(h, j, k)) {
 				if (SHAPE_CACHE != null) {
 					cir.setReturnValue(this.createFromCache(SHAPE_CACHE));
 				}
-			} else if (this.isCollision(f, g, h, i, j, k)) {
+			} else if (this.isCollision(h, j, k)) {
 				if (COLLISION_CACHE != null) {
 					cir.setReturnValue(this.createFromCache(COLLISION_CACHE));
 				}
@@ -69,17 +68,17 @@ public abstract class WallBlockMixin extends Block implements Waterloggable {
 		}
 	}
 
-	@Inject(method = "getShapeMap", at = @At(value = "RETURN"), cancellable = true)
+	@Inject(method = "getShapeMap", at = @At(value = "RETURN"))
 	private void getShapeMapCacheCreate(float f, float g, float h, float i, float j, float k, CallbackInfoReturnable<Map<BlockState, VoxelShape>> cir) {
 		if (SHAPE_CACHE == null || COLLISION_CACHE == null) {
-			if (this.isCommon(f, g, h, i, j, k)) {
-				if (this.isShape(f, g, h, i, j, k)) {
+			if (this.isCommon(f, g, i)) {
+				if (this.isShape(h, j, k)) {
 					if (SHAPE_CACHE == null) {
 						SHAPE_CACHE = new VoxelShape[2][LENGTH][LENGTH][LENGTH][LENGTH];
 						this.createCache(SHAPE_CACHE, cir.getReturnValue());
 						System.out.println("Created Shape Cache");
 					}
-				} else if (this.isCollision(f, g, h, i, j, k)) {
+				} else if (this.isCollision(h, j, k)) {
 					if (COLLISION_CACHE == null) {
 						COLLISION_CACHE = new VoxelShape[2][LENGTH][LENGTH][LENGTH][LENGTH];
 						this.createCache(COLLISION_CACHE, cir.getReturnValue());
@@ -143,15 +142,15 @@ public abstract class WallBlockMixin extends Block implements Waterloggable {
 
 	//shape 4.0F, 3.0F, 16.0F, 0.0F, 14.0F, 16.0F
 	//collision 4.0F, 3.0F, 24.0F, 0.0F, 24.0F, 24.0F
-	private boolean isShape(float f, float g, float h, float i, float j, float k) {
+	private boolean isShape(float h, float j, float k) {
 		return h == 16.0F && j == 14.0F && k == 16.0F;
 	}
 
-	private boolean isCollision(float f, float g, float h, float i, float j, float k) {
+	private boolean isCollision(float h, float j, float k) {
 		return h == 24.0F && j == 24.0F && k == 24.0F;
 	}
 
-	private boolean isCommon(float f, float g, float h, float i, float j, float k) {
+	private boolean isCommon(float f, float g, float i) {
 		return f == 4.0F && g == 3.0F && i == 0.0F;
 	}
 

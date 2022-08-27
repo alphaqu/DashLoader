@@ -4,9 +4,8 @@ package dev.quantumfusion.dashloader.registry;
 import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.function.Consumer;
+import org.jetbrains.annotations.Nullable;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @SuppressWarnings("FinalMethodInFinalClass")

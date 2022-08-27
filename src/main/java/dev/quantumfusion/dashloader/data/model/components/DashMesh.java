@@ -35,6 +35,7 @@ public final class DashMesh {
 		final Class<?> aClass = ClassHelper.getClass(this.className);
 		final Mesh mesh = (Mesh) UnsafeHelper.allocateInstance(aClass);
 		try {
+			assert aClass != null;
 			final Field data = aClass.getDeclaredField("data");
 			data.setAccessible(true);
 			data.set(mesh, this.data);
