@@ -3,6 +3,7 @@ package dev.quantumfusion.dashloader.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.quantumfusion.dashloader.DashConstants;
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.api.option.Option;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,9 +18,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class ConfigHandler {
 	private static final EnumMap<Option, Boolean> OPTION_ACTIVE = new EnumMap<>(Option.class);
@@ -31,16 +30,16 @@ public class ConfigHandler {
 	@Nullable
 	private FileAlterationObserver observer;
 
-	public ConfigHandler(Path configPath, Logger log) {
+	public ConfigHandler(Path configPath) {
 		this.configPath = configPath;
 		this.reloadConfig();
 		this.config.options.forEach((s, aBoolean) -> {
 			try {
 				var option = Option.valueOf(s.toUpperCase());
 				OPTION_ACTIVE.put(option, false);
-				log.warn("Disabled Optional Feature {} from DashLoader config.", s);
+				DashLoader.LOG.warn("Disabled Optional Feature {} from DashLoader config.", s);
 			} catch (IllegalArgumentException illegalArgumentException) {
-				log.error("Could not disable Optional Feature {} as it does not exist.", s);
+				DashLoader.LOG.error("Could not disable Optional Feature {} as it does not exist.", s);
 			}
 		});
 
@@ -52,9 +51,9 @@ public class ConfigHandler {
 					try {
 						var option = Option.valueOf(feature.toUpperCase());
 						OPTION_ACTIVE.put(option, false);
-						log.warn("Disabled Optional Feature {} from {} config. {}", feature, mod.getId(), mod.getName());
+						DashLoader.LOG.warn("Disabled Optional Feature {} from {} config. {}", feature, mod.getId(), mod.getName());
 					} catch (IllegalArgumentException illegalArgumentException) {
-						log.error("Could not disable Optional Feature {} as it does not exist.", feature);
+						DashLoader.LOG.error("Could not disable Optional Feature {} as it does not exist.", feature);
 					}
 				}
 			}
@@ -70,7 +69,7 @@ public class ConfigHandler {
 				json.close();
 			}
 		} catch (Throwable err) {
-			DL.log.info("Config corrupted creating a new one.", err);
+			DashLoader.LOG.info("Config corrupted creating a new one.", err);
 		}
 
 		this.saveConfig();

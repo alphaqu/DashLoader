@@ -2,7 +2,6 @@ package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.dashloader.util.TimeUtil;
 import java.lang.management.ManagementFactory;
-import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class ProfilerHandler {
 	public long reload_start = 0;
@@ -22,29 +21,29 @@ public class ProfilerHandler {
 	public long total_loading = -1;
 
 	public void print() {
-		DL.log.info("┏ DashLoader Statistics.");
+		DashLoader.LOG.info("┏ DashLoader Statistics.");
 		if (this.export_time != -1) {
-			DL.log.info("┠──┬ {} DashLoader load", TimeUtil.getTimeString(this.export_time));
-			DL.log.info("┃  ├── {} File reading", TimeUtil.getTimeString(this.export_file_reading_time));
-			DL.log.info("┃  ├── {} Asset exporting", TimeUtil.getTimeString(this.export_asset_exporting_time));
-			DL.log.info("┃  └── {} Asset loading", TimeUtil.getTimeString(this.export_asset_loading_time));
+			DashLoader.LOG.info("┠──┬ {} DashLoader load", TimeUtil.getTimeString(this.export_time));
+			DashLoader.LOG.info("┃  ├── {} File reading", TimeUtil.getTimeString(this.export_file_reading_time));
+			DashLoader.LOG.info("┃  ├── {} Asset exporting", TimeUtil.getTimeString(this.export_asset_exporting_time));
+			DashLoader.LOG.info("┃  └── {} Asset loading", TimeUtil.getTimeString(this.export_asset_loading_time));
 			this.export_time = -1;
 		}
 		if (this.fallback_models_count != -1) {
 			long totalModels = this.cached_models_count + this.fallback_models_count;
-			DL.log.info("┠──┬ {}% Cache coverage", (int) (((this.cached_models_count / (float) totalModels) * 100)));
-			DL.log.info("┃  ├── {} Fallback models", this.fallback_models_count);
-			DL.log.info("┃  └── {} Cached models", this.cached_models_count);
+			DashLoader.LOG.info("┠──┬ {}% Cache coverage", (int) (((this.cached_models_count / (float) totalModels) * 100)));
+			DashLoader.LOG.info("┃  ├── {} Fallback models", this.fallback_models_count);
+			DashLoader.LOG.info("┃  └── {} Cached models", this.cached_models_count);
 			this.cached_models_count = -1;
 			this.fallback_models_count = -1;
 		}
-		DL.log.info("┠── {} Minecraft client reload", TimeUtil.getTimeStringFromStart(this.reload_start));
-		DL.log.info("┠── {} Minecraft bootstrap", TimeUtil.getTimeString(this.bootstrap_end - this.bootstrap_start));
+		DashLoader.LOG.info("┠── {} Minecraft client reload", TimeUtil.getTimeStringFromStart(this.reload_start));
+		DashLoader.LOG.info("┠── {} Minecraft bootstrap", TimeUtil.getTimeString(this.bootstrap_end - this.bootstrap_start));
 
 		if (this.total_loading == -1) {
 			this.total_loading = ManagementFactory.getRuntimeMXBean().getUptime();
 		}
 
-		DL.log.info("┖── {} Total loading", TimeUtil.getTimeString(this.total_loading));
+		DashLoader.LOG.info("┖── {} Total loading", TimeUtil.getTimeString(this.total_loading));
 	}
 }

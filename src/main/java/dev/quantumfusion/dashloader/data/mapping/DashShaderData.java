@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.data.mapping;
 
 import dev.quantumfusion.dashloader.DashDataManager;
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.data.image.shader.DashShader;
 import dev.quantumfusion.dashloader.util.MissingDataException;
 import dev.quantumfusion.taski.TaskUtil;
@@ -28,7 +29,7 @@ public class DashShaderData {
 					try {
 						this.shaders.put(s, new DashShader(shader));
 					} catch (MissingDataException e) {
-						DL.log.warn("Skipping shader {}", s);
+						DashLoader.LOG.warn("Skipping shader {}", s);
 					}
 				})
 		);

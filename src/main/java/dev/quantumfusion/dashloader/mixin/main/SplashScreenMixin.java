@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.mixin.main;
 
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.client.DashCachingScreen;
 import java.util.HashMap;
 import net.minecraft.client.MinecraftClient;
@@ -53,11 +54,11 @@ public class SplashScreenMixin {
 		if (DL.isWrite()) {
 			// Yes this is bad. But it makes us not require Fabric API
 			var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
-			DL.log.info(langCode);
+			DashLoader.LOG.info(langCode);
 			var stream = this.getClass().getClassLoader().getResourceAsStream("dashloader/lang/" + langCode + ".json");
 			var map = new HashMap<String, String>();
 			if (stream != null) {
-				DL.log.info("Found translations");
+				DashLoader.LOG.info("Found translations");
 				Language.load(stream, map::put);
 			} else {
 				var en_stream = this.getClass().getClassLoader().getResourceAsStream("dashloader/lang/en_us.json");
@@ -65,7 +66,7 @@ public class SplashScreenMixin {
 					Language.load(en_stream, map::put);
 				}
 			}
-			DL.log.info("Missing translations");
+			DashLoader.LOG.info("Missing translations");
 			DL.progress.setTranslations(map);
 			this.client.currentScreen = new DashCachingScreen(this.client.currentScreen);
 		}

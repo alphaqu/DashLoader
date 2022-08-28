@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.data.mapping;
 
 import dev.quantumfusion.dashloader.DashDataManager;
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.data.common.IntIntList;
@@ -54,7 +55,7 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 
 		var missingModelsRead = DL.getData().getReadContextData().missingModelsRead;
 		var tasks = new ArrayList<Runnable>();
-		DL.log.info("Scanning Blocks");
+		DashLoader.LOG.info("Scanning Blocks");
 		for (Block block : Registry.BLOCK) {
 			tasks.add(() -> block.getStateManager().getStates().forEach((blockState) -> {
 				final ModelIdentifier modelId = BlockModels.getModelId(blockState);
@@ -64,9 +65,9 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 			}));
 		}
 
-		DL.log.info("Verifying {} BlockStates", tasks.size());
+		DashLoader.LOG.info("Verifying {} BlockStates", tasks.size());
 		DL.thread.parallelRunnable(tasks);
-		DL.log.info("Found {} Missing BlockState Models", missingModelsRead.size());
+		DashLoader.LOG.info("Found {} Missing BlockState Models", missingModelsRead.size());
 		return out;
 	}
 

@@ -48,6 +48,7 @@ public class DashLoader {
 			.getMetadata()
 			.getVersion()
 			.getFriendlyString();
+	public static final Logger LOG = LogManager.getLogger("DashLoader");
 	public static final DashLoader DL = new DashLoader();
 
 	private boolean shouldReload = true;
@@ -56,7 +57,6 @@ public class DashLoader {
 	private DashDataManager dataManager;
 
 	// Handlers
-	public final Logger log;
 	public final APIHandler api;
 	public final RegistryHandler registry;
 	public final ThreadHandler thread;
@@ -71,20 +71,19 @@ public class DashLoader {
 	}
 
 	private DashLoader() {
-		this.log = LogManager.getLogger("DashLoader");
-		this.log.info("Bootstrapping DashLoader " + VERSION + ".");
+		LOG.info("Bootstrapping DashLoader " + VERSION + ".");
 
 		this.api = new APIHandler();
 		this.metadata.setModHash(FabricLoader.getInstance());
 		this.io = new IOHandler(Path.of("./dashloader-cache/"));
-		this.config = new ConfigHandler(FabricLoader.getInstance().getConfigDir().normalize().resolve("dashloader.json"), 	this.log);
+		this.config = new ConfigHandler(FabricLoader.getInstance().getConfigDir().normalize().resolve("dashloader.json"));
 		this.thread = new ThreadHandler();
 		this.progress = new ProgressHandler();
 		this.registry = new RegistryHandler();
 	}
 
 	public void initialize() {
-		this.log.info("Initializing DashLoader " + VERSION + ".");
+		LOG.info("Initializing DashLoader " + VERSION + ".");
 		try {
 			this.api.initAPI();
 
@@ -93,7 +92,7 @@ public class DashLoader {
 
 			final FabricLoader instance = FabricLoader.getInstance();
 			if (instance.isDevelopmentEnvironment()) {
-				this.log.warn("DashLoader launched in dev.");
+				LOG.warn("DashLoader launched in dev.");
 			}
 
 			this.io.setCacheArea(this.metadata.modInfo);
@@ -105,8 +104,8 @@ public class DashLoader {
 			this.io.addSerializer(BakedQuadData.class, dashObjects, DashBakedQuad.class);
 			this.io.addSerializer(MappingData.class, dashObjects);
 
-			this.log.info("Created DashLoader with {}.", Thread.currentThread().getContextClassLoader().getClass().getSimpleName());
-			this.log.info("Initialized DashLoader");
+			LOG.info("Created DashLoader with {}.", Thread.currentThread().getContextClassLoader().getClass().getSimpleName());
+			LOG.info("Initialized DashLoader");
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("mc exception bad");
@@ -125,7 +124,7 @@ public class DashLoader {
 		if (this.shouldReload) {
 			this.metadata.setResourcePackHash(resourcePacks);
 			this.io.setSubCacheArea(this.metadata.resourcePacks);
-			this.log.info("Reloading DashLoader. [mod-hash: {}] [resource-hash: {}]", this.metadata.modInfo, this.metadata.resourcePacks);
+			LOG.info("Reloading DashLoader. [mod-hash: {}] [resource-hash: {}]", this.metadata.modInfo, this.metadata.resourcePacks);
 			if (this.io.cacheExists()) {
 				this.setStatus(Status.READ);
 				this.loadDashCache();
@@ -133,7 +132,7 @@ public class DashLoader {
 				this.setStatus(Status.WRITE);
 			}
 
-			this.log.info("Reloaded DashLoader");
+			LOG.info("Reloaded DashLoader");
 			this.shouldReload = false;
 		}
 	}
@@ -149,7 +148,7 @@ public class DashLoader {
 	public void saveDashCache() {
 		this.api.callHook(SaveCacheHook.class, SaveCacheHook::saveCacheStart);
 		DashCachingScreen.STATUS = DashCachingScreen.Status.CACHING;
-		this.log.info("Starting DashLoader Caching");
+		LOG.info("Starting DashLoader Caching");
 		try {
 			long start = System.currentTimeMillis();
 
@@ -212,12 +211,12 @@ public class DashLoader {
 			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheSerialize(writer, mappings, holders));
 
 
-			this.log.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
+			LOG.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
 			DashCachingScreen.STATUS = DashCachingScreen.Status.DONE;
 			this.api.callHook(SaveCacheHook.class, SaveCacheHook::saveCacheEnd);
 		} catch (Throwable thr) {
 			this.setStatus(Status.WRITE);
-			this.log.error("Failed caching", thr);
+			LOG.error("Failed caching", thr);
 			DashCachingScreen.STATUS = DashCachingScreen.Status.CRASHED;
 			this.io.clearCache();
 		}
@@ -229,7 +228,7 @@ public class DashLoader {
 
 		var start = System.currentTimeMillis();
 		this.io.setSubCacheArea(this.metadata.resourcePacks);
-		this.log.info("Starting DashLoader Deserialization");
+		LOG.info("Starting DashLoader Deserialization");
 		try {
 			StepTask task = new StepTask("Loading DashCache", 3);
 			this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheTask(task));
@@ -255,12 +254,12 @@ public class DashLoader {
 			assert mappings != null;
 
 			// Initialize systems
-			this.log.info("Creating Registry");
+			LOG.info("Creating Registry");
 			final RegistryReader reader = this.registry.createReader(registryDataObjects);
 			this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheRegistryInit(reader, this.dataManager, mappings));
 
 			tempStart = System.currentTimeMillis();
-			this.log.info("Exporting Mappings");
+			LOG.info("Exporting Mappings");
 			task.run(() -> {
 				reader.export(task::setSubTask);
 				this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheExported(reader, this.dataManager, mappings));
@@ -270,7 +269,7 @@ public class DashLoader {
 
 
 			tempStart = System.currentTimeMillis();
-			this.log.info("Loading Mappings");
+			LOG.info("Loading Mappings");
 			task.run(() -> {
 				mappings.export(reader, this.dataManager, task::setSubTask);
 				this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheMapped(reader, this.dataManager, mappings));
@@ -279,17 +278,17 @@ public class DashLoader {
 
 
 			this.profilerHandler.export_time = System.currentTimeMillis() - start;
-			this.log.info("Loaded DashLoader in {}ms", this.profilerHandler.export_time);
+			LOG.info("Loaded DashLoader in {}ms", this.profilerHandler.export_time);
 			this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheEnd);
 		} catch (Exception e) {
-			this.log.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(start), e);
+			LOG.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(start), e);
 			this.setStatus(Status.WRITE);
 			this.io.clearCache();
 		}
 	}
 
 	private void setStatus(Status status) {
-		DL.log.info("\u001B[46m\u001B[30m DashLoader Status change {}\n\u001B[0m", status);
+		LOG.info("\u001B[46m\u001B[30m DashLoader Status change {}\n\u001B[0m", status);
 		this.status = status;
 		switch (status) {
 			case NONE -> this.dataManager = null;

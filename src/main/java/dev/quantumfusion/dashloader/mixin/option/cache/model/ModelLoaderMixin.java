@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.model;
 
 import com.mojang.datafixers.util.Pair;
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.api.option.Option;
 import dev.quantumfusion.dashloader.fallback.model.MissingDashModel;
 import dev.quantumfusion.dashloader.fallback.model.UnbakedBakedModel;
@@ -68,7 +69,7 @@ public abstract class ModelLoaderMixin {
 		if (DL.isRead()) {
 			var data = DL.getData();
 			var dashModels = data.bakedModels.getCacheResultData();
-			DL.log.info("Injecting {} Cached Models", dashModels.size());
+			DashLoader.LOG.info("Injecting {} Cached Models", dashModels.size());
 			this.unbakedModels = new Object2ObjectOpenHashMap<>(this.unbakedModels);
 			this.modelsToBake = new Object2ObjectOpenHashMap<>(this.modelsToBake);
 			this.modelsToLoad = new ObjectOpenHashSet<>(this.modelsToLoad);
@@ -100,7 +101,7 @@ public abstract class ModelLoaderMixin {
 				// load thing lambda
 				this.method_4716(blockState);
 			}
-			DL.log.info("Loaded {} unsupported models.", missingModelsRead.size());
+			DashLoader.LOG.info("Loaded {} unsupported models.", missingModelsRead.size());
 			return false;
 		}
 		return instance.hasNext();
@@ -116,11 +117,11 @@ public abstract class ModelLoaderMixin {
 									  Set<SpriteIdentifier> thing2,
 									  Map<Identifier, List<SpriteIdentifier>> map) {
 		if (DL.isRead()) {
-			DL.log.info("Injecting Atlases");
+			DashLoader.LOG.info("Injecting Atlases");
 			DL.getData().getReadContextData().dashAtlasManager.consumeAtlases(Option.CACHE_MODEL_LOADER, (pair) -> {
 				SpriteAtlasTexture atlas = pair.getLeft();
 				Identifier id = atlas.getId();
-				DL.log.info("Injected {} atlas.", id);
+				DashLoader.LOG.info("Injected {} atlas.", id);
 				this.spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, ((SpriteAtlasTextureDuck) atlas).getCachedSprites().keySet().stream(), profiler, pair.getRight().mipLevel)));
 			});
 			map.clear();
