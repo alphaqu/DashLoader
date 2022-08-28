@@ -58,11 +58,10 @@ public class FontManagerOverride {
 	}
 
 	private void prepareFonts(Map<Identifier, List<Font>> map) {
-		DL.log.info("Preparing fonts off-thread");
+		DL.log.info("Preparing fonts");
 		Map<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> cache = new Object2ObjectOpenHashMap<>();
 		map.forEach((identifier, fonts) -> cache.put(identifier, this.computeFonts(Lists.reverse(fonts))));
 		this.cache = cache;
-		throw new Error("your mom");
 	}
 
 
