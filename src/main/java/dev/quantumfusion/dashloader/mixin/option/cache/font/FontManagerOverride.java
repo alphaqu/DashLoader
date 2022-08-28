@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.font;
 
 import com.google.common.collect.Lists;
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.mixin.accessor.FontManagerAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.FontStorageAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.UnicodeTextureFontAccessor;
@@ -58,7 +59,7 @@ public class FontManagerOverride {
 	}
 
 	private void prepareFonts(Map<Identifier, List<Font>> map) {
-		DL.log.info("Preparing fonts");
+		DashLoader.LOG.info("Preparing fonts");
 		Map<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> cache = new Object2ObjectOpenHashMap<>();
 		map.forEach((identifier, fonts) -> cache.put(identifier, this.computeFonts(Lists.reverse(fonts))));
 		this.cache = cache;
@@ -82,7 +83,7 @@ public class FontManagerOverride {
 				fontStorages.values().forEach(FontStorage::close);
 				fontStorages.clear();
 
-				DL.log.info("Applying fonts off-thread");
+				DashLoader.LOG.info("Applying fonts off-thread");
 				profiler.swap("reloading");
 				this.cache.forEach((identifier, entry) -> {
 					FontStorage fontStorage = new FontStorage(fontManagerAccessor.getTextureManager(), identifier);

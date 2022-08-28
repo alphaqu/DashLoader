@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.io.serializer;
 
 import com.github.luben.zstd.Zstd;
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
@@ -147,7 +148,7 @@ public class DashSerializer<O> {
 		long start = System.currentTimeMillis();
 		try (FileChannel channel = FileChannel.open(this.getFilePath(subCache))) {
 			var buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).order(ByteOrder.LITTLE_ENDIAN);
-			DL.log.info("Read {} in {}ms", this.dataClass.getSimpleName(), System.currentTimeMillis() - start);
+			DashLoader.LOG.info("Read {} in {}ms", this.dataClass.getSimpleName(), System.currentTimeMillis() - start);
 			start = System.currentTimeMillis();
 
 			// Check compression
@@ -158,7 +159,7 @@ public class DashSerializer<O> {
 				dst.rewind();
 				O object = this.serializer.get(dst);
 				dst.close();
-				DL.log.info("Decompressed {} in {}ms", this.dataClass.getSimpleName(), System.currentTimeMillis() - start);
+				DashLoader.LOG.info("Decompressed {} in {}ms", this.dataClass.getSimpleName(), System.currentTimeMillis() - start);
 				return object;
 			} else {
 				return this.serializer.get(ByteBufferIO.wrap(buffer));

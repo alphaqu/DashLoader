@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.model;
 
 import dev.quantumfusion.dashloader.DashDataManager;
+import dev.quantumfusion.dashloader.DashLoader;
 import java.util.Map;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
@@ -33,7 +34,7 @@ public abstract class BakedModelManagerOverride {
 	private void yankAssets(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
 		if (DL.isWrite()) {
 			final DashDataManager data = DL.getData();
-			DL.log.info("Yanking Minecraft Assets");
+			DashLoader.LOG.info("Yanking Minecraft Assets");
 			data.spriteAtlasManager.setMinecraftData(this.atlasManager);
 			data.bakedModels.setMinecraftData(this.models);
 		}

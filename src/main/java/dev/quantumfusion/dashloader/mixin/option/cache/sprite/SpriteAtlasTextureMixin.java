@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.sprite;
 
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.fallback.sprite.FakeTextureStitcher;
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAccessor;
@@ -71,7 +72,7 @@ public class SpriteAtlasTextureMixin implements SpriteAtlasTextureDuck {
 				queue.add(info);
 				ci.cancel();
 			} else {
-				DL.log.warn("Could not find cached sprite {}. This may cause huge visual issues and/or NPE.", identifier);
+				DashLoader.LOG.warn("Could not find cached sprite {}. This may cause huge visual issues and/or NPE.", identifier);
 			}
 		}
 	}

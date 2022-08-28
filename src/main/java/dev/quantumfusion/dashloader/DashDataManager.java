@@ -47,7 +47,7 @@ public class DashDataManager {
 	public final DashDataHandler<List<String>> splashText = new DashDataHandler<>();
 
 	DashDataManager(DashWriteContextData writeContextData) {
-		DL.log.info("Created WRITE data manager");
+		DashLoader.LOG.info("Created WRITE data manager");
 		if (DL.getStatus() != DashLoader.Status.WRITE) {
 			throw new RuntimeException("Wrong mode " + DL.getStatus() + " for WRITE data manager");
 		}
@@ -56,7 +56,7 @@ public class DashDataManager {
 	}
 
 	DashDataManager(DashReadContextData readContextData) {
-		DL.log.info("Created READ data manager");
+		DashLoader.LOG.info("Created READ data manager");
 		if (DL.getStatus() != DashLoader.Status.READ) {
 			throw new RuntimeException("Wrong mode " + DL.getStatus() + " for WRITE data manager");
 		}

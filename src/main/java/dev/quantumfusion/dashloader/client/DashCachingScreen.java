@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.ProgressHandler;
 import dev.quantumfusion.dashloader.config.DashConfig;
 import dev.quantumfusion.taski.builtin.StaticTask;
@@ -80,7 +81,7 @@ public class DashCachingScreen extends Screen {
 			case "LEFT" -> lineOrientation = UIDrawer.GradientOrientation.GRADIENT_LEFT;
 			case "RIGHT" -> lineOrientation = UIDrawer.GradientOrientation.GRADIENT_RIGHT;
 			case "DOWN" -> lineOrientation = UIDrawer.GradientOrientation.GRADIENT_DOWN;
-			default -> DL.log.error("Direction {} does not exist. (LEFT, RIGHT, UP, DOWN)", lineDirection);
+			default -> DashLoader.LOG.error("Direction {} does not exist. (LEFT, RIGHT, UP, DOWN)", lineDirection);
 		}
 
 		this.lineSpeedDifference = config.lineSpeedDifference;
