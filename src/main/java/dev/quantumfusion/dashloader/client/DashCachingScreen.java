@@ -6,11 +6,7 @@ import dev.quantumfusion.dashloader.ProgressHandler;
 import dev.quantumfusion.dashloader.config.DashConfig;
 import dev.quantumfusion.taski.builtin.StaticTask;
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.client.MinecraftClient;
@@ -26,7 +22,6 @@ import static dev.quantumfusion.dashloader.client.UIColors.*;
 import static dev.quantumfusion.dashloader.client.UIDrawer.TextOrientation.TEXT_LEFT;
 
 public class DashCachingScreen extends Screen {
-	public static final List<String> SUPPORTERS = new ArrayList<>();
 	public static Status STATUS = Status.IDLE;
 	private static final Color FAILED_COLOR = new Color(255, 75, 69);
 
@@ -130,16 +125,6 @@ public class DashCachingScreen extends Screen {
 		}
 		throw new RuntimeException("Could not get line color.");
 	}
-
-	static {
-		try (var input = URI.create("https://quantumfusion.dev/supporters.txt").toURL().openStream()) {
-			final String s = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-			SUPPORTERS.addAll(Arrays.asList(s.split("\n")));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 
 	@Override
 	protected void init() {
