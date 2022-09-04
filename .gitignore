@@ -32,3 +32,4 @@ bin/
 # Ignore Gradle build output directory
 build
 run/
+upload.sh

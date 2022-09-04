@@ -1,4 +1,8 @@
 plugins {
+    // Publishing
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id "com.modrinth.minotaur" version "2.+"
+
     id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
 }
@@ -26,7 +30,7 @@ repositories {
 }
 
 loom {
-    accessWidenerPath  = file("src/main/resources/dashloader.accesswidener")
+    accessWidenerPath = file("src/main/resources/dashloader.accesswidener")
 }
 
 dependencies {
@@ -86,6 +90,51 @@ jar {
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
     }
+}
+
+// Publishing
+modrinth {
+    token = project.hasProperty("modrinthApiKey") ? project.modrinthApiKey : ""
+    projectId = 'ZfQ3kTvR'
+    changelog = file("changelog.md").getText();
+    versionNumber = project.version
+    versionName = "$project.version".split("\\+")[0] + " for $project.minecraft_version"
+    uploadFile = remapJar
+    gameVersions = ['1.19', '1.19.1', '1.19.2']
+    loaders = ['fabric', 'quilt']
+}
+
+curseforge {
+    apiKey = project.hasProperty("curseForgeApiKey") ? project.curseForgeApiKey : ""
+    project {
+        id = '472772'
+        changelogType = "markdown"
+        changelog = file("changelog.md");
+        releaseType = 'release'
+
+        addGameVersion "1.19"
+        addGameVersion "1.19.1"
+        addGameVersion "1.19.2"
+        addGameVersion "Fabric"
+        addGameVersion "Quilt"
+        addGameVersion "Java 17"
+
+        mainArtifact(remapJar) {
+            displayName = "$project.version".split("\\+")[0] + " for $project.minecraft_version"
+        }
+    }
+    options {
+        forgeGradleIntegration = false
+    }
+}
+
+tasks.register("publishMod") {
+    dependsOn 'modrinth'
+    dependsOn 'curseforge'
+}
+
+tasks.register("getVersion") {
+    print("$project.version")
 }
 
 publishing {
