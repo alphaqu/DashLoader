@@ -1,0 +1,17 @@
+{
+    "initializing": "Inicializando",
+    "debug": "O modo de depuração está ativo na configuração.",
+    "convert": "Convertendo",
+    "convert.blockstate": "Convertendo Blockstates",
+    "convert.model": "Convertendo Modelos",
+    "convert.image": "Convertendo imagens",
+    "convert.particle": "Conversão de Partículas",
+    "convert.font": "Convertendo fontes",
+    "convert.splashtext": "Convertendo Texto Splash",
+    "convert.shader": "Convertendo Shaders",
+    "export.model": "Exportando modelos",
+    "export.image": "Exportando imagens",
+    "export.registry": "Exportando Registro",
+    "export.identifier": "Exportando Identificadores",
+    "export.quad": "Exportando Quads"
+  }
