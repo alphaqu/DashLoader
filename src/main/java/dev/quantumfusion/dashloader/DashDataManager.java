@@ -14,11 +14,11 @@ import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.font.Font;
-import net.minecraft.client.render.Shader;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
@@ -40,8 +40,7 @@ public class DashDataManager {
 	public final DashDataHandler<Map<Identifier, List<Font>>> fonts = new DashDataHandler<>();
 
 	// Image related
-	public final DashDataHandler<SpriteAtlasManager> spriteAtlasManager = new DashDataHandler<>();
-	public final DashDataHandler<Map<String, Shader>> shaders = new DashDataHandler<>();
+	public final DashDataHandler<Map<String, ShaderProgram>> shaders = new DashDataHandler<>();
 
 	// Haha related
 	public final DashDataHandler<List<String>> splashText = new DashDataHandler<>();
@@ -87,15 +86,12 @@ public class DashDataManager {
 		public final Object2ObjectMap<STBTTFontinfo, Identifier> fontData = new Object2ObjectOpenHashMap<>();
 		// Shader related
 		public final Int2ObjectMap<List<String>> programData = new Int2ObjectOpenHashMap<>();
+		public final Object2ObjectMap<Identifier, SpriteLoader.StitchResult> stitchResults = new Object2ObjectOpenHashMap<>();
 
 		// Model related
 		public final Object2ObjectMap<BakedModel, DashMissingDashModel> missingModelsWrite = new Object2ObjectOpenHashMap<>();
 		public final Object2ObjectMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>> multipartPredicates = new Object2ObjectOpenHashMap<>();
 		public final Object2ObjectMap<MultipartModelSelector, StateManager<Block, BlockState>> stateManagers = new Object2ObjectOpenHashMap<>();
-
-		// Atlas related SAME THING IN READ
-		public final List<SpriteAtlasTexture> extraAtlases = new ArrayList<>();
-		public final Object2ObjectMap<SpriteAtlasTexture, DashSpriteAtlasTextureData> atlasData = new Object2ObjectOpenHashMap<>();
 
 		public DashWriteContextData() {
 		}
@@ -109,16 +105,13 @@ public class DashDataManager {
 		public final Object2ObjectMap<BlockState, Identifier> missingModelsRead = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
 
 		// Atlas related SAME THING IN WRITE
-		public final Object2ObjectMap<SpriteAtlasTexture, DashSpriteAtlasTextureData> atlasData = new Object2ObjectOpenHashMap<>();
-
-		// Atlas related unique
-		public final DashAtlasManager dashAtlasManager;
+		public final Object2ObjectMap<Identifier, SpriteLoader.StitchResult> stitchResults = new Object2ObjectOpenHashMap<>();
 
 		// Shader related
 		public final Map<String, DashShader> shaderData;
 
+
 		public DashReadContextData() {
-			this.dashAtlasManager = new DashAtlasManager(this);
 			this.shaderData = new Object2ObjectOpenHashMap<>();
 		}
 

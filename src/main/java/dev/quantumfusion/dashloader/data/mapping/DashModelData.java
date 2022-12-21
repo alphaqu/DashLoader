@@ -16,8 +16,8 @@ import net.minecraft.block.Block;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 
@@ -34,7 +34,7 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 		var models = data.bakedModels.getMinecraftData();
 
 		this.models = new IntIntList(new ArrayList<>(models.size()));
-		parent.run(new StepTask("Models", models.size()), (task) -> {
+		parent.run(new StepTask("Models", Integer.max(models.size(), 1)), (task) -> {
 			var modelChunk = writer.getChunk(DashModel.class);
 			var identifierChunk = writer.getChunk(DashIdentifierInterface.class);
 			models.forEach((identifier, bakedModel) -> {
@@ -56,7 +56,7 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 		var missingModelsRead = DL.getData().getReadContextData().missingModelsRead;
 		var tasks = new ArrayList<Runnable>();
 		DashLoader.LOG.info("Scanning Blocks");
-		for (Block block : Registry.BLOCK) {
+		for (Block block : Registries.BLOCK) {
 			tasks.add(() -> block.getStateManager().getStates().forEach((blockState) -> {
 				final ModelIdentifier modelId = BlockModels.getModelId(blockState);
 				if (!out.containsKey(modelId)) {

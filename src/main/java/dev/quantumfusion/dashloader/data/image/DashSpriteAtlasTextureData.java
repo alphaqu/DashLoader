@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.data.image;
 
-import dev.quantumfusion.dashloader.mixin.accessor.SpriteAtlasTextureDataAccessor;
-import net.minecraft.client.texture.SpriteAtlasTexture;
+import dev.quantumfusion.dashloader.mixin.accessor.SpriteLoaderStitchResultAccessor;
+import net.minecraft.client.texture.SpriteLoader;
 
 public final class DashSpriteAtlasTextureData {
 	public final int width;
@@ -14,11 +14,11 @@ public final class DashSpriteAtlasTextureData {
 		this.mipLevel = mipLevel;
 	}
 
-	public DashSpriteAtlasTextureData(SpriteAtlasTexture.Data data) {
-		this((SpriteAtlasTextureDataAccessor) data);
+	public DashSpriteAtlasTextureData(SpriteLoader.StitchResult data) {
+		this((SpriteLoaderStitchResultAccessor) (Object) data);
 	}
 
-	private DashSpriteAtlasTextureData(SpriteAtlasTextureDataAccessor access) {
-		this(access.getWidth(), access.getHeight(), access.getMaxLevel());
+	private DashSpriteAtlasTextureData(SpriteLoaderStitchResultAccessor access) {
+		this(access.getWidth(), access.getHeight(), access.getMipLevel());
 	}
 }

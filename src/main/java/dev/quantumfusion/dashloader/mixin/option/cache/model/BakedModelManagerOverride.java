@@ -21,21 +21,16 @@ import static dev.quantumfusion.dashloader.DashLoader.DL;
 @Mixin(value = BakedModelManager.class, priority = 69420)
 public abstract class BakedModelManagerOverride {
 	@Shadow
-	@Nullable
-	private SpriteAtlasManager atlasManager;
-
-	@Shadow
 	private Map<Identifier, BakedModel> models;
 
-	@Inject(method = "apply*",
+	@Inject(method = "upload",
 			at = @At(value = "TAIL")
 	)
 
-	private void yankAssets(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
+	private void yankAssets(BakedModelManager.BakingResult bakingResult, Profiler profiler, CallbackInfo ci) {
 		if (DL.isWrite()) {
 			final DashDataManager data = DL.getData();
 			DashLoader.LOG.info("Yanking Minecraft Assets");
-			data.spriteAtlasManager.setMinecraftData(this.atlasManager);
 			data.bakedModels.setMinecraftData(this.models);
 		}
 	}

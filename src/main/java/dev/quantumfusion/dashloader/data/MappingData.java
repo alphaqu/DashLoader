@@ -11,10 +11,13 @@ import dev.quantumfusion.dashloader.util.DashUtil;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
+
 import java.util.function.Consumer;
+
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @DataNullable
@@ -48,7 +51,7 @@ public class MappingData {
 	}
 
 
-	public void map(RegistryWriter registry, StepTask parent) {
+	public void map(RegistryWriter registry, StepTask task) {
 		if (DL.isRead()) {
 			throw new RuntimeException("Tried to map data when DashDataManager is in Read mode");
 		}
@@ -56,71 +59,68 @@ public class MappingData {
 		final ProgressHandler progress = DL.progress;
 		progress.setCurrentTask("convert");
 
-		parent.run(new StepTask("Mapping Assets", 5), (task) -> {
+		final DashDataManager dataManager = DL.getData();
+		if (ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
+			progress.setCurrentTask("convert.model");
+			this.modelData = new DashModelData(dataManager, registry, task);
 
-			final DashDataManager dataManager = DL.getData();
-			if (ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
-				progress.setCurrentTask("convert.model");
-				this.modelData = new DashModelData(dataManager, registry, task);
+			progress.setCurrentTask("convert.image");
+			this.spriteAtlasData = new DashSpriteAtlasData(dataManager, registry, task);
+		}
 
-				progress.setCurrentTask("convert.image");
-				this.spriteAtlasData = new DashSpriteAtlasData(dataManager, registry, task);
-			}
+		if (ConfigHandler.optionActive(Option.CACHE_FONT)) {
+			progress.setCurrentTask("convert.font");
+			this.fontManagerData = new DashFontManagerData(dataManager, registry, task);
+		}
 
-			if (ConfigHandler.optionActive(Option.CACHE_FONT)) {
-				progress.setCurrentTask("convert.font");
-				this.fontManagerData = new DashFontManagerData(dataManager, registry, task);
-			}
+		if (ConfigHandler.optionActive(Option.CACHE_SPLASH_TEXT)) {
+			progress.setCurrentTask("convert.splashtext");
+			this.splashTextData = new DashSplashTextData(dataManager);
+			task.next();
+		}
 
-			if (ConfigHandler.optionActive(Option.CACHE_SPLASH_TEXT)) {
-				progress.setCurrentTask("convert.splashtext");
-				this.splashTextData = new DashSplashTextData(dataManager);
-				task.next();
-			}
+		if (ConfigHandler.optionActive(Option.CACHE_SHADER)) {
+			progress.setCurrentTask("convert.shader");
+			this.shaderData = new DashShaderData(dataManager, task);
+		}
 
-			if (ConfigHandler.optionActive(Option.CACHE_SHADER)) {
-				progress.setCurrentTask("convert.shader");
-				this.shaderData = new DashShaderData(dataManager, task);
-			}
-
-			task.finish();
-		});
 	}
 
-	public void export(RegistryReader registry, DashDataManager data, @Nullable Consumer<Task> taskConsumer) {
+	public void export(RegistryReader reader, DashDataManager data, @Nullable Consumer<Task> taskConsumer) {
 		StepTask task = new StepTask("Exporting Assets", 5);
 		if (taskConsumer != null) {
 			taskConsumer.accept(task);
 		}
 
-		var spriteData = DashUtil.nullable(this.spriteAtlasData, registry, DashSpriteAtlasData::export);
+		// Models
+		data.bakedModels.setCacheResultData(DashUtil.nullable(this.modelData, reader, DashModelData::export));
 		task.next();
 
-		var atlasManager = data.getReadContextData().dashAtlasManager;
-		data.bakedModels.setCacheResultData(DashUtil.nullable(this.modelData, registry, DashModelData::export));
+		// Sprite
+		if (this.spriteAtlasData != null) {
+			this.spriteAtlasData.export(data, reader);
+		}
 		task.next();
-		data.fonts.setCacheResultData(DashUtil.nullable(this.fontManagerData, registry, DashFontManagerData::export));
-		task.next();
-		data.spriteAtlasManager.setCacheResultData(DashUtil.nullable(spriteData, Pair::getLeft));
 
+		// Fonts
+		data.fonts.setCacheResultData(DashUtil.nullable(this.fontManagerData, reader, DashFontManagerData::export));
+		task.next();
+
+		// Shaders
 		if (this.shaderData != null) {
 			data.shaders.setCacheResultData(DashUtil.nullable(this.shaderData, DashShaderData::export));
 			data.getReadContextData().shaderData.putAll(this.shaderData.shaders);
 		}
 		task.next();
 
+		// Splash
 		data.splashText.setCacheResultData(DashUtil.nullable(this.splashTextData, DashSplashTextData::export));
 		task.next();
-
-		if (spriteData != null) {
-			for (SpriteAtlasTexture atlas : spriteData.getValue()) {
-				atlasManager.addAtlas(Option.CACHE_MODEL_LOADER, atlas);
-			}
-		}
 
 		this.modelData = null;
 		this.spriteAtlasData = null;
 		this.fontManagerData = null;
+		this.shaderData = null;
 		this.splashTextData = null;
 	}
 }

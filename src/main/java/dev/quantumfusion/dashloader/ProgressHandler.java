@@ -22,9 +22,13 @@ public final class ProgressHandler {
 	}
 
 	private void tickProgress() {
+		if (Double.isNaN(this.currentProgress)) {
+			this.currentProgress = 0.0;
+		}
 		final double actualProgress = TASK.getProgress();
 		final double divisionSpeed = (actualProgress < this.currentProgress) ? 3 : DL.config.config.progressBarSpeedDivision;
-		this.currentProgress += (actualProgress - this.currentProgress) / divisionSpeed;
+		double currentProgress1 = (actualProgress - this.currentProgress) / divisionSpeed;
+		this.currentProgress += currentProgress1;
 	}
 
 	public double getProgress() {

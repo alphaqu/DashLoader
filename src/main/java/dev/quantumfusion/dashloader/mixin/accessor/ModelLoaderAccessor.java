@@ -17,18 +17,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ModelLoader.class)
 public interface ModelLoaderAccessor {
 
-	@Accessor
-	void setSpriteAtlasManager(SpriteAtlasManager spriteAtlasManager);
-
-	@Accessor
-	@Mutable
-	Map<Identifier, UnbakedModel> getModelsToBake();
-
-	@Accessor
-	@Mutable
-	void setResourceManager(ResourceManager resourceManager);
-
-
 	@Accessor("ITEM_FRAME_STATE_FACTORY")
 	static StateManager<Block, BlockState> getTheItemFrameThing() {
 		throw new HyphenException("froge", "your dad");

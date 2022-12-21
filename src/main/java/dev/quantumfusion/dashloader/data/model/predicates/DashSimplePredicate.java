@@ -13,9 +13,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
@@ -52,7 +52,7 @@ public final class DashSimplePredicate implements DashPredicate {
 		if (stateManager == ModelLoaderAccessor.getTheItemFrameThing()) {
 			identifier = DashBlockState.ITEM_FRAME;
 		} else {
-			identifier = Registry.BLOCK.getId(stateManager.getOwner());
+			identifier = Registries.BLOCK.getId(stateManager.getOwner());
 		}
 		return identifier;
 	}
@@ -61,7 +61,7 @@ public final class DashSimplePredicate implements DashPredicate {
 		if (identifier.equals(DashBlockState.ITEM_FRAME)) {
 			return ModelLoaderAccessor.getTheItemFrameThing();
 		} else {
-			return Registry.BLOCK.get(identifier).getStateManager();
+			return Registries.BLOCK.get(identifier).getStateManager();
 		}
 	}
 

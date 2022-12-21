@@ -15,25 +15,14 @@ public interface UnicodeTextureFontAccessor {
 	@Accessor
 	byte[] getSizes();
 
+	@Accessor
+	UnicodeTextureFont.FontImage[] getFontImages();
+
 	@Mutable
 	@Accessor
 	void setSizes(byte[] sizes);
 
 	@Accessor
-	String getTemplate();
-
-	@Accessor
 	@Mutable
-	void setTemplate(String template);
-
-	@Accessor
-	Map<Identifier, NativeImage> getImages();
-
-	@Accessor
-	@Mutable
-	void setImages(Map<Identifier, NativeImage> images);
-
-	@Accessor
-	@Mutable
-	void setResourceManager(ResourceManager resourceManager);
+	void setFontImages(UnicodeTextureFont.FontImage[] fontImages);
 }

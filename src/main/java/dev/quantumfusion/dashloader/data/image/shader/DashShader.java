@@ -2,7 +2,7 @@ package dev.quantumfusion.dashloader.data.image.shader;
 
 import com.google.common.collect.UnmodifiableIterator;
 import com.mojang.blaze3d.platform.GlStateManager;
-import dev.quantumfusion.dashloader.mixin.accessor.ShaderAccessor;
+import dev.quantumfusion.dashloader.mixin.accessor.ShaderProgramAccessor;
 import dev.quantumfusion.dashloader.util.MissingDataException;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
@@ -10,7 +10,7 @@ import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
 import java.util.*;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.render.Shader;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.VertexFormat;
 
 public final class DashShader {
@@ -18,14 +18,14 @@ public final class DashShader {
 	public final String name;
 	public final DashGlBlendState blendState;
 	public final List<String> attributeNames;
-	public final DashProgram vertexShader;
-	public final DashProgram fragmentShader;
+	public final DashShaderStage vertexShader;
+	public final DashShaderStage fragmentShader;
 	public final VertexFormatsHelper.Value format;
 	public final Map<String, DashGlUniform> loadedUniforms;
 	public final List<String> samplerNames;
-	transient Shader toApply;
+	transient ShaderProgram toApply;
 
-	public DashShader(Map<String, Sampler> samplers, String name, DashGlBlendState blendState, List<String> attributeNames, DashProgram vertexShader, DashProgram fragmentShader, VertexFormatsHelper.Value format, Map<String, DashGlUniform> loadedUniforms, List<String> samplerNames) {
+	public DashShader(Map<String, Sampler> samplers, String name, DashGlBlendState blendState, List<String> attributeNames, DashShaderStage vertexShader, DashShaderStage fragmentShader, VertexFormatsHelper.Value format, Map<String, DashGlUniform> loadedUniforms, List<String> samplerNames) {
 		this.samplers = samplers;
 		this.name = name;
 		this.blendState = blendState;
@@ -37,8 +37,8 @@ public final class DashShader {
 		this.samplerNames = samplerNames;
 	}
 
-	public DashShader(Shader shader) throws MissingDataException {
-		ShaderAccessor shaderAccess = (ShaderAccessor) shader;
+	public DashShader(ShaderProgram shader) throws MissingDataException {
+		ShaderProgramAccessor shaderAccess = (ShaderProgramAccessor) shader;
 
 		this.samplers = new LinkedHashMap<>();
 		shaderAccess.getSamplers().forEach((s, o) -> this.samplers.put(s, new Sampler(o)));
@@ -46,8 +46,8 @@ public final class DashShader {
 
 		this.blendState = new DashGlBlendState(shaderAccess.getBlendState());
 		this.attributeNames = shaderAccess.getAttributeNames();
-		this.vertexShader = new DashProgram(shader.getVertexShader());
-		this.fragmentShader = new DashProgram(shader.getFragmentShader());
+		this.vertexShader = new DashShaderStage(shader.getVertexShader());
+		this.fragmentShader = new DashShaderStage(shader.getFragmentShader());
 		this.format = VertexFormatsHelper.getEnum(shader.getFormat());
 		this.loadedUniforms = new HashMap<>();
 		shaderAccess.getLoadedUniforms().forEach((s, glUniform) -> this.loadedUniforms.put(s, new DashGlUniform(glUniform)));
@@ -55,9 +55,9 @@ public final class DashShader {
 	}
 
 
-	public Shader export() {
-		this.toApply = UnsafeHelper.allocateInstance(Shader.class);
-		ShaderAccessor shaderAccess = (ShaderAccessor) this.toApply;
+	public ShaderProgram export() {
+		this.toApply = UnsafeHelper.allocateInstance(ShaderProgram.class);
+		ShaderProgramAccessor shaderAccess = (ShaderProgramAccessor) this.toApply;
 		//object init
 		shaderAccess.setLoadedSamplerIds(new ArrayList<>());
 		shaderAccess.setLoadedUniformIds(new ArrayList<>());
@@ -121,14 +121,14 @@ public final class DashShader {
 
 
 	public void apply() {
-		ShaderAccessor shaderAccess = (ShaderAccessor) this.toApply;
+		ShaderProgramAccessor shaderAccess = (ShaderProgramAccessor) this.toApply;
 		shaderAccess.setBlendState(this.blendState.export());
 		shaderAccess.setVertexShader(this.vertexShader.exportProgram());
 		shaderAccess.setFragmentShader(this.fragmentShader.exportProgram());
 		final List<Integer> loadedAttributeIds = shaderAccess.getLoadedAttributeIds();
 
 		final int programId = GlStateManager.glCreateProgram();
-		shaderAccess.setProgramId(programId);
+		shaderAccess.setGlRef(programId);
 
 
 		if (this.attributeNames != null) {

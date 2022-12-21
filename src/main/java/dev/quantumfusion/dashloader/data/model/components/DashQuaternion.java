@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.data.model.components;
 
-import net.minecraft.util.math.Quaternion;
+
+import org.joml.Quaternionf;
 
 public final class DashQuaternion {
 	public final float x;
@@ -15,11 +16,11 @@ public final class DashQuaternion {
 		this.w = w;
 	}
 
-	public DashQuaternion(Quaternion quaternion) {
-		this(quaternion.getX(), quaternion.getY(), quaternion.getZ(), quaternion.getW());
+	public DashQuaternion(Quaternionf quaternion) {
+		this(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	}
 
-	public Quaternion export() {
-		return new Quaternion(this.x, this.y, this.z, this.w);
+	public Quaternionf export() {
+		return new Quaternionf(this.x, this.y, this.z, this.w);
 	}
 }

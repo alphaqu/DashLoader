@@ -4,7 +4,6 @@ import dev.quantumfusion.dashloader.util.mixins.SpriteInfoDuck;
 import net.minecraft.client.texture.Sprite;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(Sprite.Info.class)
 public class SpriteInfoMixin implements SpriteInfoDuck {
 	private Sprite cached;
 

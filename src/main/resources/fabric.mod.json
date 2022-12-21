@@ -47,7 +47,6 @@
 			"dev.quantumfusion.dashloader.data.model.predicates.DashStaticPredicate",
 			"dev.quantumfusion.dashloader.data.image.DashImage",
 			"dev.quantumfusion.dashloader.data.image.DashSpriteImpl",
-			"dev.quantumfusion.dashloader.data.image.DashMissingSprite",
 			"dev.quantumfusion.dashloader.data.image.DashFabricSprite",
 			"dev.quantumfusion.dashloader.data.font.DashBitmapFont",
 			"dev.quantumfusion.dashloader.data.font.DashBlankFont",

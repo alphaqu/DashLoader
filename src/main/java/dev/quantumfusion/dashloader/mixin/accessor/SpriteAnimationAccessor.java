@@ -2,27 +2,28 @@ package dev.quantumfusion.dashloader.mixin.accessor;
 
 import java.util.List;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteContents;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(Sprite.Animation.class)
+@Mixin(SpriteContents.Animation.class)
 public interface SpriteAnimationAccessor {
 
 
 	@Invoker("<init>")
-	static Sprite.Animation init(Sprite parent, List<Sprite.AnimationFrame> list, int i, @Nullable Sprite.Interpolation interpolation) {
+	static SpriteContents.Animation init(SpriteContents parent, List<SpriteContents.AnimationFrame> frames, int frameCount, boolean interpolation) {
 		throw new AssertionError();
 	}
 
 	@Accessor
-	List<Sprite.AnimationFrame> getFrames();
+	List<SpriteContents.AnimationFrame> getFrames();
 
 	@Accessor
 	int getFrameCount();
 
 	@Accessor
-	Sprite.Interpolation getInterpolation();
+	boolean getInterpolation();
 
 }

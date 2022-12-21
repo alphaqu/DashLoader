@@ -21,20 +21,17 @@ public final class DashSpriteAtlasTexture implements Dashable<SpriteAtlasTexture
 	public final IntIntList sprites;
 	public final boolean bilinear;
 	public final boolean mipmap;
-	public final DashSpriteAtlasTextureData data;
 
 	public DashSpriteAtlasTexture(
 			int id,
 			IntIntList sprites,
 			boolean bilinear,
-			boolean mipmap,
-			DashSpriteAtlasTextureData data
+			boolean mipmap
 	) {
 		this.id = id;
 		this.sprites = sprites;
 		this.bilinear = bilinear;
 		this.mipmap = mipmap;
-		this.data = data;
 	}
 
 	public DashSpriteAtlasTexture(SpriteAtlasTexture spriteAtlasTexture, RegistryWriter writer) {
@@ -46,7 +43,6 @@ public final class DashSpriteAtlasTexture implements Dashable<SpriteAtlasTexture
 
 		this.bilinear = access.getBilinear();
 		this.mipmap = access.getMipmap();
-		this.data = DL.getData().getWriteContextData().atlasData.get(spriteAtlasTexture);
 
 	}
 
@@ -60,14 +56,11 @@ public final class DashSpriteAtlasTexture implements Dashable<SpriteAtlasTexture
 		final Map<Identifier, Sprite> out = new HashMap<>(this.sprites.list().size());
 		this.sprites.forEach((key, value) -> out.put(reader.get(key), this.loadSprite(value, reader, spriteAtlasTexture)));
 		// Notify about its cached state.
-		((SpriteAtlasTextureDuck) spriteAtlasTexture).dashLoaded(this.data, out);
-		DL.getData().getReadContextData().atlasData.put(spriteAtlasTexture, this.data);
 		return spriteAtlasTexture;
 	}
 
 	private Sprite loadSprite(int spritePointer, RegistryReader exportHandler, SpriteAtlasTexture spriteAtlasTexture) {
 		Sprite sprite = exportHandler.get(spritePointer);
-		((SpriteAccessor) sprite).setAtlas(spriteAtlasTexture);
 		return sprite;
 	}
 }

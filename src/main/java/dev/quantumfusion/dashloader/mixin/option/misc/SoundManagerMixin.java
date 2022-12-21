@@ -2,6 +2,7 @@ package dev.quantumfusion.dashloader.mixin.option.misc;
 
 import net.minecraft.client.sound.Sound;
 import net.minecraft.client.sound.SoundManager;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +16,7 @@ public class SoundManagerMixin {
 	 */
 	@SuppressWarnings("SameReturnValue")
 	@Overwrite
-	public static boolean isSoundResourcePresent(Sound sound, Identifier identifier, ResourceManager resourceManager) {
+	public static boolean isSoundResourcePresent(Sound sound, Identifier id, ResourceFactory resourceFactory) {
 		return true;
 	}
 }

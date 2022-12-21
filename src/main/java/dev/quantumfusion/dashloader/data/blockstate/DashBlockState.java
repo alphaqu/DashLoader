@@ -9,8 +9,8 @@ import dev.quantumfusion.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import net.minecraft.block.BlockState;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 @DashObject(BlockState.class)
 @DashDependencies({DashIdentifier.class, DashModelIdentifier.class})
@@ -47,7 +47,7 @@ public final class DashBlockState implements Dashable<BlockState> {
 				BlockState state = states.get(i);
 				if (state.equals(blockState)) {
 					pos = i;
-					owner = Registry.BLOCK.getId(block);
+					owner = Registries.BLOCK.getId(block);
 					break;
 				}
 			}
@@ -68,7 +68,7 @@ public final class DashBlockState implements Dashable<BlockState> {
 		if (id.equals(ITEM_FRAME)) {
 			return ModelLoaderAccessor.getTheItemFrameThing().getStates().get(this.pos);
 		} else {
-			return Registry.BLOCK.get(id).getStateManager().getStates().get(this.pos);
+			return Registries.BLOCK.get(id).getStateManager().getStates().get(this.pos);
 		}
 	}
 }

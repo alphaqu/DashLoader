@@ -3,7 +3,7 @@ package dev.quantumfusion.dashloader;
 import dev.quantumfusion.dashloader.api.APIHandler;
 import dev.quantumfusion.dashloader.api.hook.LoadCacheHook;
 import dev.quantumfusion.dashloader.api.hook.SaveCacheHook;
-import dev.quantumfusion.dashloader.client.DashCachingScreen;
+import dev.quantumfusion.dashloader.client.DashToast;
 import dev.quantumfusion.dashloader.config.ConfigHandler;
 import dev.quantumfusion.dashloader.data.DashIdentifier;
 import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
@@ -27,9 +27,11 @@ import dev.quantumfusion.dashloader.registry.factory.DashFactory;
 import dev.quantumfusion.dashloader.thread.ThreadHandler;
 import dev.quantumfusion.dashloader.util.TimeUtil;
 import dev.quantumfusion.taski.builtin.StepTask;
+
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -147,15 +149,15 @@ public class DashLoader {
 
 	public void saveDashCache() {
 		this.api.callHook(SaveCacheHook.class, SaveCacheHook::saveCacheStart);
-		DashCachingScreen.STATUS = DashCachingScreen.Status.CACHING;
+		DashToast.STATUS = DashToast.Status.CACHING;
 		LOG.info("Starting DashLoader Caching");
 		try {
 			long start = System.currentTimeMillis();
 
-			StepTask main = new StepTask("Creating DashCache", 12);
-			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheTask(main));
-
+			StepTask main = new StepTask("Creating DashCache", 3);
 			ProgressHandler.TASK = main;
+
+			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheTask(main));
 			this.progress.setCurrentTask("initializing");
 
 			// missing model callback
@@ -179,45 +181,52 @@ public class DashLoader {
 			});
 
 			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheRegistryInit(this.registry));
-
-			// creation
 			RegistryWriter writer = this.registry.createWriter(callbacks, this.api.getDashObjects());
 			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheRegistryWriterInit(writer));
 
-			// mapping
+			// Reading minecraft assets
+			StepTask readTask = new StepTask("Reading", 10);
+			main.setSubTask(readTask);
+
 			MappingData mappings = new MappingData();
 			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheMappingStart(writer, mappings));
-			mappings.map(writer, main);
+			mappings.map(writer, readTask);
 			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheMappingEnd(writer, mappings));
 
-			// export
 			List<ChunkHolder> holders = new ArrayList<>();
 			this.progress.setCurrentTask("export.image");
-			main.run(() -> holders.add(new ImageData(writer)));
+			readTask.run(() -> holders.add(new ImageData(writer)));
 			this.progress.setCurrentTask("export.model");
-			main.run(() -> holders.add(new ModelData(writer)));
+			readTask.run(() -> holders.add(new ModelData(writer)));
 			this.progress.setCurrentTask("export.registry");
-			main.run(() -> holders.add(new RegistryData(writer)));
+			readTask.run(() -> holders.add(new RegistryData(writer)));
 			this.progress.setCurrentTask("export.identifier");
-			main.run(() -> holders.add(new IdentifierData(writer)));
+			readTask.run(() -> holders.add(new IdentifierData(writer)));
 			this.progress.setCurrentTask("export.quad");
-			main.run(() -> holders.add(new BakedQuadData(writer)));
-			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCachePopulateHolders(writer, mappings, holders));
+			readTask.run(() -> holders.add(new BakedQuadData(writer)));
 
+
+			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCachePopulateHolders(writer, mappings, holders));
+			main.next();
+
+			this.progress.setCurrentTask("Serializing");
 
 			// serialization
-			holders.forEach(holder -> main.run(() -> this.io.save(holder, main::setSubTask)));
-			main.run(() -> this.io.save(mappings, main::setSubTask));
-			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheSerialize(writer, mappings, holders));
+			main.run(new StepTask("Serializing", holders.size() + 2), (task) -> {
+				holders.forEach(holder -> task.run(() -> this.io.save(holder, task::setSubTask)));
+				task.run(() -> this.io.save(mappings, task::setSubTask));
+				this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheSerialize(writer, mappings, holders));
+			});
 
-
-			LOG.info("Created cache in " + TimeUtil.getTimeStringFromStart(start));
-			DashCachingScreen.STATUS = DashCachingScreen.Status.DONE;
+			String text = "Created cache in " + TimeUtil.getTimeStringFromStart(start);
+			this.progress.setCurrentTask(text);
+			LOG.info(text);
+			DashToast.STATUS = DashToast.Status.DONE;
 			this.api.callHook(SaveCacheHook.class, SaveCacheHook::saveCacheEnd);
 		} catch (Throwable thr) {
 			this.setStatus(Status.WRITE);
 			LOG.error("Failed caching", thr);
-			DashCachingScreen.STATUS = DashCachingScreen.Status.CRASHED;
+			DashToast.STATUS = DashToast.Status.CRASHED;
 			this.io.clearCache();
 		}
 	}
@@ -239,15 +248,15 @@ public class DashLoader {
 
 			var tempStart = System.currentTimeMillis();
 			// Deserialize / Decompress all registries and mappings.
-				this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheDeserialization);
-				this.thread.parallelRunnable(
-						() -> registryDataObjects[0] = (this.io.load(RegistryData.class)),
-						() -> registryDataObjects[1] = (this.io.load(ImageData.class)),
-						() -> registryDataObjects[2] = (this.io.load(ModelData.class)),
-						() -> registryDataObjects[3] = (this.io.load(IdentifierData.class)),
-						() -> registryDataObjects[4] = (this.io.load(BakedQuadData.class)),
-						() -> mappingsReference.set(this.io.load(MappingData.class))
-				);
+			this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheDeserialization);
+			this.thread.parallelRunnable(
+					() -> registryDataObjects[0] = (this.io.load(RegistryData.class)),
+					() -> registryDataObjects[1] = (this.io.load(ImageData.class)),
+					() -> registryDataObjects[2] = (this.io.load(ModelData.class)),
+					() -> registryDataObjects[3] = (this.io.load(IdentifierData.class)),
+					() -> registryDataObjects[4] = (this.io.load(BakedQuadData.class)),
+					() -> mappingsReference.set(this.io.load(MappingData.class))
+			);
 			this.profilerHandler.export_file_reading_time = System.currentTimeMillis() - tempStart;
 
 			MappingData mappings = mappingsReference.get();

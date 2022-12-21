@@ -22,7 +22,7 @@ public class DashFontManagerData implements Dashable<Map<Identifier, List<Font>>
 
 	public DashFontManagerData(DashDataManager data, RegistryWriter writer, StepTask parent) {
 		this.fontMap = new IntObjectList<>();
-		parent.run(new StepTask("Fonts", data.fonts.getMinecraftData().size()), (task) -> {
+		parent.run(new StepTask("Fonts", Integer.max(data.fonts.getMinecraftData().size(), 1)), (task) -> {
 			data.fonts.getMinecraftData().forEach((identifier, fontList) -> {
 				List<Integer> fontsOut = new ArrayList<>();
 				fontList.forEach(font -> fontsOut.add(writer.add(font)));

@@ -4,8 +4,9 @@ import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAnimationFrameAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteContents;
 
-public final class DashSpriteAnimationFrame implements Dashable<Sprite.AnimationFrame> {
+public final class DashSpriteAnimationFrame implements Dashable<SpriteContents.AnimationFrame> {
 	public final int index;
 	public final int time;
 
@@ -14,14 +15,14 @@ public final class DashSpriteAnimationFrame implements Dashable<Sprite.Animation
 		this.time = time;
 	}
 
-	public DashSpriteAnimationFrame(Sprite.AnimationFrame animationFrame) {
+	public DashSpriteAnimationFrame(SpriteContents.AnimationFrame animationFrame) {
 		SpriteAnimationFrameAccessor access = ((SpriteAnimationFrameAccessor) animationFrame);
 		this.index = access.getIndex();
 		this.time = access.getTime();
 	}
 
 	@Override
-	public Sprite.AnimationFrame export(RegistryReader exportHandler) {
+	public SpriteContents.AnimationFrame export(RegistryReader exportHandler) {
 		return SpriteAnimationFrameAccessor.newSpriteFrame(this.index, this.time);
 	}
 }

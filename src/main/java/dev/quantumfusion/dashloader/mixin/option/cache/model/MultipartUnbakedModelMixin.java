@@ -15,6 +15,7 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,12 +38,12 @@ public class MultipartUnbakedModelMixin {
 	private StateManager<Block, BlockState> stateFactory;
 
 	@Inject(
-			method = "bake(Lnet/minecraft/client/render/model/ModelLoader;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/model/BakedModel;",
+			method = "bake",
 			at = @At(value = "RETURN"),
 			locals = LocalCapture.CAPTURE_FAILSOFT,
 			cancellable = true
 	)
-	private void addPredicateInfo(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId, CallbackInfoReturnable<BakedModel> cir, MultipartBakedModel.Builder builder) {
+	private void addPredicateInfo(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId, CallbackInfoReturnable<@Nullable BakedModel> cir, MultipartBakedModel.Builder builder) {
 		if (DL.isWrite()) {
 			var bakedModel = (MultipartBakedModel) builder.build();
 			var outSelectors = new ArrayList<MultipartModelSelector>();

@@ -1,15 +1,16 @@
 package dev.quantumfusion.dashloader.mixin.accessor;
 
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteContents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(Sprite.AnimationFrame.class)
+@Mixin(SpriteContents.AnimationFrame.class)
 public interface SpriteAnimationFrameAccessor {
 
 	@Invoker("<init>")
-	static Sprite.AnimationFrame newSpriteFrame(int index, int time) {
+	static SpriteContents.AnimationFrame newSpriteFrame(int index, int time) {
 		throw new AssertionError();
 	}
 

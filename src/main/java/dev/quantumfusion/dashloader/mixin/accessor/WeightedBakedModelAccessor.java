@@ -12,7 +12,4 @@ public interface WeightedBakedModelAccessor {
 
 	@Accessor("models")
 	List<Weighted.Present<BakedModel>> getBakedModels();
-
-	@Accessor
-	void setModels(List<Weighted.Present<BakedModel>> models);
 }

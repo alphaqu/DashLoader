@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.data.model.components;
 
-import net.minecraft.util.math.Vec3f;
+
+import org.joml.Vector3f;
 
 public final class DashVec3f {
 	public final float x;
@@ -13,11 +14,11 @@ public final class DashVec3f {
 		this.z = z;
 	}
 
-	public DashVec3f(Vec3f vector3f) {
-		this(vector3f.getX(), vector3f.getY(), vector3f.getZ());
+	public DashVec3f(Vector3f vector3f) {
+		this(vector3f.x, vector3f.y, vector3f.z);
 	}
 
-	public Vec3f export() {
-		return new Vec3f(this.x, this.y, this.z);
+	public Vector3f export() {
+		return new Vector3f(this.x, this.y, this.z);
 	}
 }

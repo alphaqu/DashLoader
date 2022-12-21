@@ -42,11 +42,11 @@ dependencies {
     // TODO jákob if you need modmenu uncomment this and in gradle.properties - !alpha
     // modImplementation "com.terraformersmc:modmenu:$project.modmenu_version"
 
-    implementation "dev.quantumfusion:Hyphen:0.2.2"
-    include "dev.quantumfusion:Hyphen:0.2.2"
+    implementation "dev.quantumfusion:Hyphen:0.3.0"
+    include "dev.quantumfusion:Hyphen:0.3.0"
 
-    implementation "dev.quantumfusion:Taski:1.1.0"
-    include "dev.quantumfusion:Taski:1.1.0"
+    implementation "dev.quantumfusion:Taski:1.1.2"
+    include "dev.quantumfusion:Taski:1.1.2"
 
     implementation 'com.github.luben:zstd-jni:1.5.2-2'
     include 'com.github.luben:zstd-jni:1.5.2-2'

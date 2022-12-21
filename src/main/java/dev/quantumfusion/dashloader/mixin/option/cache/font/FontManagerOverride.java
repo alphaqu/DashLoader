@@ -45,13 +45,6 @@ public class FontManagerOverride {
 			if (DL.isRead() && DL.getData().fonts.dataAvailable()) {
 				var fonts = DL.getData().fonts;
 				var cacheResultData = fonts.getCacheResultData();
-				cacheResultData.forEach((identifier, list) -> list.forEach(font -> {
-							if (font instanceof UnicodeTextureFont) {
-								((UnicodeTextureFontAccessor) font).setResourceManager(resourceManager);
-							}
-						}
-				));
-
 				this.prepareFonts(cacheResultData);
 				cir.setReturnValue(cacheResultData);
 			}

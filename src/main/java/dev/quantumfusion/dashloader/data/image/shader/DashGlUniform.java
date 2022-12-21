@@ -6,8 +6,8 @@ import dev.quantumfusion.dashloader.util.IOHelper;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import java.util.List;
-import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;
+import net.minecraft.client.gl.ShaderProgram;
 
 public final class DashGlUniform {
 	public final int count;
@@ -35,7 +35,7 @@ public final class DashGlUniform {
 		this.name = glUniform.getName();
 	}
 
-	public GlUniform export(GlShader shader, List<GlUniform> uniforms) {
+	public GlUniform export(ShaderProgram shader, List<GlUniform> uniforms) {
 		final GlUniform glUniform = UnsafeHelper.allocateInstance(GlUniform.class);
 		GlUniformAccessor glUniformAccess = (GlUniformAccessor) glUniform;
 		glUniformAccess.setCount(this.count);

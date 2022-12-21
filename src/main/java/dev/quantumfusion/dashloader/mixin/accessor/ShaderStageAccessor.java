@@ -1,24 +1,24 @@
 package dev.quantumfusion.dashloader.mixin.accessor;
 
-import net.minecraft.client.gl.Program;
+import net.minecraft.client.gl.ShaderStage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(Program.class)
-public interface ProgramAccessor {
+@Mixin(ShaderStage.class)
+public interface ShaderStageAccessor {
 	@Invoker("<init>")
-	static Program create(Program.Type shaderType, int shaderRef, String name) {
+	static ShaderStage create(ShaderStage.Type shaderType, int shaderRef, String name) {
 		throw new AssertionError();
 	}
 
 	@Accessor
-	Program.Type getShaderType();
+	ShaderStage.Type getType();
 
 	@Accessor
-	int getShaderRef();
+	int getGlRef();
 
-	@Mixin(Program.Type.class)
+	@Mixin(ShaderStage.Type.class)
 	interface TypeAccessor {
 		@Accessor
 		int getGlType();

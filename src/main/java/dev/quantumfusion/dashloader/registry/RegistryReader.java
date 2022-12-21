@@ -21,7 +21,7 @@ public final class RegistryReader {
 	}
 
 	public final void export(@Nullable Consumer<Task> taskConsumer) {
-		StepTask task = new StepTask("Exporting", this.dataChunks.length);
+		StepTask task = new StepTask("Exporting", Integer.max(this.dataChunks.length, 1));
 		if (taskConsumer != null) {
 			taskConsumer.accept(task);
 		}

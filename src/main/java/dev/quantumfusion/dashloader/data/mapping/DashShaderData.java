@@ -11,7 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import net.minecraft.client.render.Shader;
+
+import net.minecraft.client.gl.ShaderProgram;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class DashShaderData {
@@ -23,7 +24,7 @@ public class DashShaderData {
 
 	public DashShaderData(DashDataManager data, StepTask parent) {
 		this.shaders = new HashMap<>();
-		final Map<String, Shader> minecraftData = data.shaders.getMinecraftData();
+		final Map<String, ShaderProgram> minecraftData = data.shaders.getMinecraftData();
 
 		parent.run(new StepTask("Shaders"), (task) -> TaskUtil.forEach(task, minecraftData, (s, shader) -> {
 					try {
@@ -36,8 +37,8 @@ public class DashShaderData {
 
 	}
 
-	public Map<String, Shader> export() {
-		Map<String, Shader> out = new ConcurrentHashMap<>();
+	public Map<String, ShaderProgram> export() {
+		Map<String, ShaderProgram> out = new ConcurrentHashMap<>();
 		List<Runnable> runnables = new ArrayList<>();
 		this.shaders.forEach((key, value) -> runnables.add(() -> out.put(key, value.export())));
 		DL.thread.parallelRunnable(runnables);

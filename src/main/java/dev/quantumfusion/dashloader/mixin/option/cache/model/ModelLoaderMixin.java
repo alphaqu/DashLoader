@@ -13,11 +13,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.render.model.UnbakedModel;
+import net.minecraft.client.render.model.json.JsonUnbakedModel;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -57,15 +61,11 @@ public abstract class ModelLoaderMixin {
 	@Final
 	private Map<Identifier, UnbakedModel> modelsToBake;
 
-	@Shadow
-	@Final
-	private Map<Identifier, Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data>> spriteAtlasData;
-
 	@Inject(
-			method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
+			method = "<init>",
 			at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=static_definitions", shift = At.Shift.AFTER)
 	)
-	private void injectLoadedModels(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int i, CallbackInfo ci) {
+	private void injectLoadedModels(BlockColors blockColors, Profiler profiler, Map<Identifier, JsonUnbakedModel> jsonUnbakedModels, Map<Identifier, List<ModelLoader.SourceTrackedData>> blockStates, CallbackInfo ci) {
 		if (DL.isRead()) {
 			var data = DL.getData();
 			var dashModels = data.bakedModels.getCacheResultData();
@@ -91,7 +91,7 @@ public abstract class ModelLoaderMixin {
 	 * We want to not load all of the blockstate models as we have a list of them available on which ones to load to save a lot of computation
 	 */
 	@Redirect(
-			method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
+			method = "<init>",
 			at = @At(value = "INVOKE", target = "Ljava/util/Iterator;hasNext()Z", ordinal = 0)
 	)
 	private boolean loadMissingModels(Iterator instance) {
@@ -106,38 +106,13 @@ public abstract class ModelLoaderMixin {
 		}
 		return instance.hasNext();
 	}
-
 	@Inject(
-			method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
-			at = @At(value = "INVOKE", target = "Ljava/util/Map;entrySet()Ljava/util/Set;", shift = At.Shift.BEFORE),
-			locals = LocalCapture.CAPTURE_FAILHARD
-	)
-	private void onFinishAddingModels(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int mipmap, CallbackInfo ci,
-									  Set<Pair<String, String>> thing,
-									  Set<SpriteIdentifier> thing2,
-									  Map<Identifier, List<SpriteIdentifier>> map) {
-		if (DL.isRead()) {
-			DashLoader.LOG.info("Injecting Atlases");
-			DL.getData().getReadContextData().dashAtlasManager.consumeAtlases(Option.CACHE_MODEL_LOADER, (pair) -> {
-				SpriteAtlasTexture atlas = pair.getLeft();
-				Identifier id = atlas.getId();
-				DashLoader.LOG.info("Injected {} atlas.", id);
-				this.spriteAtlasData.put(id, Pair.of(atlas, atlas.stitch(resourceManager, ((SpriteAtlasTextureDuck) atlas).getCachedSprites().keySet().stream(), profiler, pair.getRight().mipLevel)));
-			});
-			map.clear();
-		}
-	}
-
-	@Inject(
-			method = "upload",
+			method = "bake",
 			at = @At(
-					value = "INVOKE_STRING",
-					target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V",
-					args = "ldc=atlas",
-					shift = At.Shift.AFTER
+					value = "HEAD"
 			)
 	)
-	private void atlasInject(TextureManager textureManager, Profiler profiler, CallbackInfoReturnable<SpriteAtlasManager> cir) {
+	private void countModels(BiFunction<Identifier, SpriteIdentifier, Sprite> spriteLoader, CallbackInfo ci) {
 		if (DL.isRead()) {
 			// Cache stats
 			int cachedModels = 0;
