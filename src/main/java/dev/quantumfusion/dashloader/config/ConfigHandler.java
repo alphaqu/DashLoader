@@ -78,6 +78,7 @@ public class ConfigHandler {
 	public void saveConfig() {
 		try {
 			Files.createDirectories(this.configPath.getParent());
+			Files.deleteIfExists(this.configPath);
 			final BufferedWriter writer = Files.newBufferedWriter(this.configPath, StandardOpenOption.CREATE);
 			this.gson.toJson(this.config, writer);
 			writer.close();
