@@ -1,24 +1,15 @@
 package dev.quantumfusion.dashloader.data.font;
 
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.data.common.IntIntList;
 import dev.quantumfusion.dashloader.mixin.accessor.FontImageAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.UnicodeTextureFontAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.util.DashUtil;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.font.UnicodeTextureFont;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.util.Identifier;
 
 @DashObject(UnicodeTextureFont.class)
 public final class DashUnicodeFont implements DashFont {

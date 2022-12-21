@@ -2,8 +2,9 @@ package dev.quantumfusion.dashloader.data.model.components;
 
 import dev.quantumfusion.dashloader.util.ClassHelper;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
-import java.lang.reflect.Field;
 import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
+
+import java.lang.reflect.Field;
 
 public final class DashMesh {
 	public final int[] data;

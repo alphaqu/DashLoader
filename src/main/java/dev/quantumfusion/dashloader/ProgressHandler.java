@@ -2,8 +2,8 @@ package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StaticTask;
+
 import java.util.HashMap;
-import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public final class ProgressHandler {
 	public static Task TASK = new StaticTask("Idle", 0);

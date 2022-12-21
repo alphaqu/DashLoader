@@ -7,11 +7,12 @@ import dev.quantumfusion.dashloader.util.MissingDataException;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
-import java.util.*;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.VertexFormat;
+
+import java.util.*;
 
 public final class DashShader {
 	public final Map<String, Sampler> samplers;

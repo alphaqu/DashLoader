@@ -6,13 +6,14 @@ import dev.quantumfusion.dashloader.data.image.shader.DashShader;
 import dev.quantumfusion.dashloader.util.MissingDataException;
 import dev.quantumfusion.taski.TaskUtil;
 import dev.quantumfusion.taski.builtin.StepTask;
+import net.minecraft.client.gl.ShaderProgram;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.minecraft.client.gl.ShaderProgram;
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class DashShaderData {

@@ -4,18 +4,12 @@ import com.google.common.collect.Lists;
 import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.mixin.accessor.FontManagerAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.FontStorageAccessor;
-import dev.quantumfusion.dashloader.mixin.accessor.UnicodeTextureFontAccessor;
 import dev.quantumfusion.dashloader.util.mixins.MixinThings;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.IntConsumer;
-import java.util.function.IntFunction;
 import net.minecraft.client.font.*;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.ResourceManager;
@@ -28,6 +22,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.IntConsumer;
+import java.util.function.IntFunction;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(targets = "net/minecraft/client/font/FontManager$1")

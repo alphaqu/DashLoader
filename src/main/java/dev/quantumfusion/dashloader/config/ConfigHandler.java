@@ -5,6 +5,12 @@ import com.google.gson.GsonBuilder;
 import dev.quantumfusion.dashloader.DashConstants;
 import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.api.option.Option;
+import net.fabricmc.loader.api.FabricLoader;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,11 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.EnumMap;
 import java.util.function.Consumer;
-import net.fabricmc.loader.api.FabricLoader;
-import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.jetbrains.annotations.Nullable;
 
 public class ConfigHandler {
 	private static final EnumMap<Option, Boolean> OPTION_ACTIVE = new EnumMap<>(Option.class);

@@ -5,8 +5,9 @@ import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
-import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 @SuppressWarnings("FinalMethodInFinalClass")
 public final class RegistryReader {

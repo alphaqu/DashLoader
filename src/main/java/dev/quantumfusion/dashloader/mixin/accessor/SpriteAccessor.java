@@ -1,8 +1,6 @@
 package dev.quantumfusion.dashloader.mixin.accessor;
 
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;

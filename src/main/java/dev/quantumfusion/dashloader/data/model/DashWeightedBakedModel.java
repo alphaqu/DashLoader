@@ -6,11 +6,12 @@ import dev.quantumfusion.dashloader.data.model.components.DashWeightedModelEntry
 import dev.quantumfusion.dashloader.mixin.accessor.WeightedBakedModelAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.WeightedBakedModel;
 import net.minecraft.util.collection.Weighted.Present;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @DashObject(WeightedBakedModel.class)
 @DashDependencies({DashBasicBakedModel.class, DashBuiltinBakedModel.class})

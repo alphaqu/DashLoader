@@ -3,9 +3,10 @@ package dev.quantumfusion.dashloader.data.model.predicates;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.util.BooleanSelector;
-import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
+
+import java.util.function.Predicate;
 
 @DashObject(BooleanSelector.class)
 public final class DashStaticPredicate implements DashPredicate {

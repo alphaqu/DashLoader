@@ -2,9 +2,6 @@ package dev.quantumfusion.dashloader.mixin.option.cache.model;
 
 import dev.quantumfusion.dashloader.mixin.accessor.MultipartModelComponentAccessor;
 import dev.quantumfusion.dashloader.util.mixins.MixinThings;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.*;
@@ -23,6 +20,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(MultipartUnbakedModel.class)

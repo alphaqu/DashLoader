@@ -14,6 +14,9 @@ import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -23,8 +26,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class DashSerializer<O> {

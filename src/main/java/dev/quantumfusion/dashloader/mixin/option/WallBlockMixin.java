@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader.mixin.option;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBlock;
@@ -16,6 +15,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
 
 @Mixin(WallBlock.class)
 public abstract class WallBlockMixin extends Block implements Waterloggable {

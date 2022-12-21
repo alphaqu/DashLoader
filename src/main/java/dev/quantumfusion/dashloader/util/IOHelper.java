@@ -1,12 +1,13 @@
 package dev.quantumfusion.dashloader.util;
 
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.system.MemoryUtil;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import org.apache.commons.io.IOUtils;
-import org.lwjgl.system.MemoryUtil;
 
 public class IOHelper {
 

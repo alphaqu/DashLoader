@@ -3,7 +3,6 @@ package dev.quantumfusion.dashloader.mixin.option.misc;
 import net.minecraft.client.sound.Sound;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.resource.ResourceFactory;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;

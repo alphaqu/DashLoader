@@ -2,9 +2,10 @@ package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 
 /**
@@ -51,8 +52,7 @@ public final class DashObjectClass<R, D extends dev.quantumfusion.dashloader.Das
 	@NotNull
 	public Class<? extends dev.quantumfusion.dashloader.Dashable<?>> getTag() {
 
-		if (this.dashTag == null)
-		{
+		if (this.dashTag == null) {
 			Class<? extends dev.quantumfusion.dashloader.Dashable<?>> dashInterface = null;
 			for (Class<?> anInterface : this.dashClass.getInterfaces()) {
 				if (dev.quantumfusion.dashloader.Dashable.class.isAssignableFrom(anInterface)) {

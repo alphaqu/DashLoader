@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.dashloader.util.TimeUtil;
+
 import java.lang.management.ManagementFactory;
 
 public class ProfilerHandler {

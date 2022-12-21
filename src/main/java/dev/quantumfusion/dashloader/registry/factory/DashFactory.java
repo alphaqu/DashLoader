@@ -7,6 +7,7 @@ import dev.quantumfusion.dashloader.registry.factory.creator.CreationError;
 import dev.quantumfusion.dashloader.registry.factory.creator.Creator;
 import dev.quantumfusion.dashloader.registry.factory.creator.MultiCreator;
 import dev.quantumfusion.dashloader.registry.factory.creator.SoloCreator;
+
 import java.util.Collection;
 
 public final class DashFactory<R, D extends Dashable<R>> {

@@ -3,7 +3,6 @@ package dev.quantumfusion.dashloader.data.image;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAnimationFrameAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
 
 public final class DashSpriteAnimationFrame implements Dashable<SpriteContents.AnimationFrame> {

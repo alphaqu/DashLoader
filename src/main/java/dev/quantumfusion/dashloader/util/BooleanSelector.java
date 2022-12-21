@@ -1,10 +1,11 @@
 package dev.quantumfusion.dashloader.util;
 
-import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.state.StateManager;
+
+import java.util.function.Predicate;
 
 public class BooleanSelector implements MultipartModelSelector {
 

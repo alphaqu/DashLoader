@@ -11,12 +11,9 @@ import dev.quantumfusion.dashloader.util.DashUtil;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
-
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
 
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 

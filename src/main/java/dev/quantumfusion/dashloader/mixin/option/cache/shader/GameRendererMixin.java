@@ -1,17 +1,13 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.shader;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import java.io.IOException;
-
-import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.VertexFormat;
 import net.minecraft.resource.ResourceFactory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(value = GameRenderer.class, priority = 69)

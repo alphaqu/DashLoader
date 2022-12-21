@@ -3,11 +3,6 @@ package dev.quantumfusion.dashloader.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.quantumfusion.dashloader.ProgressHandler;
 import dev.quantumfusion.taski.builtin.StaticTask;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.toast.Toast;
@@ -17,6 +12,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
@@ -32,6 +32,7 @@ public class DashToast implements Toast {
 	private final long start = System.currentTimeMillis();
 	private long oldTime = System.currentTimeMillis();
 	private boolean done = false;
+
 	public int getWidth() {
 		return 200;
 	}
@@ -104,14 +105,14 @@ public class DashToast implements Toast {
 		}
 
 		// Draw the ui
-		DrawerUtil.drawRect(matrices, -100, -100, 100, 100,Color.red);
+		DrawerUtil.drawRect(matrices, -100, -100, 100, 100, Color.red);
 
 		DrawerUtil.drawRect(matrices, 0, 0, width, height, DrawerUtil.BACKGROUND_COLOR);
 		this.drawLines(currentProgress, matrices);
 		DrawerUtil.drawRect(matrices, 0, barY, width, PROGRESS_BAR_HEIGHT, DrawerUtil.PROGRESS_TRACK);
-		DrawerUtil.drawRect(matrices, 0, barY, (int) (width * currentProgress), PROGRESS_BAR_HEIGHT,currentProgressColor);
-		DrawerUtil.drawText(matrices, textRenderer, PADDING, barY - PADDING,  DL.progress.getCurrentTask(), DrawerUtil.STATUS_COLOR);
-		DrawerUtil.drawText(matrices, textRenderer, PADDING,  textRenderer.fontHeight + PADDING,  this.fact, DrawerUtil.FOREGROUND_COLOR);
+		DrawerUtil.drawRect(matrices, 0, barY, (int) (width * currentProgress), PROGRESS_BAR_HEIGHT, currentProgressColor);
+		DrawerUtil.drawText(matrices, textRenderer, PADDING, barY - PADDING, DL.progress.getCurrentTask(), DrawerUtil.STATUS_COLOR);
+		DrawerUtil.drawText(matrices, textRenderer, PADDING, textRenderer.fontHeight + PADDING, this.fact, DrawerUtil.FOREGROUND_COLOR);
 
 		RenderSystem.disableScissor();
 
@@ -197,9 +198,9 @@ public class DashToast implements Toast {
 				color = DrawerUtil.FAILED_COLOR;
 			}
 
-			drawVertex(b4, bb, x + width,  y, color); // right top
+			drawVertex(b4, bb, x + width, y, color); // right top
 			drawVertex(b4, bb, x, y, end); // left top
-			drawVertex(b4, bb, x,  y + height, end); // left bottom
+			drawVertex(b4, bb, x, y + height, end); // left bottom
 			drawVertex(b4, bb, x + width, y + height, color); // right bottom
 		}
 
@@ -208,7 +209,7 @@ public class DashToast implements Toast {
 				case Neutral -> DrawerUtil.NEUTRAL_LINE;
 				case Progress -> DrawerUtil.getProgressColor(progress);
 			};
-			float opacity = MathHelper.clamp(( (this.x) / (float) this.width), 0.0f, 1.0f);
+			float opacity = MathHelper.clamp(((this.x) / (float) this.width), 0.0f, 1.0f);
 			return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (opacity * 255));
 		}
 
@@ -223,6 +224,7 @@ public class DashToast implements Toast {
 		CRASHED,
 		DONE
 	}
+
 	public enum ColorKind {
 		Neutral,
 		Progress

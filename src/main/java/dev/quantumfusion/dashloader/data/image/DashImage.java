@@ -4,9 +4,10 @@ import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.mixin.accessor.NativeImageAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
-import java.nio.ByteBuffer;
 import net.minecraft.client.texture.NativeImage;
 import org.lwjgl.system.MemoryUtil;
+
+import java.nio.ByteBuffer;
 
 @DashObject(NativeImage.class)
 public final class DashImage implements Dashable<NativeImage> {

@@ -1,31 +1,18 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.model;
 
-import com.mojang.datafixers.util.Pair;
 import dev.quantumfusion.dashloader.DashLoader;
-import dev.quantumfusion.dashloader.api.option.Option;
 import dev.quantumfusion.dashloader.fallback.model.MissingDashModel;
 import dev.quantumfusion.dashloader.fallback.model.UnbakedBakedModel;
-import dev.quantumfusion.dashloader.util.mixins.SpriteAtlasTextureDuck;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.BiFunction;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.spongepowered.asm.mixin.Final;
@@ -36,8 +23,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiFunction;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(value = ModelLoader.class, priority = 69420)
@@ -106,6 +98,7 @@ public abstract class ModelLoaderMixin {
 		}
 		return instance.hasNext();
 	}
+
 	@Inject(
 			method = "bake",
 			at = @At(

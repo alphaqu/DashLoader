@@ -5,6 +5,12 @@ import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.hook.LoadCacheHook;
 import dev.quantumfusion.dashloader.api.hook.SaveCacheHook;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.metadata.CustomValue;
+import net.fabricmc.loader.api.metadata.ModMetadata;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.Instant;
@@ -13,11 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.metadata.CustomValue;
-import net.fabricmc.loader.api.metadata.ModMetadata;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class APIHandler {
 	public static final Logger LOGGER = LogManager.getLogger("DashLoaderAPI");

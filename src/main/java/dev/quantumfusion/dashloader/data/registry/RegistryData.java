@@ -7,10 +7,11 @@ import dev.quantumfusion.dashloader.data.model.predicates.DashPredicate;
 import dev.quantumfusion.dashloader.registry.ChunkHolder;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
-import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.texture.Sprite;
+
+import java.util.function.Predicate;
 
 public class RegistryData implements ChunkHolder {
 	public final AbstractDataChunk<BlockState, DashBlockState> blockStateRegistryData;

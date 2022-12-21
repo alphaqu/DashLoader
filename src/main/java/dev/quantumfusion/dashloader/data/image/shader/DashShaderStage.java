@@ -4,11 +4,12 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import dev.quantumfusion.dashloader.mixin.accessor.EffectShaderStageAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.ShaderStageAccessor;
 import dev.quantumfusion.dashloader.util.MissingDataException;
-import java.util.List;
-
 import net.minecraft.client.gl.EffectShaderStage;
 import net.minecraft.client.gl.ShaderStage;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public final class DashShaderStage {

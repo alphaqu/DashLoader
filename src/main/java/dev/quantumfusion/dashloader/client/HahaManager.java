@@ -2,6 +2,7 @@ package dev.quantumfusion.dashloader.client;
 
 import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.config.DashConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 

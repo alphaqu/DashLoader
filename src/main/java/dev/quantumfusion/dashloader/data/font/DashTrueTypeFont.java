@@ -6,17 +6,19 @@ import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.util.IOHelper;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TrueTypeFont;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @DashObject(TrueTypeFont.class)

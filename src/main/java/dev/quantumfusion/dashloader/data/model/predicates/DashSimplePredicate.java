@@ -8,7 +8,6 @@ import dev.quantumfusion.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.SimpleMultipartModelSelectorAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
@@ -17,6 +16,9 @@ import net.minecraft.registry.Registries;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Predicate;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 

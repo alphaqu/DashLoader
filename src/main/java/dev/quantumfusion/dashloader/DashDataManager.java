@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader;
 
-import dev.quantumfusion.dashloader.data.image.DashSpriteAtlasTextureData;
 import dev.quantumfusion.dashloader.data.image.shader.DashShader;
 import dev.quantumfusion.dashloader.fallback.model.DashMissingDashModel;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -8,22 +7,22 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.stb.STBTTFontinfo;
+
+import java.util.List;
+import java.util.Map;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 /**

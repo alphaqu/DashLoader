@@ -2,13 +2,10 @@ package dev.quantumfusion.dashloader.data.image;
 
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAnimationAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
-import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import dev.quantumfusion.dashloader.util.DashUtil;
-import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import net.minecraft.client.texture.SpriteContents;
+
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteContents;
 
 public final class DashSpriteAnimation {
 	public final List<DashSpriteAnimationFrame> frames;

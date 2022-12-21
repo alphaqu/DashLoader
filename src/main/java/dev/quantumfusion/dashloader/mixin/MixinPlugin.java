@@ -2,11 +2,12 @@ package dev.quantumfusion.dashloader.mixin;
 
 import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.config.ConfigHandler;
-import java.util.List;
-import java.util.Set;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+
+import java.util.List;
+import java.util.Set;
 
 public class MixinPlugin implements IMixinConfigPlugin {
 

@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.data.image;
 
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.data.common.IntIntList;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
@@ -50,7 +49,7 @@ public final class DashStitchResult {
 		if (this.mipLevel > 0) {
 			completableFuture = CompletableFuture.runAsync(
 					() -> regions.values().forEach(sprite -> sprite.getContents().generateMipmaps(this.mipLevel))
-					);
+			);
 		} else {
 			completableFuture = CompletableFuture.completedFuture(null);
 		}

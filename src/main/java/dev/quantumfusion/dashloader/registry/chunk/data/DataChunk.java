@@ -2,6 +2,7 @@ package dev.quantumfusion.dashloader.registry.chunk.data;
 
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class DataChunk<R, D extends Dashable<R>> extends AbstractDataChunk<R, D> {

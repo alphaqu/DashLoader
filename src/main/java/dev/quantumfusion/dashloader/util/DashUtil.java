@@ -1,9 +1,10 @@
 package dev.quantumfusion.dashloader.util;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public final class DashUtil {
 	@Nullable

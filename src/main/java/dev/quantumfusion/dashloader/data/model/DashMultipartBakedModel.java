@@ -16,15 +16,17 @@ import dev.quantumfusion.dashloader.util.RegistryUtil;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.MultipartBakedModel;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.MultipartBakedModel;
-import org.apache.commons.lang3.tuple.Pair;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @DashObject(MultipartBakedModel.class)
@@ -72,7 +74,7 @@ public class DashMultipartBakedModel implements DashModel {
 		this.sideLit = model.isSideLit();
 		this.sprite = writer.add(model.getParticleSprite());
 		this.transformations = DashModelTransformation.createDashOrReturnNullIfDefault(model.getTransformation());
-	//	this.itemPropertyOverrides = new DashModelOverrideList(model.getOverrides(), writer);
+		//	this.itemPropertyOverrides = new DashModelOverrideList(model.getOverrides(), writer);
 
 		var accessComponents = access.getComponents();
 		int size = accessComponents.size();

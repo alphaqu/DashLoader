@@ -27,11 +27,6 @@ import dev.quantumfusion.dashloader.registry.factory.DashFactory;
 import dev.quantumfusion.dashloader.thread.ThreadHandler;
 import dev.quantumfusion.dashloader.util.TimeUtil;
 import dev.quantumfusion.taski.builtin.StepTask;
-
-import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -41,6 +36,10 @@ import net.minecraft.util.Identifier;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.nio.file.Path;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class DashLoader {

@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.sprite;
 
 import dev.quantumfusion.dashloader.DashDataManager;
-import dev.quantumfusion.dashloader.DashLoader;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -33,6 +32,7 @@ public final class SpriteLoaderMixin {
 			}));
 		}
 	}
+
 	@Inject(
 			method = "method_47661",
 			at = @At(value = "HEAD"),

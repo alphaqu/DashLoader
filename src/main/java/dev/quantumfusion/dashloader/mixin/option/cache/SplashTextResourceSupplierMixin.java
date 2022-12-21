@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.mixin.option.cache;
 
-import java.util.List;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.profiler.Profiler;
@@ -8,6 +7,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(SplashTextResourceSupplier.class)

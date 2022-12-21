@@ -2,8 +2,6 @@ package dev.quantumfusion.dashloader.mixin.main;
 
 import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.client.DashToast;
-import java.util.HashMap;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -18,6 +16,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.HashMap;
+
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 

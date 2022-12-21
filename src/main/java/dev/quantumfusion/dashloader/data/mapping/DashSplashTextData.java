@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.data.mapping;
 
 import dev.quantumfusion.dashloader.DashDataManager;
+
 import java.util.List;
 
 public class DashSplashTextData {
