@@ -38,12 +38,21 @@ public final class SpriteLoaderMixin {
 			at = @At(value = "HEAD"),
 			cancellable = true
 	)
-	private void dashloaderRead(ResourceManager resourceManager, Identifier identifier, int i, Executor executor, CallbackInfoReturnable<CompletableFuture<SpriteLoader.StitchResult>> cir) {
+	private void dashloaderRead(ResourceManager resourceManager, Identifier identifier, int m, Executor executor, CallbackInfoReturnable<CompletableFuture<SpriteLoader.StitchResult>> cir) {
 		if (DL.isRead()) {
 			DashDataManager.DashReadContextData data = DL.getData().getReadContextData();
 			SpriteLoader.StitchResult cached = data.stitchResults.get(identifier);
 			if (cached != null) {
-				cir.setReturnValue(CompletableFuture.completedFuture(cached));
+				// Correct the executor
+				CompletableFuture<Void> completableFuture = m > 0 ? CompletableFuture.runAsync(() -> cached.regions().values().forEach(sprite -> sprite.getContents().generateMipmaps(m)), executor) : CompletableFuture.completedFuture(null);
+				cir.setReturnValue(CompletableFuture.completedFuture(new SpriteLoader.StitchResult(
+						cached.width(),
+						cached.height(),
+						cached.mipLevel(),
+						cached.missing(),
+						cached.regions(),
+						completableFuture
+				)));
 				cir.cancel();
 			}
 		}

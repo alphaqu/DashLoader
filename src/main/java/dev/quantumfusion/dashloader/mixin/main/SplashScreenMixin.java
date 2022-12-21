@@ -7,6 +7,7 @@ import java.util.HashMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.toast.Toast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceReload;
 import net.minecraft.util.Language;
@@ -52,7 +53,7 @@ public class SplashScreenMixin {
 
 		DL.profilerHandler.print();
 
-		if (DL.isWrite()) {
+		if (DL.isWrite() && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
 			// Yes this is bad. But it makes us not require Fabric API
 			var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
 			DashLoader.LOG.info(langCode);

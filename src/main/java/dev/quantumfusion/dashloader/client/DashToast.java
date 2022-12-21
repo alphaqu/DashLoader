@@ -25,14 +25,12 @@ public class DashToast implements Toast {
 	private static final int PADDING = 8;
 	private static final int LINES = 200;
 	public static Status STATUS = Status.IDLE;
-
-
 	private final Random random = new Random();
 	private final List<Line> lines = new ArrayList<>();
 	private final String fact = HahaManager.getFact();
 
+	private final long start = System.currentTimeMillis();
 	private long oldTime = System.currentTimeMillis();
-	private long start = System.currentTimeMillis();
 	private boolean done = false;
 	public int getWidth() {
 		return 200;
@@ -43,6 +41,7 @@ public class DashToast implements Toast {
 	}
 
 	public DashToast() {
+		DashToast.STATUS = DashToast.Status.CACHING;
 		final Thread thread = new Thread(DL::saveDashCache);
 		thread.setName("dashloader-thread");
 		thread.start();
@@ -58,10 +57,9 @@ public class DashToast implements Toast {
 	public Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
 		TextRenderer textRenderer = manager.getClient().textRenderer;
 
-		if ((STATUS == Status.DONE)) {
+		if ((STATUS == Status.DONE) && !done) {
 			DL.resetDashLoader();
 			done = true;
-			STATUS = Status.IDLE;
 		}
 
 		final int width = this.getWidth();
@@ -72,8 +70,8 @@ public class DashToast implements Toast {
 		double currentProgress;
 		Color currentProgressColor;
 		if (STATUS == Status.CRASHED) {
-			ProgressHandler.TASK = new StaticTask("Crash", 1);
-			DL.progress.setCurrentTask("Internal crash. Please check logs or press ENTER.");
+			ProgressHandler.TASK = new StaticTask("Crash", (System.currentTimeMillis() - start) / (float) 10000);
+			DL.progress.setCurrentTask("Internal crash. Please check logs.");
 			currentProgress = DL.progress.getProgress();
 			currentProgressColor = DrawerUtil.FAILED_COLOR;
 		} else {
@@ -117,7 +115,11 @@ public class DashToast implements Toast {
 
 		RenderSystem.disableScissor();
 
-		if (done && System.currentTimeMillis() - start > 2000) {
+		if (STATUS == Status.CRASHED && System.currentTimeMillis() - start > 10000) {
+			return Visibility.HIDE;
+		}
+
+		if ((done && System.currentTimeMillis() - start > 2000)) {
 			return Visibility.HIDE;
 		}
 		return Visibility.SHOW;
