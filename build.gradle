@@ -51,8 +51,7 @@ dependencies {
     implementation 'com.github.luben:zstd-jni:1.5.2-2'
     include 'com.github.luben:zstd-jni:1.5.2-2'
 
-    modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.55.2+1.19");
-    modCompileOnly fabricApi.module("fabric-textures-v0", "0.55.2+1.19");
+    modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.69.1+1.19.3");
 }
 
 test {
