@@ -7,18 +7,18 @@ import org.jetbrains.annotations.Nullable;
 
 @DataNullable
 public final class DashModelTransformation {
-	public final DashTransformation thirdPersonLeftHand;
-	public final DashTransformation thirdPersonRightHand;
-	public final DashTransformation firstPersonLeftHand;
-	public final DashTransformation firstPersonRightHand;
-	public final DashTransformation head;
-	public final DashTransformation gui;
-	public final DashTransformation ground;
-	public final DashTransformation fixed;
+	public final Transformation thirdPersonLeftHand;
+	public final Transformation thirdPersonRightHand;
+	public final Transformation firstPersonLeftHand;
+	public final Transformation firstPersonRightHand;
+	public final Transformation head;
+	public final Transformation gui;
+	public final Transformation ground;
+	public final Transformation fixed;
 
 	public transient int nullTransformations = 0;
 
-	public DashModelTransformation(@Nullable DashTransformation thirdPersonLeftHand, @Nullable DashTransformation thirdPersonRightHand, @Nullable DashTransformation firstPersonLeftHand, @Nullable DashTransformation firstPersonRightHand, @Nullable DashTransformation head, @Nullable DashTransformation gui, @Nullable DashTransformation ground, @Nullable DashTransformation fixed) {
+	public DashModelTransformation(@Nullable Transformation thirdPersonLeftHand, @Nullable Transformation thirdPersonRightHand, @Nullable Transformation firstPersonLeftHand, @Nullable Transformation firstPersonRightHand, @Nullable Transformation head, @Nullable Transformation gui, @Nullable Transformation ground, @Nullable Transformation fixed) {
 		this.thirdPersonLeftHand = thirdPersonLeftHand;
 		this.thirdPersonRightHand = thirdPersonRightHand;
 		this.firstPersonLeftHand = firstPersonLeftHand;
@@ -63,29 +63,29 @@ public final class DashModelTransformation {
 		return other.export();
 	}
 
-	private DashTransformation createTransformation(Transformation transformation) {
+	private Transformation createTransformation(Transformation transformation) {
 		if (transformation == Transformation.IDENTITY) {
 			this.nullTransformations++;
 			return null;
 		} else {
-			return new DashTransformation(transformation);
+			return transformation;
 		}
 	}
 
-	private Transformation unDashTransformation(DashTransformation transformation) {
-		return transformation == null ? Transformation.IDENTITY : transformation.export();
+	private Transformation unTransformation(Transformation transformation) {
+		return transformation == null ? Transformation.IDENTITY : transformation;
 	}
 
 	public ModelTransformation export() {
 		return new ModelTransformation(
-				this.unDashTransformation(this.thirdPersonLeftHand),
-				this.unDashTransformation(this.thirdPersonRightHand),
-				this.unDashTransformation(this.firstPersonLeftHand),
-				this.unDashTransformation(this.firstPersonRightHand),
-				this.unDashTransformation(this.head),
-				this.unDashTransformation(this.gui),
-				this.unDashTransformation(this.ground),
-				this.unDashTransformation(this.fixed)
+				this.unTransformation(this.thirdPersonLeftHand),
+				this.unTransformation(this.thirdPersonRightHand),
+				this.unTransformation(this.firstPersonLeftHand),
+				this.unTransformation(this.firstPersonRightHand),
+				this.unTransformation(this.head),
+				this.unTransformation(this.gui),
+				this.unTransformation(this.ground),
+				this.unTransformation(this.fixed)
 		);
 	}
 }
