@@ -21,6 +21,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+// StagedDataChunk -> interface DashModel {BasicBakedModel, WeightedBakedModel, MultipartBakedModel}
+// SimpleDataChunk -> class DashImage
+
+
+//  class BasicBakedModel -> output DashModel
+//  class WeightedBakedModel(BasicBakedModel) -> output DashModel
+//  class MultipartBakedModel(WeightedBakedModel) -> output DashModel
+//  class DashImage[] -> output DashImage
+
+// 2 outputs [DashModel, DashImage]
+
+
 @DashObject(BasicBakedModel.class)
 @DashDependencies({DashSprite.class, DashBakedQuad.class})
 public final class DashBasicBakedModel implements DashModel {

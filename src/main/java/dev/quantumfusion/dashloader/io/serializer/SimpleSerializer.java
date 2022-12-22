@@ -4,9 +4,10 @@ import com.github.luben.zstd.Zstd;
 import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
 import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
+import dev.quantumfusion.dashloader.registry.chunk.data.SimpleDataChunk;
 import dev.quantumfusion.dashloader.registry.chunk.data.StagedDataChunk;
+import dev.quantumfusion.dashloader.thread.ThreadHandler;
 import dev.quantumfusion.hyphen.ClassDefiner;
 import dev.quantumfusion.hyphen.HyphenSerializer;
 import dev.quantumfusion.hyphen.SerializerFactory;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -29,20 +31,20 @@ import java.util.function.Consumer;
 
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
-public class DashSerializer<O> {
+public class SimpleSerializer<O> implements DataSerializer<O> {
 
 	private static final int HEADER_SIZE = 5;
-	private final Class<O> dataClass;
+	private final String name;
 	private final HyphenSerializer<ByteBufferIO, O> serializer;
 	private final byte compressionLevel;
 
-	public DashSerializer(Class<O> dataClass, HyphenSerializer<ByteBufferIO, O> serializer) {
-		this.dataClass = dataClass;
+	public SimpleSerializer(String name, HyphenSerializer<ByteBufferIO, O> serializer) {
+		this.name = name;
 		this.serializer = serializer;
 		this.compressionLevel = DL.config.config.compression;
 	}
 
-	public static <F> DashSerializer<F> create(Path cacheArea, Class<F> holderClass, List<DashObjectClass<?, ?>> dashObjects, Class<? extends Dashable<?>>[] dashables) {
+	public static <F> SimpleSerializer<F> create(Path cacheArea, Class<F> holderClass, List<DashObjectClass<?, ?>> dashObjects, Class<? extends Dashable<?>>[] dashables) {
 		var serializerFileLocation = cacheArea.resolve(holderClass.getSimpleName().toLowerCase() + ".dlc");
 		prepareFile(serializerFileLocation);
 		if (Files.exists(serializerFileLocation)) {
@@ -50,15 +52,16 @@ public class DashSerializer<O> {
 			try {
 				classDefiner.def(getSerializerName(holderClass), Files.readAllBytes(serializerFileLocation));
 				//noinspection unchecked
-				return new DashSerializer<>(holderClass, (HyphenSerializer<ByteBufferIO, F>) ClassDefiner.SERIALIZER);
+				return new SimpleSerializer<>(holderClass.getSimpleName(), (HyphenSerializer<ByteBufferIO, F>) ClassDefiner.SERIALIZER);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		var factory = SerializerFactory.createDebug(ByteBufferIO.class, holderClass);
-		factory.addGlobalAnnotation(AbstractDataChunk.class, DataSubclasses.class, new Class[]{DataChunk.class, StagedDataChunk.class});
+		factory.addGlobalAnnotation(DataChunk.class, DataSubclasses.class, new Class[]{SimpleDataChunk.class, StagedDataChunk.class});
 		factory.setClassName(getSerializerName(holderClass));
 		factory.setExportPath(serializerFileLocation);
+		factory.addDynamicDef(ByteBuffer.class, UnsafeByteBufferDef::new);
 		for (Class<? extends Dashable> dashable : dashables) {
 			var dashClasses = new ArrayList<Class<?>>();
 			for (var dashObject : dashObjects) {
@@ -72,7 +75,7 @@ public class DashSerializer<O> {
 				factory.addGlobalAnnotation(dashable, DataSubclasses.class, dashClasses.toArray(Class[]::new));
 			}
 		}
-		return new DashSerializer<>(holderClass, factory.build());
+		return new SimpleSerializer<>(holderClass.getSimpleName(), factory.build());
 
 	}
 
@@ -89,8 +92,27 @@ public class DashSerializer<O> {
 		}
 	}
 
+	// Calculates fragments to optimize performance dependent on threads and to fit int size constraints.
+	public int calculateFragments(long size) {
+		// Fragment needs to carry least 8MB to prevent many threads fragmenting minor files.
+		long threads = ThreadHandler.CORES;
+		long maxFragments = (long) Math.ceil((size / (8D * 1024 * 1024)));
+		long optimalFragments = Long.min(threads, maxFragments);
+
+		// Fragment needs to carry max 1.5GB because of the int 2GB limit
+		long minFragments = (long) Math.ceil((size / (1536D * 1024 * 1024)));
+
+		return (int) Long.max(minFragments, optimalFragments);
+	}
+
+	@NotNull
+	private Path getFilePath(Path subCache) {
+		return subCache.resolve(this.name + ".dld");
+	}
+
+	@Override
 	public void encode(O object, Path subCache, @Nullable Consumer<Task> taskConsumer) throws IOException {
-		StepTask task = new StepTask(this.dataClass.getSimpleName(), this.compressionLevel > 0 ? 5 : 2);
+		StepTask task = new StepTask(this.name, this.compressionLevel > 0 ? 5 : 2);
 		if (taskConsumer != null) {
 			taskConsumer.accept(task);
 		}
@@ -98,15 +120,17 @@ public class DashSerializer<O> {
 		final Path outPath = this.getFilePath(subCache);
 		prepareFile(outPath);
 
-
 		try (FileChannel channel = FileChannel.open(outPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.READ)) {
-			final int rawFileSize = this.serializer.measure(object);
+			final long rawFileSize = this.serializer.measure(object);
+			if (rawFileSize > Integer.MAX_VALUE) {
+				throw new IOException("Size of data is " + rawFileSize + " which is bigger than 2GB");
+			}
 
 			if (this.compressionLevel > 0) {
 				// Allocate
 				final long maxSize = Zstd.compressBound(rawFileSize);
 				final var dst = ByteBufferIO.createDirect((int) maxSize);
-				final var src = ByteBufferIO.createDirect(rawFileSize);
+				final var src = ByteBufferIO.createDirect((int) rawFileSize);
 				task.next();
 
 				// Serialize
@@ -126,7 +150,7 @@ public class DashSerializer<O> {
 				task.next();
 
 				map.put(this.compressionLevel);
-				map.putInt(rawFileSize);
+				map.putInt((int) rawFileSize);
 				map.put(dst.byteBuffer);
 				src.close();
 				dst.close();
@@ -141,16 +165,12 @@ public class DashSerializer<O> {
 		task.next();
 	}
 
-	@NotNull
-	private Path getFilePath(Path subCache) {
-		return subCache.resolve(this.dataClass.getSimpleName().toLowerCase() + ".dld");
-	}
-
-	public O decode(Path subCache) throws IOException {
+	@Override
+	public O decode(Path subCache, @Nullable Consumer<Task> task) throws IOException {
 		long start = System.currentTimeMillis();
 		try (FileChannel channel = FileChannel.open(this.getFilePath(subCache))) {
 			var buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).order(ByteOrder.LITTLE_ENDIAN);
-			DashLoader.LOG.info("Read {} in {}ms", this.dataClass.getSimpleName(), System.currentTimeMillis() - start);
+			DashLoader.LOG.info("Read {} in {}ms", this.name, System.currentTimeMillis() - start);
 			start = System.currentTimeMillis();
 
 			// Check compression
@@ -161,7 +181,7 @@ public class DashSerializer<O> {
 				dst.rewind();
 				O object = this.serializer.get(dst);
 				dst.close();
-				DashLoader.LOG.info("Decompressed {} in {}ms", this.dataClass.getSimpleName(), System.currentTimeMillis() - start);
+				DashLoader.LOG.info("Decompressed {} in {}ms", this.name, System.currentTimeMillis() - start);
 				return object;
 			} else {
 				return this.serializer.get(ByteBufferIO.wrap(buffer));

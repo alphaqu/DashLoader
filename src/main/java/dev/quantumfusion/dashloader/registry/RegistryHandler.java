@@ -2,7 +2,7 @@ package dev.quantumfusion.dashloader.registry;
 
 import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
+import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
 import dev.quantumfusion.dashloader.registry.chunk.write.AbstractWriteChunk;
 import dev.quantumfusion.dashloader.registry.chunk.write.FloatingWriteChunk;
 import dev.quantumfusion.dashloader.registry.chunk.write.StagedWriteChunk;
@@ -62,12 +62,12 @@ public final class RegistryHandler {
 	}
 
 	public RegistryReader createReader(ChunkHolder... holders) {
-		var dataChunks = new ArrayList<AbstractDataChunk<?, ?>>();
+		var dataChunks = new ArrayList<DataChunk<?, ?>>();
 		for (var holder : holders) {
 			Collections.addAll(dataChunks, holder.getChunks());
 		}
-		AbstractDataChunk<?, ?>[] out = new AbstractDataChunk[dataChunks.size()];
-		for (AbstractDataChunk<?, ?> dataChunk : dataChunks) {
+		DataChunk<?, ?>[] out = new DataChunk[dataChunks.size()];
+		for (DataChunk<?, ?> dataChunk : dataChunks) {
 			out[dataChunk.pos] = dataChunk;
 		}
 		return new RegistryReader(out);

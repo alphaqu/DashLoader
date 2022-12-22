@@ -2,38 +2,18 @@ package dev.quantumfusion.dashloader.registry.chunk.data;
 
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
+import dev.quantumfusion.dashloader.registry.chunk.AbstractChunk;
 
-import static dev.quantumfusion.dashloader.DashLoader.DL;
-
-public class DataChunk<R, D extends Dashable<R>> extends AbstractDataChunk<R, D> {
-	public final D[] dashables;
-
-	public DataChunk(byte pos, String name, D[] dashables) {
+public abstract class DataChunk<R, D extends Dashable<R>> extends AbstractChunk<R, D> {
+	protected DataChunk(byte pos, String name) {
 		super(pos, name);
-		this.dashables = dashables;
 	}
 
-	@Override
-	public void preExport(RegistryReader reader) {
-		for (D dashable : this.dashables) {
-			dashable.preExport(reader);
-		}
-	}
+	public abstract void preExport(RegistryReader registry);
 
-	@Override
-	public void export(Object[] data, RegistryReader registry) {
-		DL.thread.parallelExport(this.dashables, data, registry);
-	}
+	public abstract void export(Object[] data, RegistryReader registry);
 
-	@Override
-	public void postExport(RegistryReader reader) {
-		for (D dashable : this.dashables) {
-			dashable.postExport(reader);
-		}
-	}
+	public abstract void postExport(RegistryReader registry);
 
-	@Override
-	public int getDashableSize() {
-		return this.dashables.length;
-	}
+	public abstract int getSize();
 }

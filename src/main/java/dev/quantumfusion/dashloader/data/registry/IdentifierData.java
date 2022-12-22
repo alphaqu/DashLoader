@@ -3,13 +3,13 @@ package dev.quantumfusion.dashloader.data.registry;
 import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.registry.ChunkHolder;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
+import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
 import net.minecraft.util.Identifier;
 
 public class IdentifierData implements ChunkHolder {
-	public final AbstractDataChunk<Identifier, DashIdentifierInterface> identifierData;
+	public final DataChunk<Identifier, DashIdentifierInterface> identifierData;
 
-	public IdentifierData(AbstractDataChunk<Identifier, DashIdentifierInterface> identifierData) {
+	public IdentifierData(DataChunk<Identifier, DashIdentifierInterface> identifierData) {
 		this.identifierData = identifierData;
 	}
 
@@ -18,7 +18,7 @@ public class IdentifierData implements ChunkHolder {
 	}
 
 	@Override
-	public AbstractDataChunk<?, ?>[] getChunks() {
-		return new AbstractDataChunk[]{this.identifierData};
+	public DataChunk<?, ?>[] getChunks() {
+		return new DataChunk[]{this.identifierData};
 	}
 }

@@ -35,7 +35,7 @@ public final class ThreadHandler {
 	}
 
 	// Fork Join Methods
-	public <R, D extends Dashable<? extends R>> void parallelExport(dev.quantumfusion.dashloader.thread.IndexedArrayMapTask.IndexedArrayEntry<D>[] in, R[] out, RegistryReader reader) {
+	public <R, D extends Dashable<? extends R>> void parallelExport(IndexedArrayMapTask.Entry<D>[] in, R[] out, RegistryReader reader) {
 		this.threadPool.invoke(new IndexedArrayMapTask<>(in, out, d -> d.export(reader)));
 	}
 

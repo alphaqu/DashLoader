@@ -6,7 +6,7 @@ import dev.quantumfusion.dashloader.data.image.DashSprite;
 import dev.quantumfusion.dashloader.data.model.predicates.DashPredicate;
 import dev.quantumfusion.dashloader.registry.ChunkHolder;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
+import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.texture.Sprite;
@@ -14,12 +14,12 @@ import net.minecraft.client.texture.Sprite;
 import java.util.function.Predicate;
 
 public class RegistryData implements ChunkHolder {
-	public final AbstractDataChunk<BlockState, DashBlockState> blockStateRegistryData;
-	public final AbstractDataChunk<Font, DashFont> fontRegistryData;
-	public final AbstractDataChunk<Sprite, DashSprite> spriteRegistryData;
-	public final AbstractDataChunk<Predicate<BlockState>, DashPredicate> predicateRegistryData;
+	public final DataChunk<BlockState, DashBlockState> blockStateRegistryData;
+	public final DataChunk<Font, DashFont> fontRegistryData;
+	public final DataChunk<Sprite, DashSprite> spriteRegistryData;
+	public final DataChunk<Predicate<BlockState>, DashPredicate> predicateRegistryData;
 
-	public RegistryData(AbstractDataChunk<BlockState, DashBlockState> blockStateRegistryData, AbstractDataChunk<Font, DashFont> fontRegistryData, AbstractDataChunk<Sprite, DashSprite> spriteRegistryData, AbstractDataChunk<Predicate<BlockState>, DashPredicate> predicateRegistryData) {
+	public RegistryData(DataChunk<BlockState, DashBlockState> blockStateRegistryData, DataChunk<Font, DashFont> fontRegistryData, DataChunk<Sprite, DashSprite> spriteRegistryData, DataChunk<Predicate<BlockState>, DashPredicate> predicateRegistryData) {
 		this.blockStateRegistryData = blockStateRegistryData;
 		this.fontRegistryData = fontRegistryData;
 		this.spriteRegistryData = spriteRegistryData;
@@ -36,7 +36,7 @@ public class RegistryData implements ChunkHolder {
 
 
 	@Override
-	public AbstractDataChunk<?, ?>[] getChunks() {
-		return new AbstractDataChunk[]{this.blockStateRegistryData, this.fontRegistryData, this.spriteRegistryData, this.predicateRegistryData};
+	public DataChunk<?, ?>[] getChunks() {
+		return new DataChunk[]{this.blockStateRegistryData, this.fontRegistryData, this.spriteRegistryData, this.predicateRegistryData};
 	}
 }

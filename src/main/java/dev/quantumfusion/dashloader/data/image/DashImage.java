@@ -1,17 +1,25 @@
 package dev.quantumfusion.dashloader.data.image;
 
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashObject;
+import dev.quantumfusion.dashloader.io.serializer.DataUnsafeByteBuffer;
 import dev.quantumfusion.dashloader.mixin.accessor.NativeImageAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import net.minecraft.client.texture.NativeImage;
+import org.lwjgl.stb.STBImage;
+import org.lwjgl.stb.STBImageWrite;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 @DashObject(NativeImage.class)
 public final class DashImage implements Dashable<NativeImage> {
-	public final byte[] image;
+	@DataUnsafeByteBuffer
+	public final ByteBuffer image;
 	public final NativeImage.Format format;
 	public final boolean useSTB;
 	public final int width;
@@ -22,25 +30,22 @@ public final class DashImage implements Dashable<NativeImage> {
 		this.format = nativeImage.getFormat();
 		this.width = nativeImage.getWidth();
 		this.height = nativeImage.getHeight();
-		this.image = this.write(nativeImageAccess.getPointer());
+
+		final int capacity = this.width * this.height * this.format.getChannelCount();
+		final long pointer = nativeImageAccess.getPointer();
+
+		this.image = MemoryUtil.memByteBuffer(pointer, capacity);
+
+
 		this.useSTB = nativeImageAccess.getIsStbImage();
 	}
 
-	public DashImage(byte[] image, NativeImage.Format format, boolean useSTB, int width, int height) {
+	public DashImage(ByteBuffer image, NativeImage.Format format, boolean useSTB,int width, int height) {
 		this.image = image;
 		this.format = format;
 		this.useSTB = useSTB;
 		this.width = width;
 		this.height = height;
-	}
-
-
-	private byte[] write(long pointer) {
-		final int capacity = this.width * this.height * this.format.getChannelCount();
-		final var byteBuffer = MemoryUtil.memByteBuffer(pointer, capacity);
-		final byte[] bytes = new byte[capacity];
-		byteBuffer.get(bytes);
-		return bytes;
 	}
 
 	/**
@@ -51,9 +56,21 @@ public final class DashImage implements Dashable<NativeImage> {
 	 */
 	@Override
 	public NativeImage export(final RegistryReader registry) {
-		final ByteBuffer buf = MemoryUtil.memAlloc(this.image.length);
-		buf.put(this.image);
-		buf.rewind();
-		return NativeImageAccessor.init(this.format, this.width, this.height, this.useSTB, MemoryUtil.memAddress(buf));
+		long pointer;
+		//if (this.compressed) {
+		//	try (MemoryStack memoryStack = MemoryStack.stackPush();){
+		//		IntBuffer width = memoryStack.mallocInt(1);
+		//		IntBuffer height = memoryStack.mallocInt(1);
+		//		IntBuffer channels = memoryStack.mallocInt(1);
+		//		ByteBuffer byteBuffer = STBImage.stbi_load_from_memory(image, width, height, channels, format.getChannelCount());
+		//		if (byteBuffer == null) {
+		//			throw new RuntimeException("Could not load image: " + STBImage.stbi_failure_reason());
+		//		}
+		//		pointer = MemoryUtil.memAddress(byteBuffer);
+		//	}
+		//} else {
+			pointer = MemoryUtil.memAddress(image);
+		//}
+		return NativeImageAccessor.init(this.format, this.width, this.height, this.useSTB, pointer);
 	}
 }

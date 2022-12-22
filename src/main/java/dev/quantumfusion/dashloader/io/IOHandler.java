@@ -2,7 +2,7 @@ package dev.quantumfusion.dashloader.io;
 
 import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.io.serializer.DashSerializer;
+import dev.quantumfusion.dashloader.io.serializer.SimpleSerializer;
 import dev.quantumfusion.taski.Task;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  * The IO Module of DashLoaderCore. Handles Serializers and Caches.
  */
 public final class IOHandler {
-	private final Map<Class<?>, DashSerializer<?>> serializers = new HashMap<>();
+	private final Map<Class<?>, SimpleSerializer<?>> serializers = new HashMap<>();
 
 	private final Path cacheDir;
 
@@ -32,7 +32,7 @@ public final class IOHandler {
 
 	@SafeVarargs
 	public final void addSerializer(Class<?> dataObject, List<DashObjectClass<?, ?>> dashObjects, Class<? extends Dashable<?>>... dashables) {
-		this.serializers.put(dataObject, DashSerializer.create(this.getCurrentCacheDir(), dataObject, dashObjects, dashables));
+		this.serializers.put(dataObject, SimpleSerializer.create(this.getCurrentCacheDir(), dataObject, dashObjects, dashables));
 	}
 
 	public void setCacheArea(String name) {
@@ -67,7 +67,7 @@ public final class IOHandler {
 	public <O> void save(O dataObject, @Nullable Consumer<Task> task) {
 		try {
 			//noinspection unchecked
-			((DashSerializer<O>) this.serializers.get(dataObject.getClass())).encode(dataObject, this.getCurrentSubCacheDir(), task);
+			((SimpleSerializer<O>) this.serializers.get(dataObject.getClass())).encode(dataObject, this.getCurrentSubCacheDir(), task);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

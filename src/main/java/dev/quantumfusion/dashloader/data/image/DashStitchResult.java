@@ -3,6 +3,7 @@ package dev.quantumfusion.dashloader.data.image;
 import dev.quantumfusion.dashloader.data.common.IntIntList;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
+import dev.quantumfusion.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteLoader;
@@ -27,7 +28,7 @@ public final class DashStitchResult {
 		this.regions = regions;
 	}
 
-	public DashStitchResult(SpriteLoader.StitchResult stitchResult, RegistryWriter writer) {
+	public DashStitchResult(SpriteLoader.StitchResult stitchResult, RegistryWriter writer, StepTask task) {
 		this.width = stitchResult.width();
 		this.height = stitchResult.height();
 		this.mipLevel = stitchResult.mipLevel();
@@ -36,6 +37,7 @@ public final class DashStitchResult {
 		this.regions = new IntIntList();
 		stitchResult.regions().forEach((identifier, sprite) -> {
 			this.regions.put(writer.add(identifier), writer.add(sprite));
+			task.next();
 		});
 	}
 

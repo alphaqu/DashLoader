@@ -4,7 +4,7 @@ import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.registry.chunk.AbstractChunk;
-import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
+import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
 import dev.quantumfusion.dashloader.registry.factory.DashFactory;
 
 import java.util.Collection;
@@ -28,5 +28,5 @@ public abstract class AbstractWriteChunk<R, D extends Dashable<R>> extends Abstr
 		return this.dashObjects.stream().map(DashObjectClass::getTargetClass).collect(Collectors.toList());
 	}
 
-	public abstract AbstractDataChunk<R, D> exportData();
+	public abstract DataChunk<R, D> exportData();
 }

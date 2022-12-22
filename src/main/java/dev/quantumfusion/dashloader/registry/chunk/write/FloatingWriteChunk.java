@@ -3,8 +3,8 @@ package dev.quantumfusion.dashloader.registry.chunk.write;
 import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
 import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
+import dev.quantumfusion.dashloader.registry.chunk.data.SimpleDataChunk;
 import dev.quantumfusion.dashloader.registry.factory.DashFactory;
 
 import java.util.ArrayList;
@@ -26,13 +26,13 @@ public class FloatingWriteChunk<R, D extends Dashable<R>> extends AbstractWriteC
 	}
 
 	@Override
-	public AbstractDataChunk<R, D> exportData() {
+	public DataChunk<R, D> exportData() {
 		final int length = this.list.size();
 		//noinspection unchecked
 		final D[] dashables = (D[]) new Dashable[length];
 		for (int i = 0; i < length; i++) {
 			dashables[i] = this.factory.create(this.list.get(i), this.writer);
 		}
-		return new DataChunk<>(this.pos, this.name, dashables);
+		return new SimpleDataChunk<>(this.pos, this.name, dashables);
 	}
 }

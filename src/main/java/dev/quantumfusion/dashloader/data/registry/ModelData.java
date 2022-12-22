@@ -3,13 +3,13 @@ package dev.quantumfusion.dashloader.data.registry;
 import dev.quantumfusion.dashloader.data.model.DashModel;
 import dev.quantumfusion.dashloader.registry.ChunkHolder;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
+import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
 import net.minecraft.client.render.model.BakedModel;
 
 public class ModelData implements ChunkHolder {
-	public final AbstractDataChunk<BakedModel, DashModel> modelData;
+	public final DataChunk<BakedModel, DashModel> modelData;
 
-	public ModelData(AbstractDataChunk<BakedModel, DashModel> modelData) {
+	public ModelData(DataChunk<BakedModel, DashModel> modelData) {
 		this.modelData = modelData;
 	}
 
@@ -18,7 +18,7 @@ public class ModelData implements ChunkHolder {
 	}
 
 	@Override
-	public AbstractDataChunk<?, ?>[] getChunks() {
-		return new AbstractDataChunk[]{this.modelData};
+	public DataChunk<?, ?>[] getChunks() {
+		return new DataChunk[]{this.modelData};
 	}
 }

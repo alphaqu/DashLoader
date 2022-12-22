@@ -20,10 +20,11 @@ public class DashSpriteAtlasData {
 	public DashSpriteAtlasData(DashDataManager data, RegistryWriter writer, StepTask parent) {
 		this.results = new IntObjectList<>();
 		var results = data.getWriteContextData().stitchResults;
-		parent.run(new StepTask("Atlases", Integer.max(results.size(), 1)), stepTask -> {
+		parent.run(new StepTask("Atlases", results.size()), stepTask -> {
 			results.forEach((identifier, stitchResult) -> {
-				this.results.put(writer.add(identifier), new DashStitchResult(stitchResult, writer));
-				stepTask.next();
+				stepTask.run(new StepTask("Images", stitchResult.regions().size()), stepTask1 -> {
+					this.results.put(writer.add(identifier), new DashStitchResult(stitchResult, writer, stepTask1));
+				});
 			});
 		});
 	}

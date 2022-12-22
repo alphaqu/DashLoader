@@ -2,7 +2,7 @@ package dev.quantumfusion.dashloader.registry;
 
 
 import dev.quantumfusion.dashloader.DashLoader;
-import dev.quantumfusion.dashloader.registry.chunk.data.AbstractDataChunk;
+import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
 import org.jetbrains.annotations.Nullable;
@@ -11,12 +11,12 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("FinalMethodInFinalClass")
 public final class RegistryReader {
-	private final AbstractDataChunk<?, ?>[] dataChunks;
+	private final DataChunk<?, ?>[] dataChunks;
 
 	// Holds an array of the exported dataChunks array values.
 	private final Object[][] data;
 
-	public RegistryReader(AbstractDataChunk<?, ?>[] data) {
+	public RegistryReader(DataChunk<?, ?>[] data) {
 		this.dataChunks = data;
 		this.data = new Object[data.length][];
 	}
@@ -29,7 +29,7 @@ public final class RegistryReader {
 
 		for (int i = 0; i < this.dataChunks.length; i++) {
 			var chunk = this.dataChunks[i];
-			final int size = chunk.getDashableSize();
+			final int size = chunk.getSize();
 			var dataObjects = new Object[size];
 			this.data[i] = dataObjects;
 			task.run(new StepTask(chunk.name, 3), (subTask) -> {

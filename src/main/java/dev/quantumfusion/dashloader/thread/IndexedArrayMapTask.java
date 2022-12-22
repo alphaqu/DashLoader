@@ -7,11 +7,11 @@ public final class IndexedArrayMapTask<I, O> extends RecursiveAction {
 	private final int threshold;
 	private final int start;
 	private final int stop;
-	private final IndexedArrayEntry<I>[] inArray;
+	private final Entry<I>[] inArray;
 	private final O[] outArray;
 	private final Function<I, O> function;
 
-	private IndexedArrayMapTask(IndexedArrayEntry<I>[] inArray, O[] outArray, Function<I, O> function, int threshold, int start, int stop) {
+	private IndexedArrayMapTask(Entry<I>[] inArray, O[] outArray, Function<I, O> function, int threshold, int start, int stop) {
 		this.threshold = threshold;
 		this.start = start;
 		this.stop = stop;
@@ -20,7 +20,7 @@ public final class IndexedArrayMapTask<I, O> extends RecursiveAction {
 		this.function = function;
 	}
 
-	public IndexedArrayMapTask(IndexedArrayEntry<I>[] inArray, O[] outArray, Function<I, O> function) {
+	public IndexedArrayMapTask(Entry<I>[] inArray, O[] outArray, Function<I, O> function) {
 		this.start = 0;
 		this.stop = inArray.length;
 		this.threshold = ThreadHandler.calcThreshold(this.stop);
@@ -44,6 +44,6 @@ public final class IndexedArrayMapTask<I, O> extends RecursiveAction {
 		}
 	}
 
-	public record IndexedArrayEntry<O>(O object, int pos) {
+	public record Entry<O>(O object, int pos) {
 	}
 }
