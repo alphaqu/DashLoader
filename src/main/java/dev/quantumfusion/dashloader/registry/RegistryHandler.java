@@ -4,7 +4,6 @@ import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
 import dev.quantumfusion.dashloader.registry.chunk.write.AbstractWriteChunk;
-import dev.quantumfusion.dashloader.registry.chunk.write.FloatingWriteChunk;
 import dev.quantumfusion.dashloader.registry.chunk.write.StagedWriteChunk;
 import dev.quantumfusion.dashloader.registry.chunk.write.WriteChunk;
 import dev.quantumfusion.dashloader.registry.factory.DashFactory;
@@ -201,11 +200,7 @@ public final class RegistryHandler {
 				var groupsSorted = calculateBuildOrder(Holder.map(this.dashObjects, obj -> new Holder<>(obj.getDashClass(), internalDependencies.getOrDefault(obj, List.of()), obj)));
 				return new StagedWriteChunk<>(pos, name, writer, groupsSorted, factory);
 			} else {
-				if (this.dependencies.size() == 0) {
-					return new FloatingWriteChunk<>(pos, name, writer, this.dashObjects, factory);
-				} else {
-					return new WriteChunk<>(pos, name, writer, this.dashObjects, factory);
-				}
+				return new WriteChunk<>(pos, name, writer, this.dashObjects, factory);
 			}
 		}
 	}
