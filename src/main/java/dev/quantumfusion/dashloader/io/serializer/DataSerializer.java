@@ -9,5 +9,5 @@ import java.util.function.Consumer;
 
 public interface DataSerializer<O> {
 	void encode(O object, Path subCache, @Nullable Consumer<Task> task) throws IOException;
-	O decode(Path subCache, @Nullable Consumer<Task> task) throws IOException;
+	O decode(Path subCache) throws IOException;
 }

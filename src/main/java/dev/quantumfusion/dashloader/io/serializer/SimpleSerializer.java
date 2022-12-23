@@ -166,7 +166,7 @@ public class SimpleSerializer<O> implements DataSerializer<O> {
 	}
 
 	@Override
-	public O decode(Path subCache, @Nullable Consumer<Task> task) throws IOException {
+	public O decode(Path subCache) throws IOException {
 		long start = System.currentTimeMillis();
 		try (FileChannel channel = FileChannel.open(this.getFilePath(subCache))) {
 			var buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).order(ByteOrder.LITTLE_ENDIAN);
