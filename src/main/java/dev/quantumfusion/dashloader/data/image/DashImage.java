@@ -1,20 +1,14 @@
 package dev.quantumfusion.dashloader.data.image;
 
-import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.io.serializer.DataUnsafeByteBuffer;
 import dev.quantumfusion.dashloader.mixin.accessor.NativeImageAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import net.minecraft.client.texture.NativeImage;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.stb.STBImageWrite;
-import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 @DashObject(NativeImage.class)
 public final class DashImage implements Dashable<NativeImage> {
@@ -34,13 +28,13 @@ public final class DashImage implements Dashable<NativeImage> {
 		final int capacity = this.width * this.height * this.format.getChannelCount();
 		final long pointer = nativeImageAccess.getPointer();
 
-		this.image = MemoryUtil.memByteBuffer(pointer, capacity);
-
-
+		ByteBuffer image1 = MemoryUtil.memByteBuffer(pointer, capacity);
+		image1.limit(capacity);
+		this.image = image1;
 		this.useSTB = nativeImageAccess.getIsStbImage();
 	}
 
-	public DashImage(ByteBuffer image, NativeImage.Format format, boolean useSTB,int width, int height) {
+	public DashImage(ByteBuffer image, NativeImage.Format format, boolean useSTB, int width, int height) {
 		this.image = image;
 		this.format = format;
 		this.useSTB = useSTB;
@@ -69,7 +63,8 @@ public final class DashImage implements Dashable<NativeImage> {
 		//		pointer = MemoryUtil.memAddress(byteBuffer);
 		//	}
 		//} else {
-			pointer = MemoryUtil.memAddress(image);
+		image.rewind();
+		pointer = MemoryUtil.memAddress(image);
 		//}
 		return NativeImageAccessor.init(this.format, this.width, this.height, this.useSTB, pointer);
 	}
