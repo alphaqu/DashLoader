@@ -18,4 +18,6 @@ public @interface DashObject {
 	 * @return Target Class
 	 */
 	Class<?> value();
+
+	Class<?> category() default Void.class;
 }

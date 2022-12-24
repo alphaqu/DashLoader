@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.data.model;
 
+import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.data.common.ObjectObjectList;
@@ -11,6 +12,7 @@ import dev.quantumfusion.dashloader.mixin.accessor.BasicBakedModelAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.texture.Sprite;
@@ -33,7 +35,7 @@ import java.util.List;
 // 2 outputs [DashModel, DashImage]
 
 
-@DashObject(BasicBakedModel.class)
+@DashObject(value = BasicBakedModel.class, category = BakedModel.class)
 @DashDependencies({DashSprite.class, DashBakedQuad.class})
 public final class DashBasicBakedModel implements DashModel {
 	public final List<Integer> quads;

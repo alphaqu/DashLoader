@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader.api;
 
 import dev.quantumfusion.dashloader.DashConstants;
-import dev.quantumfusion.dashloader.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.hook.LoadCacheHook;
 import dev.quantumfusion.dashloader.api.hook.SaveCacheHook;
@@ -14,10 +13,7 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class APIHandler {
@@ -93,7 +89,15 @@ public class APIHandler {
 				throw new RuntimeException("Failed to initialize the API");
 			}
 
+			this.dashObjects.sort(Comparator.comparing(o -> o.getDashClass().getSimpleName()));
+
 			LOGGER.info("[" + Duration.between(start, Instant.now()).toMillis() + "ms] Initialized api.");
+			List<DashObjectClass<?, ?>> objects = this.dashObjects;
+			for (int i = 0; i < objects.size(); i++) {
+				DashObjectClass<?, ?> dashObject = objects.get(i);
+				dashObject.dashObjectId = i;
+				LOGGER.info(dashObject);
+			}
 			this.initialized = true;
 		}
 	}

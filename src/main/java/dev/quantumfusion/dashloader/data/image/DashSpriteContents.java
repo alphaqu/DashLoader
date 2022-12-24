@@ -51,7 +51,6 @@ public final class DashSpriteContents {
 		access.setHeight(height);
 		access.setWidth(width);
 		access.setMipmapLevelsImages(new NativeImage[]{image});
-		out.generateMipmaps(this.mipMaps);
 		access.setAnimation(DashUtil.nullable(this.animation, animation -> animation.export(out, reader)));
 		return out;
 	}

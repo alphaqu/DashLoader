@@ -1,9 +1,15 @@
 package dev.quantumfusion.dashloader.io;
 
-import dev.quantumfusion.dashloader.DashObjectClass;
+import dev.quantumfusion.dashloader.DashLoader;
+import dev.quantumfusion.dashloader.api.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
+import dev.quantumfusion.dashloader.io.meta.CacheMetadata;
 import dev.quantumfusion.dashloader.io.serializer.SimpleSerializer;
+import dev.quantumfusion.dashloader.registry.RegistryReader;
+import dev.quantumfusion.dashloader.registry.RegistryWriter;
+import dev.quantumfusion.dashloader.registry.chunk.DataChunk;
 import dev.quantumfusion.taski.Task;
+import dev.quantumfusion.taski.builtin.StepTask;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +27,9 @@ import java.util.function.Consumer;
 public final class IOHandler {
 	private final Map<Class<?>, SimpleSerializer<?>> serializers = new HashMap<>();
 
+	private final MetadataSerializer metadataSerializer = new MetadataSerializer();
+	private final RegistrySerializer registrySerializer = new RegistrySerializer();
+
 	private final Path cacheDir;
 
 	private String cacheArea;
@@ -28,6 +37,10 @@ public final class IOHandler {
 
 	public IOHandler(Path cacheDir) {
 		this.cacheDir = cacheDir;
+	}
+
+	public void init(List<DashObjectClass<?, ?>> dashObjects, int compressionLevel) {
+		this.registrySerializer.init(dashObjects, compressionLevel);
 	}
 
 	@SafeVarargs
@@ -55,6 +68,27 @@ public final class IOHandler {
 		return Files.exists(this.getCurrentSubCacheDir());
 	}
 
+
+	public void saveRegistry(RegistryWriter writer, Consumer<Task> taskConsumer) {
+		Path dir = this.getCurrentSubCacheDir();
+		try {
+			CacheMetadata metadata = this.registrySerializer.serialize(dir, writer.chunks, taskConsumer);
+			this.metadataSerializer.serialize(dir, metadata);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public RegistryReader loadRegistry() {
+		Path dir = this.getCurrentSubCacheDir();
+		try {
+			CacheMetadata metadata = this.metadataSerializer.deserialize(dir);
+			DataChunk<?, ?>[] chunks = this.registrySerializer.deserialize(dir, metadata, DashLoader.DL.api.getDashObjects());
+			return new RegistryReader(chunks);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 	public <O> O load(Class<O> dataObject) {
 		try {
 			//noinspection unchecked

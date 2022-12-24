@@ -2,23 +2,27 @@ package dev.quantumfusion.dashloader.registry;
 
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.registry.chunk.write.AbstractWriteChunk;
+import dev.quantumfusion.dashloader.registry.chunk.WriteChunk;
+import dev.quantumfusion.dashloader.registry.factory.MissingHandler;
 import it.unimi.dsi.fastutil.objects.Object2ByteMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class RegistryWriter {
 	private final Object2IntOpenHashMap<?> dedup = new Object2IntOpenHashMap<>();
 	private final Object2ByteMap<Class<?>> target2chunkMappings;
-	private final Object2ByteMap<Class<?>> dashTag2chunkMappings;
-	private final Object2ByteMap<Class<?>> mappings;
-	private final AbstractWriteChunk<?, ?>[] chunks;
+	private final Object2ByteMap<Class<?>> dash2chunkMappings;
+	private final List<MissingHandler<?>> missingHandlers;
+	public final WriteChunk<?, ?>[] chunks;
 
-	public RegistryWriter(AbstractWriteChunk<?, ?>[] chunks) {
+	public RegistryWriter(WriteChunk<?, ?>[] chunks, List<MissingHandler<?>> missingHandlers) {
 		this.target2chunkMappings = new Object2ByteOpenHashMap<>();
-		this.dashTag2chunkMappings = new Object2ByteOpenHashMap<>();
-		this.mappings = new Object2ByteOpenHashMap<>();
+		this.dash2chunkMappings = new Object2ByteOpenHashMap<>();
+		this.missingHandlers = missingHandlers;
 		this.chunks = chunks;
 	}
 
@@ -32,32 +36,24 @@ public final class RegistryWriter {
 		return objectPos << 6 | (chunkPos & 0x3f);
 	}
 
-	void compileMappings() {
-		for (int i = 0; i < this.chunks.length; i++) {
-			for (Class<?> aClass : this.chunks[i].getTargetClasses()) {
-				this.mappings.put(aClass, (byte) i);
-			}
-		}
-	}
-
-	void addChunkMapping(Class<?> tag, byte pos) {
-		this.dashTag2chunkMappings.put(tag, pos);
-		final DashObject declaredAnnotation = tag.getDeclaredAnnotation(DashObject.class);
+	void addChunkMapping(Class<?> dashClass, byte pos) {
+		this.dash2chunkMappings.put(dashClass, pos);
+		final DashObject declaredAnnotation = dashClass.getDeclaredAnnotation(DashObject.class);
 		if (declaredAnnotation != null) {
 			this.target2chunkMappings.put(declaredAnnotation.value(), pos);
 		} else {
-			throw new RuntimeException("No DashObject annotation for " + tag.getSimpleName());
+			throw new RuntimeException("No DashObject annotation for " + dashClass.getSimpleName());
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public <R, D extends Dashable<R>> AbstractWriteChunk<R, D> getChunk(Class<D> dashType) {
-		return (AbstractWriteChunk<R, D>) this.chunks[this.dashTag2chunkMappings.getByte(dashType)];
+	public <R, D extends Dashable<R>> WriteChunk<R, D> getChunk(Class<D> dashType) {
+		return (WriteChunk<R, D>) this.chunks[this.dash2chunkMappings.getByte(dashType)];
 	}
 
-	public <R, D extends Dashable<R>> int addDirect(AbstractWriteChunk<R, D> chunk, R object) {
+	public <R, D extends Dashable<R>> int addDirect(WriteChunk<R, D> chunk, R object) {
 		final int objectPos = chunk.add(object);
-		final int pointer = createPointer(objectPos, chunk.pos);
+		final int pointer = createPointer(objectPos, chunk.chunkId);
 		//noinspection unchecked
 		((Object2IntMap<R>) this.dedup).put(object, pointer);
 		return pointer;
@@ -69,13 +65,15 @@ public final class RegistryWriter {
 			return this.dedup.getInt(object);
 		}
 		var targetClass = object.getClass();
-		byte chunkPos = this.mappings.getOrDefault(targetClass, (byte) -1);
+		byte chunkPos = this.target2chunkMappings.getOrDefault(targetClass, (byte) -1);
 
 		if (chunkPos == -1) {
-			for (var targetChunk : this.target2chunkMappings.object2ByteEntrySet()) {
-				if (targetChunk.getKey().isAssignableFrom(targetClass)) {
-					chunkPos = targetChunk.getByteValue();
-					break;
+			for (MissingHandler missingHandler : this.missingHandlers) {
+				if (missingHandler.parentClass.isAssignableFrom(targetClass)) {
+					Object output = missingHandler.func.apply(object, this);
+					if (output != null) {
+						return add(output);
+					}
 				}
 			}
 		}
@@ -84,7 +82,7 @@ public final class RegistryWriter {
 			throw new RuntimeException("Could not find a ChunkWriter for " + targetClass);
 		}
 
-		var chunk = (AbstractWriteChunk<R, ?>) this.chunks[chunkPos];
+		var chunk = (WriteChunk<R, ?>) this.chunks[chunkPos];
 		final var objectPos = chunk.add(object);
 		final int pointer = createPointer(objectPos, chunkPos);
 		((Object2IntMap<R>) this.dedup).put(object, pointer);

@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.util;
 
-import dev.quantumfusion.dashloader.registry.chunk.data.SimpleDataFragment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

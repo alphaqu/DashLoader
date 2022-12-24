@@ -1,4 +1,4 @@
-package dev.quantumfusion.dashloader.registry.factory.creator;
+package dev.quantumfusion.dashloader.registry.factory;
 
 public class CreationError extends RuntimeException {
 

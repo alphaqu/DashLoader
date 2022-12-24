@@ -37,13 +37,11 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 
 		this.models = new IntIntList(new ArrayList<>(models.size()));
 		parent.run(new StepTask("Models", Integer.max(models.size(), 1)), (task) -> {
-			var modelChunk = writer.getChunk(DashModel.class);
-			var identifierChunk = writer.getChunk(DashIdentifierInterface.class);
 			models.forEach((identifier, bakedModel) -> {
 				if (bakedModel != null) {
-					final int add = writer.addDirect(modelChunk, bakedModel);
+					final int add = writer.add(bakedModel);
 					if (!missingModelsWrite.containsKey(bakedModel)) {
-						this.models.put(writer.addDirect(identifierChunk, identifier), add);
+						this.models.put(writer.add(identifier), add);
 					}
 				}
 				task.next();

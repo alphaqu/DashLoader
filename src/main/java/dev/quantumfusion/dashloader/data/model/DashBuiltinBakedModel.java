@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.data.model;
 
+import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.data.image.DashSprite;
@@ -9,11 +10,13 @@ import dev.quantumfusion.dashloader.mixin.accessor.BuiltinBakedModelAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.render.model.BuiltinBakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 
-@DashObject(BuiltinBakedModel.class)
+@DashObject(value = BuiltinBakedModel.class, category = BakedModel.class)
 @DashDependencies(DashSprite.class)
 public final class DashBuiltinBakedModel implements DashModel {
 	@DataNullable

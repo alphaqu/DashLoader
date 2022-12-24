@@ -47,21 +47,17 @@ public final class DashStitchResult {
 			regions.put(reader.get(key), reader.get(value));
 		});
 
-		CompletableFuture<Void> completableFuture;
-		if (this.mipLevel > 0) {
-			completableFuture = CompletableFuture.runAsync(
-					() -> regions.values().forEach(sprite -> sprite.getContents().generateMipmaps(this.mipLevel))
-			);
-		} else {
-			completableFuture = CompletableFuture.completedFuture(null);
-		}
 		return new SpriteLoader.StitchResult(
 				this.width,
 				this.height,
 				this.mipLevel,
 				reader.get(this.missing),
 				regions,
-				completableFuture
+				CompletableFuture.runAsync(
+						() ->{
+							throw new RuntimeException("Cached object not yet finalized");
+						}
+				)
 		);
 	}
 }

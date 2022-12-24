@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.data.model.predicates;
 
+import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.mixin.accessor.AndMultipartModelSelectorAccessor;
@@ -16,10 +17,10 @@ import java.util.function.Predicate;
 @DashObject(AndMultipartModelSelector.class)
 @DashDependencies(DashSimplePredicate.class)
 public final class DashAndPredicate implements DashPredicate {
-	public final List<DashPredicate> selectors;
+	public final List<Integer> selectors;
 	public final int identifier;
 
-	public DashAndPredicate(List<DashPredicate> selectors, int identifier) {
+	public DashAndPredicate(List<Integer> selectors, int identifier) {
 		this.selectors = selectors;
 		this.identifier = identifier;
 	}
@@ -30,17 +31,17 @@ public final class DashAndPredicate implements DashPredicate {
 
 		this.selectors = new ArrayList<>();
 		for (MultipartModelSelector accessSelector : access.getSelectors()) {
-			this.selectors.add(DashPredicateCreator.create(accessSelector, writer));
+			System.out.println("AND adding " + accessSelector.getClass().getSimpleName());
+			this.selectors.add(writer.add(accessSelector));
 		}
-
 	}
 
 	@Override
 	public Predicate<BlockState> export(RegistryReader handler) {
 		final ArrayList<MultipartModelSelector> selectors = new ArrayList<>();
-		for (DashPredicate accessSelector : this.selectors) {
-			final Predicate<BlockState> export = accessSelector.export(handler);
-			selectors.add((stateStateManager) -> export);
+		for (Integer accessSelector : this.selectors) {
+			Predicate<BlockState> value = handler.get(accessSelector);
+			selectors.add((stateStateManager) -> value);
 		}
 
 		return new AndMultipartModelSelector(selectors).getPredicate(DashSimplePredicate.getStateManager(handler.get(this.identifier)));

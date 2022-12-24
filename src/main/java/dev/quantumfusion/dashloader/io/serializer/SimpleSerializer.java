@@ -2,12 +2,9 @@ package dev.quantumfusion.dashloader.io.serializer;
 
 import com.github.luben.zstd.Zstd;
 import dev.quantumfusion.dashloader.DashLoader;
-import dev.quantumfusion.dashloader.DashObjectClass;
+import dev.quantumfusion.dashloader.api.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
-import dev.quantumfusion.dashloader.registry.chunk.data.SimpleDataChunk;
-import dev.quantumfusion.dashloader.registry.chunk.data.StagedDataChunk;
-import dev.quantumfusion.dashloader.thread.ThreadHandler;
+import dev.quantumfusion.dashloader.registry.chunk.DataChunk;
 import dev.quantumfusion.hyphen.ClassDefiner;
 import dev.quantumfusion.hyphen.HyphenSerializer;
 import dev.quantumfusion.hyphen.SerializerFactory;
@@ -58,7 +55,7 @@ public class SimpleSerializer<O> implements DataSerializer<O> {
 			}
 		}
 		var factory = SerializerFactory.createDebug(ByteBufferIO.class, holderClass);
-		factory.addGlobalAnnotation(DataChunk.class, DataSubclasses.class, new Class[]{SimpleDataChunk.class, StagedDataChunk.class});
+		factory.addGlobalAnnotation(DataChunk.class, DataSubclasses.class, new Class[]{DataChunk.class});
 		factory.setClassName(getSerializerName(holderClass));
 		factory.setExportPath(serializerFileLocation);
 		factory.addDynamicDef(ByteBuffer.class, UnsafeByteBufferDef::new);
@@ -76,7 +73,6 @@ public class SimpleSerializer<O> implements DataSerializer<O> {
 			}
 		}
 		return new SimpleSerializer<>(holderClass.getSimpleName(), factory.build());
-
 	}
 
 	@NotNull
@@ -90,19 +86,6 @@ public class SimpleSerializer<O> implements DataSerializer<O> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	// Calculates fragments to optimize performance dependent on threads and to fit int size constraints.
-	public int calculateFragments(long size) {
-		// Fragment needs to carry least 8MB to prevent many threads fragmenting minor files.
-		long threads = ThreadHandler.CORES;
-		long maxFragments = (long) Math.ceil((size / (8D * 1024 * 1024)));
-		long optimalFragments = Long.min(threads, maxFragments);
-
-		// Fragment needs to carry max 1.5GB because of the int 2GB limit
-		long minFragments = (long) Math.ceil((size / (1536D * 1024 * 1024)));
-
-		return (int) Long.max(minFragments, optimalFragments);
 	}
 
 	@NotNull

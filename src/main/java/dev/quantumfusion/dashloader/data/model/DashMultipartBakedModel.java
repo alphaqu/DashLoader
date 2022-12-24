@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.data.model;
 
 import dev.quantumfusion.dashloader.DashDataManager;
+import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.data.blockstate.DashBlockState;
@@ -29,7 +30,7 @@ import java.util.function.Predicate;
 
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
-@DashObject(MultipartBakedModel.class)
+@DashObject(value = MultipartBakedModel.class, category = BakedModel.class)
 @DashDependencies({DashWeightedBakedModel.class, DashPredicate.class, DashBlockState.class, DashSprite.class})
 public class DashMultipartBakedModel implements DashModel {
 	//identifier baked model

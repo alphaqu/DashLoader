@@ -2,7 +2,7 @@ package dev.quantumfusion.dashloader.registry;
 
 
 import dev.quantumfusion.dashloader.DashLoader;
-import dev.quantumfusion.dashloader.registry.chunk.data.DataChunk;
+import dev.quantumfusion.dashloader.registry.chunk.DataChunk;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
 import org.jetbrains.annotations.Nullable;

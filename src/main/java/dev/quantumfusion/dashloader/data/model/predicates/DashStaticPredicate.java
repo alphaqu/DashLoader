@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.data.model.predicates;
 
+import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.util.BooleanSelector;

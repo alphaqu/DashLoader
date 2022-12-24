@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntFunction;
 
 public final class ThreadHandler {
-	public static final int CORES = Runtime.getRuntime().availableProcessors();
+	public static final int THREADS = Runtime.getRuntime().availableProcessors();
 
-	private final ForkJoinPool threadPool = new ForkJoinPool(CORES, new ForkJoinPool.ForkJoinWorkerThreadFactory() {
+	private final ForkJoinPool threadPool = new ForkJoinPool(THREADS, new ForkJoinPool.ForkJoinWorkerThreadFactory() {
 		private final AtomicInteger threadNumber = new AtomicInteger(0);
 
 		@Override
@@ -31,7 +31,7 @@ public final class ThreadHandler {
 	}
 
 	public static int calcThreshold(final int tasks) {
-		return Math.max(tasks / (CORES * 32), 4);
+		return Math.max(tasks / (THREADS * 32), 4);
 	}
 
 	// Fork Join Methods

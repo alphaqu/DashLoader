@@ -1,36 +1,33 @@
 package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.dashloader.api.APIHandler;
+import dev.quantumfusion.dashloader.api.DashObjectClass;
 import dev.quantumfusion.dashloader.api.hook.LoadCacheHook;
 import dev.quantumfusion.dashloader.api.hook.SaveCacheHook;
 import dev.quantumfusion.dashloader.client.DashToast;
 import dev.quantumfusion.dashloader.config.ConfigHandler;
 import dev.quantumfusion.dashloader.data.DashIdentifier;
-import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.data.DashModelIdentifier;
 import dev.quantumfusion.dashloader.data.MappingData;
-import dev.quantumfusion.dashloader.data.blockstate.DashBlockState;
-import dev.quantumfusion.dashloader.data.font.DashFont;
-import dev.quantumfusion.dashloader.data.image.DashImage;
-import dev.quantumfusion.dashloader.data.image.DashSprite;
-import dev.quantumfusion.dashloader.data.model.DashModel;
-import dev.quantumfusion.dashloader.data.model.components.DashBakedQuad;
-import dev.quantumfusion.dashloader.data.model.predicates.DashPredicate;
-import dev.quantumfusion.dashloader.data.registry.*;
+import dev.quantumfusion.dashloader.data.model.predicates.*;
 import dev.quantumfusion.dashloader.fallback.model.DashMissingDashModel;
 import dev.quantumfusion.dashloader.io.IOHandler;
-import dev.quantumfusion.dashloader.registry.ChunkHolder;
-import dev.quantumfusion.dashloader.registry.RegistryHandler;
+import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import dev.quantumfusion.dashloader.registry.factory.DashFactory;
+import dev.quantumfusion.dashloader.registry.factory.MissingHandler;
 import dev.quantumfusion.dashloader.thread.ThreadHandler;
+import dev.quantumfusion.dashloader.util.BooleanSelector;
 import dev.quantumfusion.dashloader.util.TimeUtil;
 import dev.quantumfusion.taski.builtin.StepTask;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.json.AndMultipartModelSelector;
+import net.minecraft.client.render.model.json.MultipartModelSelector;
+import net.minecraft.client.render.model.json.OrMultipartModelSelector;
+import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -59,7 +56,7 @@ public class DashLoader {
 
 	// Handlers
 	public final APIHandler api;
-	public final RegistryHandler registry;
+	public final RegistryFactory registry;
 	public final ThreadHandler thread;
 	public final ProgressHandler progress;
 	public final ConfigHandler config;
@@ -80,7 +77,7 @@ public class DashLoader {
 		this.config = new ConfigHandler(FabricLoader.getInstance().getConfigDir().normalize().resolve("dashloader.json"));
 		this.thread = new ThreadHandler();
 		this.progress = new ProgressHandler();
-		this.registry = new RegistryHandler();
+		this.registry = new RegistryFactory();
 	}
 
 	public void initialize() {
@@ -90,19 +87,14 @@ public class DashLoader {
 
 			List<DashObjectClass<?, ?>> dashObjects = this.api.getDashObjects();
 			this.config.reloadConfig();
-
 			final FabricLoader instance = FabricLoader.getInstance();
 			if (instance.isDevelopmentEnvironment()) {
 				LOG.warn("DashLoader launched in dev.");
 			}
 
+			this.io.init(dashObjects, this.config.config.compression);
 			this.io.setCacheArea(this.metadata.modInfo);
 			this.io.setSubCacheArea("bootstrap");
-			this.io.addSerializer(RegistryData.class, dashObjects, DashBlockState.class, DashFont.class, DashSprite.class, DashPredicate.class);
-			this.io.addSerializer(ImageData.class, dashObjects, DashImage.class);
-			this.io.addSerializer(ModelData.class, dashObjects, DashModel.class);
-			this.io.addSerializer(IdentifierData.class, dashObjects, DashIdentifierInterface.class);
-			this.io.addSerializer(BakedQuadData.class, dashObjects, DashBakedQuad.class);
 			this.io.addSerializer(MappingData.class, dashObjects);
 
 			LOG.info("Created DashLoader with {}.", Thread.currentThread().getContextClassLoader().getClass().getSimpleName());
@@ -153,34 +145,60 @@ public class DashLoader {
 		try {
 			long start = System.currentTimeMillis();
 
-			StepTask main = new StepTask("Creating DashCache", 3);
+			StepTask main = new StepTask("Creating DashCache", 2);
 			ProgressHandler.TASK = main;
 
 			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheTask(main));
 			this.progress.setCurrentTask("initializing");
 
 			// missing model callback
-			Map<Class<?>, DashFactory.FailCallback<?, ?>> callbacks = new HashMap<>();
-			callbacks.put(DashModel.class, (DashFactory.FailCallback<BakedModel, DashModel>) (rraw, registry) -> {
-				final DashDataManager.DashWriteContextData writeContextData = this.getData().getWriteContextData();
-				if (writeContextData.missingModelsWrite.containsKey(rraw)) {
-					return writeContextData.missingModelsWrite.get(rraw);
-				}
-				final DashMissingDashModel value = new DashMissingDashModel();
-				writeContextData.missingModelsWrite.put(rraw, value);
-				return value;
-			});
-
-			callbacks.put(DashIdentifierInterface.class, (DashFactory.FailCallback<Identifier, DashIdentifierInterface>) (rraw, registry) -> {
-				if (rraw instanceof ModelIdentifier m) {
-					return new DashModelIdentifier(m);
-				} else {
-					return new DashIdentifier(rraw);
-				}
-			});
+			List<MissingHandler<?>> handlers = new ArrayList<>();
+			handlers.add(new MissingHandler<>(
+					BakedModel.class,
+					(bakedModel, registryWriter) -> {
+						final DashDataManager.DashWriteContextData writeContextData = this.getData().getWriteContextData();
+						if (writeContextData.missingModelsWrite.containsKey(bakedModel)) {
+							return writeContextData.missingModelsWrite.get(bakedModel);
+						}
+						final DashMissingDashModel value = new DashMissingDashModel();
+						writeContextData.missingModelsWrite.put(bakedModel, value);
+						return value;
+					}
+			));
+			handlers.add(new MissingHandler<>(
+					Identifier.class,
+					(identifier, registryWriter) -> {
+						if (identifier instanceof ModelIdentifier m) {
+							return new DashModelIdentifier(m);
+						} else {
+							return new DashIdentifier(identifier);
+						}
+					}
+			));
+			handlers.add(new MissingHandler<>(
+					MultipartModelSelector.class,
+					(selector, writer) -> {
+						System.out.println("hi " + selector);
+						if (selector == MultipartModelSelector.TRUE) {
+							return new DashStaticPredicate(true);
+						} else if (selector == MultipartModelSelector.FALSE) {
+							return new DashStaticPredicate(false);
+						} else if (selector instanceof AndMultipartModelSelector s) {
+							return new DashAndPredicate(s, writer);
+						} else if (selector instanceof OrMultipartModelSelector s) {
+							return new DashOrPredicate(s, writer);
+						} else if (selector instanceof SimpleMultipartModelSelector s) {
+							return new DashSimplePredicate(s, writer);
+						} else if (selector instanceof BooleanSelector s) {
+							return new DashStaticPredicate(s.selector);
+						} else {
+							throw new RuntimeException("someone is having fun with lambda selectors again");
+						}
+					}
+			));
 
 			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheRegistryInit(this.registry));
-			RegistryWriter writer = this.registry.createWriter(callbacks, this.api.getDashObjects());
+			RegistryWriter writer = this.registry.createWriter(handlers, this.api.getDashObjects());
 			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheRegistryWriterInit(writer));
 
 			// Reading minecraft assets
@@ -188,33 +206,15 @@ public class DashLoader {
 			main.setSubTask(readTask);
 
 			MappingData mappings = new MappingData();
-			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheMappingStart(writer, mappings));
 			mappings.map(writer, readTask);
-			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheMappingEnd(writer, mappings));
 
-			List<ChunkHolder> holders = new ArrayList<>();
-			this.progress.setCurrentTask("export.image");
-			readTask.run(() -> holders.add(new ImageData(writer)));
-			this.progress.setCurrentTask("export.model");
-			readTask.run(() -> holders.add(new ModelData(writer)));
-			this.progress.setCurrentTask("export.registry");
-			readTask.run(() -> holders.add(new RegistryData(writer)));
-			this.progress.setCurrentTask("export.identifier");
-			readTask.run(() -> holders.add(new IdentifierData(writer)));
-			this.progress.setCurrentTask("export.quad");
-			readTask.run(() -> holders.add(new BakedQuadData(writer)));
-
-
-			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCachePopulateHolders(writer, mappings, holders));
 			main.next();
-
 			this.progress.setCurrentTask("Serializing");
 
 			// serialization
-			main.run(new StepTask("Serializing", holders.size() + 2), (task) -> {
-				holders.forEach(holder -> task.run(() -> this.io.save(holder, task::setSubTask)));
+			main.run(new StepTask("Serializing", 2), (task) -> {
+				task.run(() -> this.io.saveRegistry(writer, task::setSubTask));
 				task.run(() -> this.io.save(mappings, task::setSubTask));
-				this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheSerialize(writer, mappings, holders));
 			});
 
 			String text = "Created cache in " + TimeUtil.getTimeStringFromStart(start);
@@ -243,17 +243,13 @@ public class DashLoader {
 			ProgressHandler.TASK = task;
 
 			AtomicReference<MappingData> mappingsReference = new AtomicReference<>();
-			ChunkHolder[] registryDataObjects = new ChunkHolder[5];
+			AtomicReference<RegistryReader> registryReference = new AtomicReference<>();
 
 			var tempStart = System.currentTimeMillis();
 			// Deserialize / Decompress all registries and mappings.
 			this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheDeserialization);
 			this.thread.parallelRunnable(
-					() -> registryDataObjects[0] = (this.io.load(RegistryData.class)),
-					() -> registryDataObjects[1] = (this.io.load(ImageData.class)),
-					() -> registryDataObjects[2] = (this.io.load(ModelData.class)),
-					() -> registryDataObjects[3] = (this.io.load(IdentifierData.class)),
-					() -> registryDataObjects[4] = (this.io.load(BakedQuadData.class)),
+					() -> registryReference.set(this.io.loadRegistry()),
 					() -> mappingsReference.set(this.io.load(MappingData.class))
 			);
 			this.profilerHandler.export_file_reading_time = System.currentTimeMillis() - tempStart;
@@ -263,7 +259,7 @@ public class DashLoader {
 
 			// Initialize systems
 			LOG.info("Creating Registry");
-			final RegistryReader reader = this.registry.createReader(registryDataObjects);
+			final RegistryReader reader = registryReference.get();
 			this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheRegistryInit(reader, this.dataManager, mappings));
 
 			tempStart = System.currentTimeMillis();

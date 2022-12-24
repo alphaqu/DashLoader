@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 public class IOHelper {
 
@@ -37,6 +41,15 @@ public class IOHelper {
 		buffer.put(arr);
 		buffer.rewind();
 		return buffer;
+	}
+
+	public static FileChannel createFile(Path path) throws IOException {
+		Files.createDirectories(path.getParent());
+		return FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.READ);
+	}
+
+	public static FileChannel openFile(Path path) throws IOException {
+		return FileChannel.open(path, StandardOpenOption.READ);
 	}
 
 	public static byte[] streamToArray(InputStream inputStream) throws IOException {

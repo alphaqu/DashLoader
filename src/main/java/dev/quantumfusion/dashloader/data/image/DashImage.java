@@ -42,6 +42,15 @@ public final class DashImage implements Dashable<NativeImage> {
 		this.height = height;
 	}
 
+
+	private byte[] write(long pointer) {
+		final int capacity = this.width * this.height * this.format.getChannelCount();
+		final var byteBuffer = MemoryUtil.memByteBuffer(pointer, capacity);
+		final byte[] bytes = new byte[capacity];
+		byteBuffer.get(bytes);
+		return bytes;
+	}
+
 	/**
 	 * <h2>I can bet that next dashloader version will change this again. This method needs some serious over engineering.</h2>
 	 *
@@ -50,22 +59,8 @@ public final class DashImage implements Dashable<NativeImage> {
 	 */
 	@Override
 	public NativeImage export(final RegistryReader registry) {
-		long pointer;
-		//if (this.compressed) {
-		//	try (MemoryStack memoryStack = MemoryStack.stackPush();){
-		//		IntBuffer width = memoryStack.mallocInt(1);
-		//		IntBuffer height = memoryStack.mallocInt(1);
-		//		IntBuffer channels = memoryStack.mallocInt(1);
-		//		ByteBuffer byteBuffer = STBImage.stbi_load_from_memory(image, width, height, channels, format.getChannelCount());
-		//		if (byteBuffer == null) {
-		//			throw new RuntimeException("Could not load image: " + STBImage.stbi_failure_reason());
-		//		}
-		//		pointer = MemoryUtil.memAddress(byteBuffer);
-		//	}
-		//} else {
 		image.rewind();
-		pointer = MemoryUtil.memAddress(image);
-		//}
+		long pointer = MemoryUtil.memAddress(image);
 		return NativeImageAccessor.init(this.format, this.width, this.height, this.useSTB, pointer);
 	}
 }

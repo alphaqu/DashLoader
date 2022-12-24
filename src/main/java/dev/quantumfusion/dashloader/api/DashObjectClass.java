@@ -1,7 +1,9 @@
-package dev.quantumfusion.dashloader;
+package dev.quantumfusion.dashloader.api;
 
+import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
+import dev.quantumfusion.dashloader.registry.factory.InheritanceHandling;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,13 +17,16 @@ import java.util.List;
  * @param <R> Raw
  * @param <D> Dashable
  */
-public final class DashObjectClass<R, D extends dev.quantumfusion.dashloader.Dashable<R>> {
+public final class DashObjectClass<R, D extends Dashable<R>> {
 	private final Class<D> dashClass;
-
 	@Nullable
 	private Class<R> targetClass;
 	@Nullable
-	private Class<? extends dev.quantumfusion.dashloader.Dashable<?>> dashTag;
+	private Class<?> category;
+	int dashObjectId;
+	@Deprecated
+	@Nullable
+	private Class<? extends Dashable<?>> dashTag;
 	@Nullable
 	private List<Class<?>> dependencies;
 
@@ -37,27 +42,44 @@ public final class DashObjectClass<R, D extends dev.quantumfusion.dashloader.Das
 	@NotNull
 	public Class<R> getTargetClass() {
 		if (this.targetClass == null) {
-			var dashObjectAnnotation = this.dashClass.getDeclaredAnnotation(DashObject.class);
-			if (dashObjectAnnotation == null) {
-				throw new RuntimeException("Registered Class " + this.dashClass.getSimpleName() + " does not have a @DashObject annotation.");
-			}
-			//noinspection unchecked
-			this.targetClass = (Class<R>) dashObjectAnnotation.value();
+			resolveDashObjectAnnotation();
 		}
 		return this.targetClass;
+	}
+
+	@NotNull
+	public Class<?> getCategory() {
+		if (this.category == null) {
+			resolveDashObjectAnnotation();
+		}
+		return this.category;
+	}
+
+	private void resolveDashObjectAnnotation() {
+		var annotation = this.dashClass.getDeclaredAnnotation(DashObject.class);
+		if (annotation == null) {
+			throw new RuntimeException("Registered Class " + this.dashClass.getSimpleName() + " does not have a @DashObject annotation.");
+		}
+		//noinspection unchecked
+		this.targetClass = (Class<R>) annotation.value();
+
+		Class<?> category = annotation.category();
+		if (category == Void.class)  {
+			category = this.targetClass;
+		}
+		this.category = category;
 	}
 
 	// lazy
 	@SuppressWarnings({"rawtypes", "RedundantSuppression", "RedundantCast"})
 	@NotNull
-	public Class<? extends dev.quantumfusion.dashloader.Dashable<?>> getTag() {
-
+	public Class<? extends Dashable<?>> getTag() {
 		if (this.dashTag == null) {
-			Class<? extends dev.quantumfusion.dashloader.Dashable<?>> dashInterface = null;
+			Class<? extends Dashable<?>> dashInterface = null;
 			for (Class<?> anInterface : this.dashClass.getInterfaces()) {
-				if (dev.quantumfusion.dashloader.Dashable.class.isAssignableFrom(anInterface)) {
+				if (Dashable.class.isAssignableFrom(anInterface)) {
 					//noinspection unchecked
-					dashInterface = (Class<? extends dev.quantumfusion.dashloader.Dashable<?>>) anInterface;
+					dashInterface = (Class<? extends Dashable<?>>) anInterface;
 					break;
 				}
 			}
@@ -67,7 +89,7 @@ public final class DashObjectClass<R, D extends dev.quantumfusion.dashloader.Das
 			}
 
 
-			this.dashTag = (dashInterface == ((Class<? extends dev.quantumfusion.dashloader.Dashable>) Dashable.class) ? this.dashClass : dashInterface);
+			this.dashTag = (dashInterface == ((Class<? extends Dashable>) Dashable.class) ? this.dashClass : dashInterface);
 		}
 		return this.dashTag;
 	}
@@ -94,5 +116,21 @@ public final class DashObjectClass<R, D extends dev.quantumfusion.dashloader.Das
 			this.dependencies = List.of(dependencies);
 		}
 		return this.dependencies;
+	}
+
+	public int getDashObjectId() {
+		return dashObjectId;
+	}
+
+	@Override
+	public String toString() {
+		return "DashObjectClass{" +
+				"dashClass=" + dashClass +
+				", targetClass=" + targetClass +
+				", category=" + category +
+				", dashObjectId=" + dashObjectId +
+				", dashTag=" + dashTag +
+				", dependencies=" + dependencies +
+				'}';
 	}
 }
