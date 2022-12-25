@@ -129,37 +129,28 @@ public class RegistrySerializer {
 			DashObjectClass<?, ?> dashObjectClass = objects.get(chunk.dashObjectId);
 			HyphenSerializer<ByteBufferIO, ?> serializer = serializers.get(dashObjectClass.getDashClass());
 			Dashable[] output = new Dashable[chunk.size];
-			DashLoader.LOG.info("Deserializing " + chunk.name + "(size: " + chunk.size + ")");
-
 			// TODO parallelize
 			List<FragmentMetadata> fragments = chunk.fragments;
 
 			List<Runnable> runnables = new ArrayList<>();
 			for (int j = 0; j < fragments.size(); j++) {
 				FragmentMetadata fragment = fragments.get(j);
-				int finalI = i;
-				int finalJ = j;
-
 				try {
-					runnables.add(fragment.deserialize(output, serializer, fragmentFilePath(dir, finalI, finalJ), metadata.compressionLevel));
+					runnables.add(fragment.deserialize(output, serializer, fragmentFilePath(dir, i, j), metadata.compressionLevel));
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 			}
 			long l = Runtime.getRuntime().freeMemory();
-			if (chunk.fileSize > (l / 2)) {
-				DashLoader.LOG.warn("Running deserialization of " + chunk.name + " on a single thread because of limited memory.");
-				for (Runnable runnable : runnables) {
-					runnable.run();
-				}
-			} else {
+			//if (chunk.fileSize > (l / 2)) {
+			//	DashLoader.LOG.warn("Running deserialization of " + chunk.name + " on a single thread because of limited memory.");
+			//	for (Runnable runnable : runnables) {
+			//		runnable.run();
+			//	}
+			//} else {
 				DashLoader.DL.thread.parallelRunnable(runnables);
-			}
-
-			//for (Runnable runnable : runnables) {
-			//	runnable.run();
 			//}
-			DashLoader.LOG.info("");
+
 			dataChunks[i] = new DataChunk<>(chunk.chunkId, chunk.name, output);
 		}
 

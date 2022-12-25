@@ -76,7 +76,6 @@ public class FragmentMetadata {
 
 			// Check compression
 			return () -> {
-				DashLoader.LOG.info("Fragment " + rangeStart + ".." + rangeEnd);
 				if (compressionLevel > 0) {
 					final var dst = ByteBufferIO.createDirect(this.fileSize);
 					Zstd.decompress(dst.byteBuffer, buffer);
