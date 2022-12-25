@@ -27,6 +27,7 @@
     "accessor.OrMultipartModelSelectorAccessor",
     "accessor.ShaderProgramAccessor",
     "accessor.ShaderStageAccessor",
+    "accessor.ShaderStageAccessor$TypeAccessor",
     "accessor.SimpleMultipartModelSelectorAccessor",
     "accessor.SpriteAccessor",
     "accessor.SpriteAnimationAccessor",
@@ -38,7 +39,6 @@
     "accessor.UnicodeTextureFontAccessor",
     "accessor.WeightedBakedModelAccessor",
     "accessor.WeightedBakedModelEntryAccessor",
-    "accessor.ShaderStageAccessor$TypeAccessor",
     "main.BootstrapMixin",
     "main.KeyboardMixin",
     "main.MainMixin",
@@ -65,6 +65,7 @@
   },
   "client": [
     "accessor.FontImageAccessor",
+    "accessor.ModelIdentifierAccessor",
     "accessor.ShaderStageAccessor$TypeAccessor",
     "accessor.SpriteContentsAccessor"
   ]

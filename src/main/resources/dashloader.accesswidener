@@ -8,6 +8,7 @@ accessible class net/minecraft/client/render/model/json/ModelOverrideList$BakedO
 accessible class net/minecraft/client/render/model/json/ModelOverrideList$InlinedCondition
 accessible class net/minecraft/client/render/model/BakedModelManager$BakingResult
 accessible class net/minecraft/client/font/UnicodeTextureFont$FontImage
+accessible class net/minecraft/util/Identifier$ExtraData
 mutable field net/minecraft/client/gl/ShaderProgram modelViewMat Lnet/minecraft/client/gl/GlUniform;
 mutable field net/minecraft/client/gl/ShaderProgram projectionMat Lnet/minecraft/client/gl/GlUniform;
 mutable field net/minecraft/client/gl/ShaderProgram viewRotationMat Lnet/minecraft/client/gl/GlUniform;

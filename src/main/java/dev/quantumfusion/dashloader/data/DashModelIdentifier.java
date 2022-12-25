@@ -2,6 +2,7 @@ package dev.quantumfusion.dashloader.data;
 
 
 import dev.quantumfusion.dashloader.api.DashObject;
+import dev.quantumfusion.dashloader.mixin.accessor.ModelIdentifierAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
 import net.minecraft.client.util.ModelIdentifier;
@@ -24,6 +25,6 @@ public final class DashModelIdentifier implements DashIdentifierInterface {
 
 	@Override
 	public Identifier export(RegistryReader exportHandler) {
-		return new ModelIdentifier(this.strings[0], this.strings[1], this.strings[2]);
+		return ModelIdentifierAccessor.init(this.strings[0], this.strings[1], this.strings[2], null);
 	}
 }
