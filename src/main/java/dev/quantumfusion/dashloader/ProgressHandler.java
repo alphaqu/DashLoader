@@ -26,7 +26,7 @@ public final class ProgressHandler {
 			this.currentProgress = 0.0;
 		}
 		final double actualProgress = TASK.getProgress();
-		final double divisionSpeed = (actualProgress < this.currentProgress) ? 3 : 10;
+		final double divisionSpeed = (actualProgress < this.currentProgress) ? 3 : 5;
 		double currentProgress1 = (actualProgress - this.currentProgress) / divisionSpeed;
 		this.currentProgress += currentProgress1;
 	}
