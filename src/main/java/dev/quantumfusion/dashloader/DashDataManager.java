@@ -4,6 +4,7 @@ import dev.quantumfusion.dashloader.data.image.shader.DashShader;
 import dev.quantumfusion.dashloader.fallback.model.DashMissingDashModel;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -36,7 +37,7 @@ public class DashDataManager {
 	public final DashDataHandler<Map<Identifier, BakedModel>> bakedModels = new DashDataHandler<>();
 
 	// Font related
-	public final DashDataHandler<Map<Identifier, List<Font>>> fonts = new DashDataHandler<>();
+	public final DashDataHandler<Map<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>>> fonts = new DashDataHandler<>();
 
 	// Image related
 	public final DashDataHandler<Map<String, ShaderProgram>> shaders = new DashDataHandler<>();

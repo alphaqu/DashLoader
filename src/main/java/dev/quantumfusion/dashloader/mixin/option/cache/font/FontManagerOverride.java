@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.font;
 
-import com.google.common.collect.Lists;
 import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.mixin.accessor.FontManagerAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.FontStorageAccessor;
@@ -33,8 +32,6 @@ import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 @Mixin(targets = "net/minecraft/client/font/FontManager$1")
 public class FontManagerOverride {
-	private Map<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> cache;
-
 	@SuppressWarnings("UnresolvedMixinReference")
 	@Inject(
 			method = {"method_18638", "prepare*"},
@@ -44,21 +41,15 @@ public class FontManagerOverride {
 	private void overridePrepare(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<Map<Identifier, List<Font>>> cir) {
 		if (DL.active()) {
 			if (DL.isRead() && DL.getData().fonts.dataAvailable()) {
-				var fonts = DL.getData().fonts;
-				var cacheResultData = fonts.getCacheResultData();
-				this.prepareFonts(cacheResultData);
-				cir.setReturnValue(cacheResultData);
+				DashLoader.LOG.info("Preparing fonts");
+				Map<Identifier, List<Font>> out = new Object2ObjectOpenHashMap<>();
+				DL.getData().fonts.getCacheResultData().forEach(
+						(identifier, int2ObjectMapListPair) -> out.put(identifier, int2ObjectMapListPair.getValue())
+				);
+				cir.setReturnValue(out);
 			}
 		}
 	}
-
-	private void prepareFonts(Map<Identifier, List<Font>> map) {
-		DashLoader.LOG.info("Preparing fonts");
-		Map<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> cache = new Object2ObjectOpenHashMap<>();
-		map.forEach((identifier, fonts) -> cache.put(identifier, this.computeFonts(Lists.reverse(fonts))));
-		this.cache = cache;
-	}
-
 
 	@SuppressWarnings("UnresolvedMixinReference")
 	@Inject(
@@ -79,7 +70,7 @@ public class FontManagerOverride {
 
 				DashLoader.LOG.info("Applying fonts off-thread");
 				profiler.swap("reloading");
-				this.cache.forEach((identifier, entry) -> {
+				DL.getData().fonts.getCacheResultData().forEach((identifier, entry) -> {
 					FontStorage fontStorage = new FontStorage(fontManagerAccessor.getTextureManager(), identifier);
 					FontStorageAccessor access = (FontStorageAccessor) fontStorage;
 					access.callCloseFonts();
@@ -106,34 +97,16 @@ public class FontManagerOverride {
 	@Inject(method = {"method_18635", "apply*"}, at = @At(value = "TAIL"))
 	private void applyInject(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
 		if (DL.isWrite()) {
-			DL.getData().fonts.setMinecraftData(map);
+			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) MixinThings.FONTMANAGER;
+			final Map<Identifier, FontStorage> fontStorages = fontManagerAccessor.getFontStorages();
+			Map<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> out = new Object2ObjectOpenHashMap<>();
+			fontStorages.forEach((identifier, fontStorage) -> {
+				var access = ((FontStorageAccessor) fontStorage);
+				out.put(identifier, Pair.of(access.getCharactersByWidth(), access.getFonts()));
+			});
+			DL.getData().fonts.setMinecraftData(out);
 		}
 	}
-
-	private Pair<Int2ObjectMap<IntList>, List<Font>> computeFonts(List<Font> fonts) {
-		Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<>();
-		List<Font> fontsOut = new ArrayList<>();
-
-		final IntFunction<IntList> creatIntArrayListFunc = (i) -> new IntArrayList();
-		fonts.forEach(currentFont -> currentFont.getProvidedGlyphs().forEach((IntConsumer) codePoint -> {
-			//noinspection ForLoopReplaceableByForEach
-			for (int i = 0, fontsSize = fonts.size(); i < fontsSize; i++) {
-				Font font = fonts.get(i);
-				Glyph glyph = font.getGlyph(codePoint);
-				if (glyph != null) {
-					if (glyph != BuiltinEmptyGlyph.MISSING) {
-						charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), creatIntArrayListFunc).add(codePoint);
-					}
-					fontsOut.add(font);
-					break;
-				}
-			}
-		}));
-
-
-		return Pair.of(charactersByWidth, fontsOut);
-	}
-
 
 	@Mixin(FontManager.class)
 	private static class LeoFontSolution {
