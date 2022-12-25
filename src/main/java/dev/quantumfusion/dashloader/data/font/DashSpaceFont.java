@@ -4,31 +4,38 @@ import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.data.common.IntObjectList;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import it.unimi.dsi.fastutil.ints.Int2FloatArrayMap;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.SpaceFont;
 
 @DashObject(SpaceFont.class)
 public final class DashSpaceFont implements DashFont {
-	public final IntObjectList<Float> glyphs;
+	public final int[] ints;
+	public final float[] floats;
+
+	public DashSpaceFont(int[] ints, float[] floats) {
+		this.ints = ints;
+		this.floats = floats;
+	}
 
 	public DashSpaceFont(SpaceFont font) {
-		this.glyphs = new IntObjectList<>();
-		for (Integer providedGlyph : font.getProvidedGlyphs()) {
+		IntSet glyphs = font.getProvidedGlyphs();
+		this.ints = new int[glyphs.size()];
+		this.floats = new float[glyphs.size()];
+		int i = 0;
+		for (Integer providedGlyph : glyphs) {
 			Glyph glyph = font.getGlyph(providedGlyph);
 			assert glyph != null;
-			this.glyphs.put(providedGlyph, glyph.getAdvance());
+			this.ints[i] = providedGlyph;
+			this.floats[i] = glyph.getAdvance();
 		}
 	}
 
-	public DashSpaceFont(IntObjectList<Float> glyphs) {
-		this.glyphs = glyphs;
-	}
+
 
 	@Override
 	public Font export(RegistryReader exportHandler) {
-		Int2FloatArrayMap int2FloatArrayMap = new Int2FloatArrayMap();
-		this.glyphs.forEach((key, value) -> int2FloatArrayMap.put(key, (float) value));
-		return new SpaceFont(int2FloatArrayMap);
+		return new SpaceFont(new Int2FloatArrayMap(ints, floats));
 	}
 }
