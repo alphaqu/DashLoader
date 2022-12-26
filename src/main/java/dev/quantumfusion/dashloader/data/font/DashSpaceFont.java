@@ -29,6 +29,7 @@ public final class DashSpaceFont implements DashFont {
 			assert glyph != null;
 			this.ints[i] = providedGlyph;
 			this.floats[i] = glyph.getAdvance();
+			i++;
 		}
 	}
 

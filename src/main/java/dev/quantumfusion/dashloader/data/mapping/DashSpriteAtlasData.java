@@ -3,6 +3,7 @@ package dev.quantumfusion.dashloader.data.mapping;
 import dev.quantumfusion.dashloader.DashDataManager;
 import dev.quantumfusion.dashloader.data.common.IntObjectList;
 import dev.quantumfusion.dashloader.data.image.DashStitchResult;
+import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -17,15 +18,14 @@ public class DashSpriteAtlasData {
 		this.results = results;
 	}
 
-	public DashSpriteAtlasData(DashDataManager data, RegistryWriter writer, StepTask parent) {
+	public DashSpriteAtlasData(DashDataManager data, RegistryFactory writer, StepTask task) {
 		this.results = new IntObjectList<>();
 		var results = data.getWriteContextData().stitchResults;
-		parent.run(new StepTask("Atlases", results.size()), stepTask -> {
-			results.forEach((identifier, stitchResult) -> {
-				stepTask.run(new StepTask("Images", stitchResult.regions().size()), stepTask1 -> {
-					this.results.put(writer.add(identifier), new DashStitchResult(stitchResult, writer, stepTask1));
-				});
-			});
+
+		task.doForEach(results, (identifier, stitchResult) -> {
+			StepTask atlases = new StepTask("atlas", stitchResult.regions().size());
+			task.setSubTask(atlases);
+			this.results.put(writer.add(identifier), new DashStitchResult(stitchResult, writer, atlases));
 		});
 	}
 

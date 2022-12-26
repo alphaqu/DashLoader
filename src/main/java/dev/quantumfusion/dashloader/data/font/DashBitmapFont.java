@@ -1,9 +1,7 @@
 package dev.quantumfusion.dashloader.data.font;
 
-import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.data.common.IntObjectList;
-import dev.quantumfusion.dashloader.data.image.DashImage;
 import dev.quantumfusion.dashloader.mixin.accessor.BitmapFontAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
@@ -13,7 +11,6 @@ import net.minecraft.client.font.BitmapFont;
 import java.util.ArrayList;
 
 @DashObject(BitmapFont.class)
-@DashDependencies(DashImage.class)
 public final class DashBitmapFont implements DashFont {
 	public final int image;
 	public final IntObjectList<DashBitmapFontGlyph> glyphs;

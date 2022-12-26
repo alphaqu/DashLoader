@@ -3,9 +3,8 @@ package dev.quantumfusion.dashloader.data.mapping;
 import dev.quantumfusion.dashloader.DashDataManager;
 import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.data.common.IntIntList;
-import dev.quantumfusion.dashloader.data.model.DashModel;
+import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -30,22 +29,19 @@ public class DashModelData implements Dashable<Map<Identifier, BakedModel>> {
 		this.models = models;
 	}
 
-	public DashModelData(DashDataManager data, RegistryWriter writer, StepTask parent) {
+	public DashModelData(DashDataManager data, RegistryFactory writer, StepTask task) {
 		var writeContextData = data.getWriteContextData();
 		var missingModelsWrite = writeContextData.missingModelsWrite;
 		var models = data.bakedModels.getMinecraftData();
 
 		this.models = new IntIntList(new ArrayList<>(models.size()));
-		parent.run(new StepTask("Models", Integer.max(models.size(), 1)), (task) -> {
-			models.forEach((identifier, bakedModel) -> {
-				if (bakedModel != null) {
-					final int add = writer.add(bakedModel);
-					if (!missingModelsWrite.containsKey(bakedModel)) {
-						this.models.put(writer.add(identifier), add);
-					}
+		task.doForEach(models, (identifier, bakedModel) -> {
+			if (bakedModel != null) {
+				final int add = writer.add(bakedModel);
+				if (!missingModelsWrite.containsKey(bakedModel)) {
+					this.models.put(writer.add(identifier), add);
 				}
-				task.next();
-			});
+			}
 		});
 	}
 

@@ -29,7 +29,7 @@ public class DashToast implements Toast {
 	private final List<Line> lines = new ArrayList<>();
 	private final String fact = HahaManager.getFact();
 
-	private final long start = System.currentTimeMillis();
+	private long timeDone = System.currentTimeMillis();
 	private long oldTime = System.currentTimeMillis();
 	private boolean done = false;
 
@@ -60,6 +60,7 @@ public class DashToast implements Toast {
 
 		if ((STATUS == Status.DONE) && !done) {
 			DL.resetDashLoader();
+			timeDone = System.currentTimeMillis();
 			done = true;
 		}
 
@@ -71,8 +72,8 @@ public class DashToast implements Toast {
 		double currentProgress;
 		Color currentProgressColor;
 		if (STATUS == Status.CRASHED) {
-			ProgressHandler.TASK = new StaticTask("Crash", (System.currentTimeMillis() - start) / (float) 10000);
-			DL.progress.setCurrentTask("Internal crash. Please check logs.");
+			ProgressHandler.TASK = new StaticTask("Crash", (System.currentTimeMillis() - timeDone) / (float) 10000);
+			DL.progress.setOverwriteText("Internal crash. Please check logs.");
 			currentProgress = DL.progress.getProgress();
 			currentProgressColor = DrawerUtil.FAILED_COLOR;
 		} else {
@@ -111,16 +112,23 @@ public class DashToast implements Toast {
 		this.drawLines(currentProgress, matrices);
 		DrawerUtil.drawRect(matrices, 0, barY, width, PROGRESS_BAR_HEIGHT, DrawerUtil.PROGRESS_TRACK);
 		DrawerUtil.drawRect(matrices, 0, barY, (int) (width * currentProgress), PROGRESS_BAR_HEIGHT, currentProgressColor);
-		DrawerUtil.drawText(matrices, textRenderer, PADDING, barY - PADDING, DL.progress.getCurrentTask(), DrawerUtil.STATUS_COLOR);
+
+		// Draw progress text
+		DrawerUtil.drawText(matrices, textRenderer, PADDING, barY - PADDING, DL.progress.getText(), DrawerUtil.STATUS_COLOR);
+		String progressText = DL.progress.getProgressText();
+		int textWidth = textRenderer.getWidth(progressText);
+		DrawerUtil.drawText(matrices, textRenderer, (width - PADDING) - textWidth, barY - PADDING, progressText, DrawerUtil.STATUS_COLOR);
+
+		// Draw the fun fact
 		DrawerUtil.drawText(matrices, textRenderer, PADDING, textRenderer.fontHeight + PADDING, this.fact, DrawerUtil.FOREGROUND_COLOR);
 
 		RenderSystem.disableScissor();
 
-		if (STATUS == Status.CRASHED && System.currentTimeMillis() - start > 10000) {
+		if (STATUS == Status.CRASHED && System.currentTimeMillis() - timeDone > 10000) {
 			return Visibility.HIDE;
 		}
 
-		if ((done && System.currentTimeMillis() - start > 2000)) {
+		if ((done && System.currentTimeMillis() - timeDone > 2000)) {
 			return Visibility.HIDE;
 		}
 		return Visibility.SHOW;

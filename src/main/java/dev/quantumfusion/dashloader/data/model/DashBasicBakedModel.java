@@ -1,11 +1,7 @@
 package dev.quantumfusion.dashloader.data.model;
 
-import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.data.common.ObjectObjectList;
-import dev.quantumfusion.dashloader.data.image.DashSprite;
-import dev.quantumfusion.dashloader.data.model.components.DashBakedQuad;
 import dev.quantumfusion.dashloader.data.model.components.DashModelOverrideList;
 import dev.quantumfusion.dashloader.data.model.components.DashModelTransformation;
 import dev.quantumfusion.dashloader.mixin.accessor.BasicBakedModelAccessor;
@@ -35,8 +31,7 @@ import java.util.List;
 // 2 outputs [DashModel, DashImage]
 
 
-@DashObject(value = BasicBakedModel.class, category = BakedModel.class)
-@DashDependencies({DashSprite.class, DashBakedQuad.class})
+@DashObject(BasicBakedModel.class)
 public final class DashBasicBakedModel implements DashModel {
 	public final List<Integer> quads;
 	public final ObjectObjectList<Direction, List<Integer>> faceQuads;

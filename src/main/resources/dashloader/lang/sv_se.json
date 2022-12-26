@@ -1,17 +1,11 @@
 {
-  "initializing": "Påbörjar",
-  "debug": "Debug läge är aktivt i configen.",
-  "convert": "Konverterar",
-  "convert.blockstate": "Konverterar Blockstater",
-  "convert.model": "Konverterar Modeller",
-  "convert.image": "Konverterar Bilder",
-  "convert.particle": "Konverterar Partiklar",
-  "convert.font": "Konverterar Fonter",
-  "convert.splashtext": "Konverterar Splash Text",
-  "convert.shader": "Konverterar Skuggor",
-  "export.image": "Exporterar Bilder",
-  "export.model": "Exporterar Modeller",
-  "export.registry": "Exporterar Register",
-  "export.identifier": "Exporterar Identifierare",
-  "export.quad": "Exporterar Quads"
+  "debug": "Debug läge är på i konfigurations filen.",
+  "save": "Påbörjar",
+  "save.cache": "Laddar",
+  "save.cache.model": "Laddar modeler",
+  "save.cache.image": "Laddar bilder",
+  "save.cache.misc": "Laddar blandat",
+  "save.serialize": "Sparar",
+  "save.serialize.fragment": "Sparar fragment",
+  "save.serialize.mapping": "Sparar mappningar"
 }

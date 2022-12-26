@@ -4,7 +4,7 @@ import com.github.luben.zstd.Zstd;
 import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.api.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.registry.chunk.DataChunk;
+import dev.quantumfusion.dashloader.registry.data.ChunkData;
 import dev.quantumfusion.hyphen.ClassDefiner;
 import dev.quantumfusion.hyphen.HyphenSerializer;
 import dev.quantumfusion.hyphen.SerializerFactory;
@@ -41,7 +41,7 @@ public class SimpleSerializer<O> implements DataSerializer<O> {
 		this.compressionLevel = DL.config.config.compression;
 	}
 
-	public static <F> SimpleSerializer<F> create(Path cacheArea, Class<F> holderClass, List<DashObjectClass<?, ?>> dashObjects, Class<? extends Dashable<?>>[] dashables) {
+	public static <F> SimpleSerializer<F> create(String name, Path cacheArea, Class<F> holderClass, List<DashObjectClass<?, ?>> dashObjects, Class<? extends Dashable<?>>[] dashables) {
 		var serializerFileLocation = cacheArea.resolve(holderClass.getSimpleName().toLowerCase() + ".dlc");
 		prepareFile(serializerFileLocation);
 		if (Files.exists(serializerFileLocation)) {
@@ -49,30 +49,30 @@ public class SimpleSerializer<O> implements DataSerializer<O> {
 			try {
 				classDefiner.def(getSerializerName(holderClass), Files.readAllBytes(serializerFileLocation));
 				//noinspection unchecked
-				return new SimpleSerializer<>(holderClass.getSimpleName(), (HyphenSerializer<ByteBufferIO, F>) ClassDefiner.SERIALIZER);
+				return new SimpleSerializer<>(name, (HyphenSerializer<ByteBufferIO, F>) ClassDefiner.SERIALIZER);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		var factory = SerializerFactory.createDebug(ByteBufferIO.class, holderClass);
-		factory.addGlobalAnnotation(DataChunk.class, DataSubclasses.class, new Class[]{DataChunk.class});
+		factory.addGlobalAnnotation(ChunkData.class, DataSubclasses.class, new Class[]{ChunkData.class});
 		factory.setClassName(getSerializerName(holderClass));
 		factory.setExportPath(serializerFileLocation);
 		factory.addDynamicDef(ByteBuffer.class, UnsafeByteBufferDef::new);
 		for (Class<? extends Dashable> dashable : dashables) {
 			var dashClasses = new ArrayList<Class<?>>();
-			for (var dashObject : dashObjects) {
-				if (dashable == dashObject.getTag()) {
-					dashClasses.add(dashObject.getDashClass());
-				}
-			}
+		//for (var dashObject : dashObjects) {
+		//	if (dashable == dashObject.getTag()) {
+		//		dashClasses.add(dashObject.getDashClass());
+		//	}
+		//}
 
 			dashClasses.remove(dashable);
 			if (dashClasses.size() > 0) {
 				factory.addGlobalAnnotation(dashable, DataSubclasses.class, dashClasses.toArray(Class[]::new));
 			}
 		}
-		return new SimpleSerializer<>(holderClass.getSimpleName(), factory.build());
+		return new SimpleSerializer<>(name, factory.build());
 	}
 
 	@NotNull

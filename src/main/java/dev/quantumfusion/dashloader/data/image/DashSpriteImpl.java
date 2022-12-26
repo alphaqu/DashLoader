@@ -1,8 +1,6 @@
 package dev.quantumfusion.dashloader.data.image;
 
-import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.data.DashIdentifier;
 import dev.quantumfusion.dashloader.mixin.accessor.SpriteAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
@@ -10,7 +8,6 @@ import dev.quantumfusion.dashloader.util.UnsafeHelper;
 import net.minecraft.client.texture.Sprite;
 
 @DashObject(Sprite.class)
-@DashDependencies({DashImage.class, DashIdentifier.class})
 public class DashSpriteImpl implements DashSprite {
 	public final int atlasId;
 	public final DashSpriteContents contents;

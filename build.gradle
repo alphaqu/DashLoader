@@ -45,8 +45,8 @@ dependencies {
     implementation "dev.quantumfusion:Hyphen:0.4.0-rc.2"
     include "dev.quantumfusion:Hyphen:0.4.0-rc.2"
 
-    implementation "dev.quantumfusion:Taski:1.1.2"
-    include "dev.quantumfusion:Taski:1.1.2"
+    implementation "dev.quantumfusion:Taski:2.1.0"
+    include "dev.quantumfusion:Taski:2.1.0"
 
     implementation 'com.github.luben:zstd-jni:1.5.2-2'
     include 'com.github.luben:zstd-jni:1.5.2-2'

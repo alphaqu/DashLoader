@@ -5,14 +5,16 @@ import dev.quantumfusion.dashloader.ProgressHandler;
 import dev.quantumfusion.dashloader.api.option.Option;
 import dev.quantumfusion.dashloader.config.ConfigHandler;
 import dev.quantumfusion.dashloader.data.mapping.*;
+import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
-import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.util.DashUtil;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
+import dev.quantumfusion.taski.builtin.WeightedStageTask;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import static dev.quantumfusion.dashloader.DashLoader.DL;
@@ -48,39 +50,39 @@ public class MappingData {
 	}
 
 
-	public void map(RegistryWriter registry, StepTask task) {
+	public void map(RegistryFactory registry, StepTask parent) {
+		StepTask model = new StepTask("model");
+		StepTask sprite = new StepTask("image");
+		StepTask misc = new StepTask("misc", 3);
+		WeightedStageTask task = new WeightedStageTask("cache", List.of(
+				new WeightedStageTask.WeightedStage(100f, model),
+				new WeightedStageTask.WeightedStage(25f, sprite),
+				new WeightedStageTask.WeightedStage(1f, misc)
+		));
+		parent.setSubTask(task);
+
 		if (DL.isRead()) {
 			throw new RuntimeException("Tried to map data when DashDataManager is in Read mode");
 		}
 
-		final ProgressHandler progress = DL.progress;
-		progress.setCurrentTask("convert");
-
 		final DashDataManager dataManager = DL.getData();
 		if (ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER)) {
-			progress.setCurrentTask("convert.model");
-			this.modelData = new DashModelData(dataManager, registry, task);
-
-			progress.setCurrentTask("convert.image");
-			this.spriteAtlasData = new DashSpriteAtlasData(dataManager, registry, task);
+			this.modelData = new DashModelData(dataManager, registry, model);
+			this.spriteAtlasData = new DashSpriteAtlasData(dataManager, registry, sprite);
 		}
 
+
 		if (ConfigHandler.optionActive(Option.CACHE_FONT)) {
-			progress.setCurrentTask("convert.font");
-			this.fontManagerData = new DashFontManagerData(dataManager, registry, task);
+			this.fontManagerData = new DashFontManagerData(dataManager, registry, misc);
 		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_SPLASH_TEXT)) {
-			progress.setCurrentTask("convert.splashtext");
 			this.splashTextData = new DashSplashTextData(dataManager);
-			task.next();
 		}
 
 		if (ConfigHandler.optionActive(Option.CACHE_SHADER)) {
-			progress.setCurrentTask("convert.shader");
-			this.shaderData = new DashShaderData(dataManager, task);
+			this.shaderData = new DashShaderData(dataManager, misc);
 		}
-
 	}
 
 	public void export(RegistryReader reader, DashDataManager data, @Nullable Consumer<Task> taskConsumer) {

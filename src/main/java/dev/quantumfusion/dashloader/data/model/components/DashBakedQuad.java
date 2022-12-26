@@ -1,16 +1,13 @@
 package dev.quantumfusion.dashloader.data.model.components;
 
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.data.image.DashSprite;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.util.math.Direction;
 
 @DashObject(BakedQuad.class)
-@DashDependencies(DashSprite.class)
 public final class DashBakedQuad implements Dashable<BakedQuad> {
 	public final int[] vertexData;
 	public final int colorIndex;

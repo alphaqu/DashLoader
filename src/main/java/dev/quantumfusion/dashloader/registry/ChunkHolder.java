@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.registry;
 
-import dev.quantumfusion.dashloader.registry.chunk.DataChunk;
+import dev.quantumfusion.dashloader.registry.data.ChunkData;
 
 public interface ChunkHolder {
-	DataChunk<?, ?>[] getChunks();
+	ChunkData<?, ?>[] getChunks();
 }

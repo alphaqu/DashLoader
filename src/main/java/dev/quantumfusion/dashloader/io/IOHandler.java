@@ -5,11 +5,12 @@ import dev.quantumfusion.dashloader.api.DashObjectClass;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.io.meta.CacheMetadata;
 import dev.quantumfusion.dashloader.io.serializer.SimpleSerializer;
+import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import dev.quantumfusion.dashloader.registry.chunk.DataChunk;
+import dev.quantumfusion.dashloader.registry.data.ChunkData;
+import dev.quantumfusion.dashloader.registry.data.StageData;
 import dev.quantumfusion.taski.Task;
-import dev.quantumfusion.taski.builtin.StepTask;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,8 +45,8 @@ public final class IOHandler {
 	}
 
 	@SafeVarargs
-	public final void addSerializer(Class<?> dataObject, List<DashObjectClass<?, ?>> dashObjects, Class<? extends Dashable<?>>... dashables) {
-		this.serializers.put(dataObject, SimpleSerializer.create(this.getCurrentCacheDir(), dataObject, dashObjects, dashables));
+	public final void addSerializer(String name, Class<?> dataObject, List<DashObjectClass<?, ?>> dashObjects, Class<? extends Dashable<?>>... dashables) {
+		this.serializers.put(dataObject, SimpleSerializer.create(name, this.getCurrentCacheDir(), dataObject, dashObjects, dashables));
 	}
 
 	public void setCacheArea(String name) {
@@ -69,10 +70,10 @@ public final class IOHandler {
 	}
 
 
-	public void saveRegistry(RegistryWriter writer, Consumer<Task> taskConsumer) {
+	public void saveRegistry(RegistryFactory factory, Consumer<Task> taskConsumer) {
 		Path dir = this.getCurrentSubCacheDir();
 		try {
-			CacheMetadata metadata = this.registrySerializer.serialize(dir, writer.chunks, taskConsumer);
+			CacheMetadata metadata = this.registrySerializer.serialize(dir, factory, taskConsumer);
 			this.metadataSerializer.serialize(dir, metadata);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -83,8 +84,8 @@ public final class IOHandler {
 		Path dir = this.getCurrentSubCacheDir();
 		try {
 			CacheMetadata metadata = this.metadataSerializer.deserialize(dir);
-			DataChunk<?, ?>[] chunks = this.registrySerializer.deserialize(dir, metadata, DashLoader.DL.api.getDashObjects());
-			return new RegistryReader(chunks);
+			StageData[] chunks = this.registrySerializer.deserialize(dir, metadata, DashLoader.DL.api.getDashObjects());
+			return new RegistryReader(metadata, chunks);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

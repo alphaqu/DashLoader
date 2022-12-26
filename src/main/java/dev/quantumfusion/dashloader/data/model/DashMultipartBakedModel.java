@@ -1,21 +1,14 @@
 package dev.quantumfusion.dashloader.data.model;
 
 import dev.quantumfusion.dashloader.DashDataManager;
-import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.data.blockstate.DashBlockState;
 import dev.quantumfusion.dashloader.data.common.IntIntList;
 import dev.quantumfusion.dashloader.data.common.IntObjectList;
-import dev.quantumfusion.dashloader.data.image.DashSprite;
-import dev.quantumfusion.dashloader.data.model.components.DashModelTransformation;
-import dev.quantumfusion.dashloader.data.model.predicates.DashPredicate;
 import dev.quantumfusion.dashloader.mixin.accessor.MultipartBakedModelAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.util.RegistryUtil;
 import dev.quantumfusion.dashloader.util.UnsafeHelper;
-import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
@@ -30,39 +23,23 @@ import java.util.function.Predicate;
 
 import static dev.quantumfusion.dashloader.DashLoader.DL;
 
-@DashObject(value = MultipartBakedModel.class, category = BakedModel.class)
-@DashDependencies({DashWeightedBakedModel.class, DashPredicate.class, DashBlockState.class, DashSprite.class})
+@DashObject(MultipartBakedModel.class)
 public class DashMultipartBakedModel implements DashModel {
 	//identifier baked model
 	public final IntIntList components;
-	public final boolean ambientOcclusion;
-	public final boolean depthGui;
-	public final boolean sideLit;
-	public final int sprite;
-	@DataNullable
-	public final DashModelTransformation transformations;
+	//public final boolean ambientOcclusion;
+	//public final boolean depthGui;
+	//public final boolean sideLit;
+	//public final int sprite;
+	//@DataNullable
+	//public final DashModelTransformation transformations;
 	// a bit too expensive to compute
 	//public final DashModelOverrideList itemPropertyOverrides;
 
 	public final IntObjectList<byte[]> stateCache;
-	transient MultipartBakedModel toApply;
 
-	public DashMultipartBakedModel(
-			IntIntList components,
-			boolean ambientOcclusion,
-			boolean depthGui,
-			boolean sideLit,
-			int sprite,
-			DashModelTransformation transformations,
-			//DashModelOverrideList itemPropertyOverrides,
-			IntObjectList<byte[]> stateCache) {
+	public DashMultipartBakedModel(IntIntList components, IntObjectList<byte[]> stateCache) {
 		this.components = components;
-		this.ambientOcclusion = ambientOcclusion;
-		this.depthGui = depthGui;
-		this.sideLit = sideLit;
-		this.sprite = sprite;
-		this.transformations = transformations;
-		//this.itemPropertyOverrides = itemPropertyOverrides;
 		this.stateCache = stateCache;
 	}
 
@@ -70,11 +47,11 @@ public class DashMultipartBakedModel implements DashModel {
 		final DashDataManager.DashWriteContextData writeContextData = DL.getData().getWriteContextData();
 		var access = ((MultipartBakedModelAccessor) model);
 
-		this.ambientOcclusion = model.useAmbientOcclusion();
-		this.depthGui = model.hasDepth();
-		this.sideLit = model.isSideLit();
-		this.sprite = writer.add(model.getParticleSprite());
-		this.transformations = DashModelTransformation.createDashOrReturnNullIfDefault(model.getTransformation());
+		//this.ambientOcclusion = model.useAmbientOcclusion();
+		//this.depthGui = model.hasDepth();
+		//this.sideLit = model.isSideLit();
+		//this.sprite = writer.add(model.getParticleSprite());
+		//this.transformations = DashModelTransformation.createDashOrReturnNullIfDefault(model.getTransformation());
 		//	this.itemPropertyOverrides = new DashModelOverrideList(model.getOverrides(), writer);
 
 		var accessComponents = access.getComponents();
@@ -101,20 +78,7 @@ public class DashMultipartBakedModel implements DashModel {
 		this.stateCache.forEach((blockstate, bitSet) -> stateCacheOut.put(reader.get(blockstate), BitSet.valueOf(bitSet)));
 		access.setStateCache(stateCacheOut);
 
-		access.setAmbientOcclusion(this.ambientOcclusion);
-		access.setDepthGui(this.depthGui);
-		access.setSideLit(this.sideLit);
-		access.setSprite(reader.get(this.sprite));
-		access.setTransformations(DashModelTransformation.exportOrDefault(this.transformations));
-		this.toApply = model;
-		return model;
-	}
-
-	@Override
-	public void postExport(RegistryReader reader) {
-		var access = ((MultipartBakedModelAccessor) this.toApply);
-
-		List<Pair<Predicate<BlockState>, BakedModel>> componentsOut = new ArrayList<>();
+		List<Pair<Predicate<BlockState>, BakedModel>> componentsOut = new ArrayList<>(this.components.list().size());
 		this.components.forEach((key, value) -> componentsOut.add(Pair.of(reader.get(key), reader.get(value))));
 
 		var bakedModel = componentsOut.iterator().next().getRight();
@@ -125,6 +89,24 @@ public class DashMultipartBakedModel implements DashModel {
 		access.setSprite(bakedModel.getParticleSprite());
 		access.setTransformations(bakedModel.getTransformation());
 		access.setItemPropertyOverrides(bakedModel.getOverrides());
+		return model;
 	}
+
+	///@Override
+	///public void postExport(RegistryReader reader) {
+	///	var access = ((MultipartBakedModelAccessor) this.toApply);
+///
+	///	List<Pair<Predicate<BlockState>, BakedModel>> componentsOut = new ArrayList<>();
+	///	this.components.forEach((key, value) -> componentsOut.add(Pair.of(reader.get(key), reader.get(value))));
+///
+	///	var bakedModel = componentsOut.iterator().next().getRight();
+	///	access.setComponents(componentsOut);
+	///	access.setAmbientOcclusion(bakedModel.useAmbientOcclusion());
+	///	access.setDepthGui(bakedModel.hasDepth());
+	///	access.setSideLit(bakedModel.isSideLit());
+	///	access.setSprite(bakedModel.getParticleSprite());
+	///	access.setTransformations(bakedModel.getTransformation());
+	///	access.setItemPropertyOverrides(bakedModel.getOverrides());
+	///}
 }
 

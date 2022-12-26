@@ -1,17 +1,11 @@
 {
-  "initializing": "uwu waking up",
-  "debug": "Ya debug is on!!!11!! config!",
-  "convert": "owoifying",
-  "convert.blockstate": "owoifying Blockstates",
-  "convert.model": "OwOifying anime",
-  "convert.image": "uwuifying pictures",
-  "convert.particle": "UwWifying smol stuff",
-  "convert.font": ">w<ifying chit chat",
-  "convert.splashtext": "~w~ifying menu dms",
-  "convert.shader": "-w-ifying graphics",
-  "export.model": "shipping blocks and things",
-  "export.image": "shipping selfies",
-  "export.registry": "shipping coding stuff",
-  "export.identifier": "shipping discord tags",
-  "export.quad": "shipping squares"
+  "debug": "eyo debug is on! Check the cribby config.",
+  "save": "wakin up!",
+  "save.cache": "owoifying",
+  "save.cache.model": "uwufying anime",
+  "save.cache.image": "saving anime",
+  "save.cache.misc": "savin' stuff",
+  "save.serialize": "sending dms",
+  "save.serialize.fragment": "sending hot sha256 keys",
+  "save.serialize.mapping": "sending private key"
 }

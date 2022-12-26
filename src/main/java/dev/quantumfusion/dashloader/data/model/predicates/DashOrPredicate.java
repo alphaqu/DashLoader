@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.data.model.predicates;
 
-import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.mixin.accessor.OrMultipartModelSelectorAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
@@ -15,7 +14,6 @@ import java.util.function.Predicate;
 
 
 @DashObject(OrMultipartModelSelector.class)
-@DashDependencies({DashSimplePredicate.class, DashAndPredicate.class})
 public final class DashOrPredicate implements DashPredicate {
 	public final List<Integer> selectors;
 	public final int identifier;

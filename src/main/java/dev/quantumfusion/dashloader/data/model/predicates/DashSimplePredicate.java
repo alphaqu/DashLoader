@@ -1,8 +1,6 @@
 package dev.quantumfusion.dashloader.data.model.predicates;
 
-import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.data.DashIdentifierInterface;
 import dev.quantumfusion.dashloader.data.blockstate.DashBlockState;
 import dev.quantumfusion.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.SimpleMultipartModelSelectorAccessor;
@@ -23,7 +21,6 @@ import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 
 @DashObject(SimpleMultipartModelSelector.class)
-@DashDependencies(DashIdentifierInterface.class)
 public final class DashSimplePredicate implements DashPredicate {
 	public final String key;
 	public final String valueString;

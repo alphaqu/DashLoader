@@ -3,6 +3,7 @@ package dev.quantumfusion.dashloader.data.mapping;
 import dev.quantumfusion.dashloader.DashDataManager;
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.data.common.IntObjectList;
+import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -26,7 +27,7 @@ public class DashFontManagerData implements Dashable<Map<Identifier, Pair<Int2Ob
 		this.fontMap = fontMap;
 	}
 
-	public DashFontManagerData(DashDataManager data, RegistryWriter writer, StepTask parent) {
+	public DashFontManagerData(DashDataManager data, RegistryFactory writer, StepTask parent) {
 		this.fontMap = new IntObjectList<>();
 		parent.run(new StepTask("Fonts", Integer.max(data.fonts.getMinecraftData().size(), 1)), (task) -> {
 			data.fonts.getMinecraftData().forEach((identifier, fontList) -> {

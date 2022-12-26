@@ -2,8 +2,7 @@ package dev.quantumfusion.dashloader.thread;
 
 import dev.quantumfusion.dashloader.Dashable;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
-import dev.quantumfusion.dashloader.registry.RegistryWriter;
-import dev.quantumfusion.dashloader.registry.factory.DashFactory;
+import dev.quantumfusion.dashloader.registry.data.ChunkData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,17 +34,8 @@ public final class ThreadHandler {
 	}
 
 	// Fork Join Methods
-	public <R, D extends Dashable<? extends R>> void parallelExport(IndexedArrayMapTask.Entry<D>[] in, R[] out, RegistryReader reader) {
+	public <R, D extends Dashable<? extends R>> void parallelExport(ChunkData.Entry<D>[] in, R[] out, RegistryReader reader) {
 		this.threadPool.invoke(new IndexedArrayMapTask<>(in, out, d -> d.export(reader)));
-	}
-
-	public <R, D extends Dashable<? extends R>> void parallelExport(D[] in, R[] out, RegistryReader reader) {
-		this.threadPool.invoke(new dev.quantumfusion.dashloader.thread.ArrayMapTask<>(in, out, d -> d.export(reader)));
-	}
-
-	@SuppressWarnings("unchecked")
-	public <R, D extends Dashable<? extends R>> void parallelWrite(R[] in, D[] out, RegistryWriter writer, DashFactory<R, ? extends D> factory) {
-		this.threadPool.invoke(new ArrayMapTask<>(in, out, d -> factory.create(d, writer)));
 	}
 
 	// Basic Methods

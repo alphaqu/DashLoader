@@ -2,7 +2,6 @@ package dev.quantumfusion.dashloader.api.hook;
 
 import dev.quantumfusion.dashloader.data.MappingData;
 import dev.quantumfusion.dashloader.registry.ChunkHolder;
-import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.taski.builtin.StepTask;
 
@@ -15,7 +14,7 @@ public interface SaveCacheHook {
 	default void saveCacheTask(StepTask task) {
 	}
 
-	default void saveCacheRegistryInit(RegistryFactory handler) {
+	default void saveCacheRegistryInit(RegistryWriter handler) {
 	}
 
 	default void saveCacheRegistryWriterInit(RegistryWriter writer) {

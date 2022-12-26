@@ -1,10 +1,7 @@
 package dev.quantumfusion.dashloader.data.blockstate;
 
 import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.api.DashDependencies;
 import dev.quantumfusion.dashloader.api.DashObject;
-import dev.quantumfusion.dashloader.data.DashIdentifier;
-import dev.quantumfusion.dashloader.data.DashModelIdentifier;
 import dev.quantumfusion.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
@@ -13,7 +10,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 @DashObject(BlockState.class)
-@DashDependencies({DashIdentifier.class, DashModelIdentifier.class})
 public final class DashBlockState implements Dashable<BlockState> {
 	public static final Identifier ITEM_FRAME = new Identifier("dashloader:itemframewhy");
 	public final int owner;

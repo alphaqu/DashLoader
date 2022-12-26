@@ -4,7 +4,6 @@ import dev.quantumfusion.dashloader.DashDataManager;
 import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.data.image.shader.DashShader;
 import dev.quantumfusion.dashloader.util.MissingDataException;
-import dev.quantumfusion.taski.TaskUtil;
 import dev.quantumfusion.taski.builtin.StepTask;
 import net.minecraft.client.gl.ShaderProgram;
 
@@ -27,13 +26,15 @@ public class DashShaderData {
 		this.shaders = new HashMap<>();
 		final Map<String, ShaderProgram> minecraftData = data.shaders.getMinecraftData();
 
-		parent.run(new StepTask("Shaders"), (task) -> TaskUtil.forEach(task, minecraftData, (s, shader) -> {
-					try {
-						this.shaders.put(s, new DashShader(shader));
-					} catch (MissingDataException e) {
-						DashLoader.LOG.warn("Skipping shader {}", s);
-					}
-				})
+		parent.run(new StepTask("Shaders"), (task) -> {
+					task.doForEach(minecraftData, (s, shader) -> {
+						try {
+							this.shaders.put(s, new DashShader(shader));
+						} catch (MissingDataException e) {
+							DashLoader.LOG.warn("Skipping shader {}", s);
+						}
+					});
+				}
 		);
 
 	}

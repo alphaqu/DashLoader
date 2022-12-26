@@ -14,7 +14,6 @@ import dev.quantumfusion.dashloader.fallback.model.DashMissingDashModel;
 import dev.quantumfusion.dashloader.io.IOHandler;
 import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
-import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.registry.factory.MissingHandler;
 import dev.quantumfusion.dashloader.thread.ThreadHandler;
 import dev.quantumfusion.dashloader.util.BooleanSelector;
@@ -56,7 +55,6 @@ public class DashLoader {
 
 	// Handlers
 	public final APIHandler api;
-	public final RegistryFactory registry;
 	public final ThreadHandler thread;
 	public final ProgressHandler progress;
 	public final ConfigHandler config;
@@ -77,7 +75,6 @@ public class DashLoader {
 		this.config = new ConfigHandler(FabricLoader.getInstance().getConfigDir().normalize().resolve("dashloader.json"));
 		this.thread = new ThreadHandler();
 		this.progress = new ProgressHandler();
-		this.registry = new RegistryFactory();
 	}
 
 	public void initialize() {
@@ -95,7 +92,7 @@ public class DashLoader {
 			this.io.init(dashObjects, this.config.config.compression);
 			this.io.setCacheArea(this.metadata.modInfo);
 			this.io.setSubCacheArea("bootstrap");
-			this.io.addSerializer(MappingData.class, dashObjects);
+			this.io.addSerializer("mapping", MappingData.class, dashObjects);
 
 			LOG.info("Created DashLoader with {}.", Thread.currentThread().getContextClassLoader().getClass().getSimpleName());
 			LOG.info("Initialized DashLoader");
@@ -143,14 +140,13 @@ public class DashLoader {
 		DashToast.STATUS = DashToast.Status.CACHING;
 		LOG.info("Starting DashLoader Caching");
 		try {
+			this.progress.setOverwriteText(null);
 			long start = System.currentTimeMillis();
 
-			StepTask main = new StepTask("Creating DashCache", 2);
+			StepTask main = new StepTask("save", 2);
 			ProgressHandler.TASK = main;
 
 			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheTask(main));
-			this.progress.setCurrentTask("initializing");
-
 			// missing model callback
 			List<MissingHandler<?>> handlers = new ArrayList<>();
 			handlers.add(new MissingHandler<>(
@@ -197,28 +193,22 @@ public class DashLoader {
 					}
 			));
 
-			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheRegistryInit(this.registry));
-			RegistryWriter writer = this.registry.createWriter(handlers, this.api.getDashObjects());
-			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheRegistryWriterInit(writer));
+			RegistryFactory writer = RegistryFactory.create(handlers, this.api.getDashObjects());
 
 			// Reading minecraft assets
-			StepTask readTask = new StepTask("Reading", 10);
-			main.setSubTask(readTask);
 
 			MappingData mappings = new MappingData();
-			mappings.map(writer, readTask);
-
+			mappings.map(writer, main);
 			main.next();
-			this.progress.setCurrentTask("Serializing");
 
 			// serialization
-			main.run(new StepTask("Serializing", 2), (task) -> {
+			main.run(new StepTask("serialize", 2), (task) -> {
 				task.run(() -> this.io.saveRegistry(writer, task::setSubTask));
 				task.run(() -> this.io.save(mappings, task::setSubTask));
 			});
 
 			String text = "Created cache in " + TimeUtil.getTimeStringFromStart(start);
-			this.progress.setCurrentTask(text);
+			this.progress.setOverwriteText(text);
 			LOG.info(text);
 			DashToast.STATUS = DashToast.Status.DONE;
 			this.api.callHook(SaveCacheHook.class, SaveCacheHook::saveCacheEnd);

@@ -1,17 +1,11 @@
 {
-  "initializing": "Initializing",
   "debug": "Debug Mode is active in config.",
-  "convert": "Converting",
-  "convert.blockstate": "Converting Blockstates",
-  "convert.model": "Converting Models",
-  "convert.image": "Converting Images",
-  "convert.particle": "Converting Particles",
-  "convert.font": "Converting Fonts",
-  "convert.splashtext": "Converting Splash Text",
-  "convert.shader": "Converting Shaders",
-  "export.model": "Exporting Models",
-  "export.image": "Exporting Images",
-  "export.registry": "Exporting Registry",
-  "export.identifier": "Exporting Identifiers",
-  "export.quad": "Exporting Quads"
+  "save": "Initializing",
+  "save.cache": "Caching",
+  "save.cache.model": "Caching models",
+  "save.cache.image": "Caching images",
+  "save.cache.misc": "Caching miscellaneous",
+  "save.serialize": "Serializing",
+  "save.serialize.fragment": "Serializing fragments",
+  "save.serialize.mapping": "Serializing mappings"
 }

@@ -24,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 import static dev.quantumfusion.dashloader.DashLoader.DL;
+import static net.minecraft.client.render.model.ModelLoader.MISSING_ID;
 
 @Mixin(value = ModelLoader.class, priority = 69420)
 public abstract class ModelLoaderMixin {
@@ -52,6 +54,8 @@ public abstract class ModelLoaderMixin {
 	@Shadow
 	@Final
 	private Map<Identifier, UnbakedModel> modelsToBake;
+
+	@Shadow protected abstract JsonUnbakedModel loadModelFromJson(Identifier id) throws IOException;
 
 	@Inject(
 			method = "<init>",
@@ -97,6 +101,27 @@ public abstract class ModelLoaderMixin {
 			return false;
 		}
 		return instance.hasNext();
+	}
+
+	@Redirect(
+			method = "<init>",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelLoader;loadModelFromJson(Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/model/json/JsonUnbakedModel;")
+	)
+	private JsonUnbakedModel pleaseDontLoadMissingModelBecauseItsReallySlowThankYou(ModelLoader instance, Identifier id) throws IOException {
+		if (DL.isRead()) {
+			return null;
+		}
+		return loadModelFromJson(MISSING_ID);
+	}
+
+	@Inject(
+			method = "<init>",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelLoader;addModel(Lnet/minecraft/client/util/ModelIdentifier;)V", ordinal = 0, shift = At.Shift.BEFORE)
+	)
+	private void pleaseDontLoadMissingModelBecauseItsReallySlowThankYouPart2(BlockColors blockColors, Profiler profiler, Map jsonUnbakedModels, Map blockStates, CallbackInfo ci) {
+		if (DL.isRead()) {
+			this.unbakedModels.put(MISSING_ID, new UnbakedBakedModel(DL.getData().bakedModels.getCacheResultData().get(MISSING_ID), MISSING_ID));
+		}
 	}
 
 	@Inject(

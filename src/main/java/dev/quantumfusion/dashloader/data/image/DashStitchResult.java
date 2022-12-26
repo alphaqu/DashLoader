@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.data.image;
 
 import dev.quantumfusion.dashloader.data.common.IntIntList;
+import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -28,7 +29,7 @@ public final class DashStitchResult {
 		this.regions = regions;
 	}
 
-	public DashStitchResult(SpriteLoader.StitchResult stitchResult, RegistryWriter writer, StepTask task) {
+	public DashStitchResult(SpriteLoader.StitchResult stitchResult, RegistryFactory writer, StepTask task) {
 		this.width = stitchResult.width();
 		this.height = stitchResult.height();
 		this.mipLevel = stitchResult.mipLevel();
