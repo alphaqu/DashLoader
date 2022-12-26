@@ -28,7 +28,6 @@ public final class DashAndPredicate implements DashPredicate {
 
 		this.selectors = new ArrayList<>();
 		for (MultipartModelSelector accessSelector : access.getSelectors()) {
-			System.out.println("AND adding " + accessSelector.getClass().getSimpleName());
 			this.selectors.add(writer.add(accessSelector));
 		}
 	}

@@ -174,7 +174,6 @@ public class DashLoader {
 			handlers.add(new MissingHandler<>(
 					MultipartModelSelector.class,
 					(selector, writer) -> {
-						System.out.println("hi " + selector);
 						if (selector == MultipartModelSelector.TRUE) {
 							return new DashStaticPredicate(true);
 						} else if (selector == MultipartModelSelector.FALSE) {

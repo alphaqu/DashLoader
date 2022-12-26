@@ -164,9 +164,7 @@ public class RegistrySerializer {
 					final var dst = ByteBufferIO.createDirect((int) maxSize);
 					serializingTask.next();
 
-					DashLoader.LOG.info("Allocating {}MB", maxSize / 1024 / 1024);
 					final long size = Zstd.compress(dst.byteBuffer, io.byteBuffer, compressionLevel);
-					DashLoader.LOG.info("Compressed to {}MB", size / 1024 / 1024);
 					io.close();
 					serializingTask.next();
 

@@ -96,7 +96,6 @@ public class APIHandler {
 			for (int i = 0; i < objects.size(); i++) {
 				DashObjectClass<?, ?> dashObject = objects.get(i);
 				dashObject.dashObjectId = i;
-				LOGGER.info(dashObject);
 			}
 			this.initialized = true;
 		}

@@ -29,7 +29,6 @@ public final class DashOrPredicate implements DashPredicate {
 
 		this.selectors = new ArrayList<>();
 		for (MultipartModelSelector accessSelector : access.getSelectors()) {
-			System.out.println("OR adding " + accessSelector.getClass().getSimpleName());
 			this.selectors.add(writer.add(accessSelector));
 		}
 

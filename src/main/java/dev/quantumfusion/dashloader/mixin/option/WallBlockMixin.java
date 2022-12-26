@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.mixin.option;
 
 import com.google.common.collect.ImmutableMap;
+import dev.quantumfusion.dashloader.DashLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBlock;
@@ -77,13 +78,11 @@ public abstract class WallBlockMixin extends Block implements Waterloggable {
 					if (SHAPE_CACHE == null) {
 						SHAPE_CACHE = new VoxelShape[2][LENGTH][LENGTH][LENGTH][LENGTH];
 						this.createCache(SHAPE_CACHE, cir.getReturnValue());
-						System.out.println("Created Shape Cache");
 					}
 				} else if (this.isCollision(h, j, k)) {
 					if (COLLISION_CACHE == null) {
 						COLLISION_CACHE = new VoxelShape[2][LENGTH][LENGTH][LENGTH][LENGTH];
 						this.createCache(COLLISION_CACHE, cir.getReturnValue());
-						System.out.println("Created Collision Cache");
 					}
 				}
 			}
