@@ -13,9 +13,6 @@ public enum Option {
 	CACHE_SHADER(
 			"cache.shader",
 			"Caches the GL Shaders.", Impact.MEDIUM),
-	FAST_SOUND_FILE_SKIP(
-			"misc.SoundManagerMixin",
-			"Disables if file exists check on Sound Files.", Impact.HIGH),
 	FAST_MODEL_IDENTIFIER_EQUALS(
 			"misc.ModelIdentifierMixin",
 			"Use a much faster .equals() on the ModelIdentifiers", Impact.MEDIUM),

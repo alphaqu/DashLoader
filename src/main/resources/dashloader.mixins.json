@@ -57,8 +57,7 @@
     "option.cache.shader.GameRendererMixin",
     "option.cache.shader.GlStateManagerMixin",
     "option.cache.sprite.SpriteLoaderMixin",
-    "option.misc.ModelIdentifierMixin",
-    "option.misc.SoundManagerMixin"
+    "option.misc.ModelIdentifierMixin"
   ],
   "injectors": {
     "defaultRequire": 1
