@@ -13,10 +13,9 @@ import java.util.List;
 public final class DashGlUniform {
 	public final int count;
 	public final int dataType;
-	@DataNullable
-	public final int[] intData;
-	@DataNullable
-	public final float[] floatData;
+
+	public final int @DataNullable [] intData;
+	public final float @DataNullable [] floatData;
 	public final String name;
 
 
