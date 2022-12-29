@@ -3,7 +3,10 @@ package dev.quantumfusion.dashloader.api.option;
 public enum Option {
 	CACHE_MODEL_LOADER(
 			"cache.model",
-			"Caches BakedModels and Sprite/Atlases which allows the game to load extremely fast", Impact.EXTREME),
+			"Caches BakedModels which allows the game to load extremely fast", Impact.EXTREME),
+	CACHE_SPRITES(
+			"cache.sprite",
+			"Caches Sprite/Atlases which allows the game to load textures extremely fast", Impact.EXTREME),
 	CACHE_FONT(
 			"cache.font",
 			"Caches all of the fonts and their images.", Impact.HIGH),
@@ -18,16 +21,7 @@ public enum Option {
 			"Use a much faster .equals() on the ModelIdentifiers", Impact.MEDIUM),
 	FAST_WALL_BLOCK(
 			"WallBlockMixin",
-			"Caches the 2 most common blockstates for wall blocks.", Impact.MEDIUM),
-	FAST_UNICODE_FONT_GET_ID(
-			"misc.UnicodeTextureFontMixin",
-			"Use a much faster .getId() on Unicode fonts", Impact.HIGH),
-	FAST_RESOURCE_PATH(
-			"misc.DirectoryResourcePack",
-			"Use a way faster of getting the path.", Impact.HIGH),
-	WATERMARK(
-			"misc.TitleScreenMixin",
-			"DashLoader watermark. If you want to remove this please mind supporting me at https://ko-fi.com/notequalalpha instead and help this project grow.", Impact.NONE);
+			"Caches the 2 most common blockstates for wall blocks.", Impact.MEDIUM);
 
 	public final String mixinContains;
 	public final String description;
