@@ -24,21 +24,13 @@ public class ChunkFactory<R, D extends Dashable<R>> {
 		this.dashObject = dashObject;
 	}
 
-	public int add(R raw, RegistryFactory factory) {
-		RegistryWriter writer = new RegistryWriter(factory);
-		D value = this.factory.create(raw, writer);
-
-		// Increment dependency references
-		int[] dependencies = writer.getDependencies().toIntArray();
-		for (int dependency : dependencies) {
-			ChunkFactory<?, ?> chunk = factory.chunks[RegistryUtil.getChunkId(dependency)];
-			Entry<?> entry = chunk.list.get(RegistryUtil.getObjectId(dependency));
-			entry.references++;
-		}
-
+	public D create(R raw, RegistryWriter writer) {
+		return this.factory.create(raw, writer);
+	}
+	public int add(Entry<D> entry) {
 		final int pos = this.list.size();
-		this.list.add(new Entry<>(value, dependencies));
-		return pos;
+		this.list.add(entry);
+		return RegistryUtil.createId(pos, chunkId);
 	}
 
 	public List<Entry<D>> getList() {

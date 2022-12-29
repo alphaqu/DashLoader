@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.registry.factory;
 
 import dev.quantumfusion.dashloader.Dashable;
+import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 
 import java.util.function.BiFunction;

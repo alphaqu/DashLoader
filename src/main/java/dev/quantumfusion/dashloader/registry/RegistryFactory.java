@@ -23,17 +23,12 @@ import java.util.function.Function;
 public final class RegistryFactory {
 	private final Object2IntOpenHashMap<?> dedup = new Object2IntOpenHashMap<>();
 	private final Object2ByteMap<Class<?>> target2chunkMappings;
+	private final Object2ByteMap<Class<?>> dash2chunkMappings;
 	private final List<MissingHandler<?>> missingHandlers;
 	public final ChunkFactory<?, ?>[] chunks;
-
-	public RegistryFactory() {
-		this.target2chunkMappings = null;
-		this.missingHandlers = null;
-		this.chunks = null;
-	}
-
 	private RegistryFactory(ChunkFactory<?, ?>[] chunks, List<MissingHandler<?>> missingHandlers) {
 		this.target2chunkMappings = new Object2ByteOpenHashMap<>();
+		this.dash2chunkMappings = new Object2ByteOpenHashMap<>();
 		this.missingHandlers = missingHandlers;
 		this.chunks = chunks;
 	}
@@ -58,6 +53,7 @@ public final class RegistryFactory {
 			final DashObject declaredAnnotation = dashClass.getDeclaredAnnotation(DashObject.class);
 			if (declaredAnnotation != null) {
 				writer.target2chunkMappings.put(declaredAnnotation.value(), (byte) i);
+				writer.dash2chunkMappings.put(dashClass, (byte) i);
 			} else {
 				throw new RuntimeException("No DashObject annotation for " + name);
 			}
@@ -67,32 +63,52 @@ public final class RegistryFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <R> int add(R object) {
+	public <R, D extends Dashable<R>> int add(R object) {
 		if (this.dedup.containsKey(object)) {
 			return this.dedup.getInt(object);
 		}
 		var targetClass = object.getClass();
-		byte chunkPos = this.target2chunkMappings.getOrDefault(targetClass, (byte) -1);
 
-		if (chunkPos == -1) {
+
+		Integer pointer = null;
+		// If we have a dashObject supporting the target we create using its factory constructor
+		{
+			byte chunkPos = this.target2chunkMappings.getOrDefault(targetClass, (byte) -1);
+			if (chunkPos != -1) {
+				var chunk = (ChunkFactory<R, D>) this.chunks[chunkPos];
+				var entry = RegistryWriter.create(this, writer -> {
+					return chunk.create(object, writer);
+				});
+				pointer = chunk.add(entry);
+			}
+		}
+
+		// If we cannot find a target matching we go through the missing handlers
+		if (pointer == null) {
 			for (MissingHandler missingHandler : this.missingHandlers) {
 				if (missingHandler.parentClass.isAssignableFrom(targetClass)) {
-					Object output = missingHandler.func.apply(object, this);
-					if (output != null) {
-						return add(output);
+					var entry = RegistryWriter.create(this, writer -> {
+						return (D) missingHandler.func.apply(object, writer);
+					});
+					if (entry.data != null) {
+						var dashClass = entry.data.getClass();
+						byte chunkPos = this.dash2chunkMappings.getOrDefault(dashClass, (byte) -1);
+						if (chunkPos == -1) {
+							throw new RuntimeException("Could not find a ChunkWriter for DashClass " + dashClass);
+						}
+						var chunk = (ChunkFactory<R, D>) this.chunks[chunkPos];
+						pointer = chunk.add(entry);
+						break;
 					}
 				}
 			}
 		}
 
-		if (chunkPos == -1) {
-			throw new RuntimeException("Could not find a ChunkWriter for " + targetClass);
+		if (pointer == null) {
+			throw new RuntimeException("Could not find a ChunkWriter for " + targetClass + ": " + object);
 		}
 
-		var chunk = (ChunkFactory<R, ?>) this.chunks[chunkPos];
-		final var objectPos = chunk.add(object, this);
-		final int pointer = RegistryUtil.createId(objectPos, chunkPos);
-		((Object2IntMap<R>) this.dedup).put(object, pointer);
+		((Object2IntMap<R>) this.dedup).put(object, (int) pointer);
 		return pointer;
 	}
 
