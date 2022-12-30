@@ -74,6 +74,8 @@ public class SplashScreenMixin {
 			DashLoader.LOG.info("Missing translations");
 			ProgressHandler.INSTANCE.setTranslations(map);
 			client.getToastManager().add(new DashToast());
+		} else {
+			INSTANCE.resetDashLoader();
 		}
 	}
 
