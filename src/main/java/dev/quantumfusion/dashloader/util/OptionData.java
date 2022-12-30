@@ -56,7 +56,9 @@ public class OptionData<D> {
 	/** Sets the optional data to the intended status **/
 	public void set(DashLoader.Status status, @NotNull D data) {
 		if (onlyOn != null && onlyOn != status) {
-			throw new RuntimeException("Cannot set value with status " + status + " when the data is limited to " + onlyOn);
+			this.data = null;
+			this.dataStatus = null;
+			return;
 		}
 
 		DashLoader.Status currentStatus = DashLoader.INSTANCE.getStatus();
