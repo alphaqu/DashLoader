@@ -25,9 +25,9 @@ public class ShaderCacheHandler implements DashCacheHandler<ShaderCacheHandler.D
 	public static final OptionData<Int2ObjectMap<List<String>>> WRITE_PROGRAM_SOURCES = new OptionData<>(DashLoader.Status.SAVE);
 
 	@Override
-	public void prepareForSave() {
-		SHADERS.set(DashLoader.Status.SAVE, new HashMap<>());
-		WRITE_PROGRAM_SOURCES.set(DashLoader.Status.SAVE, new Int2ObjectOpenHashMap<>());
+	public void reset(DashLoader.Status status) {
+		SHADERS.set(status, new HashMap<>());
+		WRITE_PROGRAM_SOURCES.set(status, new Int2ObjectOpenHashMap<>());
 	}
 
 	@Override

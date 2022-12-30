@@ -17,8 +17,8 @@ public class SplashTextCacheHandler implements DashCacheHandler<SplashTextCacheH
 	public static final OptionData<List<String>> TEXTS = new OptionData<>();
 
 	@Override
-	public void prepareForSave() {
-		TEXTS.set(DashLoader.Status.SAVE, new ArrayList<>());
+	public void reset(DashLoader.Status status) {
+		TEXTS.set(status, new ArrayList<>());
 	}
 
 	@Override

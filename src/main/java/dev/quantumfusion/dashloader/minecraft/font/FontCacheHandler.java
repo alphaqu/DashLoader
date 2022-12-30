@@ -29,8 +29,8 @@ public class FontCacheHandler implements DashCacheHandler<FontCacheHandler.Data>
 	public static final OptionData<Map<STBTTFontinfo, Identifier>> FONT_TO_IDENT = new OptionData<>();
 
 	@Override
-	public void prepareForSave() {
-		DATA.set(DashLoader.Status.SAVE, new Object2ObjectOpenHashMap<>());
+	public void reset(DashLoader.Status status) {
+		DATA.set(status, new Object2ObjectOpenHashMap<>());
 	}
 
 	@Override

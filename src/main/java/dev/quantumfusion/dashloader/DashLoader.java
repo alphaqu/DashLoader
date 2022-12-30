@@ -42,8 +42,6 @@ public class DashLoader {
 	private boolean shouldReload = true;
 	private Status status = Status.NONE;
 	private final DashMetadata metadata = new DashMetadata();
-	private DashDataManager dataManager;
-
 	private final Path cacheDir = Path.of("./dashloader-cache/");
 	// Serializers
 	private final RegistrySerializer registrySerializer;
@@ -77,7 +75,6 @@ public class DashLoader {
 				this.loadDashCache();
 			} else {
 				this.setStatus(Status.SAVE);
-				APIHandler.INSTANCE.getCacheHandlers().forEach(DashCacheHandler::prepareForSave);
 			}
 
 			LOG.info("Reloaded DashLoader");
@@ -211,27 +208,11 @@ public class DashLoader {
 		}
 		return this.cacheDir.resolve(this.metadata.modInfo + "/");
 	}
-	public DashDataManager getData() {
-		final DashDataManager dataManager = this.dataManager;
-		if (this.dataManager == null) {
-			throw new NullPointerException("No dataManager active");
-		}
-		return dataManager;
-	}
-
 
 	private void setStatus(Status status) {
 		LOG.info("\u001B[46m\u001B[30m DashLoader Status change {}\n\u001B[0m", status);
 		this.status = status;
-		switch (status) {
-			case NONE -> this.dataManager = null;
-			case LOAD -> this.dataManager = new DashDataManager(new DashDataManager.DashReadContextData());
-			case SAVE -> this.dataManager = new DashDataManager(new DashDataManager.DashWriteContextData());
-		}
-	}
-
-	public boolean active() {
-		return this.status != Status.NONE;
+		APIHandler.INSTANCE.getCacheHandlers().forEach(handler -> handler.reset(status));
 	}
 
 	public boolean isWrite() {
@@ -245,7 +226,6 @@ public class DashLoader {
 	public Status getStatus() {
 		return this.status;
 	}
-
 
 	public enum Status {
 		NONE,

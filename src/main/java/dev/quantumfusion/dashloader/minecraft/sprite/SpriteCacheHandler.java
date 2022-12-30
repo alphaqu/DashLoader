@@ -19,8 +19,8 @@ import java.util.HashMap;
 public class SpriteCacheHandler implements DashCacheHandler<SpriteCacheHandler.Data> {
 	public final static OptionData<HashMap<Identifier, SpriteLoader.StitchResult>> ATLASES = new OptionData<>();
 	@Override
-	public void prepareForSave() {
-		ATLASES.set(DashLoader.Status.SAVE, new HashMap<>());
+	public void reset(DashLoader.Status status) {
+		ATLASES.set(status, new HashMap<>());
 	}
 
 	@Override

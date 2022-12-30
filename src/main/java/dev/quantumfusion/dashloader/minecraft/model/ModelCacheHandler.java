@@ -11,8 +11,6 @@ import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.thread.ThreadHandler;
 import dev.quantumfusion.dashloader.util.OptionData;
 import dev.quantumfusion.taski.builtin.StepTask;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.block.BlockModels;
@@ -26,6 +24,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class ModelCacheHandler implements DashCacheHandler<ModelCacheHandler.Data> {
@@ -36,12 +35,12 @@ public class ModelCacheHandler implements DashCacheHandler<ModelCacheHandler.Dat
 	public static final OptionData<HashMap<MultipartModelSelector, StateManager<Block, BlockState>>> STATE_MANAGERS = new OptionData<>(DashLoader.Status.SAVE);
 
 	@Override
-	public void prepareForSave() {
-		MODELS.set(DashLoader.Status.SAVE, new HashMap<>());
-		MISSING_WRITE.set(DashLoader.Status.SAVE, new HashMap<>());
-		MISSING_READ.set(DashLoader.Status.SAVE, new HashMap<>());
-		MULTIPART_PREDICATES.set(DashLoader.Status.SAVE, new HashMap<>());
-		STATE_MANAGERS.set(DashLoader.Status.SAVE, new HashMap<>());
+	public void reset(DashLoader.Status status) {
+		MODELS.set(status, new HashMap<>());
+		MISSING_WRITE.set(status, new HashMap<>());
+		MISSING_READ.set(status, new HashMap<>());
+		MULTIPART_PREDICATES.set(status, new HashMap<>());
+		STATE_MANAGERS.set(status, new HashMap<>());
 	}
 
 	@Override
