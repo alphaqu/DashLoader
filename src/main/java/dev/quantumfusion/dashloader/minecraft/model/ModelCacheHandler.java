@@ -51,17 +51,31 @@ public class ModelCacheHandler implements DashCacheHandler<ModelCacheHandler.Dat
 		if (missingModelsWrite == null || models == null) {
 			return null;
 		} else  {
-			var outModels  = new IntIntList(new ArrayList<>(models.size()));
+			var outModels = new IntIntList(new ArrayList<>(models.size()));
+			var missingModels = new IntIntList();
+
+			final HashSet<Identifier> out = new HashSet<>();
 			task.doForEach(models, (identifier, bakedModel) -> {
 				if (bakedModel != null) {
 					final int add = writer.add(bakedModel);
 					if (!missingModelsWrite.containsKey(bakedModel)) {
 						outModels.put(writer.add(identifier), add);
+						out.add(identifier);
 					}
 				}
 			});
 
-			return new Data(outModels);
+
+			for (Block block : Registries.BLOCK) {
+				block.getStateManager().getStates().forEach((blockState) -> {
+					final ModelIdentifier modelId = BlockModels.getModelId(blockState);
+					if (!out.contains(modelId)) {
+						missingModels.put(writer.add(blockState), writer.add(modelId));
+					}
+				});
+			}
+
+			return new Data(outModels, missingModels);
 		}
 	}
 
@@ -71,21 +85,11 @@ public class ModelCacheHandler implements DashCacheHandler<ModelCacheHandler.Dat
 		mappings.models.forEach((key, value) -> out.put(reader.get(key), reader.get(value)));
 
 		var missingModelsRead = new HashMap<BlockState, Identifier>();
-		var tasks = new ArrayList<Runnable>();
-		DashLoader.LOG.info("Scanning Blocks");
-		for (Block block : Registries.BLOCK) {
-			tasks.add(() -> block.getStateManager().getStates().forEach((blockState) -> {
-				final ModelIdentifier modelId = BlockModels.getModelId(blockState);
-				if (!out.containsKey(modelId)) {
-					missingModelsRead.put(blockState, modelId);
-				}
-			}));
-		}
-
-		DashLoader.LOG.info("Verifying {} BlockStates", tasks.size());
-		ThreadHandler.INSTANCE.parallelRunnable(tasks);
+		mappings.missingModels.forEach((blockState, modelId) -> {
+			missingModelsRead.put(reader.get(blockState), reader.get(modelId));
+		});
+		
 		DashLoader.LOG.info("Found {} Missing BlockState Models", missingModelsRead.size());
-
 		MISSING_READ.set(DashLoader.Status.LOAD, missingModelsRead);
 		MODELS.set(DashLoader.Status.LOAD, out);
 	}
@@ -107,9 +111,11 @@ public class ModelCacheHandler implements DashCacheHandler<ModelCacheHandler.Dat
 
 	public static final class Data {
 		public final IntIntList models; // identifier to model list
+		public final IntIntList missingModels;
 
-		public Data(IntIntList models) {
+		public Data(IntIntList models, IntIntList missingModels) {
 			this.models = models;
+			this.missingModels = missingModels;
 		}
 	}
 }
