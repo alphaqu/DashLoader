@@ -1,5 +1,7 @@
 package dev.quantumfusion.dashloader.mixin.option.cache;
 
+import dev.quantumfusion.dashloader.DashLoader;
+import dev.quantumfusion.dashloader.minecraft.splash.SplashTextCacheHandler;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.profiler.Profiler;
@@ -10,8 +12,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-import static dev.quantumfusion.dashloader.DashLoader.DL;
-
 @Mixin(SplashTextResourceSupplier.class)
 public class SplashTextResourceSupplierMixin {
 	@Inject(
@@ -20,12 +20,7 @@ public class SplashTextResourceSupplierMixin {
 			cancellable = true
 	)
 	private void applySplashCache(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<List<String>> cir) {
-		if (DL.isRead()) {
-			var data = DL.getData().splashText;
-			if (data.dataAvailable()) {
-				cir.setReturnValue(data.getCacheResultData());
-			}
-		}
+		SplashTextCacheHandler.TEXTS.visit(DashLoader.Status.LOAD, cir::setReturnValue);
 	}
 
 
@@ -34,8 +29,9 @@ public class SplashTextResourceSupplierMixin {
 			at = @At(value = "RETURN")
 	)
 	private void stealSplashCache(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<List<String>> cir) {
-		if (DL.isWrite()) {
-			DL.getData().splashText.setMinecraftData(cir.getReturnValue());
-		}
+		SplashTextCacheHandler.TEXTS.visit(DashLoader.Status.SAVE, strings -> {
+			strings.clear();
+			strings.addAll(cir.getReturnValue());
+		});
 	}
 }

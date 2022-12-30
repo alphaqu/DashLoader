@@ -9,26 +9,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.concurrent.CompletableFuture;
 
-import static dev.quantumfusion.dashloader.DashLoader.DL;
+import static dev.quantumfusion.dashloader.DashLoader.INSTANCE;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
-
 	@Shadow
 	protected abstract void render(boolean tick);
 
 	@Inject(method = "reloadResources()Ljava/util/concurrent/CompletableFuture;",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;reloadResources(Z)Ljava/util/concurrent/CompletableFuture;"))
 	private void requestReload(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-		DL.requestReload();
+		INSTANCE.requestReload();
 	}
 
 
 	@Inject(method = "reloadResources(Z)Ljava/util/concurrent/CompletableFuture;", at = @At(value = "RETURN"))
 	private void reloadComplete(boolean thing, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
 		cir.getReturnValue().thenRun(() -> {
-			if (DL.isRead()) {
-				DL.resetDashLoader();
+			if (INSTANCE.isRead())  {
+				INSTANCE.resetDashLoader();
 			}
 		});
 	}

@@ -1,6 +1,6 @@
 package dev.quantumfusion.dashloader.thread;
 
-import dev.quantumfusion.dashloader.Dashable;
+import dev.quantumfusion.dashloader.api.Dashable;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
 import dev.quantumfusion.dashloader.registry.data.ChunkData;
 
@@ -13,6 +13,7 @@ import java.util.function.IntFunction;
 
 public final class ThreadHandler {
 	public static final int THREADS = Runtime.getRuntime().availableProcessors();
+	public static final ThreadHandler INSTANCE = new ThreadHandler();
 
 	private final ForkJoinPool threadPool = new ForkJoinPool(THREADS, new ForkJoinPool.ForkJoinWorkerThreadFactory() {
 		private final AtomicInteger threadNumber = new AtomicInteger(0);
@@ -26,11 +27,11 @@ public final class ThreadHandler {
 		}
 	}, null, true);
 
-	public ThreadHandler() {
+	private ThreadHandler() {
 	}
 
 	public static int calcThreshold(final int tasks) {
-		return Math.max(tasks / (THREADS * 32), 4);
+		return Math.max(tasks / (THREADS * 8), 4);
 	}
 
 	// Fork Join Methods

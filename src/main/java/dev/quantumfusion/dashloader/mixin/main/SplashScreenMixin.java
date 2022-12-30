@@ -1,6 +1,8 @@
 package dev.quantumfusion.dashloader.mixin.main;
 
 import dev.quantumfusion.dashloader.DashLoader;
+import dev.quantumfusion.dashloader.ProfilerHandler;
+import dev.quantumfusion.dashloader.ProgressHandler;
 import dev.quantumfusion.dashloader.client.DashToast;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
@@ -19,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.HashMap;
 
-import static dev.quantumfusion.dashloader.DashLoader.DL;
+import static dev.quantumfusion.dashloader.DashLoader.INSTANCE;
 
 
 @Mixin(value = SplashOverlay.class, priority = 69420)
@@ -52,9 +54,9 @@ public class SplashScreenMixin {
 			}
 		}
 
-		DL.profilerHandler.print();
+		ProfilerHandler.INSTANCE.print();
 
-		if (DL.isWrite() && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
+		if (INSTANCE.isWrite() && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
 			// Yes this is bad. But it makes us not require Fabric API
 			var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
 			DashLoader.LOG.info(langCode);
@@ -70,7 +72,7 @@ public class SplashScreenMixin {
 				}
 			}
 			DashLoader.LOG.info("Missing translations");
-			DL.progress.setTranslations(map);
+			ProgressHandler.INSTANCE.setTranslations(map);
 			client.getToastManager().add(new DashToast());
 		}
 	}

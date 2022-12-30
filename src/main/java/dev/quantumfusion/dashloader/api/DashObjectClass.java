@@ -1,6 +1,5 @@
 package dev.quantumfusion.dashloader.api;
 
-import dev.quantumfusion.dashloader.Dashable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,8 +16,8 @@ public final class DashObjectClass<R, D extends Dashable<R>> {
 	@Nullable
 	private Class<R> targetClass;
 	int dashObjectId;
-	public DashObjectClass(Class<D> dashClass) {
-		this.dashClass = dashClass;
+	public DashObjectClass(Class<?> dashClass) {
+		this.dashClass = (Class<D>) dashClass;
 	}
 
 	public Class<D> getDashClass() {

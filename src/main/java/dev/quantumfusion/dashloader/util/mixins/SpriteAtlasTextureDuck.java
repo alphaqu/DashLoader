@@ -1,6 +1,6 @@
 package dev.quantumfusion.dashloader.util.mixins;
 
-import dev.quantumfusion.dashloader.data.image.DashSpriteAtlasTextureData;
+import dev.quantumfusion.dashloader.minecraft.sprite.DashSpriteAtlasTextureData;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
 

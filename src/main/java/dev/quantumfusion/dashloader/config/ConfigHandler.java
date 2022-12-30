@@ -22,6 +22,7 @@ import java.util.EnumMap;
 import java.util.function.Consumer;
 
 public class ConfigHandler {
+	public static ConfigHandler INSTANCE = new ConfigHandler(FabricLoader.getInstance().getConfigDir().normalize().resolve("dashloader.json"));
 	private static final EnumMap<Option, Boolean> OPTION_ACTIVE = new EnumMap<>(Option.class);
 	private static final String DISABLE_OPTION_TAG = DashConstants.DASH_DISABLE_OPTION_TAG;
 	private final Gson gson = new GsonBuilder().setLenient().setPrettyPrinting().create();

@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.client;
 
 import dev.quantumfusion.dashloader.DashLoader;
+import dev.quantumfusion.dashloader.config.ConfigHandler;
 import dev.quantumfusion.dashloader.config.DashConfig;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class HahaManager {
 	};
 
 	public static String getFact() {
-		DashConfig config = DashLoader.DL.config.config;
+		DashConfig config = ConfigHandler.INSTANCE.config;
 		List<String> splashLines = new ArrayList<>(config.customSplashLines);
 		if (config.addDefaultSplashLines) {
 			splashLines.addAll(List.of(FACTS));

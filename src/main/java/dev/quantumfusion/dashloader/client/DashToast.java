@@ -1,6 +1,7 @@
 package dev.quantumfusion.dashloader.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.quantumfusion.dashloader.DashLoader;
 import dev.quantumfusion.dashloader.ProgressHandler;
 import dev.quantumfusion.taski.builtin.StaticTask;
 import net.minecraft.client.font.TextRenderer;
@@ -17,8 +18,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static dev.quantumfusion.dashloader.DashLoader.DL;
 
 public class DashToast implements Toast {
 	private static final int PROGRESS_BAR_HEIGHT = 2;
@@ -43,7 +42,7 @@ public class DashToast implements Toast {
 
 	public DashToast() {
 		DashToast.STATUS = DashToast.Status.CACHING;
-		final Thread thread = new Thread(DL::saveDashCache);
+		final Thread thread = new Thread(DashLoader.INSTANCE::saveDashCache);
 		thread.setName("dashloader-thread");
 		thread.start();
 
@@ -59,7 +58,7 @@ public class DashToast implements Toast {
 		TextRenderer textRenderer = manager.getClient().textRenderer;
 
 		if ((STATUS == Status.DONE) && !done) {
-			DL.resetDashLoader();
+			DashLoader.INSTANCE.resetDashLoader();
 			timeDone = System.currentTimeMillis();
 			done = true;
 		}
@@ -71,13 +70,14 @@ public class DashToast implements Toast {
 		// Get progress
 		double currentProgress;
 		Color currentProgressColor;
+		ProgressHandler progress = ProgressHandler.INSTANCE;
 		if (STATUS == Status.CRASHED) {
-			ProgressHandler.TASK = new StaticTask("Crash", (System.currentTimeMillis() - timeDone) / (float) 10000);
-			DL.progress.setOverwriteText("Internal crash. Please check logs.");
-			currentProgress = DL.progress.getProgress();
+			progress.task = new StaticTask("Crash", (System.currentTimeMillis() - timeDone) / (float) 10000);
+			progress.setOverwriteText("Internal crash. Please check logs.");
+			currentProgress = progress.getProgress();
 			currentProgressColor = DrawerUtil.FAILED_COLOR;
 		} else {
-			currentProgress = DL.progress.getProgress();
+			currentProgress = progress.getProgress();
 			currentProgressColor = DrawerUtil.getProgressColor(currentProgress);
 		}
 
@@ -114,8 +114,8 @@ public class DashToast implements Toast {
 		DrawerUtil.drawRect(matrices, 0, barY, (int) (width * currentProgress), PROGRESS_BAR_HEIGHT, currentProgressColor);
 
 		// Draw progress text
-		DrawerUtil.drawText(matrices, textRenderer, PADDING, barY - PADDING, DL.progress.getText(), DrawerUtil.STATUS_COLOR);
-		String progressText = DL.progress.getProgressText();
+		DrawerUtil.drawText(matrices, textRenderer, PADDING, barY - PADDING, progress.getText(), DrawerUtil.STATUS_COLOR);
+		String progressText = progress.getProgressText();
 		int textWidth = textRenderer.getWidth(progressText);
 		DrawerUtil.drawText(matrices, textRenderer, (width - PADDING) - textWidth, barY - PADDING, progressText, DrawerUtil.STATUS_COLOR);
 

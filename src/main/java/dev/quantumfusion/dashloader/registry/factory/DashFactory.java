@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader.registry.factory;
 
 import dev.quantumfusion.dashloader.api.DashObjectClass;
-import dev.quantumfusion.dashloader.Dashable;
+import dev.quantumfusion.dashloader.api.Dashable;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import org.jetbrains.annotations.Nullable;
 

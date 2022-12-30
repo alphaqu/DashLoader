@@ -1,24 +1,20 @@
 package dev.quantumfusion.dashloader.registry;
 
-import dev.quantumfusion.dashloader.Dashable;
+import dev.quantumfusion.dashloader.api.Dashable;
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.api.DashObjectClass;
-import dev.quantumfusion.dashloader.io.RegistrySerializer;
 import dev.quantumfusion.dashloader.registry.data.ChunkData;
 import dev.quantumfusion.dashloader.registry.data.ChunkFactory;
 import dev.quantumfusion.dashloader.registry.data.StageData;
 import dev.quantumfusion.dashloader.registry.factory.DashFactory;
 import dev.quantumfusion.dashloader.registry.factory.MissingHandler;
 import dev.quantumfusion.dashloader.util.RegistryUtil;
-import dev.quantumfusion.hyphen.HyphenSerializer;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import it.unimi.dsi.fastutil.objects.Object2ByteMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import java.util.*;
-import java.util.function.Function;
 
 public final class RegistryFactory {
 	private final Object2IntOpenHashMap<?> dedup = new Object2IntOpenHashMap<>();

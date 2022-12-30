@@ -1,14 +1,9 @@
 package dev.quantumfusion.dashloader.registry.data;
 
-import dev.quantumfusion.dashloader.Dashable;
+import dev.quantumfusion.dashloader.api.Dashable;
 import dev.quantumfusion.dashloader.api.DashObjectClass;
-import dev.quantumfusion.dashloader.io.fragment.Piece;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static dev.quantumfusion.dashloader.DashLoader.DL;
+import dev.quantumfusion.dashloader.thread.ThreadHandler;
 
 public class ChunkData<R, D extends Dashable<R>> {
 	public final byte chunkId;
@@ -35,7 +30,7 @@ public class ChunkData<R, D extends Dashable<R>> {
 	}
 
 	public void export(Object[] data, RegistryReader registry) {
-		DL.thread.parallelExport(this.dashables, data, registry);
+		ThreadHandler.INSTANCE.parallelExport(this.dashables, data, registry);
 	}
 
 	public void postExport(RegistryReader reader) {

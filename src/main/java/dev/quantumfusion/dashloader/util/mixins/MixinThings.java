@@ -1,5 +1,7 @@
 package dev.quantumfusion.dashloader.util.mixins;
 
+import dev.quantumfusion.dashloader.DashLoader;
+import dev.quantumfusion.dashloader.minecraft.model.ModelCacheHandler;
 import dev.quantumfusion.dashloader.mixin.accessor.AndMultipartModelSelectorAccessor;
 import dev.quantumfusion.dashloader.mixin.accessor.OrMultipartModelSelectorAccessor;
 import net.minecraft.block.Block;
@@ -10,7 +12,7 @@ import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
 import net.minecraft.state.StateManager;
 
-import static dev.quantumfusion.dashloader.DashLoader.DL;
+import static dev.quantumfusion.dashloader.DashLoader.INSTANCE;
 
 public class MixinThings {
 	public static FontManager FONTMANAGER;
@@ -27,7 +29,10 @@ public class MixinThings {
 		} else if (multipartModelSelector instanceof OrMultipartModelSelector or) {
 			addPredicates(((OrMultipartModelSelectorAccessor) or).getSelectors(), stateStateManager);
 		}
-		DL.getData().getWriteContextData().stateManagers.put(multipartModelSelector, stateStateManager);
+
+		ModelCacheHandler.STATE_MANAGERS.visit(DashLoader.Status.SAVE, map -> {
+			map.put(multipartModelSelector, stateStateManager);
+		});
 	}
 
 }

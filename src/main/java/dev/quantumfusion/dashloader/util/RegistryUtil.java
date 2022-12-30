@@ -1,5 +1,6 @@
 package dev.quantumfusion.dashloader.util;
 
+import dev.quantumfusion.dashloader.minecraft.model.predicates.BooleanSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 
 public class RegistryUtil {

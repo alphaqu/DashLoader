@@ -1,8 +1,7 @@
 package dev.quantumfusion.dashloader.registry.data;
 
 import dev.quantumfusion.dashloader.api.DashObjectClass;
-import dev.quantumfusion.dashloader.Dashable;
-import dev.quantumfusion.dashloader.registry.RegistryFactory;
+import dev.quantumfusion.dashloader.api.Dashable;
 import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.dashloader.registry.factory.DashFactory;
 import dev.quantumfusion.dashloader.util.RegistryUtil;

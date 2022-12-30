@@ -1,6 +1,6 @@
 package dev.quantumfusion.dashloader.registry;
 
-import dev.quantumfusion.dashloader.Dashable;
+import dev.quantumfusion.dashloader.api.Dashable;
 import dev.quantumfusion.dashloader.registry.data.ChunkFactory;
 import dev.quantumfusion.dashloader.util.RegistryUtil;
 import it.unimi.dsi.fastutil.ints.IntArrayList;

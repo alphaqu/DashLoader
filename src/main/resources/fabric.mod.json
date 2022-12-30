@@ -12,6 +12,11 @@
 		"homepage" : "https://discord.gg/VeFTrtCkrb",
 		"sources" : "https://github.com/QuantumFusionMC/DashLoader-Definition"
 	},
+	"entrypoints": {
+		"dashloader": [
+			"dev.quantumfusion.dashloader.minecraft.DashMinecraft"
+		]
+	},
 	"license" : "LGPL-3.0-only",
 	"icon" : "dashloader/textures/icon.png",
 	"environment" : "client",

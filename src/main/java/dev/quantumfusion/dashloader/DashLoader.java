@@ -1,44 +1,35 @@
 package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.dashloader.api.APIHandler;
-import dev.quantumfusion.dashloader.api.DashObjectClass;
-import dev.quantumfusion.dashloader.api.hook.LoadCacheHook;
-import dev.quantumfusion.dashloader.api.hook.SaveCacheHook;
+import dev.quantumfusion.dashloader.api.DashCacheHandler;
+import dev.quantumfusion.dashloader.api.entrypoint.DashEntrypoint;
 import dev.quantumfusion.dashloader.client.DashToast;
-import dev.quantumfusion.dashloader.config.ConfigHandler;
-import dev.quantumfusion.dashloader.data.DashIdentifier;
-import dev.quantumfusion.dashloader.data.DashModelIdentifier;
-import dev.quantumfusion.dashloader.data.MappingData;
-import dev.quantumfusion.dashloader.data.model.predicates.*;
-import dev.quantumfusion.dashloader.fallback.model.DashMissingDashModel;
-import dev.quantumfusion.dashloader.io.IOHandler;
+import dev.quantumfusion.dashloader.io.MappingSerializer;
+import dev.quantumfusion.dashloader.io.data.CacheInfo;
+import dev.quantumfusion.dashloader.io.RegistrySerializer;
+import dev.quantumfusion.dashloader.io.Serializer;
 import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
+import dev.quantumfusion.dashloader.registry.data.StageData;
 import dev.quantumfusion.dashloader.registry.factory.MissingHandler;
-import dev.quantumfusion.dashloader.thread.ThreadHandler;
-import dev.quantumfusion.dashloader.util.BooleanSelector;
 import dev.quantumfusion.dashloader.util.TimeUtil;
 import dev.quantumfusion.taski.builtin.StepTask;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.AndMultipartModelSelector;
-import net.minecraft.client.render.model.json.MultipartModelSelector;
-import net.minecraft.client.render.model.json.OrMultipartModelSelector;
-import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
-import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.util.Identifier;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class DashLoader {
+	private static final String METADATA_FILE_NAME = "metadata.bin";
 	private static final String VERSION = FabricLoader.getInstance()
 			.getModContainer("dashloader")
 			.orElseThrow(() -> new IllegalStateException("DashLoader not found... apparently! WTF?"))
@@ -46,20 +37,18 @@ public class DashLoader {
 			.getVersion()
 			.getFriendlyString();
 	public static final Logger LOG = LogManager.getLogger("DashLoader");
-	public static final DashLoader DL = new DashLoader();
+	public static final DashLoader INSTANCE = new DashLoader();
 
 	private boolean shouldReload = true;
 	private Status status = Status.NONE;
 	private final DashMetadata metadata = new DashMetadata();
 	private DashDataManager dataManager;
 
-	// Handlers
-	public final APIHandler api;
-	public final ThreadHandler thread;
-	public final ProgressHandler progress;
-	public final ConfigHandler config;
-	public final IOHandler io;
-	public final ProfilerHandler profilerHandler = new ProfilerHandler();
+	private final Path cacheDir = Path.of("./dashloader-cache/");
+	// Serializers
+	private final RegistrySerializer registrySerializer;
+	private final MappingSerializer mappingsSerializer;
+	private final Serializer<CacheInfo> metadataSerializer;
 
 	// Initializes the static singleton
 	@SuppressWarnings("EmptyMethod")
@@ -67,59 +56,28 @@ public class DashLoader {
 	}
 
 	private DashLoader() {
-		LOG.info("Bootstrapping DashLoader " + VERSION + ".");
-
-		this.api = new APIHandler();
-		this.metadata.setModHash(FabricLoader.getInstance());
-		this.io = new IOHandler(Path.of("./dashloader-cache/"));
-		this.config = new ConfigHandler(FabricLoader.getInstance().getConfigDir().normalize().resolve("dashloader.json"));
-		this.thread = new ThreadHandler();
-		this.progress = new ProgressHandler();
-	}
-
-	public void initialize() {
 		LOG.info("Initializing DashLoader " + VERSION + ".");
-		try {
-			this.api.initAPI();
-
-			List<DashObjectClass<?, ?>> dashObjects = this.api.getDashObjects();
-			this.config.reloadConfig();
-			final FabricLoader instance = FabricLoader.getInstance();
-			if (instance.isDevelopmentEnvironment()) {
-				LOG.warn("DashLoader launched in dev.");
-			}
-
-			this.io.init(dashObjects, this.config.config.compression);
-			this.io.setCacheArea(this.metadata.modInfo);
-			this.io.setSubCacheArea("bootstrap");
-			this.io.addSerializer("mapping", MappingData.class, dashObjects);
-
-			LOG.info("Created DashLoader with {}.", Thread.currentThread().getContextClassLoader().getClass().getSimpleName());
-			LOG.info("Initialized DashLoader");
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("mc exception bad");
+		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+			LOG.warn("DashLoader launched in dev.");
 		}
-	}
 
-	public DashDataManager getData() {
-		final DashDataManager dataManager = this.dataManager;
-		if (this.dataManager == null) {
-			throw new NullPointerException("No dataManager active");
-		}
-		return dataManager;
+		this.metadata.setModHash(FabricLoader.getInstance());
+		Path cacheAreaDir = this.getCacheAreaDir();
+		// Initialize serializers
+		this.registrySerializer = new RegistrySerializer(cacheAreaDir, APIHandler.INSTANCE.getDashObjects());
+		this.mappingsSerializer = new MappingSerializer(cacheAreaDir, APIHandler.INSTANCE.getCacheHandlers());
+		this.metadataSerializer = new Serializer<>(cacheAreaDir, CacheInfo.class);
 	}
-
 	public void reload(List<String> resourcePacks) {
 		if (this.shouldReload) {
 			this.metadata.setResourcePackHash(resourcePacks);
-			this.io.setSubCacheArea(this.metadata.resourcePacks);
 			LOG.info("Reloading DashLoader. [mod-hash: {}] [resource-hash: {}]", this.metadata.modInfo, this.metadata.resourcePacks);
-			if (this.io.cacheExists()) {
-				this.setStatus(Status.READ);
+			if (this.cacheExists()) {
+				this.setStatus(Status.LOAD);
 				this.loadDashCache();
 			} else {
-				this.setStatus(Status.WRITE);
+				this.setStatus(Status.SAVE);
+				APIHandler.INSTANCE.getCacheHandlers().forEach(DashCacheHandler::prepareForSave);
 			}
 
 			LOG.info("Reloaded DashLoader");
@@ -136,157 +94,139 @@ public class DashLoader {
 	}
 
 	public void saveDashCache() {
-		this.api.callHook(SaveCacheHook.class, SaveCacheHook::saveCacheStart);
 		DashToast.STATUS = DashToast.Status.CACHING;
 		LOG.info("Starting DashLoader Caching");
 		try {
-			this.progress.setOverwriteText(null);
+			ProgressHandler.INSTANCE.setOverwriteText(null);
 			long start = System.currentTimeMillis();
 
 			StepTask main = new StepTask("save", 2);
-			ProgressHandler.TASK = main;
+			ProgressHandler.INSTANCE.task = main;
 
-			this.api.callHook(SaveCacheHook.class, hook -> hook.saveCacheTask(main));
 			// missing model callback
 			List<MissingHandler<?>> handlers = new ArrayList<>();
-			handlers.add(new MissingHandler<>(
-					BakedModel.class,
-					(bakedModel, registryWriter) -> {
-						final DashDataManager.DashWriteContextData writeContextData = this.getData().getWriteContextData();
-						if (writeContextData.missingModelsWrite.containsKey(bakedModel)) {
-							return writeContextData.missingModelsWrite.get(bakedModel);
-						}
-						final DashMissingDashModel value = new DashMissingDashModel();
-						writeContextData.missingModelsWrite.put(bakedModel, value);
-						return value;
-					}
-			));
-			handlers.add(new MissingHandler<>(
-					Identifier.class,
-					(identifier, registryWriter) -> {
-						if (identifier instanceof ModelIdentifier m) {
-							return new DashModelIdentifier(m);
-						} else {
-							return new DashIdentifier(identifier);
-						}
-					}
-			));
-			handlers.add(new MissingHandler<>(
-					MultipartModelSelector.class,
-					(selector, writer) -> {
-						if (selector == MultipartModelSelector.TRUE) {
-							return new DashStaticPredicate(true);
-						} else if (selector == MultipartModelSelector.FALSE) {
-							return new DashStaticPredicate(false);
-						} else if (selector instanceof AndMultipartModelSelector s) {
-							return new DashAndPredicate(s, writer);
-						} else if (selector instanceof OrMultipartModelSelector s) {
-							return new DashOrPredicate(s, writer);
-						} else if (selector instanceof SimpleMultipartModelSelector s) {
-							return new DashSimplePredicate(s, writer);
-						} else if (selector instanceof BooleanSelector s) {
-							return new DashStaticPredicate(s.selector);
-						} else {
-							throw new RuntimeException("someone is having fun with lambda selectors again");
-						}
-					}
-			));
+			for (DashEntrypoint entryPoint : FabricLoader.getInstance().getEntrypoints("dashloader", DashEntrypoint.class)) {
+				entryPoint.onDashLoaderSave(handlers);
+			}
+			RegistryFactory factory = RegistryFactory.create(handlers, APIHandler.INSTANCE.getDashObjects());
 
-			RegistryFactory writer = RegistryFactory.create(handlers, this.api.getDashObjects());
-
-			// Reading minecraft assets
-
-			MappingData mappings = new MappingData();
-			mappings.map(writer, main);
+			// Mappings
+			mappingsSerializer.save(getCacheDir(), factory, main);
 			main.next();
 
 			// serialization
 			main.run(new StepTask("serialize", 2), (task) -> {
-				task.run(() -> this.io.saveRegistry(writer, task::setSubTask));
-				task.run(() -> this.io.save(mappings, task::setSubTask));
+				try {
+					CacheInfo info = this.registrySerializer.serialize(getCacheDir(), factory, task::setSubTask);
+					task.next();
+					this.metadataSerializer.save(getCacheDir().resolve(METADATA_FILE_NAME), new StepTask("hi"), info);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+				task.next();
 			});
 
 			String text = "Created cache in " + TimeUtil.getTimeStringFromStart(start);
-			this.progress.setOverwriteText(text);
+			ProgressHandler.INSTANCE.setOverwriteText(text);
 			LOG.info(text);
 			DashToast.STATUS = DashToast.Status.DONE;
-			this.api.callHook(SaveCacheHook.class, SaveCacheHook::saveCacheEnd);
 		} catch (Throwable thr) {
-			this.setStatus(Status.WRITE);
+			this.setStatus(Status.SAVE);
 			LOG.error("Failed caching", thr);
 			DashToast.STATUS = DashToast.Status.CRASHED;
-			this.io.clearCache();
+			this.clearCache();
 		}
 	}
 
 	private void loadDashCache() {
-		this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheStart);
-
-
 		var start = System.currentTimeMillis();
-		this.io.setSubCacheArea(this.metadata.resourcePacks);
 		LOG.info("Starting DashLoader Deserialization");
 		try {
 			StepTask task = new StepTask("Loading DashCache", 3);
-			this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheTask(task));
-			ProgressHandler.TASK = task;
+			ProgressHandler.INSTANCE.task = task;
+			Path cacheDir = getCacheDir();
 
-			AtomicReference<MappingData> mappingsReference = new AtomicReference<>();
-			AtomicReference<RegistryReader> registryReference = new AtomicReference<>();
+			// Get metadata
+			Path metadataPath = cacheDir.resolve(METADATA_FILE_NAME);
+			CacheInfo info = metadataSerializer.load(metadataPath);
+			info.countLoaded += 1;
+			info.timeLastLoaded = System.currentTimeMillis();
+			metadataSerializer.save(metadataPath, new StepTask("none"), info);
 
+			// File reading
 			var tempStart = System.currentTimeMillis();
-			// Deserialize / Decompress all registries and mappings.
-			this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheDeserialization);
-			this.thread.parallelRunnable(
-					() -> registryReference.set(this.io.loadRegistry()),
-					() -> mappingsReference.set(this.io.load(MappingData.class))
-			);
-			this.profilerHandler.export_file_reading_time = System.currentTimeMillis() - tempStart;
+			LOG.info("Reading files");
+			StageData[] stageData = registrySerializer.deserialize(cacheDir, info, APIHandler.INSTANCE.getDashObjects());
+			RegistryReader reader = new RegistryReader(info, stageData);
+			ProfilerHandler.INSTANCE.exportFileReadingTime = System.currentTimeMillis() - tempStart;
 
-			MappingData mappings = mappingsReference.get();
-			assert mappings != null;
-
-			// Initialize systems
-			LOG.info("Creating Registry");
-			final RegistryReader reader = registryReference.get();
-			this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheRegistryInit(reader, this.dataManager, mappings));
-
+			// Exporting assets
 			tempStart = System.currentTimeMillis();
-			LOG.info("Exporting Mappings");
+			LOG.info("Exporting assets");
 			task.run(() -> {
 				reader.export(task::setSubTask);
-				this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheExported(reader, this.dataManager, mappings));
 			});
+			ProfilerHandler.INSTANCE.exportAssetExportingTime = System.currentTimeMillis() - tempStart;
 
-			this.profilerHandler.export_asset_exporting_time = System.currentTimeMillis() - tempStart;
-
-
+			// Loading mappings
 			tempStart = System.currentTimeMillis();
 			LOG.info("Loading Mappings");
-			task.run(() -> {
-				mappings.export(reader, this.dataManager, task::setSubTask);
-				this.api.callHook(LoadCacheHook.class, (hook) -> hook.loadCacheMapped(reader, this.dataManager, mappings));
-			});
-			this.profilerHandler.export_asset_loading_time = System.currentTimeMillis() - tempStart;
-
-
-			this.profilerHandler.export_time = System.currentTimeMillis() - start;
-			LOG.info("Loaded DashLoader in {}ms", this.profilerHandler.export_time);
-			this.api.callHook(LoadCacheHook.class, LoadCacheHook::loadCacheEnd);
+			if (!mappingsSerializer.load(cacheDir, reader, APIHandler.INSTANCE.getCacheHandlers())) {
+				this.setStatus(Status.SAVE);
+				this.clearCache();
+				return;
+			}
+			ProfilerHandler.INSTANCE.exportAssetLoadingTime = System.currentTimeMillis() - tempStart;
+			ProfilerHandler.INSTANCE.exportTime = System.currentTimeMillis() - start;
+			LOG.info("Loaded DashLoader in {}ms", ProfilerHandler.INSTANCE.exportTime);
 		} catch (Exception e) {
 			LOG.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(start), e);
-			this.setStatus(Status.WRITE);
-			this.io.clearCache();
+			this.setStatus(Status.SAVE);
+			this.clearCache();
 		}
 	}
+
+	public void clearCache() {
+		try {
+			FileUtils.deleteDirectory(this.getCacheDir().toFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean cacheExists() {
+		return Files.exists(this.getCacheDir());
+	}
+
+	public Path getCacheDir() {
+		if (this.metadata.resourcePacks == null) {
+			throw new RuntimeException("Current SubCache has not been set.");
+		}
+		return this.getCacheAreaDir().resolve(this.metadata.resourcePacks + "/");
+	}
+
+	public Path getCacheAreaDir() {
+		if (this.metadata.modInfo == null) {
+			throw new RuntimeException("Current Cache has not been set.");
+		}
+		return this.cacheDir.resolve(this.metadata.modInfo + "/");
+	}
+	public DashDataManager getData() {
+		final DashDataManager dataManager = this.dataManager;
+		if (this.dataManager == null) {
+			throw new NullPointerException("No dataManager active");
+		}
+		return dataManager;
+	}
+
 
 	private void setStatus(Status status) {
 		LOG.info("\u001B[46m\u001B[30m DashLoader Status change {}\n\u001B[0m", status);
 		this.status = status;
 		switch (status) {
 			case NONE -> this.dataManager = null;
-			case READ -> this.dataManager = new DashDataManager(new DashDataManager.DashReadContextData());
-			case WRITE -> this.dataManager = new DashDataManager(new DashDataManager.DashWriteContextData());
+			case LOAD -> this.dataManager = new DashDataManager(new DashDataManager.DashReadContextData());
+			case SAVE -> this.dataManager = new DashDataManager(new DashDataManager.DashWriteContextData());
 		}
 	}
 
@@ -295,11 +235,11 @@ public class DashLoader {
 	}
 
 	public boolean isWrite() {
-		return this.status == Status.WRITE;
+		return this.status == Status.SAVE;
 	}
 
 	public boolean isRead() {
-		return this.status == Status.READ;
+		return this.status == Status.LOAD;
 	}
 
 	public Status getStatus() {
@@ -309,13 +249,13 @@ public class DashLoader {
 
 	public enum Status {
 		NONE,
-		READ,
-		WRITE,
+		LOAD,
+		SAVE,
 	}
 
 	public static class DashMetadata {
-		public String modInfo;
-		public String resourcePacks;
+		public String modInfo = "bootstrap";
+		public String resourcePacks = "bootstrap";
 
 		public void setModHash(FabricLoader loader) {
 			ArrayList<ModMetadata> versions = new ArrayList<>();

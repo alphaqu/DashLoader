@@ -1,7 +1,7 @@
 package dev.quantumfusion.dashloader;
 
-import dev.quantumfusion.dashloader.data.image.shader.DashShader;
-import dev.quantumfusion.dashloader.fallback.model.DashMissingDashModel;
+import dev.quantumfusion.dashloader.minecraft.shader.DashShader;
+import dev.quantumfusion.dashloader.minecraft.model.fallback.DashMissingDashModel;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -24,7 +24,7 @@ import org.lwjgl.stb.STBTTFontinfo;
 import java.util.List;
 import java.util.Map;
 
-import static dev.quantumfusion.dashloader.DashLoader.DL;
+import static dev.quantumfusion.dashloader.DashLoader.INSTANCE;
 
 /**
  * Our interface for giving vanilla back its data and saving vanilla data for caching.
@@ -47,8 +47,8 @@ public class DashDataManager {
 
 	DashDataManager(DashWriteContextData writeContextData) {
 		DashLoader.LOG.info("Created WRITE data manager");
-		if (DL.getStatus() != DashLoader.Status.WRITE) {
-			throw new RuntimeException("Wrong mode " + DL.getStatus() + " for WRITE data manager");
+		if (INSTANCE.getStatus() != DashLoader.Status.SAVE) {
+			throw new RuntimeException("Wrong mode " + INSTANCE.getStatus() + " for WRITE data manager");
 		}
 		this.writeContextData = writeContextData;
 		this.readContextData = null;
@@ -56,8 +56,8 @@ public class DashDataManager {
 
 	DashDataManager(DashReadContextData readContextData) {
 		DashLoader.LOG.info("Created READ data manager");
-		if (DL.getStatus() != DashLoader.Status.READ) {
-			throw new RuntimeException("Wrong mode " + DL.getStatus() + " for WRITE data manager");
+		if (INSTANCE.getStatus() != DashLoader.Status.LOAD) {
+			throw new RuntimeException("Wrong mode " + INSTANCE.getStatus() + " for WRITE data manager");
 		}
 		this.writeContextData = null;
 		this.readContextData = readContextData;
@@ -65,14 +65,14 @@ public class DashDataManager {
 
 
 	public DashWriteContextData getWriteContextData() {
-		if (DL.isRead()) {
+		if (INSTANCE.isRead()) {
 			throw new RuntimeException("Tried to get DashWriteContextData on read");
 		}
 		return this.writeContextData;
 	}
 
 	public DashReadContextData getReadContextData() {
-		if (DL.isWrite()) {
+		if (INSTANCE.isWrite()) {
 			throw new RuntimeException("Tried to get DashReadContextData on write");
 		}
 		return this.readContextData;
@@ -131,14 +131,14 @@ public class DashDataManager {
 		}
 
 		public O getCacheResultData() {
-			if (DL.getStatus() != DashLoader.Status.READ) {
+			if (INSTANCE.getStatus() != DashLoader.Status.LOAD) {
 				throw new RuntimeException("Invalid status.");
 			}
 			return this.data;
 		}
 
 		public void setCacheResultData(O data) {
-			if (DL.getStatus() != DashLoader.Status.READ) {
+			if (INSTANCE.getStatus() != DashLoader.Status.LOAD) {
 				throw new RuntimeException("Invalid status.");
 			}
 			this.data = data;
@@ -146,7 +146,7 @@ public class DashDataManager {
 		}
 
 		public void setMinecraftData(O data) {
-			if (DL.getStatus() != DashLoader.Status.WRITE) {
+			if (INSTANCE.getStatus() != DashLoader.Status.SAVE) {
 				throw new RuntimeException("Invalid status.");
 			}
 			this.data = data;
@@ -154,7 +154,7 @@ public class DashDataManager {
 		}
 
 		public O getMinecraftData() {
-			if (DL.getStatus() != DashLoader.Status.WRITE) {
+			if (INSTANCE.getStatus() != DashLoader.Status.SAVE) {
 				throw new RuntimeException("Invalid status.");
 			}
 			return this.data;

@@ -1,8 +1,7 @@
 package dev.quantumfusion.dashloader.registry;
 
 
-import dev.quantumfusion.dashloader.DashLoader;
-import dev.quantumfusion.dashloader.io.meta.CacheMetadata;
+import dev.quantumfusion.dashloader.io.data.CacheInfo;
 import dev.quantumfusion.dashloader.registry.data.StageData;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -17,7 +16,7 @@ public final class RegistryReader {
 	// Holds an array of the exported dataChunks array values.
 	private final Object[][] data;
 
-	public RegistryReader(CacheMetadata metadata, StageData[] data) {
+	public RegistryReader(CacheInfo metadata, StageData[] data) {
 		this.chunkData = data;
 		this.data = new Object[metadata.chunks.size()][];
 		for (int i = 0; i < metadata.chunks.size(); i++) {
@@ -35,7 +34,6 @@ public final class RegistryReader {
 			chunkData.preExport(this);
 			chunkData.export(data, this);
 			chunkData.postExport(this);
-
 		}
 	}
 

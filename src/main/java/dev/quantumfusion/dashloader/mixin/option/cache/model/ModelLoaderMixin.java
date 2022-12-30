@@ -1,9 +1,10 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.model;
 
 import dev.quantumfusion.dashloader.DashLoader;
-import dev.quantumfusion.dashloader.fallback.model.MissingDashModel;
-import dev.quantumfusion.dashloader.fallback.model.UnbakedBakedModel;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import dev.quantumfusion.dashloader.ProfilerHandler;
+import dev.quantumfusion.dashloader.minecraft.model.ModelCacheHandler;
+import dev.quantumfusion.dashloader.minecraft.model.fallback.MissingDashModel;
+import dev.quantumfusion.dashloader.minecraft.model.fallback.UnbakedBakedModel;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.BlockState;
@@ -31,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
-import static dev.quantumfusion.dashloader.DashLoader.DL;
 import static net.minecraft.client.render.model.ModelLoader.MISSING_ID;
 
 @Mixin(value = ModelLoader.class, priority = 69420)
@@ -55,16 +55,15 @@ public abstract class ModelLoaderMixin {
 	@Final
 	private Map<Identifier, UnbakedModel> modelsToBake;
 
-	@Shadow protected abstract JsonUnbakedModel loadModelFromJson(Identifier id) throws IOException;
+	@Shadow
+	protected abstract JsonUnbakedModel loadModelFromJson(Identifier id) throws IOException;
 
 	@Inject(
 			method = "<init>",
 			at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=static_definitions", shift = At.Shift.AFTER)
 	)
 	private void injectLoadedModels(BlockColors blockColors, Profiler profiler, Map<Identifier, JsonUnbakedModel> jsonUnbakedModels, Map<Identifier, List<ModelLoader.SourceTrackedData>> blockStates, CallbackInfo ci) {
-		if (DL.isRead()) {
-			var data = DL.getData();
-			var dashModels = data.bakedModels.getCacheResultData();
+		ModelCacheHandler.MODELS.visit(DashLoader.Status.LOAD, dashModels -> {
 			DashLoader.LOG.info("Injecting {} Cached Models", dashModels.size());
 			this.unbakedModels = new Object2ObjectOpenHashMap<>(this.unbakedModels);
 			this.modelsToBake = new Object2ObjectOpenHashMap<>(this.modelsToBake);
@@ -80,7 +79,7 @@ public abstract class ModelLoaderMixin {
 					this.modelsToBake.put(identifier, unbakedBakedModel);
 				}
 			});
-		}
+		});
 	}
 
 	/**
@@ -91,13 +90,13 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE", target = "Ljava/util/Iterator;hasNext()Z", ordinal = 0)
 	)
 	private boolean loadMissingModels(Iterator instance) {
-		if (DL.isRead()) {
-			final Object2ObjectMap<BlockState, Identifier> missingModelsRead = DL.getData().getReadContextData().missingModelsRead;
-			for (BlockState blockState : missingModelsRead.keySet()) {
+		var map = ModelCacheHandler.MISSING_READ.get(DashLoader.Status.LOAD);
+		if (map != null) {
+			for (BlockState blockState : map.keySet()) {
 				// load thing lambda
 				this.method_4716(blockState);
 			}
-			DashLoader.LOG.info("Loaded {} unsupported models.", missingModelsRead.size());
+			DashLoader.LOG.info("Loaded {} unsupported models.", map.size());
 			return false;
 		}
 		return instance.hasNext();
@@ -108,7 +107,7 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelLoader;loadModelFromJson(Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/model/json/JsonUnbakedModel;")
 	)
 	private JsonUnbakedModel pleaseDontLoadMissingModelBecauseItsReallySlowThankYou(ModelLoader instance, Identifier id) throws IOException {
-		if (DL.isRead()) {
+		if (ModelCacheHandler.MODELS.active(DashLoader.Status.LOAD)) {
 			return null;
 		}
 		return loadModelFromJson(MISSING_ID);
@@ -119,9 +118,9 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelLoader;addModel(Lnet/minecraft/client/util/ModelIdentifier;)V", ordinal = 0, shift = At.Shift.BEFORE)
 	)
 	private void pleaseDontLoadMissingModelBecauseItsReallySlowThankYouPart2(BlockColors blockColors, Profiler profiler, Map jsonUnbakedModels, Map blockStates, CallbackInfo ci) {
-		if (DL.isRead()) {
-			this.unbakedModels.put(MISSING_ID, new UnbakedBakedModel(DL.getData().bakedModels.getCacheResultData().get(MISSING_ID), MISSING_ID));
-		}
+		ModelCacheHandler.MODELS.visit(DashLoader.Status.LOAD, map -> {
+			this.unbakedModels.put(MISSING_ID, new UnbakedBakedModel(map.get(MISSING_ID), MISSING_ID));
+		});
 	}
 
 	@Inject(
@@ -131,7 +130,7 @@ public abstract class ModelLoaderMixin {
 			)
 	)
 	private void countModels(BiFunction<Identifier, SpriteIdentifier, Sprite> spriteLoader, CallbackInfo ci) {
-		if (DL.isRead()) {
+		if (ModelCacheHandler.MODELS.active(DashLoader.Status.LOAD)) {
 			// Cache stats
 			int cachedModels = 0;
 			int fallbackModels = 0;
@@ -142,8 +141,9 @@ public abstract class ModelLoaderMixin {
 					fallbackModels += 1;
 				}
 			}
-			DL.profilerHandler.cached_models_count = cachedModels;
-			DL.profilerHandler.fallback_models_count = fallbackModels;
+			ProfilerHandler.INSTANCE.cachedModelsCount = cachedModels;
+			ProfilerHandler.INSTANCE.fallbackModelsCount = fallbackModels;
 		}
+
 	}
 }

@@ -8,7 +8,8 @@ import dev.quantumfusion.taski.builtin.StaticTask;
 import java.util.HashMap;
 
 public final class ProgressHandler {
-	public static Task TASK = new StaticTask("Idle", 0);
+	public static ProgressHandler INSTANCE = new ProgressHandler();
+	public Task task = new StaticTask("Idle", 0);
 	private String overwriteText;
 
 	private long lastUpdate = System.currentTimeMillis();
@@ -16,7 +17,7 @@ public final class ProgressHandler {
 
 	private HashMap<String, String> translations = new HashMap<>();
 
-	public ProgressHandler() {
+	private ProgressHandler() {
 	}
 
 	public void setTranslations(HashMap<String, String> translations) {
@@ -27,7 +28,7 @@ public final class ProgressHandler {
 		if (Double.isNaN(this.currentProgress)) {
 			this.currentProgress = 0.0;
 		}
-		final double actualProgress = TASK.getProgress();
+		final double actualProgress = task.getProgress();
 		final double divisionSpeed = (actualProgress < this.currentProgress) ? 3 : 30;
 		double currentProgress1 = (actualProgress - this.currentProgress) / divisionSpeed;
 		this.currentProgress += currentProgress1;
@@ -47,12 +48,12 @@ public final class ProgressHandler {
 			return this.overwriteText;
 		}
 
-		String text = concatTask(3, TASK);
+		String text = concatTask(3, task);
 		return this.translations.getOrDefault(text, text);
 	}
 
 	public String getProgressText() {
-		return this.getProgressText(3, TASK);
+		return this.getProgressText(3, task);
 	}
 	private String concatTask(int depth, Task task) {
 		String name = null;

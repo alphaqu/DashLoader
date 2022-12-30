@@ -1,5 +1,7 @@
 package dev.quantumfusion.dashloader.mixin.option.cache.model;
 
+import dev.quantumfusion.dashloader.DashLoader;
+import dev.quantumfusion.dashloader.minecraft.model.ModelCacheHandler;
 import dev.quantumfusion.dashloader.mixin.accessor.MultipartModelComponentAccessor;
 import dev.quantumfusion.dashloader.util.mixins.MixinThings;
 import net.minecraft.block.Block;
@@ -25,12 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static dev.quantumfusion.dashloader.DashLoader.DL;
-
 @Mixin(MultipartUnbakedModel.class)
 public class MultipartUnbakedModelMixin {
-
-
 	@Shadow
 	@Final
 	private List<MultipartModelComponent> components;
@@ -46,15 +44,15 @@ public class MultipartUnbakedModelMixin {
 			cancellable = true
 	)
 	private void addPredicateInfo(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId, CallbackInfoReturnable<@Nullable BakedModel> cir, MultipartBakedModel.Builder builder) {
-		if (DL.isWrite()) {
+		ModelCacheHandler.MULTIPART_PREDICATES.visit(DashLoader.Status.SAVE, map ->  {
 			var bakedModel = (MultipartBakedModel) builder.build();
 			var outSelectors = new ArrayList<MultipartModelSelector>();
 
 			this.components.forEach(multipartModelComponent -> outSelectors.add(((MultipartModelComponentAccessor) multipartModelComponent).getSelector()));
-			DL.getData().getWriteContextData().multipartPredicates.put(bakedModel, Pair.of(outSelectors, this.stateFactory));
+			map.put(bakedModel, Pair.of(outSelectors, this.stateFactory));
 			MixinThings.addPredicates(outSelectors, this.stateFactory);
 			cir.setReturnValue(bakedModel);
-		}
+		});
 	}
 
 
