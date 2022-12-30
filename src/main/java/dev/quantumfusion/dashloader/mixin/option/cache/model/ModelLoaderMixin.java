@@ -26,10 +26,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 
 import static net.minecraft.client.render.model.ModelLoader.MISSING_ID;
@@ -65,11 +62,11 @@ public abstract class ModelLoaderMixin {
 	private void injectLoadedModels(BlockColors blockColors, Profiler profiler, Map<Identifier, JsonUnbakedModel> jsonUnbakedModels, Map<Identifier, List<ModelLoader.SourceTrackedData>> blockStates, CallbackInfo ci) {
 		ModelCacheHandler.MODELS.visit(DashLoader.Status.LOAD, dashModels -> {
 			DashLoader.LOG.info("Injecting {} Cached Models", dashModels.size());
-			this.unbakedModels = new Object2ObjectOpenHashMap<>(this.unbakedModels);
-			this.modelsToBake = new Object2ObjectOpenHashMap<>(this.modelsToBake);
-			this.modelsToLoad = new ObjectOpenHashSet<>(this.modelsToLoad);
+			this.unbakedModels = new HashMap<>(this.unbakedModels);
+			this.modelsToBake = new HashMap<>(this.modelsToBake);
+			this.modelsToLoad = new HashSet<>(this.modelsToLoad);
 
-			ObjectOpenHashSet<Identifier> filter = new ObjectOpenHashSet<>(this.unbakedModels.size() + this.modelsToBake.size());
+			HashSet<Identifier> filter = new HashSet<>(this.unbakedModels.size() + this.modelsToBake.size());
 			filter.addAll(this.unbakedModels.keySet());
 			filter.addAll(this.modelsToBake.keySet());
 			dashModels.forEach((identifier, bakedModel) -> {
