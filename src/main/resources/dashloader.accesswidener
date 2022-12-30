@@ -7,6 +7,7 @@ accessible class net/minecraft/client/font/BitmapFont$BitmapFontGlyph
 accessible class net/minecraft/client/render/model/json/ModelOverrideList$BakedOverride
 accessible class net/minecraft/client/render/model/json/ModelOverrideList$InlinedCondition
 accessible class net/minecraft/client/render/model/BakedModelManager$BakingResult
+accessible class net/minecraft/client/render/model/ModelLoader$BakedModelCacheKey
 accessible class net/minecraft/client/font/UnicodeTextureFont$FontImage
 accessible class net/minecraft/util/Identifier$ExtraData
 mutable field net/minecraft/client/gl/ShaderProgram modelViewMat Lnet/minecraft/client/gl/GlUniform;

@@ -57,6 +57,7 @@
     "option.cache.shader.GameRendererMixin",
     "option.cache.shader.GlStateManagerMixin",
     "option.cache.sprite.SpriteLoaderMixin",
+    "option.misc.AffineTransformationMixin",
     "option.misc.ModelIdentifierMixin"
   ],
   "injectors": {
@@ -66,6 +67,7 @@
     "accessor.FontImageAccessor",
     "accessor.ModelIdentifierAccessor",
     "accessor.ShaderStageAccessor$TypeAccessor",
-    "accessor.SpriteContentsAccessor"
+    "accessor.SpriteContentsAccessor",
+    "option.misc.ModelLoaderBakedModelCacheKeyMixin"
   ]
 }
