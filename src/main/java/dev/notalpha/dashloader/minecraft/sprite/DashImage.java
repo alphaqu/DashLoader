@@ -2,7 +2,7 @@ package dev.notalpha.dashloader.minecraft.sprite;
 
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.Dashable;
-import dev.notalpha.dashloader.io.serializer.DataUnsafeByteBuffer;
+import dev.notalpha.dashloader.io.def.DataUnsafeByteBuffer;
 import dev.notalpha.dashloader.mixin.accessor.NativeImageAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import net.minecraft.client.texture.NativeImage;
@@ -40,15 +40,6 @@ public final class DashImage implements Dashable<NativeImage> {
 		this.useSTB = useSTB;
 		this.width = width;
 		this.height = height;
-	}
-
-
-	private byte[] write(long pointer) {
-		final int capacity = this.width * this.height * this.format.getChannelCount();
-		final var byteBuffer = MemoryUtil.memByteBuffer(pointer, capacity);
-		final byte[] bytes = new byte[capacity];
-		byteBuffer.get(bytes);
-		return bytes;
 	}
 
 	/**

@@ -102,73 +102,9 @@ public class ConfigHandler {
 		return OPTION_ACTIVE.get(option);
 	}
 
-
 	static {
 		for (Option value : Option.values()) {
 			OPTION_ACTIVE.put(value, true);
 		}
-	}
-
-	public void addListener(Consumer<DashConfig> configListener) {
-		if (this.observer == null) {
-			File directory = this.configPath.getParent().toFile();
-			this.observer = new FileAlterationObserver(directory);
-			FileAlterationMonitor monitor = new FileAlterationMonitor(100);
-			monitor.addObserver(this.observer);
-			try {
-				monitor.start();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		this.observer.addListener(new FileAlterationListener() {
-			@Override
-			public void onStart(FileAlterationObserver observer) {
-
-			}
-
-			@Override
-			public void onDirectoryCreate(File directory) {
-
-			}
-
-			@Override
-			public void onDirectoryChange(File directory) {
-
-			}
-
-			@Override
-			public void onDirectoryDelete(File directory) {
-
-			}
-
-			@Override
-			public void onFileCreate(File file) {
-
-			}
-
-			@Override
-			public void onFileChange(File file) {
-				try {
-					if (Files.isSameFile(Path.of(file.toURI()), ConfigHandler.this.configPath)) {
-						ConfigHandler.this.reloadConfig();
-						configListener.accept(ConfigHandler.this.config);
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onFileDelete(File file) {
-
-			}
-
-			@Override
-			public void onStop(FileAlterationObserver observer) {
-
-			}
-		});
 	}
 }

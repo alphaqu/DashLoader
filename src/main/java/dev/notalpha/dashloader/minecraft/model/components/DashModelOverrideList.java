@@ -8,11 +8,11 @@ import net.minecraft.util.Identifier;
 
 public final class DashModelOverrideList {
 	public final DashModelOverrideListBakedOverride[] overrides;
-	public final Integer[] conditionTypes; //identifiers
+	public final int[] conditionTypes; //identifiers
 
 	transient ModelOverrideList toApply;
 
-	public DashModelOverrideList(DashModelOverrideListBakedOverride[] overrides, Integer[] conditionTypes) {
+	public DashModelOverrideList(DashModelOverrideListBakedOverride[] overrides, int[] conditionTypes) {
 		this.overrides = overrides;
 		this.conditionTypes = conditionTypes;
 	}
@@ -22,7 +22,7 @@ public final class DashModelOverrideList {
 		final Identifier[] conditionTypes = ((ModelOverrideListAccessor) modelOverrideList).getConditionTypes();
 
 		this.overrides = new DashModelOverrideListBakedOverride[overrides.length];
-		this.conditionTypes = new Integer[conditionTypes.length];
+		this.conditionTypes = new int[conditionTypes.length];
 
 		for (int i = 0; i < overrides.length; i++) {
 			this.overrides[i] = new DashModelOverrideListBakedOverride(overrides[i], writer);

@@ -32,6 +32,7 @@ public class MappingSerializer {
 	}
 
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void save(Path dir, RegistryFactory factory, StepTask parent) {
 		List<WeightedStageTask.WeightedStage> tasks = new ArrayList<>();
 		for (DashCacheHandler<?> value : APIHandler.INSTANCE.getCacheHandlers()) {
@@ -95,6 +96,7 @@ public class MappingSerializer {
 		}
 	}
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public boolean load(Path dir, RegistryReader reader, List<DashCacheHandler<?>> handlers) {
 		try {
 			ByteBufferIO io = IOHelper.load(dir.resolve("mapping.bin"));

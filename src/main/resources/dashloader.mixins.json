@@ -32,8 +32,6 @@
     "accessor.SpriteAccessor",
     "accessor.SpriteAnimationAccessor",
     "accessor.SpriteAnimationFrameAccessor",
-    "accessor.SpriteAtlasManagerAccessor",
-    "accessor.SpriteAtlasTextureAccessor",
     "accessor.SpriteLoaderStitchResultAccessor",
     "accessor.TrueTypeFontAccessor",
     "accessor.UnicodeTextureFontAccessor",

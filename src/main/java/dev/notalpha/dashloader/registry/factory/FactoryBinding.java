@@ -10,16 +10,16 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
-public final class DashFactory<R, D extends Dashable<R>> {
+public final class FactoryBinding<R, D extends Dashable<R>> {
 	private final MethodHandle method;
 	private final FactoryFunction creator;
 
-	public DashFactory(MethodHandle method, FactoryFunction creator) {
+	public FactoryBinding(MethodHandle method, FactoryFunction creator) {
 		this.method = method;
 		this.creator = creator;
 	}
 
-	public static <R, D extends Dashable<R>> DashFactory<R, D> create(DashObjectClass<R, D> dashObject) {
+	public static <R, D extends Dashable<R>> FactoryBinding<R, D> create(DashObjectClass<R, D> dashObject) {
 		final Class<?> dashClass = dashObject.getDashClass();
 
 		var factory = tryScanCreators((look, type) -> look.findConstructor(dashClass, type.changeReturnType(void.class)), dashObject);
@@ -39,6 +39,7 @@ public final class DashFactory<R, D extends Dashable<R>> {
 
 	public D create(R raw, RegistryWriter writer) {
 		try {
+			//noinspection unchecked
 			return (D) this.creator.create(this.method, raw, writer);
 		} catch (Throwable e) {
 			throw new RuntimeException("Could not create DashObject " + raw.getClass().getSimpleName(), e);
@@ -46,7 +47,7 @@ public final class DashFactory<R, D extends Dashable<R>> {
 	}
 
 	@Nullable
-	private static <R, D extends Dashable<R>> DashFactory<R, D> tryScanCreators(MethodTester tester, DashObjectClass<R, D> dashObject) {
+	private static <R, D extends Dashable<R>> FactoryBinding<R, D> tryScanCreators(MethodTester tester, DashObjectClass<R, D> dashObject) {
 		for (InvokeType value : InvokeType.values()) {
 			final Class<?>[] apply = value.parameters.apply(dashObject);
 
@@ -56,7 +57,7 @@ public final class DashFactory<R, D extends Dashable<R>> {
 						MethodType.methodType(dashObject.getTargetClass(), apply));
 
 				if (method != null) {
-					return new DashFactory<>(method, value.creator);
+					return new FactoryBinding<>(method, value.creator);
 				}
 			} catch (Throwable ignored) {
 			}

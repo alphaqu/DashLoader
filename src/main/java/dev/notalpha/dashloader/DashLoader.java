@@ -94,8 +94,6 @@ public class DashLoader {
 		DashToast.STATUS = DashToast.Status.CACHING;
 		LOG.info("Starting DashLoader Caching");
 		try {
-			ChunkFactory.C_AMOUNT = 0;
-			ChunkFactory.C_DE = 0;
 			ProgressHandler.INSTANCE.setOverwriteText(null);
 			long start = System.currentTimeMillis();
 
@@ -129,10 +127,6 @@ public class DashLoader {
 			ProgressHandler.INSTANCE.setOverwriteText(text);
 			LOG.info(text);
 			DashToast.STATUS = DashToast.Status.DONE;
-
-			DashLoader.LOG.info("Collections: " + ChunkFactory.C_AMOUNT + ", Removed " + ChunkFactory.C_DE);
-			DashLoader.LOG.info("Quads: " + ChunkFactory.Q_AMOUNT + ", Removed " + ChunkFactory.Q_DE);
-
 		} catch (Throwable thr) {
 			this.setStatus(Status.SAVE);
 			LOG.error("Failed caching", thr);

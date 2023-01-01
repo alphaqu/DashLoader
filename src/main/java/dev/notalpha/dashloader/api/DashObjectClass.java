@@ -17,6 +17,7 @@ public final class DashObjectClass<R, D extends Dashable<R>> {
 	private Class<R> targetClass;
 	int dashObjectId;
 	public DashObjectClass(Class<?> dashClass) {
+		//noinspection unchecked
 		this.dashClass = (Class<D>) dashClass;
 	}
 

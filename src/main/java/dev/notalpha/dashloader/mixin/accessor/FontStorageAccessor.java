@@ -12,10 +12,6 @@ import java.util.List;
 
 @Mixin(FontStorage.class)
 public interface FontStorageAccessor {
-
-	@Accessor
-	Identifier getId();
-
 	@Accessor
 	void setBlankGlyphRenderer(GlyphRenderer renderer);
 

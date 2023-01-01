@@ -19,13 +19,8 @@ public class ChunkData<R, D extends Dashable<R>> {
 	}
 
 	public void preExport(RegistryReader reader) {
-		Entry<D>[] ds = this.dashables;
-		for (int i = 0; i < ds.length; i++) {
-			Entry<D> dashable = ds[i];
-			if (dashable == null) {
-				System.out.println(name + " / " + i);
-			}
-			dashable.data.preExport(reader);
+		for (Entry<D> entry : this.dashables) {
+			entry.data.preExport(reader);
 		}
 	}
 
@@ -34,8 +29,8 @@ public class ChunkData<R, D extends Dashable<R>> {
 	}
 
 	public void postExport(RegistryReader reader) {
-		for (Entry<D> dashable : this.dashables) {
-			dashable.data.postExport(reader);
+		for (Entry<D> entry : this.dashables) {
+			entry.data.postExport(reader);
 		}
 	}
 

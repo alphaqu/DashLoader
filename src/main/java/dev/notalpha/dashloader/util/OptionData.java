@@ -15,20 +15,6 @@ public class OptionData<D> {
 	@Nullable
 	private final DashLoader.Status onlyOn;
 
-	// ModelCache
-	//
-	// enables mixins
-	// - ModelLoaderMixin
-	// - BlockModelsMixin
-	//
-	// contains
-	//  OptionData<Object2ObjectMap<Identifier, BakedModel>> MODELS = new OptionData<>(new Object2ObjectOpenHashMap<>(), Option.CACHE_MODEL_LOADER);
-	//	OptionData<Object2ObjectMap<BakedModel, DashMissingDashModel>> MISSING_WRITE = new OptionData<>(new Object2ObjectOpenHashMap<>(), Option.CACHE_MODEL_LOADER);
-	//	OptionData<Object2ObjectMap<BlockState, Identifier>> MISSING_READ = new OptionData<>(new Object2ObjectOpenHashMap<>(), Option.CACHE_MODEL_LOADER);
-	//	OptionData<Object2ObjectMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>>> MULTIPART_PREDICATES = new OptionData<>(new Object2ObjectOpenHashMap<>(), Option.CACHE_MODEL_LOADER);
-	//
-
-
 	public OptionData( @Nullable DashLoader.Status onlyOn) {
 		this.data = null;
 		this.onlyOn = onlyOn;

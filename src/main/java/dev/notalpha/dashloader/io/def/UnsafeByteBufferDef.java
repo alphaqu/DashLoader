@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.io.serializer;
+package dev.notalpha.dashloader.io.def;
 
 import dev.quantumfusion.hyphen.SerializerHandler;
 import dev.quantumfusion.hyphen.codegen.MethodHandler;

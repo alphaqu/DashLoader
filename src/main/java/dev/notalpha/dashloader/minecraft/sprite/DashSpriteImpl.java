@@ -58,13 +58,4 @@ public class DashSpriteImpl implements DashSprite {
 		spriteAccessor.setVMax(this.vMax);
 		return out;
 	}
-
-	private static int getColorUnsafe(final long ptr, final int oldWidth, final int x, final int y) {
-		return UnsafeHelper.UNSAFE.getInt(ptr + (((long) x + (long) y * (long) oldWidth) * 4L));
-	}
-
-	private static void setColorUnsafe(final long ptr, final int width, final int x, final int y, final int color) {
-		UnsafeHelper.UNSAFE.putInt(ptr + (((long) x + (long) y * (long) width) * 4L), color);
-	}
-
 }

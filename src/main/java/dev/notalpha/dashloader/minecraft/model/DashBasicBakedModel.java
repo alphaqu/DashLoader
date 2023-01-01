@@ -96,6 +96,7 @@ public final class DashBasicBakedModel implements DashModel {
 
 	@Override
 	public void postExport(RegistryReader reader) {
+		// TODO move to export?
 		this.itemPropertyOverrides.applyOverrides(reader);
 	}
 }

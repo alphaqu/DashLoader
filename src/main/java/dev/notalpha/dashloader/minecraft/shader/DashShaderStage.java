@@ -51,8 +51,4 @@ public final class DashShaderStage {
 		this.shaderType.getLoadedShaders().put(this.name, program);
 		return program;
 	}
-
-	public EffectShaderStage exportEffectProgram() {
-		return EffectShaderStageAccessor.create(this.shaderType, this.createProgram(this.shaderType), this.name);
-	}
 }

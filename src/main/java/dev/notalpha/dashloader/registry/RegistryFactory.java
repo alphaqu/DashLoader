@@ -5,7 +5,7 @@ import dev.notalpha.dashloader.api.Dashable;
 import dev.notalpha.dashloader.registry.data.ChunkData;
 import dev.notalpha.dashloader.registry.data.ChunkFactory;
 import dev.notalpha.dashloader.registry.data.StageData;
-import dev.notalpha.dashloader.registry.factory.DashFactory;
+import dev.notalpha.dashloader.registry.factory.FactoryBinding;
 import dev.notalpha.dashloader.registry.factory.MissingHandler;
 import dev.notalpha.dashloader.util.RegistryUtil;
 import dev.notalpha.dashloader.api.DashObjectClass;
@@ -41,7 +41,7 @@ public final class RegistryFactory {
 
 		for (int i = 0; i < dashObjects.size(); i++) {
 			final DashObjectClass<R, D> dashObject = (DashObjectClass<R, D>) dashObjects.get(i);
-			var factory = DashFactory.create(dashObject);
+			var factory = FactoryBinding.create(dashObject);
 			var dashClass = dashObject.getDashClass();
 			var name = dashClass.getSimpleName();
 			chunks[i] = new ChunkFactory<>((byte) i, name, factory, dashObject);

@@ -16,10 +16,8 @@ import dev.notalpha.dashloader.minecraft.sprite.DashSpriteImpl;
 import dev.notalpha.dashloader.minecraft.sprite.SpriteCacheHandler;
 import dev.notalpha.dashloader.registry.factory.MissingHandler;
 import dev.notalpha.dashloader.minecraft.blockstate.DashBlockState;
-import dev.notalpha.dashloader.minecraft.font.*;
 import dev.notalpha.dashloader.minecraft.identifier.DashIdentifier;
 import dev.notalpha.dashloader.minecraft.identifier.DashModelIdentifier;
-import dev.notalpha.dashloader.minecraft.model.*;
 import dev.notalpha.dashloader.minecraft.model.predicates.DashAndPredicate;
 import dev.notalpha.dashloader.minecraft.model.predicates.DashOrPredicate;
 import dev.notalpha.dashloader.minecraft.model.predicates.DashSimplePredicate;
@@ -35,7 +33,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class DashMinecraft implements DashEntrypoint {
+public class DashObjects implements DashEntrypoint {
 	@Override
 	public void onDashLoaderInit(APIHandler handler) {
 		handler.addCacheHandler(new FontCacheHandler());
