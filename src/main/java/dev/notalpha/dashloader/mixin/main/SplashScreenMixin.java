@@ -2,8 +2,8 @@ package dev.notalpha.dashloader.mixin.main;
 
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.ProfilerHandler;
-import dev.notalpha.dashloader.ProgressHandler;
 import dev.notalpha.dashloader.client.DashToast;
+import dev.notalpha.dashloader.client.ProgressManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -70,7 +70,7 @@ public class SplashScreenMixin {
 				}
 			}
 			DashLoader.LOG.info("Missing translations");
-			ProgressHandler.INSTANCE.setTranslations(map);
+			ProgressManager.INSTANCE.setTranslations(map);
 			client.getToastManager().add(new DashToast());
 		} else {
 			DashLoader.INSTANCE.resetDashLoader();

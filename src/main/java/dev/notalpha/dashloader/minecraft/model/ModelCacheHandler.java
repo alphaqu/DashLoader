@@ -2,13 +2,13 @@ package dev.notalpha.dashloader.minecraft.model;
 
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashCacheHandler;
+import dev.notalpha.dashloader.api.Option;
 import dev.notalpha.dashloader.config.ConfigHandler;
+import dev.notalpha.dashloader.io.data.collection.IntIntList;
 import dev.notalpha.dashloader.minecraft.model.fallback.DashMissingDashModel;
+import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.util.OptionData;
-import dev.notalpha.dashloader.api.option.Option;
-import dev.notalpha.dashloader.io.data.collection.IntIntList;
-import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.taski.builtin.StepTask;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

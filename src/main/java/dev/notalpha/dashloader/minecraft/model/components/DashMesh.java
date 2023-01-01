@@ -1,15 +1,19 @@
 package dev.notalpha.dashloader.minecraft.model.components;
 
-import dev.notalpha.dashloader.util.ClassHelper;
 import dev.notalpha.dashloader.util.UnsafeHelper;
 import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class DashMesh {
+	public static final Map<String, Class<?>> CLASS_CACHE = new ConcurrentHashMap<>();
+
 	public final int[] data;
 	public final String className;
+
 
 	public DashMesh(int[] data, String className) {
 		this.data = data;
@@ -32,9 +36,8 @@ public final class DashMesh {
 		return data;
 	}
 
-
 	public Mesh export() {
-		final Class<?> aClass = ClassHelper.getClass(this.className);
+		final Class<?> aClass = getClass(this.className);
 		final Mesh mesh = (Mesh) UnsafeHelper.allocateInstance(aClass);
 		try {
 			assert aClass != null;
@@ -45,6 +48,21 @@ public final class DashMesh {
 			throw new RuntimeException("Could not use Mesh field hack. ", e);
 		}
 		return mesh;
+	}
+
+	public static Class<?> getClass(final String className) {
+		final Class<?> closs = CLASS_CACHE.get(className);
+		if (closs != null) {
+			return closs;
+		}
+		try {
+			final Class<?> clz = Class.forName(className);
+			CLASS_CACHE.put(className, clz);
+			return clz;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

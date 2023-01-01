@@ -1,11 +1,8 @@
 package dev.notalpha.dashloader.minecraft.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import dev.notalpha.dashloader.util.MissingDataException;
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.mixin.accessor.EffectShaderStageAccessor;
 import dev.notalpha.dashloader.mixin.accessor.ShaderStageAccessor;
-import net.minecraft.client.gl.EffectShaderStage;
 import net.minecraft.client.gl.ShaderStage;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,13 +19,13 @@ public final class DashShaderStage {
 		this.shader = shader;
 	}
 
-	public DashShaderStage(ShaderStage program) throws MissingDataException {
+	public DashShaderStage(ShaderStage program) {
 		ShaderStageAccessor access = (ShaderStageAccessor) program;
 		this.shaderType = access.getType();
 		this.name = program.getName();
 		List<String> shader = ShaderCacheHandler.WRITE_PROGRAM_SOURCES.get(DashLoader.Status.SAVE).get(access.getGlRef());
 		if (shader == null) {
-			throw new MissingDataException();
+			throw new RuntimeException();
 		}
 		this.shader = shader;
 	}

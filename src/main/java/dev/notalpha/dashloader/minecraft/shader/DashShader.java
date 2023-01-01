@@ -4,10 +4,9 @@ import com.google.common.collect.UnmodifiableIterator;
 import com.mojang.blaze3d.platform.GlStateManager;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.Dashable;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.util.MissingDataException;
-import dev.notalpha.dashloader.util.UnsafeHelper;
 import dev.notalpha.dashloader.mixin.accessor.ShaderProgramAccessor;
+import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
 import net.minecraft.client.gl.GlProgramManager;
@@ -42,7 +41,7 @@ public final class DashShader implements Dashable<ShaderProgram> {
 		this.samplerNames = samplerNames;
 	}
 
-	public DashShader(ShaderProgram shader) throws MissingDataException {
+	public DashShader(ShaderProgram shader) {
 		ShaderProgramAccessor shaderAccess = (ShaderProgramAccessor) shader;
 
 		this.samplers = new LinkedHashMap<>();

@@ -1,12 +1,11 @@
 package dev.notalpha.dashloader.minecraft.font;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.registry.RegistryWriter;
-import dev.notalpha.dashloader.util.DashUtil;
-import dev.notalpha.dashloader.util.UnsafeHelper;
 import dev.notalpha.dashloader.mixin.accessor.FontImageAccessor;
 import dev.notalpha.dashloader.mixin.accessor.UnicodeTextureFontAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.registry.RegistryWriter;
+import dev.notalpha.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.font.UnicodeTextureFont;
@@ -29,7 +28,7 @@ public final class DashUnicodeFont implements DashFont {
 		UnicodeTextureFont.FontImage[] fontImages = font.getFontImages();
 		for (int i = 0; i < fontImages.length; i++) {
 			UnicodeTextureFont.FontImage fontImage = fontImages[i];
-			this.images[i] = DashUtil.nullable(fontImage, image -> writer.add(((FontImageAccessor) image).getImage()));
+			this.images[i] = fontImage == null ? null : writer.add(((FontImageAccessor) fontImage).getImage());
 		}
 		this.sizes = font.getSizes();
 	}
@@ -41,9 +40,10 @@ public final class DashUnicodeFont implements DashFont {
 		accessor.setSizes(this.sizes);
 		UnicodeTextureFont.FontImage[] fontImages = new UnicodeTextureFont.FontImage[256];
 
+
 		for (int i = 0; i < images.length; i++) {
 			Integer image = images[i];
-			fontImages[i] = DashUtil.nullable(image, img -> FontImageAccessor.create(this.sizes, handler.get(img)));
+			fontImages[i] = image == null ? null : FontImageAccessor.create(this.sizes, handler.get(image));
 		}
 		accessor.setFontImages(fontImages);
 		return font;

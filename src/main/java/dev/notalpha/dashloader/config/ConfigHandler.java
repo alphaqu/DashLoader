@@ -2,35 +2,25 @@ package dev.notalpha.dashloader.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dev.notalpha.dashloader.DashConstants;
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.api.option.Option;
+import dev.notalpha.dashloader.api.Option;
 import net.fabricmc.loader.api.FabricLoader;
-import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.EnumMap;
-import java.util.function.Consumer;
 
 public class ConfigHandler {
 	public static ConfigHandler INSTANCE = new ConfigHandler(FabricLoader.getInstance().getConfigDir().normalize().resolve("dashloader.json"));
 	private static final EnumMap<Option, Boolean> OPTION_ACTIVE = new EnumMap<>(Option.class);
-	private static final String DISABLE_OPTION_TAG = DashConstants.DASH_DISABLE_OPTION_TAG;
+	private static final String DISABLE_OPTION_TAG = "dashloader:disableoption";
 	private final Gson gson = new GsonBuilder().setLenient().setPrettyPrinting().create();
 	private final Path configPath;
 	public DashConfig config = new DashConfig();
-
-	@Nullable
-	private FileAlterationObserver observer;
 
 	public ConfigHandler(Path configPath) {
 		this.configPath = configPath;

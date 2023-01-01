@@ -3,7 +3,6 @@ package dev.notalpha.dashloader.io;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.def.UnsafeByteBufferDef;
 import dev.notalpha.dashloader.registry.data.ChunkData;
-import dev.notalpha.dashloader.util.IOHelper;
 import dev.quantumfusion.hyphen.ClassDefiner;
 import dev.quantumfusion.hyphen.HyphenSerializer;
 import dev.quantumfusion.hyphen.SerializerFactory;

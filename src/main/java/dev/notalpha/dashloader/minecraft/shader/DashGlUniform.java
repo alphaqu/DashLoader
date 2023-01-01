@@ -1,9 +1,8 @@
 package dev.notalpha.dashloader.minecraft.shader;
 
-import dev.notalpha.dashloader.util.DashUtil;
-import dev.notalpha.dashloader.util.IOHelper;
-import dev.notalpha.dashloader.util.UnsafeHelper;
+import dev.notalpha.dashloader.io.IOHelper;
 import dev.notalpha.dashloader.mixin.accessor.GlUniformAccessor;
+import dev.notalpha.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.ShaderProgram;
@@ -30,8 +29,8 @@ public final class DashGlUniform {
 	public DashGlUniform(GlUniform glUniform) {
 		this.count = glUniform.getCount();
 		this.dataType = glUniform.getDataType();
-		this.intData = DashUtil.nullable(glUniform.getIntData(), IOHelper::toArray);
-		this.floatData = DashUtil.nullable(glUniform.getFloatData(), IOHelper::toArray);
+		this.intData = glUniform.getIntData() == null ? null : IOHelper.toArray(glUniform.getIntData());
+		this.floatData = glUniform.getFloatData() == null ? null : IOHelper.toArray(glUniform.getFloatData());
 		this.name = glUniform.getName();
 	}
 
@@ -41,8 +40,9 @@ public final class DashGlUniform {
 		glUniformAccess.setCount(this.count);
 		glUniformAccess.setDataType(this.dataType);
 		glUniformAccess.setProgram(shader);
-		glUniformAccess.setIntData(DashUtil.nullable(this.intData, IOHelper::fromArray));
-		glUniformAccess.setFloatData(DashUtil.nullable(this.floatData, IOHelper::fromArray));
+
+		glUniformAccess.setIntData(this.intData == null ? null : IOHelper.fromArray(this.intData));
+		glUniformAccess.setFloatData(this.floatData == null ? null : IOHelper.fromArray(this.floatData));
 		glUniformAccess.setName(this.name);
 		uniforms.add(glUniform);
 		return glUniform;

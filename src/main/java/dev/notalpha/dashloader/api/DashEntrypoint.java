@@ -1,6 +1,5 @@
-package dev.notalpha.dashloader.api.entrypoint;
+package dev.notalpha.dashloader.api;
 
-import dev.notalpha.dashloader.api.APIHandler;
 import dev.notalpha.dashloader.registry.factory.MissingHandler;
 
 import java.util.List;

@@ -1,13 +1,14 @@
 package dev.notalpha.dashloader.api;
 
-import dev.notalpha.dashloader.api.entrypoint.DashEntrypoint;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class APIHandler {
 	private static final Logger LOGGER = LogManager.getLogger("DashLoaderAPI");

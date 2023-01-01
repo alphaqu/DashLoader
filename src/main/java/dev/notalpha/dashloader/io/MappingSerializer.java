@@ -1,10 +1,9 @@
 package dev.notalpha.dashloader.io;
 
-import dev.notalpha.dashloader.api.APIHandler;
-import dev.notalpha.dashloader.config.ConfigHandler;
-import dev.notalpha.dashloader.util.IOHelper;
 import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.api.APIHandler;
 import dev.notalpha.dashloader.api.DashCacheHandler;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.quantumfusion.hyphen.io.ByteBufferIO;

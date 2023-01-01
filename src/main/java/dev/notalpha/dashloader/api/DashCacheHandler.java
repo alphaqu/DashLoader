@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.api;
 
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryFactory;
+import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.quantumfusion.taski.builtin.StepTask;
 
 public interface DashCacheHandler<M> {

@@ -1,7 +1,6 @@
 package dev.notalpha.dashloader.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.notalpha.dashloader.ProgressHandler;
 import dev.notalpha.dashloader.DashLoader;
 import dev.quantumfusion.taski.builtin.StaticTask;
 import net.minecraft.client.font.TextRenderer;
@@ -70,7 +69,7 @@ public class DashToast implements Toast {
 		// Get progress
 		double currentProgress;
 		Color currentProgressColor;
-		ProgressHandler progress = ProgressHandler.INSTANCE;
+		ProgressManager progress = ProgressManager.INSTANCE;
 		if (STATUS == Status.CRASHED) {
 			progress.task = new StaticTask("Crash", (System.currentTimeMillis() - timeDone) / (float) 10000);
 			progress.setOverwriteText("Internal crash. Please check logs.");

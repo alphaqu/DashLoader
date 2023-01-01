@@ -1,13 +1,13 @@
 package dev.notalpha.dashloader.minecraft.font;
 
-import dev.notalpha.dashloader.config.ConfigHandler;
-import dev.notalpha.dashloader.util.OptionData;
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashCacheHandler;
-import dev.notalpha.dashloader.api.option.Option;
+import dev.notalpha.dashloader.api.Option;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.data.collection.IntObjectList;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.util.OptionData;
 import dev.quantumfusion.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -16,6 +16,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.font.Font;
+import net.minecraft.client.font.FontManager;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.stb.STBTTFontinfo;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FontCacheHandler implements DashCacheHandler<FontCacheHandler.Data> {
+	public static FontManager FONTMANAGER;
 	public static final OptionData<Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>>> DATA = new OptionData<>();
 	public static final OptionData<Map<STBTTFontinfo, Identifier>> FONT_TO_IDENT = new OptionData<>();
 

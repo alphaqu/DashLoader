@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.minecraft.model.predicates;
 
-import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.minecraft.blockstate.DashBlockState;
 import dev.notalpha.dashloader.minecraft.model.ModelCacheHandler;
 import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;

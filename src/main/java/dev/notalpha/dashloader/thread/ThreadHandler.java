@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.thread;
 
 import dev.notalpha.dashloader.api.Dashable;
-import dev.notalpha.dashloader.registry.data.ChunkData;
 import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.registry.data.ChunkData;
 
 import java.util.ArrayList;
 import java.util.Collection;

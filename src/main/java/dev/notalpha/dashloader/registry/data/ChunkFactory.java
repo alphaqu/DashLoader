@@ -1,11 +1,11 @@
 package dev.notalpha.dashloader.registry.data;
 
-import dev.notalpha.dashloader.api.Dashable;
-import dev.notalpha.dashloader.util.RegistryUtil;
 import dev.notalpha.dashloader.api.DashObjectClass;
+import dev.notalpha.dashloader.api.Dashable;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.notalpha.dashloader.registry.factory.FactoryBinding;
+import dev.notalpha.dashloader.util.RegistryUtil;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 

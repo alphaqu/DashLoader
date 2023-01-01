@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.util;
+package dev.notalpha.dashloader.io;
 
 import com.github.luben.zstd.Zstd;
 import dev.quantumfusion.hyphen.io.ByteBufferIO;

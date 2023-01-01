@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.registry.data;
 
-import dev.notalpha.dashloader.api.Dashable;
 import dev.notalpha.dashloader.api.DashObjectClass;
+import dev.notalpha.dashloader.api.Dashable;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.thread.ThreadHandler;
 

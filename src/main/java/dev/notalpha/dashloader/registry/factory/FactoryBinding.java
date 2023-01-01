@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.registry.factory;
 
+import dev.notalpha.dashloader.api.DashObjectClass;
 import dev.notalpha.dashloader.api.Dashable;
 import dev.notalpha.dashloader.registry.RegistryWriter;
-import dev.notalpha.dashloader.api.DashObjectClass;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;

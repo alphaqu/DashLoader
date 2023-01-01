@@ -3,8 +3,8 @@ package dev.notalpha.dashloader.minecraft.model.components;
 import dev.notalpha.dashloader.mixin.accessor.ModelOverrideListBakedOverrideAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
-import dev.notalpha.dashloader.util.DashUtil;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +20,8 @@ public final class DashModelOverrideListBakedOverride {
 
 	public DashModelOverrideListBakedOverride(ModelOverrideList.BakedOverride override, RegistryWriter writer) {
 		final ModelOverrideList.InlinedCondition[] conditionsIn = ((ModelOverrideListBakedOverrideAccessor) override).getConditions();
-		this.model = DashUtil.nullable(((ModelOverrideListBakedOverrideAccessor) override).getModel(), writer::add);
+		BakedModel bakedModel = ((ModelOverrideListBakedOverrideAccessor) override).getModel();
+		this.model = bakedModel == null ? null : writer.add(bakedModel);
 
 		this.conditions = new DashModelOverrideListInlinedCondition[conditionsIn.length];
 		for (int i = 0; i < conditionsIn.length; i++) {
@@ -34,6 +35,6 @@ public final class DashModelOverrideListBakedOverride {
 			conditionsOut[i] = this.conditions[i].export();
 		}
 
-		return ModelOverrideListBakedOverrideAccessor.newModelOverrideListBakedOverride(conditionsOut, DashUtil.nullable(this.model, reader::get));
+		return ModelOverrideListBakedOverrideAccessor.newModelOverrideListBakedOverride(conditionsOut, this.model == null ? null : reader.get(this.model));
 	}
 }

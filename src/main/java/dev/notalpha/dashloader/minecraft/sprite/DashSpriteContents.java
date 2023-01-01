@@ -1,6 +1,5 @@
 package dev.notalpha.dashloader.minecraft.sprite;
 
-import dev.notalpha.dashloader.util.DashUtil;
 import dev.notalpha.dashloader.mixin.accessor.SpriteContentsAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
@@ -31,14 +30,14 @@ public final class DashSpriteContents {
 	}
 
 	public DashSpriteContents(SpriteContents contents, RegistryWriter writer) {
-
 		var access = (SpriteContentsAccessor) contents;
 		this.id = writer.add(contents.getId());
 		this.image = writer.add(access.getImage());
 		this.width = contents.getWidth();
 		this.height = contents.getHeight();
 		this.mipMaps = access.getMipmapLevelsImages().length - 1;
-		this.animation = DashUtil.nullable(access.getAnimation(), DashSpriteAnimation::new);
+		SpriteContents.Animation animation = access.getAnimation();
+		this.animation = animation == null ? null : new DashSpriteAnimation(animation);
 	}
 
 	public SpriteContents export(RegistryReader reader) {
@@ -51,7 +50,7 @@ public final class DashSpriteContents {
 		access.setHeight(height);
 		access.setWidth(width);
 		access.setMipmapLevelsImages(new NativeImage[]{image});
-		access.setAnimation(DashUtil.nullable(this.animation, animation -> animation.export(out, reader)));
+		access.setAnimation(this.animation == null ? null : animation.export(out, reader));
 		return out;
 	}
 }

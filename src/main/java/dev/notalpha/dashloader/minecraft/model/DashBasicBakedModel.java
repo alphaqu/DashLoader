@@ -1,13 +1,13 @@
 package dev.notalpha.dashloader.minecraft.model;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.minecraft.model.components.BakedQuadCollection;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.notalpha.dashloader.io.data.collection.ObjectObjectList;
+import dev.notalpha.dashloader.minecraft.model.components.BakedQuadCollection;
 import dev.notalpha.dashloader.minecraft.model.components.DashModelOverrideList;
 import dev.notalpha.dashloader.minecraft.model.components.DashModelTransformation;
 import dev.notalpha.dashloader.mixin.accessor.BasicBakedModelAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BasicBakedModel;

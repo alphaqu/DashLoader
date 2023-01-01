@@ -1,18 +1,17 @@
 package dev.notalpha.dashloader;
 
 import dev.notalpha.dashloader.api.APIHandler;
+import dev.notalpha.dashloader.api.DashEntrypoint;
 import dev.notalpha.dashloader.client.DashToast;
+import dev.notalpha.dashloader.client.ProgressManager;
 import dev.notalpha.dashloader.io.MappingSerializer;
-import dev.notalpha.dashloader.io.data.CacheInfo;
-import dev.notalpha.dashloader.registry.data.ChunkFactory;
-import dev.notalpha.dashloader.registry.data.StageData;
-import dev.notalpha.dashloader.registry.factory.MissingHandler;
-import dev.notalpha.dashloader.util.TimeUtil;
-import dev.notalpha.dashloader.api.entrypoint.DashEntrypoint;
 import dev.notalpha.dashloader.io.RegistrySerializer;
 import dev.notalpha.dashloader.io.Serializer;
+import dev.notalpha.dashloader.io.data.CacheInfo;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.registry.data.StageData;
+import dev.notalpha.dashloader.registry.factory.MissingHandler;
 import dev.quantumfusion.taski.builtin.StepTask;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -25,7 +24,9 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 
 public class DashLoader {
@@ -94,11 +95,11 @@ public class DashLoader {
 		DashToast.STATUS = DashToast.Status.CACHING;
 		LOG.info("Starting DashLoader Caching");
 		try {
-			ProgressHandler.INSTANCE.setOverwriteText(null);
+			ProgressManager.INSTANCE.setOverwriteText(null);
 			long start = System.currentTimeMillis();
 
 			StepTask main = new StepTask("save", 2);
-			ProgressHandler.INSTANCE.task = main;
+			ProgressManager.INSTANCE.task = main;
 
 			// missing model callback
 			List<MissingHandler<?>> handlers = new ArrayList<>();
@@ -123,8 +124,8 @@ public class DashLoader {
 				task.next();
 			});
 
-			String text = "Created cache in " + TimeUtil.getTimeStringFromStart(start);
-			ProgressHandler.INSTANCE.setOverwriteText(text);
+			String text = "Created cache in " + ProfilerHandler.getTimeStringFromStart(start);
+			ProgressManager.INSTANCE.setOverwriteText(text);
 			LOG.info(text);
 			DashToast.STATUS = DashToast.Status.DONE;
 		} catch (Throwable thr) {
@@ -140,7 +141,7 @@ public class DashLoader {
 		LOG.info("Starting DashLoader Deserialization");
 		try {
 			StepTask task = new StepTask("Loading DashCache", 3);
-			ProgressHandler.INSTANCE.task = task;
+			ProgressManager.INSTANCE.task = task;
 			Path cacheDir = getCacheDir();
 
 			// Get metadata
@@ -177,7 +178,7 @@ public class DashLoader {
 			ProfilerHandler.INSTANCE.exportTime = System.currentTimeMillis() - start;
 			LOG.info("Loaded DashLoader in {}ms", ProfilerHandler.INSTANCE.exportTime);
 		} catch (Exception e) {
-			LOG.error("Summoned CrashLoader in {}", TimeUtil.getTimeStringFromStart(start), e);
+			LOG.error("Summoned CrashLoader in {}", ProfilerHandler.getTimeStringFromStart(start), e);
 			this.setStatus(Status.SAVE);
 			this.clearCache();
 		}

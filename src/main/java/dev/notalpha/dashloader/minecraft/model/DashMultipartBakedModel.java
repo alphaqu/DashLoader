@@ -1,18 +1,19 @@
 package dev.notalpha.dashloader.minecraft.model;
 
-import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.registry.RegistryWriter;
-import dev.notalpha.dashloader.util.RegistryUtil;
-import dev.notalpha.dashloader.util.UnsafeHelper;
 import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.io.data.collection.IntIntList;
 import dev.notalpha.dashloader.io.data.collection.IntObjectList;
+import dev.notalpha.dashloader.minecraft.model.predicates.BooleanSelector;
 import dev.notalpha.dashloader.mixin.accessor.MultipartBakedModelAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.registry.RegistryWriter;
+import dev.notalpha.dashloader.util.UnsafeHelper;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.MultipartBakedModel;
+import net.minecraft.client.render.model.json.MultipartModelSelector;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -54,11 +55,18 @@ public class DashMultipartBakedModel implements DashModel {
 			var right = accessComponents.get(i).getRight();
 			var selector = selectors.getKey().get(i);
 			stateManagers.put(selector, selectors.getValue());
-			this.components.put(writer.add(RegistryUtil.preparePredicate(selector)), writer.add(right));
+			this.components.put(writer.add(preparePredicate(selector)), writer.add(right));
 		}
 
 		this.stateCache = new IntObjectList<>();
 		access.getStateCache().forEach((blockState, bitSet) -> this.stateCache.put(writer.add(blockState), bitSet.toByteArray()));
+	}
+
+	public static MultipartModelSelector preparePredicate(final MultipartModelSelector selector) {
+		if (selector == MultipartModelSelector.TRUE || selector == MultipartModelSelector.FALSE) {
+			return new BooleanSelector(selector);
+		}
+		return selector;
 	}
 
 	@Override

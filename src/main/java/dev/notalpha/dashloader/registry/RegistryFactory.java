@@ -1,6 +1,7 @@
 package dev.notalpha.dashloader.registry;
 
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.DashObjectClass;
 import dev.notalpha.dashloader.api.Dashable;
 import dev.notalpha.dashloader.registry.data.ChunkData;
 import dev.notalpha.dashloader.registry.data.ChunkFactory;
@@ -8,13 +9,14 @@ import dev.notalpha.dashloader.registry.data.StageData;
 import dev.notalpha.dashloader.registry.factory.FactoryBinding;
 import dev.notalpha.dashloader.registry.factory.MissingHandler;
 import dev.notalpha.dashloader.util.RegistryUtil;
-import dev.notalpha.dashloader.api.DashObjectClass;
 import it.unimi.dsi.fastutil.objects.Object2ByteMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class RegistryFactory {
 	private final Object2IntOpenHashMap<?> dedup = new Object2IntOpenHashMap<>();

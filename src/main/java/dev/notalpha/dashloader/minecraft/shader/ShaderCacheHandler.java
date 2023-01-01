@@ -1,13 +1,13 @@
 package dev.notalpha.dashloader.minecraft.shader;
 
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.config.ConfigHandler;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.util.OptionData;
 import dev.notalpha.dashloader.api.DashCacheHandler;
-import dev.notalpha.dashloader.api.option.Option;
+import dev.notalpha.dashloader.api.Option;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.data.collection.ObjectIntList;
 import dev.notalpha.dashloader.registry.RegistryFactory;
+import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.util.OptionData;
 import dev.quantumfusion.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

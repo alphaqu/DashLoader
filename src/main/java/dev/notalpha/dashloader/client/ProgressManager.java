@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader;
+package dev.notalpha.dashloader.client;
 
 import dev.quantumfusion.taski.ParentTask;
 import dev.quantumfusion.taski.Task;
@@ -7,8 +7,8 @@ import dev.quantumfusion.taski.builtin.StaticTask;
 
 import java.util.HashMap;
 
-public final class ProgressHandler {
-	public static ProgressHandler INSTANCE = new ProgressHandler();
+public final class ProgressManager {
+	public static ProgressManager INSTANCE = new ProgressManager();
 	public Task task = new StaticTask("Idle", 0);
 	private String overwriteText;
 
@@ -17,7 +17,7 @@ public final class ProgressHandler {
 
 	private HashMap<String, String> translations = new HashMap<>();
 
-	private ProgressHandler() {
+	private ProgressManager() {
 	}
 
 	public void setTranslations(HashMap<String, String> translations) {

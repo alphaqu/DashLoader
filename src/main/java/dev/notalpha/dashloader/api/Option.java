@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.api.option;
+package dev.notalpha.dashloader.api;
 
 public enum Option {
 	CACHE_MODEL_LOADER(

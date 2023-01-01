@@ -2,13 +2,16 @@ package dev.notalpha.dashloader.mixin.option.cache.model;
 
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.minecraft.model.ModelCacheHandler;
+import dev.notalpha.dashloader.mixin.accessor.AndMultipartModelSelectorAccessor;
 import dev.notalpha.dashloader.mixin.accessor.MultipartModelComponentAccessor;
-import dev.notalpha.dashloader.util.mixins.MixinThings;
+import dev.notalpha.dashloader.mixin.accessor.OrMultipartModelSelectorAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.*;
+import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelComponent;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
+import net.minecraft.client.render.model.json.OrMultipartModelSelector;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.state.StateManager;
@@ -47,13 +50,29 @@ public class MultipartUnbakedModelMixin {
 		ModelCacheHandler.MULTIPART_PREDICATES.visit(DashLoader.Status.SAVE, map ->  {
 			var bakedModel = (MultipartBakedModel) builder.build();
 			var outSelectors = new ArrayList<MultipartModelSelector>();
-
 			this.components.forEach(multipartModelComponent -> outSelectors.add(((MultipartModelComponentAccessor) multipartModelComponent).getSelector()));
 			map.put(bakedModel, Pair.of(outSelectors, this.stateFactory));
-			MixinThings.addPredicates(outSelectors, this.stateFactory);
+			addPredicates(outSelectors, this.stateFactory);
 			cir.setReturnValue(bakedModel);
 		});
 	}
 
+	private static <M extends MultipartModelSelector> void addPredicates(Iterable<M> multipartModelSelectors, StateManager<Block, BlockState> stateStateManager) {
+		for (M multipartModelSelector : multipartModelSelectors) {
+			addPredicate(multipartModelSelector, stateStateManager);
+		}
+	}
+
+	private static void addPredicate(MultipartModelSelector multipartModelSelector, StateManager<Block, BlockState> stateStateManager) {
+		if (multipartModelSelector instanceof AndMultipartModelSelector and) {
+			addPredicates(((AndMultipartModelSelectorAccessor) and).getSelectors(), stateStateManager);
+		} else if (multipartModelSelector instanceof OrMultipartModelSelector or) {
+			addPredicates(((OrMultipartModelSelectorAccessor) or).getSelectors(), stateStateManager);
+		}
+
+		ModelCacheHandler.STATE_MANAGERS.visit(DashLoader.Status.SAVE, map -> {
+			map.put(multipartModelSelector, stateStateManager);
+		});
+	}
 
 }

@@ -2,8 +2,8 @@ package dev.notalpha.dashloader.minecraft.model.components;
 
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.Dashable;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.util.math.Direction;
 

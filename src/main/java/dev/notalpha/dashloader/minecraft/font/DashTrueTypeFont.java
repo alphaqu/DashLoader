@@ -1,11 +1,11 @@
 package dev.notalpha.dashloader.minecraft.font;
 
-import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.util.IOHelper;
-import dev.notalpha.dashloader.util.UnsafeHelper;
 import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.io.IOHelper;
 import dev.notalpha.dashloader.mixin.accessor.TrueTypeFontAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.util.UnsafeHelper;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TrueTypeFont;
