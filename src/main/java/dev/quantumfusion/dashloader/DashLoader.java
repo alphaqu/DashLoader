@@ -1,7 +1,6 @@
 package dev.quantumfusion.dashloader;
 
 import dev.quantumfusion.dashloader.api.APIHandler;
-import dev.quantumfusion.dashloader.api.DashCacheHandler;
 import dev.quantumfusion.dashloader.api.entrypoint.DashEntrypoint;
 import dev.quantumfusion.dashloader.client.DashToast;
 import dev.quantumfusion.dashloader.io.MappingSerializer;
@@ -10,6 +9,7 @@ import dev.quantumfusion.dashloader.io.RegistrySerializer;
 import dev.quantumfusion.dashloader.io.Serializer;
 import dev.quantumfusion.dashloader.registry.RegistryFactory;
 import dev.quantumfusion.dashloader.registry.RegistryReader;
+import dev.quantumfusion.dashloader.registry.data.ChunkFactory;
 import dev.quantumfusion.dashloader.registry.data.StageData;
 import dev.quantumfusion.dashloader.registry.factory.MissingHandler;
 import dev.quantumfusion.dashloader.util.TimeUtil;
@@ -94,6 +94,8 @@ public class DashLoader {
 		DashToast.STATUS = DashToast.Status.CACHING;
 		LOG.info("Starting DashLoader Caching");
 		try {
+			ChunkFactory.C_AMOUNT = 0;
+			ChunkFactory.C_DE = 0;
 			ProgressHandler.INSTANCE.setOverwriteText(null);
 			long start = System.currentTimeMillis();
 
@@ -127,6 +129,10 @@ public class DashLoader {
 			ProgressHandler.INSTANCE.setOverwriteText(text);
 			LOG.info(text);
 			DashToast.STATUS = DashToast.Status.DONE;
+
+			DashLoader.LOG.info("Collections: " + ChunkFactory.C_AMOUNT + ", Removed " + ChunkFactory.C_DE);
+			DashLoader.LOG.info("Quads: " + ChunkFactory.Q_AMOUNT + ", Removed " + ChunkFactory.Q_DE);
+
 		} catch (Throwable thr) {
 			this.setStatus(Status.SAVE);
 			LOG.error("Failed caching", thr);

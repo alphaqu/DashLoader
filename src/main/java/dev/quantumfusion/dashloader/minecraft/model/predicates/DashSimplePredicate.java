@@ -64,5 +64,23 @@ public final class DashSimplePredicate implements DashPredicate {
 		}
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
 
+		DashSimplePredicate that = (DashSimplePredicate) o;
+
+		if (identifier != that.identifier) return false;
+		if (!key.equals(that.key)) return false;
+		return valueString.equals(that.valueString);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = key.hashCode();
+		result = 31 * result + valueString.hashCode();
+		result = 31 * result + identifier;
+		return result;
+	}
 }

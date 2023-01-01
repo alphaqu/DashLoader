@@ -24,4 +24,18 @@ public final class DashStaticPredicate implements DashPredicate {
 		return this.value ? MultipartModelSelector.TRUE.getPredicate(null) : MultipartModelSelector.FALSE.getPredicate(null);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashStaticPredicate that = (DashStaticPredicate) o;
+
+		return value == that.value;
+	}
+
+	@Override
+	public int hashCode() {
+		return (value ? 1 : 0);
+	}
 }

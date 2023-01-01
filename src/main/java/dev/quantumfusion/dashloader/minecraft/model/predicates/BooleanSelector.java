@@ -8,7 +8,6 @@ import net.minecraft.state.StateManager;
 import java.util.function.Predicate;
 
 public class BooleanSelector implements MultipartModelSelector {
-
 	public final boolean selector;
 
 	public BooleanSelector(MultipartModelSelector selector) {

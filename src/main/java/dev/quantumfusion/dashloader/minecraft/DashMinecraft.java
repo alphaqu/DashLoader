@@ -9,6 +9,7 @@ import dev.quantumfusion.dashloader.minecraft.identifier.DashIdentifier;
 import dev.quantumfusion.dashloader.minecraft.identifier.DashModelIdentifier;
 import dev.quantumfusion.dashloader.minecraft.model.*;
 import dev.quantumfusion.dashloader.minecraft.model.components.DashBakedQuad;
+import dev.quantumfusion.dashloader.minecraft.model.components.DashBakedQuadCollection;
 import dev.quantumfusion.dashloader.minecraft.model.fallback.DashMissingDashModel;
 import dev.quantumfusion.dashloader.minecraft.model.predicates.DashAndPredicate;
 import dev.quantumfusion.dashloader.minecraft.model.predicates.DashOrPredicate;
@@ -50,6 +51,7 @@ public class DashMinecraft implements DashEntrypoint {
 				DashWeightedBakedModel.class,
 				DashMissingDashModel.class,
 				DashBakedQuad.class,
+				DashBakedQuadCollection.class,
 				DashAndPredicate.class,
 				DashOrPredicate.class,
 				DashSimplePredicate.class,

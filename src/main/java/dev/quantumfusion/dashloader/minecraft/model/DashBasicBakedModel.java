@@ -2,6 +2,7 @@ package dev.quantumfusion.dashloader.minecraft.model;
 
 import dev.quantumfusion.dashloader.api.DashObject;
 import dev.quantumfusion.dashloader.io.data.collection.ObjectObjectList;
+import dev.quantumfusion.dashloader.minecraft.model.components.BakedQuadCollection;
 import dev.quantumfusion.dashloader.minecraft.model.components.DashModelOverrideList;
 import dev.quantumfusion.dashloader.minecraft.model.components.DashModelTransformation;
 import dev.quantumfusion.dashloader.mixin.accessor.BasicBakedModelAccessor;
@@ -32,8 +33,8 @@ import java.util.List;
 
 @DashObject(BasicBakedModel.class)
 public final class DashBasicBakedModel implements DashModel {
-	public final List<Integer> quads;
-	public final ObjectObjectList<Direction, List<Integer>> faceQuads;
+	public final int quads;
+	public final ObjectObjectList<Direction, Integer> faceQuads;
 	public final boolean usesAo;
 	public final boolean hasDepth;
 	public final boolean isSideLit;
@@ -42,8 +43,8 @@ public final class DashBasicBakedModel implements DashModel {
 	public final DashModelOverrideList itemPropertyOverrides;
 	public final int spritePointer;
 
-	public DashBasicBakedModel(List<Integer> quads,
-							   ObjectObjectList<Direction, List<Integer>> faceQuads,
+	public DashBasicBakedModel(int quads,
+							   ObjectObjectList<Direction, Integer> faceQuads,
 							   boolean usesAo, boolean hasDepth, boolean isSideLit,
 							   DashModelTransformation transformation,
 							   DashModelOverrideList itemPropertyOverrides,
@@ -61,19 +62,12 @@ public final class DashBasicBakedModel implements DashModel {
 
 	public DashBasicBakedModel(BasicBakedModel basicBakedModel, RegistryWriter writer) {
 		BasicBakedModelAccessor access = ((BasicBakedModelAccessor) basicBakedModel);
-		this.quads = new ArrayList<>();
 		basicBakedModel.getQuads(null, null, Random.create());
-		for (var quad : access.getQuads()) {
-			this.quads.add(writer.add(quad));
-		}
+		this.quads = writer.add(new BakedQuadCollection(access.getQuads()));
 
 		this.faceQuads = new ObjectObjectList<>();
 		access.getFaceQuads().forEach((direction, bakedQuads) -> {
-			var bakedQuadsOut = new ArrayList<Integer>();
-			for (var bakedQuad : bakedQuads) {
-				bakedQuadsOut.add(writer.add(bakedQuad));
-			}
-			this.faceQuads.put(direction, bakedQuadsOut);
+			this.faceQuads.put(direction, writer.add(new BakedQuadCollection(bakedQuads)));
 		});
 
 		this.itemPropertyOverrides = new DashModelOverrideList(access.getItemPropertyOverrides(), writer);
@@ -89,18 +83,13 @@ public final class DashBasicBakedModel implements DashModel {
 	public BasicBakedModel export(final RegistryReader reader) {
 		final Sprite sprite = reader.get(this.spritePointer);
 
-		var quadsOut = new ArrayList<BakedQuad>();
-		for (var quad : this.quads) {
-			quadsOut.add(reader.get(quad));
-		}
+		BakedQuadCollection collection = reader.get(this.quads);
+		var quadsOut = collection.quads;
 
 		var faceQuadsOut = new HashMap<Direction, List<BakedQuad>>();
 		for (var entry : this.faceQuads.list()) {
-			var out = new ArrayList<BakedQuad>();
-			for (Integer integer : entry.value()) {
-				out.add(reader.get(integer));
-			}
-			faceQuadsOut.put(entry.key(), out);
+			BakedQuadCollection collectionEntry = reader.get(entry.value());
+			faceQuadsOut.put(entry.key(), collectionEntry.quads);
 		}
 
 		return new BasicBakedModel(quadsOut, faceQuadsOut, this.usesAo, this.isSideLit, this.hasDepth, sprite, DashModelTransformation.exportOrDefault(this.transformation), this.itemPropertyOverrides.export(reader));

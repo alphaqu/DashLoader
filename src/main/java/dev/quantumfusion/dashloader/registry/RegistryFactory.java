@@ -75,7 +75,7 @@ public final class RegistryFactory {
 				var entry = RegistryWriter.create(this, writer -> {
 					return chunk.create(object, writer);
 				});
-				pointer = chunk.add(entry);
+				pointer = chunk.add(entry, this);
 			}
 		}
 
@@ -93,7 +93,7 @@ public final class RegistryFactory {
 							throw new RuntimeException("Could not find a ChunkWriter for DashClass " + dashClass);
 						}
 						var chunk = (ChunkFactory<R, D>) this.chunks[chunkPos];
-						pointer = chunk.add(entry);
+						pointer = chunk.add(entry, this);
 						break;
 					}
 				}

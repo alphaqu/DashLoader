@@ -5,6 +5,7 @@ import dev.quantumfusion.dashloader.util.UnsafeHelper;
 import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public final class DashMesh {
 	public final int[] data;
@@ -44,5 +45,23 @@ public final class DashMesh {
 			throw new RuntimeException("Could not use Mesh field hack. ", e);
 		}
 		return mesh;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashMesh dashMesh = (DashMesh) o;
+
+		if (!Arrays.equals(data, dashMesh.data)) return false;
+		return className.equals(dashMesh.className);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Arrays.hashCode(data);
+		result = 31 * result + className.hashCode();
+		return result;
 	}
 }

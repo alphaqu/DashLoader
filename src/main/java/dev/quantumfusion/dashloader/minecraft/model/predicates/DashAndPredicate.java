@@ -42,4 +42,22 @@ public final class DashAndPredicate implements DashPredicate {
 
 		return new AndMultipartModelSelector(selectors).getPredicate(DashSimplePredicate.getStateManager(handler.get(this.identifier)));
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashAndPredicate that = (DashAndPredicate) o;
+
+		if (identifier != that.identifier) return false;
+		return selectors.equals(that.selectors);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = selectors.hashCode();
+		result = 31 * result + identifier;
+		return result;
+	}
 }

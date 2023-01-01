@@ -31,15 +31,7 @@ public class RegistryWriter {
 	static <R, D extends Dashable<R>> ChunkFactory.Entry<D> create(RegistryFactory factory, Function<RegistryWriter, D> function) {
 		RegistryWriter writer = new RegistryWriter(factory);
 		D data = function.apply(writer);
-
-		// Increment dependency references
 		int[] dependencies = writer.dependencies.toIntArray();
-		for (int dependency : dependencies) {
-			ChunkFactory<?, ?> chunk = factory.chunks[RegistryUtil.getChunkId(dependency)];
-			ChunkFactory.Entry<?> entry = chunk.list.get(RegistryUtil.getObjectId(dependency));
-			entry.references++;
-		}
-
 		return new ChunkFactory.Entry<>(data, dependencies);
 	}
 

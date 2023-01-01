@@ -7,6 +7,8 @@ import dev.quantumfusion.dashloader.registry.RegistryWriter;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.util.math.Direction;
 
+import java.util.Arrays;
+
 @DashObject(BakedQuad.class)
 public final class DashBakedQuad implements Dashable<BakedQuad> {
 	public final int[] vertexData;
@@ -30,5 +32,29 @@ public final class DashBakedQuad implements Dashable<BakedQuad> {
 
 	public BakedQuad export(RegistryReader handler) {
 		return new BakedQuad(this.vertexData, this.colorIndex, this.face, handler.get(this.sprite), this.shade);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashBakedQuad that = (DashBakedQuad) o;
+
+		if (colorIndex != that.colorIndex) return false;
+		if (shade != that.shade) return false;
+		if (sprite != that.sprite) return false;
+		if (!Arrays.equals(vertexData, that.vertexData)) return false;
+		return face == that.face;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Arrays.hashCode(vertexData);
+		result = 31 * result + colorIndex;
+		result = 31 * result + face.hashCode();
+		result = 31 * result + (shade ? 1 : 0);
+		result = 31 * result + sprite;
+		return result;
 	}
 }
