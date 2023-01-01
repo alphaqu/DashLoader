@@ -14,7 +14,7 @@
 	},
 	"entrypoints": {
 		"dashloader": [
-			"dev.quantumfusion.dashloader.minecraft.DashMinecraft"
+          "dev.notalpha.dashloader.minecraft.DashMinecraft"
 		]
 	},
 	"license" : "LGPL-3.0-only",

@@ -1,8 +1,8 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.quantumfusion.dashloader.mixin",
-  "plugin": "dev.quantumfusion.dashloader.mixin.MixinPlugin",
+  "package": "dev.notalpha.dashloader.mixin",
+  "plugin": "dev.notalpha.dashloader.mixin.MixinPlugin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "accessor.AbstractTextureAccessor",
