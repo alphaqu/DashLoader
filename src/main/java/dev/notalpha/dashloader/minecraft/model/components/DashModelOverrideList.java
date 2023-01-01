@@ -10,8 +10,6 @@ public final class DashModelOverrideList {
 	public final DashModelOverrideListBakedOverride[] overrides;
 	public final int[] conditionTypes; //identifiers
 
-	transient ModelOverrideList toApply;
-
 	public DashModelOverrideList(DashModelOverrideListBakedOverride[] overrides, int[] conditionTypes) {
 		this.overrides = overrides;
 		this.conditionTypes = conditionTypes;
@@ -34,23 +32,21 @@ public final class DashModelOverrideList {
 	}
 
 	public ModelOverrideList export(RegistryReader reader) {
-		this.toApply = ModelOverrideListAccessor.newModelOverrideList();
+		var out = ModelOverrideListAccessor.newModelOverrideList();
+		ModelOverrideListAccessor access = (ModelOverrideListAccessor) out;
 
 		var conditionTypesOut = new Identifier[this.conditionTypes.length];
 		for (int i = 0; i < this.conditionTypes.length; i++) {
 			conditionTypesOut[i] = reader.get(this.conditionTypes[i]);
 		}
 
-		((ModelOverrideListAccessor) this.toApply).setConditionTypes(conditionTypesOut);
-		return this.toApply;
-	}
-
-	public void applyOverrides(RegistryReader reader) {
 		var overridesOut = new ModelOverrideList.BakedOverride[this.overrides.length];
 		for (int i = 0; i < this.overrides.length; i++) {
 			overridesOut[i] = this.overrides[i].export(reader);
 		}
 
-		((ModelOverrideListAccessor) this.toApply).setOverrides(overridesOut);
+		access.setConditionTypes(conditionTypesOut);
+		access.setOverrides(overridesOut);
+		return out;
 	}
 }

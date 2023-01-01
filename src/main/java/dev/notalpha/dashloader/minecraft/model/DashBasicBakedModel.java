@@ -93,10 +93,4 @@ public final class DashBasicBakedModel implements DashModel {
 
 		return new BasicBakedModel(quadsOut, faceQuadsOut, this.usesAo, this.isSideLit, this.hasDepth, sprite, DashModelTransformation.exportOrDefault(this.transformation), this.itemPropertyOverrides.export(reader));
 	}
-
-	@Override
-	public void postExport(RegistryReader reader) {
-		// TODO move to export?
-		this.itemPropertyOverrides.applyOverrides(reader);
-	}
 }

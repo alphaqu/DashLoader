@@ -41,10 +41,4 @@ public final class DashBuiltinBakedModel implements DashModel {
 		Sprite sprite = reader.get(this.spritePointer);
 		return new BuiltinBakedModel(DashModelTransformation.exportOrDefault(this.transformation), this.itemPropertyOverrides.export(reader), sprite, this.sideLit);
 	}
-
-	@Override
-	public void postExport(RegistryReader reader) {
-		// TODO move to export?
-		this.itemPropertyOverrides.applyOverrides(reader);
-	}
 }
