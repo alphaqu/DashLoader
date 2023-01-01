@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.mixin.option.cache.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.cache.CacheManager;
 import dev.notalpha.dashloader.minecraft.shader.ShaderCacheHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,7 +18,7 @@ public class GlStateManagerMixin {
 			at = @At(value = "HEAD")
 	)
 	private static void glShaderSourceInject(int shader, List<String> strings, CallbackInfo ci) {
-		ShaderCacheHandler.WRITE_PROGRAM_SOURCES.visit(DashLoader.Status.SAVE, map -> {
+		ShaderCacheHandler.WRITE_PROGRAM_SOURCES.visit(CacheManager.Status.SAVE, map -> {
 			map.put(shader, strings);
 		});
 	}

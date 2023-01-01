@@ -3,11 +3,12 @@ package dev.notalpha.dashloader.minecraft.model;
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashCacheHandler;
 import dev.notalpha.dashloader.api.Option;
+import dev.notalpha.dashloader.cache.CacheManager;
+import dev.notalpha.dashloader.cache.io.data.collection.IntIntList;
+import dev.notalpha.dashloader.cache.registry.RegistryFactory;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 import dev.notalpha.dashloader.config.ConfigHandler;
-import dev.notalpha.dashloader.io.data.collection.IntIntList;
 import dev.notalpha.dashloader.minecraft.model.fallback.DashMissingDashModel;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.util.OptionData;
 import dev.quantumfusion.taski.builtin.StepTask;
 import net.minecraft.block.Block;
@@ -30,26 +31,26 @@ public class ModelCacheHandler implements DashCacheHandler<ModelCacheHandler.Dat
 	public static final OptionData<HashMap<Identifier, BakedModel>> MODELS = new OptionData<>();
 	public static final OptionData<HashMap<BakedModel, DashMissingDashModel>> MISSING_WRITE = new OptionData<>();
 	public static final OptionData<HashMap<BlockState, Identifier>> MISSING_READ = new OptionData<>();
-	public static final OptionData<HashMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>>> MULTIPART_PREDICATES = new OptionData<>( DashLoader.Status.SAVE);
-	public static final OptionData<HashMap<MultipartModelSelector, StateManager<Block, BlockState>>> STATE_MANAGERS = new OptionData<>(DashLoader.Status.SAVE);
+	public static final OptionData<HashMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>>> MULTIPART_PREDICATES = new OptionData<>(CacheManager.Status.SAVE);
+	public static final OptionData<HashMap<MultipartModelSelector, StateManager<Block, BlockState>>> STATE_MANAGERS = new OptionData<>(CacheManager.Status.SAVE);
 
 	@Override
-	public void reset(DashLoader.Status status) {
-		MODELS.set(status, new HashMap<>());
-		MISSING_WRITE.set(status, new HashMap<>());
-		MISSING_READ.set(status, new HashMap<>());
-		MULTIPART_PREDICATES.set(status, new HashMap<>());
-		STATE_MANAGERS.set(status, new HashMap<>());
+	public void reset(CacheManager cacheManager) {
+		MODELS.reset(cacheManager, new HashMap<>());
+		MISSING_WRITE.reset(cacheManager, new HashMap<>());
+		MISSING_READ.reset(cacheManager, new HashMap<>());
+		MULTIPART_PREDICATES.reset(cacheManager, new HashMap<>());
+		STATE_MANAGERS.reset(cacheManager, new HashMap<>());
 	}
 
 	@Override
 	public Data saveMappings(RegistryFactory writer, StepTask task) {
-		var missingModelsWrite = MISSING_WRITE.get(DashLoader.Status.SAVE);
-		var models = MODELS.get(DashLoader.Status.SAVE);
+		var missingModelsWrite = MISSING_WRITE.get(CacheManager.Status.SAVE);
+		var models = MODELS.get(CacheManager.Status.SAVE);
 
 		if (missingModelsWrite == null || models == null) {
 			return null;
-		} else  {
+		} else {
 			var outModels = new IntIntList(new ArrayList<>(models.size()));
 			var missingModels = new IntIntList();
 
@@ -87,10 +88,10 @@ public class ModelCacheHandler implements DashCacheHandler<ModelCacheHandler.Dat
 		mappings.missingModels.forEach((blockState, modelId) -> {
 			missingModelsRead.put(reader.get(blockState), reader.get(modelId));
 		});
-		
+
 		DashLoader.LOG.info("Found {} Missing BlockState Models", missingModelsRead.size());
-		MISSING_READ.set(DashLoader.Status.LOAD, missingModelsRead);
-		MODELS.set(DashLoader.Status.LOAD, out);
+		MISSING_READ.set(CacheManager.Status.LOAD, missingModelsRead);
+		MODELS.set(CacheManager.Status.LOAD, out);
 	}
 
 	@Override

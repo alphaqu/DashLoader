@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.mixin.option.cache.sprite;
 
-import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.cache.CacheManager;
 import dev.notalpha.dashloader.minecraft.sprite.SpriteCacheHandler;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.resource.ResourceManager;
@@ -22,7 +22,7 @@ public final class SpriteLoaderMixin {
 			cancellable = true
 	)
 	private void dashloaderWrite(ResourceManager resourceManager, Identifier identifier, int i, Executor executor, CallbackInfoReturnable<CompletableFuture<SpriteLoader.StitchResult>> cir) {
-		SpriteCacheHandler.ATLASES.visit(DashLoader.Status.SAVE, map -> {
+		SpriteCacheHandler.ATLASES.visit(CacheManager.Status.SAVE, map -> {
 			cir.setReturnValue(cir.getReturnValue().thenApply(stitchResult -> {
 				map.put(identifier, stitchResult);
 				return stitchResult;
@@ -36,7 +36,7 @@ public final class SpriteLoaderMixin {
 			cancellable = true
 	)
 	private void dashloaderRead(ResourceManager resourceManager, Identifier identifier, int m, Executor executor, CallbackInfoReturnable<CompletableFuture<SpriteLoader.StitchResult>> cir) {
-		SpriteCacheHandler.ATLASES.visit(DashLoader.Status.LOAD, map -> {
+		SpriteCacheHandler.ATLASES.visit(CacheManager.Status.LOAD, map -> {
 			SpriteLoader.StitchResult cached = map.get(identifier);
 			if (cached != null) {
 				// Correct the executor

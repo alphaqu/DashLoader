@@ -2,9 +2,9 @@ package dev.notalpha.dashloader.minecraft.blockstate;
 
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.Dashable;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
+import dev.notalpha.dashloader.cache.registry.RegistryWriter;
 import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;

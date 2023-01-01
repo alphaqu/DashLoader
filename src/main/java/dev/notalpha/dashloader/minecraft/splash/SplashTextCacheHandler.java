@@ -1,11 +1,11 @@
 package dev.notalpha.dashloader.minecraft.splash;
 
-import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashCacheHandler;
 import dev.notalpha.dashloader.api.Option;
+import dev.notalpha.dashloader.cache.CacheManager;
+import dev.notalpha.dashloader.cache.registry.RegistryFactory;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 import dev.notalpha.dashloader.config.ConfigHandler;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.util.OptionData;
 import dev.quantumfusion.taski.builtin.StepTask;
 
@@ -17,18 +17,18 @@ public class SplashTextCacheHandler implements DashCacheHandler<SplashTextCacheH
 	public static final OptionData<List<String>> TEXTS = new OptionData<>();
 
 	@Override
-	public void reset(DashLoader.Status status) {
-		TEXTS.set(status, new ArrayList<>());
+	public void reset(CacheManager cacheManager) {
+		TEXTS.reset(cacheManager, new ArrayList<>());
 	}
 
 	@Override
 	public Data saveMappings(RegistryFactory writer, StepTask task) {
-		return new Data(TEXTS.get(DashLoader.Status.SAVE));
+		return new Data(TEXTS.get(CacheManager.Status.SAVE));
 	}
 
 	@Override
 	public void loadMappings(Data mappings, RegistryReader reader, StepTask task) {
-		TEXTS.set(DashLoader.Status.LOAD, mappings.splashList);
+		TEXTS.set(CacheManager.Status.LOAD, mappings.splashList);
 	}
 
 	@Override

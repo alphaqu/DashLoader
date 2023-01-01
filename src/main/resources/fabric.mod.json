@@ -14,7 +14,7 @@
 	},
 	"entrypoints": {
 		"dashloader": [
-			"dev.notalpha.dashloader.minecraft.DashObjects"
+          "dev.notalpha.dashloader.minecraft.DashLoaderClientDriver"
 		]
 	},
 	"license" : "LGPL-3.0-only",

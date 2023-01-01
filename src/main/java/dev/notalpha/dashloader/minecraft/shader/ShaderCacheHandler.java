@@ -1,12 +1,12 @@
 package dev.notalpha.dashloader.minecraft.shader;
 
-import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashCacheHandler;
 import dev.notalpha.dashloader.api.Option;
+import dev.notalpha.dashloader.cache.CacheManager;
+import dev.notalpha.dashloader.cache.io.data.collection.ObjectIntList;
+import dev.notalpha.dashloader.cache.registry.RegistryFactory;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 import dev.notalpha.dashloader.config.ConfigHandler;
-import dev.notalpha.dashloader.io.data.collection.ObjectIntList;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.util.OptionData;
 import dev.quantumfusion.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -20,17 +20,17 @@ import java.util.Map;
 
 public class ShaderCacheHandler implements DashCacheHandler<ShaderCacheHandler.Data> {
 	public static final OptionData<HashMap<String, ShaderProgram>> SHADERS = new OptionData<>();
-	public static final OptionData<Int2ObjectMap<List<String>>> WRITE_PROGRAM_SOURCES = new OptionData<>(DashLoader.Status.SAVE);
+	public static final OptionData<Int2ObjectMap<List<String>>> WRITE_PROGRAM_SOURCES = new OptionData<>(CacheManager.Status.SAVE);
 
 	@Override
-	public void reset(DashLoader.Status status) {
-		SHADERS.set(status, new HashMap<>());
-		WRITE_PROGRAM_SOURCES.set(status, new Int2ObjectOpenHashMap<>());
+	public void reset(CacheManager cacheManager) {
+		SHADERS.reset(cacheManager, new HashMap<>());
+		WRITE_PROGRAM_SOURCES.reset(cacheManager, new Int2ObjectOpenHashMap<>());
 	}
 
 	@Override
 	public Data saveMappings(RegistryFactory writer, StepTask task) {
-		final Map<String, ShaderProgram> minecraftData = SHADERS.get(DashLoader.Status.SAVE);
+		final Map<String, ShaderProgram> minecraftData = SHADERS.get(CacheManager.Status.SAVE);
 		if (minecraftData == null) {
 			return null;
 		}
@@ -47,7 +47,7 @@ public class ShaderCacheHandler implements DashCacheHandler<ShaderCacheHandler.D
 	public void loadMappings(Data mappings, RegistryReader reader, StepTask task) {
 		HashMap<String, ShaderProgram> out = new HashMap<>();
 		mappings.shaders.forEach((key, value) -> out.put(key, reader.get(value)));
-		SHADERS.set(DashLoader.Status.LOAD, out);
+		SHADERS.set(CacheManager.Status.LOAD, out);
 	}
 
 	@Override

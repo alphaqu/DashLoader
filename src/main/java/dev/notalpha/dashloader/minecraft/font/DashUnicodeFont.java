@@ -1,10 +1,10 @@
 package dev.notalpha.dashloader.minecraft.font;
 
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
+import dev.notalpha.dashloader.cache.registry.RegistryWriter;
 import dev.notalpha.dashloader.mixin.accessor.FontImageAccessor;
 import dev.notalpha.dashloader.mixin.accessor.UnicodeTextureFontAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.notalpha.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;

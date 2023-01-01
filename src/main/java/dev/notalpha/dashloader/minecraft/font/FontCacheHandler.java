@@ -1,12 +1,12 @@
 package dev.notalpha.dashloader.minecraft.font;
 
-import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashCacheHandler;
 import dev.notalpha.dashloader.api.Option;
+import dev.notalpha.dashloader.cache.CacheManager;
+import dev.notalpha.dashloader.cache.io.data.collection.IntObjectList;
+import dev.notalpha.dashloader.cache.registry.RegistryFactory;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 import dev.notalpha.dashloader.config.ConfigHandler;
-import dev.notalpha.dashloader.io.data.collection.IntObjectList;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.util.OptionData;
 import dev.quantumfusion.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -31,14 +31,14 @@ public class FontCacheHandler implements DashCacheHandler<FontCacheHandler.Data>
 	public static final OptionData<Map<STBTTFontinfo, Identifier>> FONT_TO_IDENT = new OptionData<>();
 
 	@Override
-	public void reset(DashLoader.Status status) {
-		DATA.set(status, new Object2ObjectOpenHashMap<>());
+	public void reset(CacheManager cacheManager) {
+		DATA.reset(cacheManager, new Object2ObjectOpenHashMap<>());
 	}
 
 	@Override
 	public Data saveMappings(RegistryFactory writer, StepTask task) {
 		var fontMap = new IntObjectList<DashFontStorage>();
-		Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> identifierPairObject2ObjectMap = DATA.get(DashLoader.Status.SAVE);
+		Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> identifierPairObject2ObjectMap = DATA.get(CacheManager.Status.SAVE);
 		identifierPairObject2ObjectMap.forEach((identifier, fontList) -> {
 			List<Integer> fontsOut = new ArrayList<>();
 			for (Font font : fontList.getValue()) {
@@ -65,7 +65,7 @@ public class FontCacheHandler implements DashCacheHandler<FontCacheHandler.Data>
 			out.put(reader.get(key), Pair.of(charactersByWidth, fontsOut));
 		});
 
-		DATA.set(DashLoader.Status.LOAD, out);
+		DATA.set(CacheManager.Status.LOAD, out);
 	}
 
 	@Override

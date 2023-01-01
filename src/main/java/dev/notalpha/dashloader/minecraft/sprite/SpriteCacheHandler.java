@@ -1,12 +1,12 @@
 package dev.notalpha.dashloader.minecraft.sprite;
 
-import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashCacheHandler;
 import dev.notalpha.dashloader.api.Option;
+import dev.notalpha.dashloader.cache.CacheManager;
+import dev.notalpha.dashloader.cache.io.data.collection.IntObjectList;
+import dev.notalpha.dashloader.cache.registry.RegistryFactory;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 import dev.notalpha.dashloader.config.ConfigHandler;
-import dev.notalpha.dashloader.io.data.collection.IntObjectList;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.util.OptionData;
 import dev.quantumfusion.taski.builtin.StepTask;
 import net.minecraft.client.texture.SpriteLoader;
@@ -16,16 +16,17 @@ import java.util.HashMap;
 
 public class SpriteCacheHandler implements DashCacheHandler<SpriteCacheHandler.Data> {
 	public final static OptionData<HashMap<Identifier, SpriteLoader.StitchResult>> ATLASES = new OptionData<>();
+
 	@Override
-	public void reset(DashLoader.Status status) {
-		ATLASES.set(status, new HashMap<>());
+	public void reset(CacheManager cacheManager) {
+		ATLASES.reset(cacheManager, new HashMap<>());
 	}
 
 	@Override
 	public Data saveMappings(RegistryFactory writer, StepTask task) {
 		var results = new IntObjectList<DashStitchResult>();
 
-		var map = ATLASES.get(DashLoader.Status.SAVE);
+		var map = ATLASES.get(CacheManager.Status.SAVE);
 		task.doForEach(map, (identifier, stitchResult) -> {
 			StepTask atlases = new StepTask("atlas", stitchResult.regions().size());
 			task.setSubTask(atlases);
@@ -42,7 +43,7 @@ public class SpriteCacheHandler implements DashCacheHandler<SpriteCacheHandler.D
 			stitchResults.put(reader.get(identifier), stitchResult.export(reader));
 		});
 
-		ATLASES.set(DashLoader.Status.LOAD, stitchResults);
+		ATLASES.set(CacheManager.Status.LOAD, stitchResults);
 	}
 
 	@Override
@@ -57,6 +58,7 @@ public class SpriteCacheHandler implements DashCacheHandler<SpriteCacheHandler.D
 
 	public static final class Data {
 		public final IntObjectList<DashStitchResult> results;
+
 		public Data(IntObjectList<DashStitchResult> results) {
 			this.results = results;
 		}

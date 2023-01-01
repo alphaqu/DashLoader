@@ -1,27 +1,38 @@
 package dev.notalpha.dashloader.client;
 
+import dev.notalpha.dashloader.DashLoader;
 import dev.quantumfusion.taski.ParentTask;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.AbstractTask;
 import dev.quantumfusion.taski.builtin.StaticTask;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.Language;
 
 import java.util.HashMap;
 
 public final class ProgressManager {
-	public static ProgressManager INSTANCE = new ProgressManager();
 	public Task task = new StaticTask("Idle", 0);
+	private final HashMap<String, String> translations;
 	private String overwriteText;
 
-	private long lastUpdate = System.currentTimeMillis();
 	private double currentProgress = 0;
+	private long lastUpdate = System.currentTimeMillis();
 
-	private HashMap<String, String> translations = new HashMap<>();
 
-	private ProgressManager() {
-	}
-
-	public void setTranslations(HashMap<String, String> translations) {
-		this.translations = translations;
+	public ProgressManager() {
+		var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
+		DashLoader.LOG.info(langCode);
+		var stream = this.getClass().getClassLoader().getResourceAsStream("dashloader/lang/" + langCode + ".json");
+		this.translations = new HashMap<>();
+		if (stream != null) {
+			DashLoader.LOG.info("Found translations");
+			Language.load(stream, this.translations::put);
+		} else {
+			var en_stream = this.getClass().getClassLoader().getResourceAsStream("dashloader/lang/en_us.json");
+			if (en_stream != null) {
+				Language.load(en_stream, this.translations::put);
+			}
+		}
 	}
 
 	private void tickProgress() {
@@ -55,6 +66,7 @@ public final class ProgressManager {
 	public String getProgressText() {
 		return this.getProgressText(3, task);
 	}
+
 	private String concatTask(int depth, Task task) {
 		String name = null;
 		if (task instanceof AbstractTask abstractTask) {
@@ -63,9 +75,9 @@ public final class ProgressManager {
 
 		if (task instanceof ParentTask stepTask) {
 			Task subTask = stepTask.getChild();
-			if (depth > 1)  {
+			if (depth > 1) {
 				String subName = concatTask(depth - 1, subTask);
-				if (subName != null)  {
+				if (subName != null) {
 					return name + "." + subName;
 				}
 			}
@@ -77,9 +89,9 @@ public final class ProgressManager {
 	private String getProgressText(int depth, Task task) {
 		if (task instanceof ParentTask stepTask) {
 			Task subTask = stepTask.getChild();
-			if (depth > 1)  {
+			if (depth > 1) {
 				String subName = getProgressText(depth - 1, subTask);
-				if (subName != null)  {
+				if (subName != null) {
 					return subName;
 				}
 			}

@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.minecraft.sprite;
 
 import dev.notalpha.dashloader.api.Dashable;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 import dev.notalpha.dashloader.mixin.accessor.SpriteAnimationFrameAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import net.minecraft.client.texture.SpriteContents;
 
 public final class DashSpriteAnimationFrame implements Dashable<SpriteContents.AnimationFrame> {

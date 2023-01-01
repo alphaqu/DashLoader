@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.minecraft.sprite;
 
-import dev.notalpha.dashloader.io.data.collection.IntIntList;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.cache.io.data.collection.IntIntList;
+import dev.notalpha.dashloader.cache.registry.RegistryFactory;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 import dev.quantumfusion.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.texture.Sprite;
@@ -54,7 +54,7 @@ public final class DashStitchResult {
 				reader.get(this.missing),
 				regions,
 				CompletableFuture.runAsync(
-						() ->{
+						() -> {
 							throw new RuntimeException("Cached object not yet finalized");
 						}
 				)

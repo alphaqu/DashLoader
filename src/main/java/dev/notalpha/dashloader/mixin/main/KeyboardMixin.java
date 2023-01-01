@@ -1,6 +1,7 @@
 package dev.notalpha.dashloader.mixin.main;
 
 import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.minecraft.DashLoaderClientDriver;
 import net.minecraft.client.Keyboard;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +29,7 @@ public class KeyboardMixin {
 	private void f3tReloadWorld(int key, CallbackInfoReturnable<Boolean> cir) {
 		if (!this.shiftHeld) {
 			DashLoader.LOG.info("Clearing cache.");
-			DashLoader.INSTANCE.clearCache();
+			DashLoaderClientDriver.MANAGER.clearCache();
 		}
 	}
 

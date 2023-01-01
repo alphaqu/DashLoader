@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.api;
 
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 
 /**
  * The Dashable interface is the interface to implement when adding DashLoader cache support to a registry object.

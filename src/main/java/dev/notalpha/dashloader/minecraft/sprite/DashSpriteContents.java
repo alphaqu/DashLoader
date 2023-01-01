@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.minecraft.sprite;
 
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
+import dev.notalpha.dashloader.cache.registry.RegistryWriter;
 import dev.notalpha.dashloader.mixin.accessor.SpriteContentsAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.notalpha.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.texture.NativeImage;

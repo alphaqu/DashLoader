@@ -1,13 +1,13 @@
 package dev.notalpha.dashloader.minecraft.model;
 
-import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.io.data.collection.IntIntList;
-import dev.notalpha.dashloader.io.data.collection.IntObjectList;
+import dev.notalpha.dashloader.cache.CacheManager;
+import dev.notalpha.dashloader.cache.io.data.collection.IntIntList;
+import dev.notalpha.dashloader.cache.io.data.collection.IntObjectList;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
+import dev.notalpha.dashloader.cache.registry.RegistryWriter;
 import dev.notalpha.dashloader.minecraft.model.predicates.BooleanSelector;
 import dev.notalpha.dashloader.mixin.accessor.MultipartBakedModelAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.notalpha.dashloader.util.UnsafeHelper;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
@@ -48,8 +48,8 @@ public class DashMultipartBakedModel implements DashModel {
 		int size = accessComponents.size();
 		this.components = new IntIntList(new ArrayList<>(size));
 
-		var stateManagers = ModelCacheHandler.STATE_MANAGERS.get(DashLoader.Status.SAVE);
-		var selectors = ModelCacheHandler.MULTIPART_PREDICATES.get(DashLoader.Status.SAVE).get(model);
+		var stateManagers = ModelCacheHandler.STATE_MANAGERS.get(CacheManager.Status.SAVE);
+		var selectors = ModelCacheHandler.MULTIPART_PREDICATES.get(CacheManager.Status.SAVE).get(model);
 
 		for (int i = 0; i < size; i++) {
 			var right = accessComponents.get(i).getRight();

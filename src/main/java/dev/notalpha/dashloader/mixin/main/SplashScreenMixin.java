@@ -1,16 +1,15 @@
 package dev.notalpha.dashloader.mixin.main;
 
-import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.ProfilerHandler;
+import dev.notalpha.dashloader.cache.CacheManager;
 import dev.notalpha.dashloader.client.DashToast;
-import dev.notalpha.dashloader.client.ProgressManager;
+import dev.notalpha.dashloader.minecraft.DashLoaderClientDriver;
+import dev.notalpha.dashloader.util.ProfilerUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceReload;
-import net.minecraft.util.Language;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -18,8 +17,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.HashMap;
 
 
 @Mixin(value = SplashOverlay.class, priority = 69420)
@@ -52,28 +49,11 @@ public class SplashScreenMixin {
 			}
 		}
 
-		ProfilerHandler.INSTANCE.print();
-
-		if (DashLoader.INSTANCE.isWrite() && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
-			// Yes this is bad. But it makes us not require Fabric API
-			var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
-			DashLoader.LOG.info(langCode);
-			var stream = this.getClass().getClassLoader().getResourceAsStream("dashloader/lang/" + langCode + ".json");
-			var map = new HashMap<String, String>();
-			if (stream != null) {
-				DashLoader.LOG.info("Found translations");
-				Language.load(stream, map::put);
-			} else {
-				var en_stream = this.getClass().getClassLoader().getResourceAsStream("dashloader/lang/en_us.json");
-				if (en_stream != null) {
-					Language.load(en_stream, map::put);
-				}
-			}
-			DashLoader.LOG.info("Missing translations");
-			ProgressManager.INSTANCE.setTranslations(map);
-			client.getToastManager().add(new DashToast());
+		ProfilerUtil.getTimeStringFromStart(ProfilerUtil.RELOAD_START);
+		if (DashLoaderClientDriver.MANAGER.getStatus() == CacheManager.Status.SAVE && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
+			client.getToastManager().add(new DashToast(DashLoaderClientDriver.MANAGER));
 		} else {
-			DashLoader.INSTANCE.resetDashLoader();
+			DashLoaderClientDriver.MANAGER.setStatus(CacheManager.Status.IDLE);
 		}
 	}
 

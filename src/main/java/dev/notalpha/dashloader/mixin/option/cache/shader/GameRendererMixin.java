@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.mixin.option.cache.shader;
 
-import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.cache.CacheManager;
 import dev.notalpha.dashloader.minecraft.shader.ShaderCacheHandler;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.GameRenderer;
@@ -23,8 +23,8 @@ public abstract class GameRendererMixin {
 			)
 	)
 	private ShaderProgram shaderCreation(ResourceFactory factory, String name, VertexFormat format) throws IOException {
-		HashMap<String, ShaderProgram> shaders = ShaderCacheHandler.SHADERS.get(DashLoader.Status.LOAD);
-		if (shaders != null)  {
+		HashMap<String, ShaderProgram> shaders = ShaderCacheHandler.SHADERS.get(CacheManager.Status.LOAD);
+		if (shaders != null) {
 			// If we are reading from cache load the shader and check if its cached.
 			var shader = shaders.get(name);
 			if (shader != null) {
@@ -34,7 +34,7 @@ public abstract class GameRendererMixin {
 		}
 
 		ShaderProgram shader = new ShaderProgram(factory, name, format);
-		ShaderCacheHandler.SHADERS.visit(DashLoader.Status.SAVE, map -> map.put(name, shader));
+		ShaderCacheHandler.SHADERS.visit(CacheManager.Status.SAVE, map -> map.put(name, shader));
 		return shader;
 	}
 

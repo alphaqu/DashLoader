@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.minecraft.font;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 import it.unimi.dsi.fastutil.ints.Int2FloatArrayMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.client.font.Font;
@@ -31,7 +31,6 @@ public final class DashSpaceFont implements DashFont {
 			i++;
 		}
 	}
-
 
 
 	@Override

@@ -1,13 +1,13 @@
 package dev.notalpha.dashloader.minecraft.model.predicates;
 
-import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.cache.CacheManager;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
+import dev.notalpha.dashloader.cache.registry.RegistryWriter;
 import dev.notalpha.dashloader.minecraft.blockstate.DashBlockState;
 import dev.notalpha.dashloader.minecraft.model.ModelCacheHandler;
 import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.notalpha.dashloader.mixin.accessor.SimpleMultipartModelSelectorAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
@@ -46,7 +46,7 @@ public final class DashSimplePredicate implements DashPredicate {
 
 	@NotNull
 	public static Identifier getStateManagerIdentifier(MultipartModelSelector multipartModelSelector) {
-		StateManager<Block, BlockState> stateManager = ModelCacheHandler.STATE_MANAGERS.get(DashLoader.Status.SAVE).get(multipartModelSelector);
+		StateManager<Block, BlockState> stateManager = ModelCacheHandler.STATE_MANAGERS.get(CacheManager.Status.SAVE).get(multipartModelSelector);
 		Identifier identifier;
 		if (stateManager == ModelLoaderAccessor.getTheItemFrameThing()) {
 			identifier = DashBlockState.ITEM_FRAME;

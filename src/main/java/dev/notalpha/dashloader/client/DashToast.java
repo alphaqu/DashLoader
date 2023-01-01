@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.cache.CacheManager;
 import dev.quantumfusion.taski.builtin.StaticTask;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.*;
@@ -22,14 +22,13 @@ public class DashToast implements Toast {
 	private static final int PROGRESS_BAR_HEIGHT = 2;
 	private static final int PADDING = 8;
 	private static final int LINES = 200;
-	public static Status STATUS = Status.IDLE;
 	private final Random random = new Random();
 	private final List<Line> lines = new ArrayList<>();
 	private final String fact = HahaManager.getFact();
-
+	private Status status;
+	private ProgressManager progress;
 	private long timeDone = System.currentTimeMillis();
 	private long oldTime = System.currentTimeMillis();
-	private boolean done = false;
 
 	public int getWidth() {
 		return 200;
@@ -39,11 +38,27 @@ public class DashToast implements Toast {
 		return 40;
 	}
 
-	public DashToast() {
-		DashToast.STATUS = DashToast.Status.CACHING;
-		final Thread thread = new Thread(DashLoader.INSTANCE::saveDashCache);
-		thread.setName("dashloader-thread");
-		thread.start();
+	public DashToast(CacheManager cacheManager) {
+		this.progress = new ProgressManager();
+		switch (cacheManager.getStatus()) {
+			case SAVE -> {
+				this.status = DashToast.Status.CACHING;
+				final Thread thread = new Thread(() -> {
+					if (cacheManager.saveCache(stepTask -> this.progress.task = stepTask)) {
+						this.status = Status.DONE;
+					} else {
+						this.status = Status.CRASHED;
+					}
+					cacheManager.setStatus(CacheManager.Status.IDLE);
+					this.timeDone = System.currentTimeMillis();
+				});
+				thread.setName("dashloader-thread");
+				thread.start();
+			}
+			default -> {
+				throw new RuntimeException("hi");
+			}
+		}
 
 		// Create lines
 		for (int i = 0; i < LINES; i++) {
@@ -56,12 +71,6 @@ public class DashToast implements Toast {
 	public Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
 		TextRenderer textRenderer = manager.getClient().textRenderer;
 
-		if ((STATUS == Status.DONE) && !done) {
-			DashLoader.INSTANCE.resetDashLoader();
-			timeDone = System.currentTimeMillis();
-			done = true;
-		}
-
 		final int width = this.getWidth();
 		final int height = this.getHeight();
 		final int barY = height - PROGRESS_BAR_HEIGHT;
@@ -69,8 +78,7 @@ public class DashToast implements Toast {
 		// Get progress
 		double currentProgress;
 		Color currentProgressColor;
-		ProgressManager progress = ProgressManager.INSTANCE;
-		if (STATUS == Status.CRASHED) {
+		if (status == Status.CRASHED) {
 			progress.task = new StaticTask("Crash", (System.currentTimeMillis() - timeDone) / (float) 10000);
 			progress.setOverwriteText("Internal crash. Please check logs.");
 			currentProgress = progress.getProgress();
@@ -123,11 +131,11 @@ public class DashToast implements Toast {
 
 		RenderSystem.disableScissor();
 
-		if (STATUS == Status.CRASHED && System.currentTimeMillis() - timeDone > 10000) {
+		if (status == Status.CRASHED && System.currentTimeMillis() - timeDone > 10000) {
 			return Visibility.HIDE;
 		}
 
-		if ((done && System.currentTimeMillis() - timeDone > 2000)) {
+		if (status == Status.DONE && System.currentTimeMillis() - timeDone > 2000) {
 			return Visibility.HIDE;
 		}
 		return Visibility.SHOW;
@@ -201,7 +209,7 @@ public class DashToast implements Toast {
 			Color color = getColor(progress);
 			Color end = new Color(color.getRed(), color.getGreen(), color.getBlue(), 0);
 
-			if (STATUS == Status.CRASHED) {
+			if (status == Status.CRASHED) {
 				color = DrawerUtil.FAILED_COLOR;
 			}
 

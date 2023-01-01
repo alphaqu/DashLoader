@@ -9,11 +9,17 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(value = ModelLoader.BakedModelCacheKey.class, priority = 999)
 public class ModelLoaderBakedModelCacheKeyMixin {
-	@Shadow @Final private Identifier id;
+	@Shadow
+	@Final
+	private Identifier id;
 
-	@Shadow @Final private boolean isUvLocked;
+	@Shadow
+	@Final
+	private boolean isUvLocked;
 
-	@Shadow @Final private AffineTransformation transformation;
+	@Shadow
+	@Final
+	private AffineTransformation transformation;
 
 	@Override
 	public boolean equals(Object o) {

@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.minecraft.font;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 import net.minecraft.client.font.BlankFont;
 
 @DashObject(BlankFont.class)

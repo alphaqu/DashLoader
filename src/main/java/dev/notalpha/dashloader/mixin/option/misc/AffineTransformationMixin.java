@@ -10,7 +10,9 @@ import java.util.Objects;
 
 @Mixin(value = AffineTransformation.class, priority = 999)
 public class AffineTransformationMixin {
-	@Shadow @Final private Matrix4f matrix;
+	@Shadow
+	@Final
+	private Matrix4f matrix;
 
 
 	@Override

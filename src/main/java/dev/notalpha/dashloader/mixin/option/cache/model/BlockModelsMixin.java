@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.mixin.option.cache.model;
 
-import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.cache.CacheManager;
 import dev.notalpha.dashloader.minecraft.model.ModelCacheHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.block.BlockModels;
@@ -20,7 +20,7 @@ public class BlockModelsMixin {
 			cancellable = true
 	)
 	private static void cacheModelId(BlockState state, CallbackInfoReturnable<ModelIdentifier> cir) {
-		ModelCacheHandler.MISSING_READ.visit(DashLoader.Status.LOAD, map -> {
+		ModelCacheHandler.MISSING_READ.visit(CacheManager.Status.LOAD, map -> {
 			final Identifier identifier = map.get(state);
 			if (identifier != null) {
 				cir.setReturnValue((ModelIdentifier) identifier);

@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.mixin.option.cache.model;
 
-import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.cache.CacheManager;
 import dev.notalpha.dashloader.minecraft.model.ModelCacheHandler;
 import dev.notalpha.dashloader.mixin.accessor.AndMultipartModelSelectorAccessor;
 import dev.notalpha.dashloader.mixin.accessor.MultipartModelComponentAccessor;
@@ -47,7 +47,7 @@ public class MultipartUnbakedModelMixin {
 			cancellable = true
 	)
 	private void addPredicateInfo(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId, CallbackInfoReturnable<@Nullable BakedModel> cir, MultipartBakedModel.Builder builder) {
-		ModelCacheHandler.MULTIPART_PREDICATES.visit(DashLoader.Status.SAVE, map ->  {
+		ModelCacheHandler.MULTIPART_PREDICATES.visit(CacheManager.Status.SAVE, map -> {
 			var bakedModel = (MultipartBakedModel) builder.build();
 			var outSelectors = new ArrayList<MultipartModelSelector>();
 			this.components.forEach(multipartModelComponent -> outSelectors.add(((MultipartModelComponentAccessor) multipartModelComponent).getSelector()));
@@ -70,7 +70,7 @@ public class MultipartUnbakedModelMixin {
 			addPredicates(((OrMultipartModelSelectorAccessor) or).getSelectors(), stateStateManager);
 		}
 
-		ModelCacheHandler.STATE_MANAGERS.visit(DashLoader.Status.SAVE, map -> {
+		ModelCacheHandler.STATE_MANAGERS.visit(CacheManager.Status.SAVE, map -> {
 			map.put(multipartModelSelector, stateStateManager);
 		});
 	}

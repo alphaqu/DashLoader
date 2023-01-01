@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.minecraft.shader;
 
-import dev.notalpha.dashloader.io.IOHelper;
+import dev.notalpha.dashloader.cache.io.IOHelper;
 import dev.notalpha.dashloader.mixin.accessor.GlUniformAccessor;
 import dev.notalpha.dashloader.util.UnsafeHelper;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;

@@ -2,7 +2,7 @@ package dev.notalpha.dashloader.minecraft.model.predicates;
 
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.Dashable;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.cache.registry.RegistryReader;
 import net.minecraft.block.BlockState;
 
 import java.util.function.Predicate;
