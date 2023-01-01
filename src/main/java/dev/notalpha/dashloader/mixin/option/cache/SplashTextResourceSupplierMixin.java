@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.mixin.option.cache;
 
-import dev.notalpha.dashloader.cache.CacheManager;
-import dev.notalpha.dashloader.minecraft.splash.SplashTextCacheHandler;
+import dev.notalpha.dashloader.Cache;
+import dev.notalpha.dashloader.client.splash.SplashModule;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.profiler.Profiler;
@@ -20,7 +20,7 @@ public class SplashTextResourceSupplierMixin {
 			cancellable = true
 	)
 	private void applySplashCache(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<List<String>> cir) {
-		SplashTextCacheHandler.TEXTS.visit(CacheManager.Status.LOAD, cir::setReturnValue);
+		SplashModule.TEXTS.visit(Cache.Status.LOAD, cir::setReturnValue);
 	}
 
 
@@ -29,7 +29,7 @@ public class SplashTextResourceSupplierMixin {
 			at = @At(value = "RETURN")
 	)
 	private void stealSplashCache(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<List<String>> cir) {
-		SplashTextCacheHandler.TEXTS.visit(CacheManager.Status.SAVE, strings -> {
+		SplashModule.TEXTS.visit(Cache.Status.SAVE, strings -> {
 			strings.clear();
 			strings.addAll(cir.getReturnValue());
 		});

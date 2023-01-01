@@ -1,10 +1,10 @@
 package dev.notalpha.dashloader.mixin.option.cache.model;
 
+import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.cache.CacheManager;
-import dev.notalpha.dashloader.minecraft.model.ModelCacheHandler;
-import dev.notalpha.dashloader.minecraft.model.fallback.MissingDashModel;
-import dev.notalpha.dashloader.minecraft.model.fallback.UnbakedBakedModel;
+import dev.notalpha.dashloader.client.model.ModelModule;
+import dev.notalpha.dashloader.client.model.fallback.MissingDashModel;
+import dev.notalpha.dashloader.client.model.fallback.UnbakedBakedModel;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.model.ModelLoader;
@@ -58,7 +58,7 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=static_definitions", shift = At.Shift.AFTER)
 	)
 	private void injectLoadedModels(BlockColors blockColors, Profiler profiler, Map<Identifier, JsonUnbakedModel> jsonUnbakedModels, Map<Identifier, List<ModelLoader.SourceTrackedData>> blockStates, CallbackInfo ci) {
-		ModelCacheHandler.MODELS.visit(CacheManager.Status.LOAD, dashModels -> {
+		ModelModule.MODELS.visit(Cache.Status.LOAD, dashModels -> {
 			DashLoader.LOG.info("Injecting {} Cached Models", dashModels.size());
 			this.unbakedModels = new HashMap<>(this.unbakedModels);
 			this.modelsToBake = new HashMap<>(this.modelsToBake);
@@ -85,7 +85,7 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE", target = "Ljava/util/Iterator;hasNext()Z", ordinal = 0)
 	)
 	private boolean loadMissingModels(Iterator instance) {
-		var map = ModelCacheHandler.MISSING_READ.get(CacheManager.Status.LOAD);
+		var map = ModelModule.MISSING_READ.get(Cache.Status.LOAD);
 		if (map != null) {
 			for (BlockState blockState : map.keySet()) {
 				// load thing lambda
@@ -102,7 +102,7 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelLoader;loadModelFromJson(Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/model/json/JsonUnbakedModel;")
 	)
 	private JsonUnbakedModel pleaseDontLoadMissingModelBecauseItsReallySlowThankYou(ModelLoader instance, Identifier id) throws IOException {
-		if (ModelCacheHandler.MODELS.active(CacheManager.Status.LOAD)) {
+		if (ModelModule.MODELS.active(Cache.Status.LOAD)) {
 			return null;
 		}
 		return loadModelFromJson(MISSING_ID);
@@ -113,7 +113,7 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelLoader;addModel(Lnet/minecraft/client/util/ModelIdentifier;)V", ordinal = 0, shift = At.Shift.BEFORE)
 	)
 	private void pleaseDontLoadMissingModelBecauseItsReallySlowThankYouPart2(BlockColors blockColors, Profiler profiler, Map jsonUnbakedModels, Map blockStates, CallbackInfo ci) {
-		ModelCacheHandler.MODELS.visit(CacheManager.Status.LOAD, map -> {
+		ModelModule.MODELS.visit(Cache.Status.LOAD, map -> {
 			this.unbakedModels.put(MISSING_ID, new UnbakedBakedModel(map.get(MISSING_ID), MISSING_ID));
 		});
 	}
@@ -125,7 +125,7 @@ public abstract class ModelLoaderMixin {
 			)
 	)
 	private void countModels(BiFunction<Identifier, SpriteIdentifier, Sprite> spriteLoader, CallbackInfo ci) {
-		if (ModelCacheHandler.MODELS.active(CacheManager.Status.LOAD)) {
+		if (ModelModule.MODELS.active(Cache.Status.LOAD)) {
 			// Cache stats
 			int cachedModels = 0;
 			int fallbackModels = 0;

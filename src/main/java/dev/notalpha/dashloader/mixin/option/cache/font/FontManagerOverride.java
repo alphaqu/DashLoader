@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.mixin.option.cache.font;
 
+import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.cache.CacheManager;
-import dev.notalpha.dashloader.minecraft.font.FontCacheHandler;
+import dev.notalpha.dashloader.client.font.FontModule;
 import dev.notalpha.dashloader.mixin.accessor.FontManagerAccessor;
 import dev.notalpha.dashloader.mixin.accessor.FontStorageAccessor;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -34,7 +34,7 @@ public class FontManagerOverride {
 			cancellable = true
 	)
 	private void overridePrepare(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<Map<Identifier, List<Font>>> cir) {
-		FontCacheHandler.DATA.visit(CacheManager.Status.LOAD, data -> {
+		FontModule.DATA.visit(Cache.Status.LOAD, data -> {
 			DashLoader.LOG.info("Preparing fonts");
 			Map<Identifier, List<Font>> out = new Object2ObjectOpenHashMap<>();
 			data.forEach(
@@ -51,10 +51,10 @@ public class FontManagerOverride {
 			cancellable = true
 	)
 	private void overrideApply(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		FontCacheHandler.DATA.visit(CacheManager.Status.LOAD, data -> {
+		FontModule.DATA.visit(Cache.Status.LOAD, data -> {
 			profiler.startTick();
 			profiler.push("closing");
-			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) FontCacheHandler.FONTMANAGER;
+			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) FontModule.FONTMANAGER;
 			final Map<Identifier, FontStorage> fontStorages = fontManagerAccessor.getFontStorages();
 
 			fontStorages.values().forEach(FontStorage::close);
@@ -87,9 +87,9 @@ public class FontManagerOverride {
 	@SuppressWarnings("UnresolvedMixinReference")
 	@Inject(method = {"method_18635", "apply*"}, at = @At(value = "TAIL"))
 	private void applyInject(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		FontCacheHandler.DATA.visit(CacheManager.Status.SAVE, data -> {
+		FontModule.DATA.visit(Cache.Status.SAVE, data -> {
 			data.clear();
-			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) FontCacheHandler.FONTMANAGER;
+			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) FontModule.FONTMANAGER;
 			final Map<Identifier, FontStorage> fontStorages = fontManagerAccessor.getFontStorages();
 			fontStorages.forEach((identifier, fontStorage) -> {
 				var access = ((FontStorageAccessor) fontStorage);
@@ -102,7 +102,7 @@ public class FontManagerOverride {
 	private static class LeoFontSolution {
 		@Inject(method = "<init>", at = @At(value = "TAIL"))
 		private void initInject(TextureManager manager, CallbackInfo ci) {
-			FontCacheHandler.FONTMANAGER = ((FontManager) (Object) this);
+			FontModule.FONTMANAGER = ((FontManager) (Object) this);
 		}
 	}
 

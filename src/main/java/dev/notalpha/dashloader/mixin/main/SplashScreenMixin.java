@@ -1,9 +1,9 @@
 package dev.notalpha.dashloader.mixin.main;
 
-import dev.notalpha.dashloader.cache.CacheManager;
-import dev.notalpha.dashloader.client.DashToast;
-import dev.notalpha.dashloader.minecraft.DashLoaderClientDriver;
-import dev.notalpha.dashloader.util.ProfilerUtil;
+import dev.notalpha.dashloader.Cache;
+import dev.notalpha.dashloader.client.DashLoaderClient;
+import dev.notalpha.dashloader.client.ui.DashToast;
+import dev.notalpha.dashloader.misc.ProfilerUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -50,10 +50,10 @@ public class SplashScreenMixin {
 		}
 
 		ProfilerUtil.getTimeStringFromStart(ProfilerUtil.RELOAD_START);
-		if (DashLoaderClientDriver.MANAGER.getStatus() == CacheManager.Status.SAVE && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
-			client.getToastManager().add(new DashToast(DashLoaderClientDriver.MANAGER));
+		if (DashLoaderClient.CACHE.getStatus() == Cache.Status.SAVE && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
+			client.getToastManager().add(new DashToast(DashLoaderClient.CACHE));
 		} else {
-			DashLoaderClientDriver.MANAGER.setStatus(CacheManager.Status.IDLE);
+			DashLoaderClient.CACHE.setStatus(Cache.Status.IDLE);
 		}
 	}
 

@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader;
 
-import dev.notalpha.dashloader.cache.io.Serializer;
-import dev.notalpha.dashloader.cache.io.data.CacheInfo;
+import dev.notalpha.dashloader.io.Serializer;
+import dev.notalpha.dashloader.io.data.CacheInfo;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;

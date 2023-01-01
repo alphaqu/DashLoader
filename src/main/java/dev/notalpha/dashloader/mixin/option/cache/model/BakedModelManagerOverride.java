@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.mixin.option.cache.model;
 
+import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.cache.CacheManager;
-import dev.notalpha.dashloader.minecraft.model.ModelCacheHandler;
+import dev.notalpha.dashloader.client.model.ModelModule;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.util.Identifier;
@@ -25,7 +25,7 @@ public abstract class BakedModelManagerOverride {
 	)
 
 	private void yankAssets(BakedModelManager.BakingResult bakingResult, Profiler profiler, CallbackInfo ci) {
-		ModelCacheHandler.MODELS.visit(CacheManager.Status.SAVE, map -> {
+		ModelModule.MODELS.visit(Cache.Status.SAVE, map -> {
 			DashLoader.LOG.info("Yanking Minecraft Assets");
 			map.putAll(this.models);
 		});

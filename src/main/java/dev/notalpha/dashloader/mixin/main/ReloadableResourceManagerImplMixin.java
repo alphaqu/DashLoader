@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.mixin.main;
 
-import dev.notalpha.dashloader.minecraft.DashLoaderClientDriver;
-import dev.notalpha.dashloader.util.ProfilerUtil;
+import dev.notalpha.dashloader.client.DashLoaderClient;
+import dev.notalpha.dashloader.misc.ProfilerUtil;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceReload;
@@ -28,7 +28,7 @@ public class ReloadableResourceManagerImplMixin {
 			ResourcePack pack = packs.get(i);
 			stringBuilder.append(i).append("$").append(pack.getName());
 		}
-		DashLoaderClientDriver.MANAGER.setHash(DigestUtils.md5Hex(stringBuilder.toString()).toUpperCase());
-		DashLoaderClientDriver.MANAGER.start();
+		DashLoaderClient.CACHE.setHash(DigestUtils.md5Hex(stringBuilder.toString()).toUpperCase());
+		DashLoaderClient.CACHE.start();
 	}
 }
