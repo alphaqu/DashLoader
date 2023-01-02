@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.registry;
 
-import dev.notalpha.dashloader.api.Exportable;
+import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.registry.data.ChunkFactory;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -28,7 +28,7 @@ public class RegistryWriter {
 		return value;
 	}
 
-	static <R, D extends Exportable<R>> ChunkFactory.Entry<D> create(RegistryFactory factory, Function<RegistryWriter, D> function) {
+	static <R, D extends DashObject<R>> ChunkFactory.Entry<D> create(RegistryFactory factory, Function<RegistryWriter, D> function) {
 		RegistryWriter writer = new RegistryWriter(factory);
 		D data = function.apply(writer);
 		int[] dependencies = writer.dependencies.toIntArray();

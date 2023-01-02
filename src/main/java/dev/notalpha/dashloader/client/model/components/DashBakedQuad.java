@@ -1,7 +1,6 @@
 package dev.notalpha.dashloader.client.model.components;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.Exportable;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.client.render.model.BakedQuad;
@@ -9,8 +8,7 @@ import net.minecraft.util.math.Direction;
 
 import java.util.Arrays;
 
-@DashObject(BakedQuad.class)
-public final class DashBakedQuad implements Exportable<BakedQuad> {
+public final class DashBakedQuad implements DashObject<BakedQuad> {
 	public final int[] vertexData;
 	public final int colorIndex;
 	public final Direction face;

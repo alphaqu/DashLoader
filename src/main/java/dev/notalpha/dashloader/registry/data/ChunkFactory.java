@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.registry.data;
 
 import dev.notalpha.dashloader.DashObjectClass;
-import dev.notalpha.dashloader.api.Exportable;
+import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.misc.RegistryUtil;
 import dev.notalpha.dashloader.registry.FactoryBinding;
 import dev.notalpha.dashloader.registry.RegistryFactory;
@@ -12,7 +12,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChunkFactory<R, D extends Exportable<R>> {
+public class ChunkFactory<R, D extends DashObject<R>> {
 	public final byte chunkId;
 	public final String name;
 	public final DashObjectClass<R, D> dashObject;

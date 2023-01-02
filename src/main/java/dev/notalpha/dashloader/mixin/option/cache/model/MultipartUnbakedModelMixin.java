@@ -52,26 +52,7 @@ public class MultipartUnbakedModelMixin {
 			var outSelectors = new ArrayList<MultipartModelSelector>();
 			this.components.forEach(multipartModelComponent -> outSelectors.add(((MultipartModelComponentAccessor) multipartModelComponent).getSelector()));
 			map.put(bakedModel, Pair.of(outSelectors, this.stateFactory));
-			addPredicates(outSelectors, this.stateFactory);
 			cir.setReturnValue(bakedModel);
-		});
-	}
-
-	private static <M extends MultipartModelSelector> void addPredicates(Iterable<M> multipartModelSelectors, StateManager<Block, BlockState> stateStateManager) {
-		for (M multipartModelSelector : multipartModelSelectors) {
-			addPredicate(multipartModelSelector, stateStateManager);
-		}
-	}
-
-	private static void addPredicate(MultipartModelSelector multipartModelSelector, StateManager<Block, BlockState> stateStateManager) {
-		if (multipartModelSelector instanceof AndMultipartModelSelector and) {
-			addPredicates(((AndMultipartModelSelectorAccessor) and).getSelectors(), stateStateManager);
-		} else if (multipartModelSelector instanceof OrMultipartModelSelector or) {
-			addPredicates(((OrMultipartModelSelectorAccessor) or).getSelectors(), stateStateManager);
-		}
-
-		ModelModule.STATE_MANAGERS.visit(Cache.Status.SAVE, map -> {
-			map.put(multipartModelSelector, stateStateManager);
 		});
 	}
 

@@ -4,12 +4,12 @@ import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import it.unimi.dsi.fastutil.ints.Int2FloatArrayMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import net.minecraft.client.font.BlankFont;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.SpaceFont;
 
-@DashObject(SpaceFont.class)
-public final class DashSpaceFont implements DashFont {
+public final class DashSpaceFont implements DashObject<SpaceFont> {
 	public final int[] ints;
 	public final float[] floats;
 
@@ -34,7 +34,7 @@ public final class DashSpaceFont implements DashFont {
 
 
 	@Override
-	public Font export(RegistryReader exportHandler) {
+	public SpaceFont export(RegistryReader exportHandler) {
 		return new SpaceFont(new Int2FloatArrayMap(ints, floats));
 	}
 }

@@ -1,21 +1,31 @@
 package dev.notalpha.dashloader.api;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import dev.notalpha.dashloader.registry.RegistryReader;
 
 /**
- * DashObject annotation is responsible for declaring this class as a dash mapping.
+ * The Exportable interface is the interface to implement when adding DashLoader cache support to a registry object.
+ *
+ * @param <R> Raw Object.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
 @SuppressWarnings("unused")
-public @interface DashObject {
+public interface DashObject<R> {
 	/**
-	 * This is the Target Class. So if you are adding caching support to Integer, Your class would be named DashInteger and {@code @DashObject} value would be {@code Integer.class}
-	 *
-	 * @return Target Class
+	 * Runs before {@link DashObject#export(RegistryReader)} on the main thread.
 	 */
-	Class<?> value();
+	@SuppressWarnings("unused")
+	default void preExport(RegistryReader reader) {
+	}
+
+	/**
+	 * Runs in parallel returning the target object.
+	 */
+	@SuppressWarnings("unused")
+	R export(RegistryReader reader);
+
+	/**
+	 * Runs after {@link DashObject#export(RegistryReader)} on the main thread.
+	 */
+	@SuppressWarnings("unused")
+	default void postExport(RegistryReader reader) {
+	}
 }

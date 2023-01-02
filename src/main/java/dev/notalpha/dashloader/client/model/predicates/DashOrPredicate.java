@@ -1,48 +1,52 @@
 package dev.notalpha.dashloader.client.model.predicates;
 
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.mixin.accessor.AndMultipartModelSelectorAccessor;
 import dev.notalpha.dashloader.mixin.accessor.OrMultipartModelSelectorAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
 
-@DashObject(OrMultipartModelSelector.class)
-public final class DashOrPredicate implements DashPredicate {
-	public final List<Integer> selectors;
-	public final int identifier;
+public final class DashOrPredicate implements DashObject<OrMultipartModelSelector> {
+	public final int[] selectors;
 
-	public DashOrPredicate(List<Integer> selectors, int identifier) {
+	public DashOrPredicate(int[] selectors) {
 		this.selectors = selectors;
-		this.identifier = identifier;
 	}
 
 	public DashOrPredicate(OrMultipartModelSelector selector, RegistryWriter writer) {
 		OrMultipartModelSelectorAccessor access = ((OrMultipartModelSelectorAccessor) selector);
-		this.identifier = writer.add(DashSimplePredicate.getStateManagerIdentifier(selector));
 
-		this.selectors = new ArrayList<>();
-		for (MultipartModelSelector accessSelector : access.getSelectors()) {
-			this.selectors.add(writer.add(accessSelector));
+		Iterable<? extends MultipartModelSelector> accessSelectors = access.getSelectors();
+		int count = 0;
+		for (MultipartModelSelector ignored : accessSelectors) {
+			count += 1;
 		}
+		this.selectors = new int[count];
 
+		int i = 0;
+		for (MultipartModelSelector accessSelector : accessSelectors) {
+			this.selectors[i++] = writer.add(accessSelector);
+		}
 	}
 
 	@Override
-	public Predicate<BlockState> export(RegistryReader handler) {
-		final ArrayList<MultipartModelSelector> selectors = new ArrayList<>();
-		for (Integer accessSelector : this.selectors) {
-			Predicate<BlockState> export = handler.get(accessSelector);
-			selectors.add((stateStateManager) -> export);
+	public OrMultipartModelSelector export(RegistryReader handler) {
+		final List<MultipartModelSelector> selectors = new ArrayList<>(this.selectors.length);
+		for (int accessSelector : this.selectors) {
+			selectors.add(handler.get(accessSelector));
 		}
 
-		return new OrMultipartModelSelector(selectors).getPredicate(DashSimplePredicate.getStateManager(handler.get(this.identifier)));
+		return new OrMultipartModelSelector(selectors);
 	}
 
 	@Override
@@ -52,14 +56,11 @@ public final class DashOrPredicate implements DashPredicate {
 
 		DashOrPredicate that = (DashOrPredicate) o;
 
-		if (identifier != that.identifier) return false;
-		return selectors.equals(that.selectors);
+		return Arrays.equals(selectors, that.selectors);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = selectors.hashCode();
-		result = 31 * result + identifier;
-		return result;
+		return Arrays.hashCode(selectors);
 	}
 }

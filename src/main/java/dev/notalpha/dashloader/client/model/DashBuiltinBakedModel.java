@@ -7,12 +7,12 @@ import dev.notalpha.dashloader.mixin.accessor.BuiltinBakedModelAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BuiltinBakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 
-@DashObject(BuiltinBakedModel.class)
-public final class DashBuiltinBakedModel implements DashModel {
+public final class DashBuiltinBakedModel implements DashObject<BuiltinBakedModel> {
 	@DataNullable
 	public final DashModelTransformation transformation;
 	public final DashModelOverrideList itemPropertyOverrides;

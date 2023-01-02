@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.thread;
 
-import dev.notalpha.dashloader.api.Exportable;
+import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.data.ChunkData;
 
@@ -35,7 +35,7 @@ public final class ThreadHandler {
 	}
 
 	// Fork Join Methods
-	public <R, D extends Exportable<? extends R>> void parallelExport(ChunkData.Entry<D>[] in, R[] out, RegistryReader reader) {
+	public <R, D extends DashObject<? extends R>> void parallelExport(ChunkData.Entry<D>[] in, R[] out, RegistryReader reader) {
 		this.threadPool.invoke(new IndexedArrayMapTask<>(in, out, d -> d.export(reader)));
 	}
 

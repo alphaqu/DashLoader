@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.registry;
 
 import dev.notalpha.dashloader.DashObjectClass;
-import dev.notalpha.dashloader.api.Exportable;
+import dev.notalpha.dashloader.api.DashObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;
@@ -9,7 +9,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
-public final class FactoryBinding<R, D extends Exportable<R>> {
+public final class FactoryBinding<R, D extends DashObject<R>> {
 	private final MethodHandle method;
 	private final FactoryFunction creator;
 
@@ -18,7 +18,7 @@ public final class FactoryBinding<R, D extends Exportable<R>> {
 		this.creator = creator;
 	}
 
-	public static <R, D extends Exportable<R>> FactoryBinding<R, D> create(DashObjectClass<R, D> dashObject) {
+	public static <R, D extends DashObject<R>> FactoryBinding<R, D> create(DashObjectClass<R, D> dashObject) {
 		final Class<?> dashClass = dashObject.getDashClass();
 
 		var factory = tryScanCreators((look, type) -> look.findConstructor(dashClass, type.changeReturnType(void.class)), dashObject);
@@ -46,7 +46,7 @@ public final class FactoryBinding<R, D extends Exportable<R>> {
 	}
 
 	@Nullable
-	private static <R, D extends Exportable<R>> FactoryBinding<R, D> tryScanCreators(MethodTester tester, DashObjectClass<R, D> dashObject) {
+	private static <R, D extends DashObject<R>> FactoryBinding<R, D> tryScanCreators(MethodTester tester, DashObjectClass<R, D> dashObject) {
 		for (InvokeType value : InvokeType.values()) {
 			final Class<?>[] apply = value.parameters.apply(dashObject);
 

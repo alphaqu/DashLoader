@@ -10,8 +10,7 @@ import net.minecraft.client.font.BitmapFont;
 
 import java.util.ArrayList;
 
-@DashObject(BitmapFont.class)
-public final class DashBitmapFont implements DashFont {
+public final class DashBitmapFont implements DashObject<BitmapFont> {
 	public final int image;
 	public final IntObjectList<DashBitmapFontGlyph> glyphs;
 

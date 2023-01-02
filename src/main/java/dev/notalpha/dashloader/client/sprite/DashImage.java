@@ -1,7 +1,6 @@
 package dev.notalpha.dashloader.client.sprite;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.Exportable;
 import dev.notalpha.dashloader.io.def.DataUnsafeByteBuffer;
 import dev.notalpha.dashloader.mixin.accessor.NativeImageAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
@@ -10,8 +9,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
-@DashObject(NativeImage.class)
-public final class DashImage implements Exportable<NativeImage> {
+public final class DashImage implements DashObject<NativeImage> {
 	@DataUnsafeByteBuffer
 	public final ByteBuffer image;
 	public final NativeImage.Format format;

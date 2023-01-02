@@ -1,11 +1,11 @@
 package dev.notalpha.dashloader.registry.data;
 
 import dev.notalpha.dashloader.DashObjectClass;
-import dev.notalpha.dashloader.api.Exportable;
+import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.thread.ThreadHandler;
 
-public class ChunkData<R, D extends Exportable<R>> {
+public class ChunkData<R, D extends DashObject<R>> {
 	public final byte chunkId;
 	public final String name;
 	public final DashObjectClass<?, ?> dashObject;

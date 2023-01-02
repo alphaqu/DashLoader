@@ -1,7 +1,6 @@
 package dev.notalpha.dashloader.client.blockstate;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.Exportable;
 import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
@@ -9,8 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
-@DashObject(BlockState.class)
-public final class DashBlockState implements Exportable<BlockState> {
+public final class DashBlockState implements DashObject<BlockState> {
 	public static final Identifier ITEM_FRAME = new Identifier("dashloader:itemframewhy");
 	public final int owner;
 	public final int pos;

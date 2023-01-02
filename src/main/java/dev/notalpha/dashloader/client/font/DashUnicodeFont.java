@@ -8,10 +8,10 @@ import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import net.minecraft.client.font.TrueTypeFont;
 import net.minecraft.client.font.UnicodeTextureFont;
 
-@DashObject(UnicodeTextureFont.class)
-public final class DashUnicodeFont implements DashFont {
+public final class DashUnicodeFont implements DashObject<UnicodeTextureFont> {
 
 
 	public final @DataNullable Integer @DataFixedArraySize(256) [] images;

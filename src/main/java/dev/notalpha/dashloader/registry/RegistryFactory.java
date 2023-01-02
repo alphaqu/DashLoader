@@ -2,7 +2,6 @@ package dev.notalpha.dashloader.registry;
 
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.Exportable;
 import dev.notalpha.dashloader.api.MissingHandler;
 import dev.notalpha.dashloader.misc.RegistryUtil;
 import dev.notalpha.dashloader.registry.data.ChunkData;
@@ -31,7 +30,7 @@ public final class RegistryFactory {
 		this.chunks = chunks;
 	}
 
-	public static <R, D extends Exportable<R>> RegistryFactory create(List<MissingHandler<?>> missingHandlers, List<DashObjectClass<?, ?>> dashObjects) {
+	public static <R, D extends DashObject<R>> RegistryFactory create(List<MissingHandler<?>> missingHandlers, List<DashObjectClass<?, ?>> dashObjects) {
 
 		//noinspection unchecked
 		ChunkFactory<R, D>[] chunks = new ChunkFactory[dashObjects.size()];
@@ -48,23 +47,23 @@ public final class RegistryFactory {
 			var name = dashClass.getSimpleName();
 			chunks[i] = new ChunkFactory<>((byte) i, name, factory, dashObject);
 
-			final DashObject declaredAnnotation = dashClass.getDeclaredAnnotation(DashObject.class);
-			if (declaredAnnotation != null) {
-				writer.target2chunkMappings.put(declaredAnnotation.value(), (byte) i);
-				writer.dash2chunkMappings.put(dashClass, (byte) i);
-			} else {
-				throw new RuntimeException("No DashObject annotation for " + name);
-			}
+			writer.target2chunkMappings.put(dashObject.getTargetClass(), (byte) i);
+			writer.dash2chunkMappings.put(dashClass, (byte) i);
 		}
 
 		return writer;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <R, D extends Exportable<R>> int add(R object) {
+	public <R, D extends DashObject<R>> int add(R object) {
 		if (this.dedup.containsKey(object)) {
 			return this.dedup.getInt(object);
 		}
+
+		if (object == null) {
+			throw new NullPointerException("Registry add argument is null");
+		}
+
 		var targetClass = object.getClass();
 
 

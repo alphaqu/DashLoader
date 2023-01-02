@@ -12,8 +12,7 @@ import net.minecraft.util.collection.Weighted.Present;
 import java.util.ArrayList;
 import java.util.List;
 
-@DashObject(WeightedBakedModel.class)
-public final class DashWeightedBakedModel implements DashModel {
+public final class DashWeightedBakedModel implements DashObject<WeightedBakedModel> {
 	public final List<DashWeightedModelEntry> models;
 
 	public DashWeightedBakedModel(List<DashWeightedModelEntry> models) {

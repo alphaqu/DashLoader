@@ -1,6 +1,7 @@
 package dev.notalpha.dashloader.mixin.main;
 
 import dev.notalpha.dashloader.Cache;
+import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import dev.notalpha.dashloader.client.ui.DashToast;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
@@ -49,7 +50,7 @@ public class SplashScreenMixin {
 			}
 		}
 
-		ProfilerUtil.getTimeStringFromStart(ProfilerUtil.RELOAD_START);
+		DashLoader.LOG.info("Minecraft reloaded in {}", ProfilerUtil.getTimeStringFromStart(ProfilerUtil.RELOAD_START));
 		if (DashLoaderClient.CACHE.getStatus() == Cache.Status.SAVE && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
 			client.getToastManager().add(new DashToast(DashLoaderClient.CACHE));
 		} else {

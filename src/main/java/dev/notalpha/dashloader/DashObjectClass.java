@@ -1,9 +1,12 @@
 package dev.notalpha.dashloader;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.Exportable;
+import dev.quantumfusion.hyphen.util.ScanUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 
 /**
@@ -13,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * @param <R> Raw
  * @param <D> Dashable
  */
-public final class DashObjectClass<R, D extends Exportable<R>> {
+public final class DashObjectClass<R, D extends DashObject<R>> {
 	private final Class<D> dashClass;
 	@Nullable
 	private Class<R> targetClass;
@@ -32,18 +35,33 @@ public final class DashObjectClass<R, D extends Exportable<R>> {
 	@NotNull
 	public Class<R> getTargetClass() {
 		if (this.targetClass == null) {
-			resolveDashObjectAnnotation();
+			Type[] genericInterfaces = this.dashClass.getGenericInterfaces();
+			if (genericInterfaces.length == 0) {
+				throw new RuntimeException(this.dashClass + " does not implement DashObject.");
+			}
+
+			boolean foundDashObject = false;
+			for (Type genericInterface : genericInterfaces) {
+				if (ScanUtil.getClassFrom(genericInterface) == DashObject.class) {
+					foundDashObject = true;
+					if (genericInterface instanceof ParameterizedType targetClass) {
+						Type[] actualTypeArguments = targetClass.getActualTypeArguments();
+						Class<?> classFrom = ScanUtil.getClassFrom(actualTypeArguments[0]);
+						if (classFrom == null) {
+							throw new RuntimeException(this.dashClass + " has a non resolvable DashObject parameter");
+						}
+						this.targetClass = (Class<R>) classFrom;
+					} else {
+						throw new RuntimeException(this.dashClass + " implements raw DashObject");
+					}
+				}
+			}
+
+			if (!foundDashObject) {
+				throw new RuntimeException(this.dashClass + " must implement DashObject");
+			}
 		}
 		return this.targetClass;
-	}
-
-	private void resolveDashObjectAnnotation() {
-		var annotation = this.dashClass.getDeclaredAnnotation(DashObject.class);
-		if (annotation == null) {
-			throw new RuntimeException("Registered Class " + this.dashClass.getSimpleName() + " does not have a @DashObject annotation.");
-		}
-		//noinspection unchecked
-		this.targetClass = (Class<R>) annotation.value();
 	}
 
 

@@ -8,6 +8,7 @@ import dev.notalpha.dashloader.api.config.Option;
 import dev.notalpha.dashloader.client.model.fallback.DashMissingDashModel;
 import dev.notalpha.dashloader.io.data.collection.IntIntList;
 import dev.notalpha.dashloader.misc.OptionData;
+import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -21,26 +22,21 @@ import net.minecraft.registry.Registries;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class ModelModule implements DashModule<ModelModule.Data> {
 	public static final OptionData<HashMap<Identifier, BakedModel>> MODELS = new OptionData<>();
 	public static final OptionData<HashMap<BakedModel, DashMissingDashModel>> MISSING_WRITE = new OptionData<>();
 	public static final OptionData<HashMap<BlockState, Identifier>> MISSING_READ = new OptionData<>();
 	public static final OptionData<HashMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>>> MULTIPART_PREDICATES = new OptionData<>(Cache.Status.SAVE);
-	public static final OptionData<HashMap<MultipartModelSelector, StateManager<Block, BlockState>>> STATE_MANAGERS = new OptionData<>(Cache.Status.SAVE);
-
 	@Override
 	public void reset(Cache cacheManager) {
 		MODELS.reset(cacheManager, new HashMap<>());
 		MISSING_WRITE.reset(cacheManager, new HashMap<>());
 		MISSING_READ.reset(cacheManager, new HashMap<>());
 		MULTIPART_PREDICATES.reset(cacheManager, new HashMap<>());
-		STATE_MANAGERS.reset(cacheManager, new HashMap<>());
 	}
 
 	@Override
@@ -107,6 +103,27 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 	@Override
 	public boolean isActive() {
 		return ConfigHandler.optionActive(Option.CACHE_MODEL_LOADER);
+	}
+
+	public static StateManager<Block, BlockState> getStateManager(Identifier identifier) {
+		StateManager<Block, BlockState> staticDef = ModelLoaderAccessor.getStaticDefinitions().get(identifier);
+		if (staticDef != null) {
+			return staticDef;
+		} else {
+			return Registries.BLOCK.get(identifier).getStateManager();
+		}
+	}
+
+	@NotNull
+	public static Identifier getStateManagerIdentifier(StateManager<Block, BlockState> stateManager) {
+		// Static definitions like itemframes.
+		for (Map.Entry<Identifier, StateManager<Block, BlockState>> entry : ModelLoaderAccessor.getStaticDefinitions().entrySet()) {
+			if (entry.getValue() == stateManager) {
+				return entry.getKey();
+			}
+		}
+
+		return Registries.BLOCK.getId(stateManager.getOwner());
 	}
 
 	public static final class Data {

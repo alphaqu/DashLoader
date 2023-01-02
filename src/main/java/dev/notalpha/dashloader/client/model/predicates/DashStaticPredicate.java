@@ -7,8 +7,7 @@ import net.minecraft.client.render.model.json.MultipartModelSelector;
 
 import java.util.function.Predicate;
 
-@DashObject(BooleanSelector.class)
-public final class DashStaticPredicate implements DashPredicate {
+public final class DashStaticPredicate implements DashObject<BooleanSelector> {
 	public final boolean value;
 
 	public DashStaticPredicate(boolean value) {
@@ -20,8 +19,8 @@ public final class DashStaticPredicate implements DashPredicate {
 	}
 
 	@Override
-	public Predicate<BlockState> export(RegistryReader exportHandler) {
-		return this.value ? MultipartModelSelector.TRUE.getPredicate(null) : MultipartModelSelector.FALSE.getPredicate(null);
+	public BooleanSelector export(RegistryReader exportHandler) {
+		return new BooleanSelector(value);
 	}
 
 	@Override

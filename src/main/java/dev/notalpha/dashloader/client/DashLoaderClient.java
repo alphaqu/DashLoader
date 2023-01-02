@@ -17,7 +17,7 @@ import dev.notalpha.dashloader.client.shader.DashShader;
 import dev.notalpha.dashloader.client.shader.ShaderModule;
 import dev.notalpha.dashloader.client.splash.SplashModule;
 import dev.notalpha.dashloader.client.sprite.DashImage;
-import dev.notalpha.dashloader.client.sprite.DashSpriteImpl;
+import dev.notalpha.dashloader.client.sprite.DashSprite;
 import dev.notalpha.dashloader.client.sprite.SpriteModule;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.model.BakedModel;
@@ -68,7 +68,7 @@ public class DashLoaderClient implements DashEntrypoint {
 				DashSimplePredicate.class,
 				DashStaticPredicate.class,
 				DashImage.class,
-				DashSpriteImpl.class,
+				DashSprite.class,
 				DashBitmapFont.class,
 				DashBlankFont.class,
 				DashSpaceFont.class,
@@ -122,7 +122,7 @@ public class DashLoaderClient implements DashEntrypoint {
 					} else if (selector instanceof OrMultipartModelSelector s) {
 						return new DashOrPredicate(s, writer);
 					} else if (selector instanceof SimpleMultipartModelSelector s) {
-						return new DashSimplePredicate(s, writer);
+						return new DashSimplePredicate(s);
 					} else if (selector instanceof BooleanSelector s) {
 						return new DashStaticPredicate(s.selector);
 					} else {

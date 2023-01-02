@@ -6,8 +6,7 @@ import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
 import net.minecraft.util.Identifier;
 
-@DashObject(Identifier.class)
-public final class DashIdentifier implements DashIdentifierInterface {
+public final class DashIdentifier implements DashObject<Identifier> {
 	public final String @DataFixedArraySize(2) [] strings;
 
 	public DashIdentifier(String[] strings) {

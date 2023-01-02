@@ -3,7 +3,6 @@ package dev.notalpha.dashloader.client.shader;
 import com.google.common.collect.UnmodifiableIterator;
 import com.mojang.blaze3d.platform.GlStateManager;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.Exportable;
 import dev.notalpha.dashloader.misc.UnsafeHelper;
 import dev.notalpha.dashloader.mixin.accessor.ShaderProgramAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
@@ -16,8 +15,7 @@ import net.minecraft.client.render.VertexFormat;
 
 import java.util.*;
 
-@DashObject(ShaderProgram.class)
-public final class DashShader implements Exportable<ShaderProgram> {
+public final class DashShader implements DashObject<ShaderProgram> {
 	public final Map<String, Sampler> samplers;
 	public final String name;
 	public final DashGlBlendState blendState;

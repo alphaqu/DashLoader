@@ -2,7 +2,7 @@ package dev.notalpha.dashloader.io;
 
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.DashObjectClass;
-import dev.notalpha.dashloader.api.Exportable;
+import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.config.ConfigHandler;
 import dev.notalpha.dashloader.io.data.CacheInfo;
 import dev.notalpha.dashloader.io.data.ChunkInfo;
@@ -45,7 +45,7 @@ public class RegistrySerializer {
 		}
 	}
 
-	public <D extends Exportable<?>> Serializer<D> getSerializer(DashObjectClass<?, D> dashObject) {
+	public <D extends DashObject<?>> Serializer<D> getSerializer(DashObjectClass<?, D> dashObject) {
 		return (Serializer<D>) this.serializers.get(dashObject.getDashClass());
 	}
 

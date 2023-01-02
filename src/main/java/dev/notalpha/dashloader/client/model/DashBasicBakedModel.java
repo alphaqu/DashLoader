@@ -11,6 +11,7 @@ import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BasicBakedModel;
+import net.minecraft.client.render.model.BuiltinBakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -18,8 +19,7 @@ import net.minecraft.util.math.random.Random;
 import java.util.HashMap;
 import java.util.List;
 
-@DashObject(BasicBakedModel.class)
-public final class DashBasicBakedModel implements DashModel {
+public final class DashBasicBakedModel implements DashObject<BasicBakedModel> {
 	public final int quads;
 	public final ObjectObjectList<Direction, Integer> faceQuads;
 	public final boolean usesAo;

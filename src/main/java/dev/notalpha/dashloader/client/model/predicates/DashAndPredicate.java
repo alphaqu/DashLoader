@@ -9,38 +9,41 @@ import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-@DashObject(AndMultipartModelSelector.class)
-public final class DashAndPredicate implements DashPredicate {
-	public final List<Integer> selectors;
-	public final int identifier;
+public final class DashAndPredicate implements DashObject<AndMultipartModelSelector> {
+	public final int[] selectors;
 
-	public DashAndPredicate(List<Integer> selectors, int identifier) {
+	public DashAndPredicate(int[] selectors) {
 		this.selectors = selectors;
-		this.identifier = identifier;
 	}
 
 	public DashAndPredicate(AndMultipartModelSelector selector, RegistryWriter writer) {
 		AndMultipartModelSelectorAccessor access = ((AndMultipartModelSelectorAccessor) selector);
-		this.identifier = writer.add(DashSimplePredicate.getStateManagerIdentifier(selector));
 
-		this.selectors = new ArrayList<>();
-		for (MultipartModelSelector accessSelector : access.getSelectors()) {
-			this.selectors.add(writer.add(accessSelector));
+		Iterable<? extends MultipartModelSelector> accessSelectors = access.getSelectors();
+		int count = 0;
+		for (MultipartModelSelector ignored : accessSelectors) {
+			count += 1;
+		}
+		this.selectors = new int[count];
+
+		int i = 0;
+		for (MultipartModelSelector accessSelector : accessSelectors) {
+			this.selectors[i++] = writer.add(accessSelector);
 		}
 	}
 
 	@Override
-	public Predicate<BlockState> export(RegistryReader handler) {
-		final ArrayList<MultipartModelSelector> selectors = new ArrayList<>();
-		for (Integer accessSelector : this.selectors) {
-			Predicate<BlockState> value = handler.get(accessSelector);
-			selectors.add((stateStateManager) -> value);
+	public AndMultipartModelSelector export(RegistryReader handler) {
+		final List<MultipartModelSelector> selectors = new ArrayList<>(this.selectors.length);
+		for (int accessSelector : this.selectors) {
+			selectors.add(handler.get(accessSelector));
 		}
 
-		return new AndMultipartModelSelector(selectors).getPredicate(DashSimplePredicate.getStateManager(handler.get(this.identifier)));
+		return new AndMultipartModelSelector(selectors);
 	}
 
 	@Override
@@ -50,14 +53,11 @@ public final class DashAndPredicate implements DashPredicate {
 
 		DashAndPredicate that = (DashAndPredicate) o;
 
-		if (identifier != that.identifier) return false;
-		return selectors.equals(that.selectors);
+		return Arrays.equals(selectors, that.selectors);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = selectors.hashCode();
-		result = 31 * result + identifier;
-		return result;
+		return Arrays.hashCode(selectors);
 	}
 }

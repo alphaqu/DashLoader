@@ -1,7 +1,6 @@
 package dev.notalpha.dashloader.client.model.components;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.Exportable;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.client.render.model.BakedQuad;
@@ -9,8 +8,7 @@ import net.minecraft.client.render.model.BakedQuad;
 import java.util.ArrayList;
 import java.util.List;
 
-@DashObject(BakedQuadCollection.class)
-public class DashBakedQuadCollection implements Exportable<BakedQuadCollection> {
+public class DashBakedQuadCollection implements DashObject<BakedQuadCollection> {
 	public final List<Integer> quads;
 
 	public DashBakedQuadCollection(List<Integer> quads) {

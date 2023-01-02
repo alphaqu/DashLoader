@@ -8,8 +8,7 @@ import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 
-@DashObject(ModelIdentifier.class)
-public final class DashModelIdentifier implements DashIdentifierInterface {
+public final class DashModelIdentifier implements DashObject<ModelIdentifier> {
 	public final String @DataFixedArraySize(3) [] strings;
 
 	public DashModelIdentifier(String[] strings) {
@@ -24,7 +23,7 @@ public final class DashModelIdentifier implements DashIdentifierInterface {
 	}
 
 	@Override
-	public Identifier export(RegistryReader exportHandler) {
+	public ModelIdentifier export(RegistryReader exportHandler) {
 		return ModelIdentifierAccessor.init(this.strings[0], this.strings[1], this.strings[2], null);
 	}
 }
