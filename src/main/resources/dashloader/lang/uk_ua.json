@@ -1,17 +1,11 @@
 {
-  "initializing": "Ініціалізація",
   "debug": "Режим налагодження активний у конфігурації.",
-  "convert": "Конвертація",
-  "convert.blockstate": "Конвертація станів блоків",
-  "convert.model": "Конвертація моделей",
-  "convert.image": "Конвертація зображень",
-  "convert.particle": "Конвертація частинок",
-  "convert.font": "Конвертація шрифтів",
-  "convert.splashtext": "Конвертація сплешів",
-  "convert.shader": "Конвертація шейдерів",
-  "export.model": "Експорт моделей",
-  "export.image": "Експорт зображень",
-  "export.registry": "Експорт регістру",
-  "export.identifier": "Експорт ідентифікаторів",
-  "export.quad": "Експорт чотирикутників"
+  "save": "Ініціалізація",
+  "save.cache": "Кешування",
+  "save.cache.model": "Кешування моделей",
+  "save.cache.image": "Кешування зображень",
+  "save.cache.misc": "Кешування різного",
+  "save.serialize": "Серіалізація",
+  "save.serialize.fragment": "Серіалізація фрагментів",
+  "save.serialize.mapping": "Серіалізація мапінгів"
 }
