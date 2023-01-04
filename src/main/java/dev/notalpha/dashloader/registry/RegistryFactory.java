@@ -7,17 +7,15 @@ import dev.notalpha.dashloader.misc.RegistryUtil;
 import dev.notalpha.dashloader.registry.data.ChunkData;
 import dev.notalpha.dashloader.registry.data.ChunkFactory;
 import dev.notalpha.dashloader.registry.data.StageData;
-import it.unimi.dsi.fastutil.objects.Object2ByteMap;
-import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 
 public final class RegistryFactory {
-	private final Object2IntOpenHashMap<?> dedup = new Object2IntOpenHashMap<>();
+	private final IdentityHashMap<?, Integer> dedup = new IdentityHashMap<>();
 	private final Object2ByteMap<Class<?>> target2chunkMappings;
 	private final Object2ByteMap<Class<?>> dash2chunkMappings;
 	private final List<MissingHandler<?>> missingHandlers;
@@ -57,7 +55,7 @@ public final class RegistryFactory {
 	@SuppressWarnings("unchecked")
 	public <R, D extends DashObject<R>> int add(R object) {
 		if (this.dedup.containsKey(object)) {
-			return this.dedup.getInt(object);
+			return this.dedup.get(object);
 		}
 
 		if (object == null) {
@@ -65,8 +63,6 @@ public final class RegistryFactory {
 		}
 
 		var targetClass = object.getClass();
-
-
 		Integer pointer = null;
 		// If we have a dashObject supporting the target we create using its factory constructor
 		{
@@ -104,8 +100,7 @@ public final class RegistryFactory {
 		if (pointer == null) {
 			throw new RuntimeException("Could not find a ChunkWriter for " + targetClass + ": " + object);
 		}
-
-		((Object2IntMap<R>) this.dedup).put(object, (int) pointer);
+		((IdentityHashMap<R, Integer>) this.dedup).put(object, pointer);
 		return pointer;
 	}
 
