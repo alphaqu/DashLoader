@@ -18,6 +18,7 @@ import net.minecraft.util.math.random.Random;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public final class DashBasicBakedModel implements DashObject<BasicBakedModel> {
 	public final int quads;
@@ -80,5 +81,36 @@ public final class DashBasicBakedModel implements DashObject<BasicBakedModel> {
 		}
 
 		return new BasicBakedModel(quadsOut, faceQuadsOut, this.usesAo, this.isSideLit, this.hasDepth, sprite, DashModelTransformation.exportOrDefault(this.transformation), this.itemPropertyOverrides.export(reader));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashBasicBakedModel that = (DashBasicBakedModel) o;
+
+		if (quads != that.quads) return false;
+		if (usesAo != that.usesAo) return false;
+		if (hasDepth != that.hasDepth) return false;
+		if (isSideLit != that.isSideLit) return false;
+		if (spritePointer != that.spritePointer) return false;
+		if (!faceQuads.equals(that.faceQuads)) return false;
+		if (!Objects.equals(transformation, that.transformation))
+			return false;
+		return itemPropertyOverrides.equals(that.itemPropertyOverrides);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = quads;
+		result = 31 * result + faceQuads.hashCode();
+		result = 31 * result + (usesAo ? 1 : 0);
+		result = 31 * result + (hasDepth ? 1 : 0);
+		result = 31 * result + (isSideLit ? 1 : 0);
+		result = 31 * result + (transformation != null ? transformation.hashCode() : 0);
+		result = 31 * result + itemPropertyOverrides.hashCode();
+		result = 31 * result + spritePointer;
+		return result;
 	}
 }

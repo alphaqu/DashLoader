@@ -57,4 +57,34 @@ public class DashSprite implements DashObject<Sprite> {
 		spriteAccessor.setVMax(this.vMax);
 		return out;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashSprite that = (DashSprite) o;
+
+		if (atlasId != that.atlasId) return false;
+		if (x != that.x) return false;
+		if (y != that.y) return false;
+		if (Float.compare(that.uMin, uMin) != 0) return false;
+		if (Float.compare(that.uMax, uMax) != 0) return false;
+		if (Float.compare(that.vMin, vMin) != 0) return false;
+		if (Float.compare(that.vMax, vMax) != 0) return false;
+		return contents.equals(that.contents);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = atlasId;
+		result = 31 * result + contents.hashCode();
+		result = 31 * result + x;
+		result = 31 * result + y;
+		result = 31 * result + (uMin != +0.0f ? Float.floatToIntBits(uMin) : 0);
+		result = 31 * result + (uMax != +0.0f ? Float.floatToIntBits(uMax) : 0);
+		result = 31 * result + (vMin != +0.0f ? Float.floatToIntBits(vMin) : 0);
+		result = 31 * result + (vMax != +0.0f ? Float.floatToIntBits(vMax) : 0);
+		return result;
+	}
 }

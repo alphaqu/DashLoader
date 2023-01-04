@@ -6,6 +6,8 @@ import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.util.Identifier;
 
+import java.util.Arrays;
+
 public final class DashModelOverrideList {
 	public final DashModelOverrideListBakedOverride[] overrides;
 	public final int[] conditionTypes; //identifiers
@@ -48,5 +50,24 @@ public final class DashModelOverrideList {
 		access.setConditionTypes(conditionTypesOut);
 		access.setOverrides(overridesOut);
 		return out;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashModelOverrideList that = (DashModelOverrideList) o;
+
+		// Probably incorrect - comparing Object[] arrays with Arrays.equals
+		if (!Arrays.equals(overrides, that.overrides)) return false;
+		return Arrays.equals(conditionTypes, that.conditionTypes);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Arrays.hashCode(overrides);
+		result = 31 * result + Arrays.hashCode(conditionTypes);
+		return result;
 	}
 }

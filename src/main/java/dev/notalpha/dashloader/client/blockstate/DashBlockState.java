@@ -65,4 +65,22 @@ public final class DashBlockState implements DashObject<BlockState> {
 			return Registries.BLOCK.get(id).getStateManager().getStates().get(this.pos);
 		}
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashBlockState that = (DashBlockState) o;
+
+		if (owner != that.owner) return false;
+		return pos == that.pos;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = owner;
+		result = 31 * result + pos;
+		return result;
+	}
 }

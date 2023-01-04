@@ -99,6 +99,44 @@ public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> 
 			this.selector = selector;
 			this.identifier = identifier;
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			Component component = (Component) o;
+
+			if (model != component.model) return false;
+			if (selector != component.selector) return false;
+			return identifier == component.identifier;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = model;
+			result = 31 * result + selector;
+			result = 31 * result + identifier;
+			return result;
+		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashMultipartBakedModel that = (DashMultipartBakedModel) o;
+
+		if (!components.equals(that.components)) return false;
+		return stateCache.equals(that.stateCache);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = components.hashCode();
+		result = 31 * result + stateCache.hashCode();
+		return result;
 	}
 }
 

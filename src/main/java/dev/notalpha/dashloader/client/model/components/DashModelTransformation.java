@@ -5,6 +5,8 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.render.model.json.Transformation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 @DataNullable
 public final class DashModelTransformation {
 	public final Transformation thirdPersonLeftHand;
@@ -87,5 +89,39 @@ public final class DashModelTransformation {
 				this.unTransformation(this.ground),
 				this.unTransformation(this.fixed)
 		);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashModelTransformation that = (DashModelTransformation) o;
+
+		if (!Objects.equals(thirdPersonLeftHand, that.thirdPersonLeftHand))
+			return false;
+		if (!Objects.equals(thirdPersonRightHand, that.thirdPersonRightHand))
+			return false;
+		if (!Objects.equals(firstPersonLeftHand, that.firstPersonLeftHand))
+			return false;
+		if (!Objects.equals(firstPersonRightHand, that.firstPersonRightHand))
+			return false;
+		if (!Objects.equals(head, that.head)) return false;
+		if (!Objects.equals(gui, that.gui)) return false;
+		if (!Objects.equals(ground, that.ground)) return false;
+		return Objects.equals(fixed, that.fixed);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = thirdPersonLeftHand != null ? thirdPersonLeftHand.hashCode() : 0;
+		result = 31 * result + (thirdPersonRightHand != null ? thirdPersonRightHand.hashCode() : 0);
+		result = 31 * result + (firstPersonLeftHand != null ? firstPersonLeftHand.hashCode() : 0);
+		result = 31 * result + (firstPersonRightHand != null ? firstPersonRightHand.hashCode() : 0);
+		result = 31 * result + (head != null ? head.hashCode() : 0);
+		result = 31 * result + (gui != null ? gui.hashCode() : 0);
+		result = 31 * result + (ground != null ? ground.hashCode() : 0);
+		result = 31 * result + (fixed != null ? fixed.hashCode() : 0);
+		return result;
 	}
 }

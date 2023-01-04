@@ -24,4 +24,22 @@ public final class DashIdentifier implements DashObject<Identifier> {
 	public Identifier export(RegistryReader exportHandler) {
 		return IdentifierAccessor.init(this.namespace, this.path, null);
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashIdentifier that = (DashIdentifier) o;
+
+		if (!namespace.equals(that.namespace)) return false;
+		return path.equals(that.path);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = namespace.hashCode();
+		result = 31 * result + path.hashCode();
+		return result;
+	}
 }

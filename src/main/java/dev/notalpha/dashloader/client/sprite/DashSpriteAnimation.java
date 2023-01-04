@@ -46,4 +46,24 @@ public final class DashSpriteAnimation {
 				this.interpolation
 		);
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashSpriteAnimation that = (DashSpriteAnimation) o;
+
+		if (frameCount != that.frameCount) return false;
+		if (interpolation != that.interpolation) return false;
+		return frames.equals(that.frames);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = frames.hashCode();
+		result = 31 * result + frameCount;
+		result = 31 * result + (interpolation ? 1 : 0);
+		return result;
+	}
 }

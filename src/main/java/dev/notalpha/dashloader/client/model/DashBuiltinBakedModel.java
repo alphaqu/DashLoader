@@ -12,6 +12,8 @@ import net.minecraft.client.render.model.BuiltinBakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 
+import java.util.Objects;
+
 public final class DashBuiltinBakedModel implements DashObject<BuiltinBakedModel> {
 	@DataNullable
 	public final DashModelTransformation transformation;
@@ -40,5 +42,28 @@ public final class DashBuiltinBakedModel implements DashObject<BuiltinBakedModel
 	public BuiltinBakedModel export(RegistryReader reader) {
 		Sprite sprite = reader.get(this.spritePointer);
 		return new BuiltinBakedModel(DashModelTransformation.exportOrDefault(this.transformation), this.itemPropertyOverrides.export(reader), sprite, this.sideLit);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashBuiltinBakedModel that = (DashBuiltinBakedModel) o;
+
+		if (spritePointer != that.spritePointer) return false;
+		if (sideLit != that.sideLit) return false;
+		if (!Objects.equals(transformation, that.transformation))
+			return false;
+		return itemPropertyOverrides.equals(that.itemPropertyOverrides);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = transformation != null ? transformation.hashCode() : 0;
+		result = 31 * result + itemPropertyOverrides.hashCode();
+		result = 31 * result + spritePointer;
+		result = 31 * result + (sideLit ? 1 : 0);
+		return result;
 	}
 }

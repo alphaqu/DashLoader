@@ -34,4 +34,19 @@ public final class DashWeightedBakedModel implements DashObject<WeightedBakedMod
 		}
 		return new WeightedBakedModel(modelsOut);
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashWeightedBakedModel that = (DashWeightedBakedModel) o;
+
+		return models.equals(that.models);
+	}
+
+	@Override
+	public int hashCode() {
+		return models.hashCode();
+	}
 }

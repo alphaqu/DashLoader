@@ -60,4 +60,28 @@ public final class DashStitchResult {
 				)
 		);
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashStitchResult that = (DashStitchResult) o;
+
+		if (width != that.width) return false;
+		if (height != that.height) return false;
+		if (mipLevel != that.mipLevel) return false;
+		if (missing != that.missing) return false;
+		return regions.equals(that.regions);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = width;
+		result = 31 * result + height;
+		result = 31 * result + mipLevel;
+		result = 31 * result + missing;
+		result = 31 * result + regions.hashCode();
+		return result;
+	}
 }

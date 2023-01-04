@@ -25,4 +25,22 @@ public final class DashWeightedModelEntry {
 		//noinspection unchecked
 		return WeightedBakedModelEntryAccessor.init(handler.get(this.model), Weight.of(this.weight));
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashWeightedModelEntry that = (DashWeightedModelEntry) o;
+
+		if (model != that.model) return false;
+		return weight == that.weight;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = model;
+		result = 31 * result + weight;
+		return result;
+	}
 }

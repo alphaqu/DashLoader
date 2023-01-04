@@ -24,4 +24,22 @@ public final class DashSpriteAnimationFrame implements DashObject<SpriteContents
 	public SpriteContents.AnimationFrame export(RegistryReader exportHandler) {
 		return SpriteAnimationFrameAccessor.newSpriteFrame(this.index, this.time);
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashSpriteAnimationFrame that = (DashSpriteAnimationFrame) o;
+
+		if (index != that.index) return false;
+		return time == that.time;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = index;
+		result = 31 * result + time;
+		return result;
+	}
 }

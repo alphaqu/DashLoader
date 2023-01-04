@@ -9,6 +9,8 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public final class DashSpriteContents {
 	public final int id;
 	public final int image;
@@ -52,5 +54,31 @@ public final class DashSpriteContents {
 		access.setMipmapLevelsImages(new NativeImage[]{image});
 		access.setAnimation(this.animation == null ? null : animation.export(out, reader));
 		return out;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DashSpriteContents that = (DashSpriteContents) o;
+
+		if (id != that.id) return false;
+		if (image != that.image) return false;
+		if (width != that.width) return false;
+		if (height != that.height) return false;
+		if (mipMaps != that.mipMaps) return false;
+		return Objects.equals(animation, that.animation);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id;
+		result = 31 * result + image;
+		result = 31 * result + (animation != null ? animation.hashCode() : 0);
+		result = 31 * result + width;
+		result = 31 * result + height;
+		result = 31 * result + mipMaps;
+		return result;
 	}
 }
