@@ -34,17 +34,7 @@ public final class DashGlUniform {
 		this.name = glUniform.getName();
 	}
 
-	public GlUniform export(ShaderProgram shader, List<GlUniform> uniforms) {
-		final GlUniform glUniform = UnsafeHelper.allocateInstance(GlUniform.class);
-		GlUniformAccessor glUniformAccess = (GlUniformAccessor) glUniform;
-		glUniformAccess.setCount(this.count);
-		glUniformAccess.setDataType(this.dataType);
-		glUniformAccess.setProgram(shader);
-
-		glUniformAccess.setIntData(this.intData == null ? null : IOHelper.fromArray(this.intData));
-		glUniformAccess.setFloatData(this.floatData == null ? null : IOHelper.fromArray(this.floatData));
-		glUniformAccess.setName(this.name);
-		uniforms.add(glUniform);
-		return glUniform;
+	public GlUniform export(ShaderProgram shader) {
+		return new GlUniform(this.name, this.dataType, this.count, shader);
 	}
 }

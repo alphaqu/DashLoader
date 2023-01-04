@@ -88,7 +88,11 @@ public final class DashShader implements DashObject<ShaderProgram> {
 
 		var uniformsOut = new HashMap<String, GlUniform>();
 
-		this.loadedUniforms.forEach((s, dashGlUniform) -> uniformsOut.put(s, dashGlUniform.export(this.toApply, uniforms)));
+		this.loadedUniforms.forEach((s, dashGlUniform) -> {
+			GlUniform uniform = dashGlUniform.export(this.toApply);
+			uniforms.add(uniform);
+			uniformsOut.put(s, uniform);
+		});
 
 		// JsonHelper.getArray(jsonObject, "uniforms", (JsonArray)null);
 		final GlUniform modelViewMatOut = uniformsOut.get("ModelViewMat");
