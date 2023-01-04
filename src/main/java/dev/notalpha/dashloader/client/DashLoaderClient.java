@@ -95,7 +95,7 @@ public class DashLoaderClient implements DashEntrypoint {
 						return map.get(bakedModel);
 					}
 
-					final DashMissingDashModel value = new DashMissingDashModel();
+					final DashMissingDashModel value = DashMissingDashModel.IDENTITY;
 					map.put(bakedModel, value);
 					return value;
 				}
