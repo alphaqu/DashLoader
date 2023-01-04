@@ -54,11 +54,11 @@ public final class Cache {
 	}
 
 	public boolean save(@Nullable Consumer<StepTask> taskConsumer) {
-		if (status != Status.SAVE) {
-			throw new RuntimeException("Status is not SAVE");
-		}
 		DashLoader.LOG.info("Starting DashLoader Caching");
 		try {
+			if (status != Status.SAVE) {
+				throw new RuntimeException("Status is not SAVE");
+			}
 			long start = System.currentTimeMillis();
 
 			StepTask main = new StepTask("save", 2);
