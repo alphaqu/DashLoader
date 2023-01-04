@@ -71,7 +71,7 @@ public class HahaManager {
 		}
 
 		if (splashLines.isEmpty()) {
-			return "im empty over here!";
+			return null;
 		}
 
 

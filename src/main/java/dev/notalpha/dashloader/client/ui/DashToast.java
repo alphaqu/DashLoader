@@ -5,7 +5,6 @@ import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.misc.HahaManager;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
 import dev.quantumfusion.taski.builtin.StaticTask;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.toast.Toast;
@@ -13,6 +12,7 @@ import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -28,6 +28,8 @@ public class DashToast implements Toast {
 	private static final int LINES = 125;
 	private final Random random = new Random();
 	private List<Line> lines = new ArrayList<>();
+
+	@Nullable
 	private final String fact = HahaManager.getFact();
 	private Status status;
 	private final ProgressManager progress;
@@ -138,12 +140,15 @@ public class DashToast implements Toast {
 
 		TextRenderer textRenderer = manager.getClient().textRenderer;
 		// Draw progress text
-		DrawerUtil.drawText(matrices, textRenderer, PADDING, barY - PADDING, this.progress.getText(), DrawerUtil.STATUS_COLOR);
 		String progressText = this.progress.getProgressText();
-		DrawerUtil.drawText(matrices, textRenderer, (width - PADDING) - textRenderer.getWidth(progressText), barY - PADDING, progressText, DrawerUtil.STATUS_COLOR);
+		int progressTextY = this.fact != null ? barY - PADDING : (barY / 2) + (textRenderer.fontHeight / 2);
+		DrawerUtil.drawText(matrices, textRenderer, PADDING, progressTextY, this.progress.getText(), DrawerUtil.STATUS_COLOR);
+		DrawerUtil.drawText(matrices, textRenderer, (width - PADDING) - textRenderer.getWidth(progressText), progressTextY, progressText, DrawerUtil.STATUS_COLOR);
 
-		// Draw the fun fact
-		DrawerUtil.drawText(matrices, textRenderer, PADDING, textRenderer.fontHeight + PADDING, this.fact, DrawerUtil.FOREGROUND_COLOR);
+		if (this.fact != null) {
+			// Draw the fun fact
+			DrawerUtil.drawText(matrices, textRenderer, PADDING, textRenderer.fontHeight + PADDING, this.fact, DrawerUtil.FOREGROUND_COLOR);
+		}
 
 		// Draw progress bar
 		DrawerUtil.drawRect(matrices, 0, barY, width, PROGRESS_BAR_HEIGHT, DrawerUtil.PROGRESS_TRACK);
