@@ -29,11 +29,9 @@ import java.util.function.Predicate;
 
 public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> {
 	public final List<Component> components;
-	public final IntObjectList<byte[]> stateCache;
 
-	public DashMultipartBakedModel(List<Component> components, IntObjectList<byte[]> stateCache) {
+	public DashMultipartBakedModel(List<Component> components) {
 		this.components = components;
-		this.stateCache = stateCache;
 	}
 
 	public DashMultipartBakedModel(MultipartBakedModel model, RegistryWriter writer) {
@@ -54,20 +52,10 @@ public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> 
 					writer.add(componentIdentifier)
 			));
 		}
-
-		this.stateCache = new IntObjectList<>();
-		access.getStateCache().forEach((blockState, bitSet) -> this.stateCache.put(writer.add(blockState), bitSet.toByteArray()));
 	}
 
 	@Override
 	public MultipartBakedModel export(RegistryReader reader) {
-		MultipartBakedModel model = UnsafeHelper.allocateInstance(MultipartBakedModel.class);
-		var access = (MultipartBakedModelAccessor) model;
-
-		Map<BlockState, BitSet> stateCacheOut = new Reference2ObjectOpenHashMap<>(this.stateCache.list().size());
-		this.stateCache.forEach((blockstate, bitSet) -> stateCacheOut.put(reader.get(blockstate), BitSet.valueOf(bitSet)));
-		access.setStateCache(stateCacheOut);
-
 		List<Pair<Predicate<BlockState>, BakedModel>> componentsOut = new ArrayList<>(this.components.size());
 		this.components.forEach(component -> {
 			BakedModel compModel = reader.get(component.model);
@@ -77,15 +65,7 @@ public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> 
 			componentsOut.add(Pair.of(predicate, compModel));
 		});
 
-		var bakedModel = componentsOut.iterator().next().getRight();
-		access.setComponents(componentsOut);
-		access.setAmbientOcclusion(bakedModel.useAmbientOcclusion());
-		access.setDepthGui(bakedModel.hasDepth());
-		access.setSideLit(bakedModel.isSideLit());
-		access.setSprite(bakedModel.getParticleSprite());
-		access.setTransformations(bakedModel.getTransformation());
-		access.setItemPropertyOverrides(bakedModel.getOverrides());
-		return model;
+		return new MultipartBakedModel(componentsOut);
 	}
 
 	public static final class Component {
@@ -128,15 +108,12 @@ public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> 
 
 		DashMultipartBakedModel that = (DashMultipartBakedModel) o;
 
-		if (!components.equals(that.components)) return false;
-		return stateCache.equals(that.stateCache);
+		return components.equals(that.components);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = components.hashCode();
-		result = 31 * result + stateCache.hashCode();
-		return result;
+		return components.hashCode();
 	}
 }
 
