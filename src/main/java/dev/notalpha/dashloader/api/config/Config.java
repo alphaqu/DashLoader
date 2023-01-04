@@ -11,4 +11,5 @@ public class Config {
 	public byte compression = 3;
 	public List<String> customSplashLines = new ArrayList<>();
 	public boolean addDefaultSplashLines = true;
+	public boolean showCachingToast = true;
 }

@@ -3,8 +3,6 @@ package dev.notalpha.dashloader.client.ui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.misc.HahaManager;
-import dev.notalpha.dashloader.misc.ProfilerUtil;
-import dev.quantumfusion.taski.builtin.StaticTask;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.toast.Toast;
@@ -21,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class DashToast implements Toast {
 	private static final int PROGRESS_BAR_HEIGHT = 2;
@@ -31,10 +30,8 @@ public class DashToast implements Toast {
 
 	@Nullable
 	private final String fact = HahaManager.getFact();
-	private Status status;
-	private final ProgressManager progress;
-	private long timeDone = System.currentTimeMillis();
 	private long oldTime = System.currentTimeMillis();
+	public final DashToastState state;
 	private static void drawVertex(Matrix4f m4f, BufferBuilder bb, float z, float x, float y, Color color) {
 		bb.vertex(m4f, x, y, z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
 	}
@@ -47,33 +44,8 @@ public class DashToast implements Toast {
 		return 40;
 	}
 
-	public DashToast(Cache cacheManager) {
-		this.progress = new ProgressManager();
-		switch (cacheManager.getStatus()) {
-			case SAVE -> {
-				this.status = DashToast.Status.CACHING;
-				final Thread thread = new Thread(() -> {
-					long start = System.currentTimeMillis();
-					boolean save = cacheManager.save(stepTask -> this.progress.task = stepTask);
-					if (save) {
-						this.progress.setOverwriteText("Created cache in " + ProfilerUtil.getTimeStringFromStart(start));
-						this.status = Status.DONE;
-					} else {
-						this.progress.setOverwriteText("Internal error, Please check logs.");
-						this.progress.task = new StaticTask("Crash", (System.currentTimeMillis() - timeDone) / (float) 10000);
-						this.status = Status.CRASHED;
-					}
-					cacheManager.setStatus(Cache.Status.IDLE);
-					this.timeDone = System.currentTimeMillis();
-				});
-				thread.setName("dashloader-thread");
-				thread.start();
-			}
-			default -> {
-				throw new RuntimeException("hi");
-			}
-		}
-
+	public DashToast() {
+		this.state = new DashToastState();
 		// Create lines
 		for (int i = 0; i < LINES; i++) {
 			this.lines.add(new Line());
@@ -90,11 +62,11 @@ public class DashToast implements Toast {
 		// Get progress
 		final float progress;
 		final Color progressColor;
-		if (status == Status.CRASHED) {
-			progress = (float) this.progress.getProgress();
+		if (state.getStatus() == DashToastStatus.CRASHED) {
+			progress = (float) this.state.getProgress();
 			progressColor = DrawerUtil.FAILED_COLOR;
 		} else {
-			progress = (float) this.progress.getProgress();
+			progress = (float) this.state.getProgress();
 			progressColor = DrawerUtil.getProgressColor(progress);
 		}
 
@@ -140,9 +112,9 @@ public class DashToast implements Toast {
 
 		TextRenderer textRenderer = manager.getClient().textRenderer;
 		// Draw progress text
-		String progressText = this.progress.getProgressText();
+		String progressText = this.state.getProgressText();
 		int progressTextY = this.fact != null ? barY - PADDING : (barY / 2) + (textRenderer.fontHeight / 2);
-		DrawerUtil.drawText(matrices, textRenderer, PADDING, progressTextY, this.progress.getText(), DrawerUtil.STATUS_COLOR);
+		DrawerUtil.drawText(matrices, textRenderer, PADDING, progressTextY, this.state.getText(), DrawerUtil.STATUS_COLOR);
 		DrawerUtil.drawText(matrices, textRenderer, (width - PADDING) - textRenderer.getWidth(progressText), progressTextY, progressText, DrawerUtil.STATUS_COLOR);
 
 		if (this.fact != null) {
@@ -165,11 +137,11 @@ public class DashToast implements Toast {
 		});
 		RenderSystem.disableScissor();
 
-		if (status == Status.CRASHED && System.currentTimeMillis() - timeDone > 10000) {
+		if (state.getStatus() == DashToastStatus.CRASHED && System.currentTimeMillis() - state.getTimeDone() > 10000) {
 			return Visibility.HIDE;
 		}
 
-		if (status == Status.DONE && System.currentTimeMillis() - timeDone > 2000) {
+		if (state.getStatus() == DashToastStatus.DONE && System.currentTimeMillis() - state.getTimeDone() > 2000) {
 			return Visibility.HIDE;
 		}
 		return Visibility.SHOW;
@@ -220,7 +192,7 @@ public class DashToast implements Toast {
 				this.y = screenHeight * DashToast.this.random.nextFloat();
 
 				// Randomise color
-				if (status == Status.CRASHED) {
+				if (state.getStatus() == DashToastStatus.CRASHED) {
 					if (DashToast.this.random.nextFloat() > 0.9 || this.colorKind == ColorKind.Progress) {
 						this.colorKind = ColorKind.Crashed;
 					}
@@ -272,7 +244,7 @@ public class DashToast implements Toast {
 			Color color = switch (this.colorKind) {
 				case Neutral -> DrawerUtil.NEUTRAL_LINE;
 				case Progress -> {
-					if (status == Status.CRASHED) {
+					if (state.getStatus() == DashToastStatus.CRASHED) {
 						yield DrawerUtil.FAILED_COLOR;
 					}
 
@@ -287,12 +259,6 @@ public class DashToast implements Toast {
 		public float getWeight() {
 			return ((this.width * (float) this.height) - 60f) / 190f;
 		}
-	}
-
-	public enum Status {
-		CACHING,
-		CRASHED,
-		DONE
 	}
 
 	public enum ColorKind {

@@ -10,16 +10,17 @@ import net.minecraft.util.Language;
 
 import java.util.HashMap;
 
-public final class ProgressManager {
+public final class DashToastState {
 	public Task task = new StaticTask("Idle", 0);
 	private final HashMap<String, String> translations;
 	private String overwriteText;
-
+	private DashToastStatus status;
 	private double currentProgress = 0;
 	private long lastUpdate = System.currentTimeMillis();
+	private long timeDone = System.currentTimeMillis();
 
 
-	public ProgressManager() {
+	public DashToastState() {
 		var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
 		DashLoader.LOG.info(langCode);
 		var stream = this.getClass().getClassLoader().getResourceAsStream("dashloader/lang/" + langCode + ".json");
@@ -105,5 +106,21 @@ public final class ProgressManager {
 
 	public void setOverwriteText(String overwriteText) {
 		this.overwriteText = this.translations.getOrDefault(overwriteText, overwriteText);
+	}
+
+	public DashToastStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(DashToastStatus status) {
+		this.status = status;
+	}
+
+	public long getTimeDone() {
+		return timeDone;
+	}
+
+	public void setDone() {
+		this.timeDone = System.currentTimeMillis();
 	}
 }
