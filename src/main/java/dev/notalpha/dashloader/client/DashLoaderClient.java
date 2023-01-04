@@ -11,7 +11,6 @@ import dev.notalpha.dashloader.client.identifier.DashModelIdentifier;
 import dev.notalpha.dashloader.client.model.*;
 import dev.notalpha.dashloader.client.model.components.DashBakedQuad;
 import dev.notalpha.dashloader.client.model.components.DashBakedQuadCollection;
-import dev.notalpha.dashloader.client.model.fallback.DashMissingDashModel;
 import dev.notalpha.dashloader.client.model.predicates.*;
 import dev.notalpha.dashloader.client.shader.DashShader;
 import dev.notalpha.dashloader.client.shader.ShaderModule;
@@ -20,7 +19,6 @@ import dev.notalpha.dashloader.client.sprite.DashImage;
 import dev.notalpha.dashloader.client.sprite.DashSprite;
 import dev.notalpha.dashloader.client.sprite.SpriteModule;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
@@ -60,7 +58,6 @@ public class DashLoaderClient implements DashEntrypoint {
 				DashBuiltinBakedModel.class,
 				DashMultipartBakedModel.class,
 				DashWeightedBakedModel.class,
-				DashMissingDashModel.class,
 				DashBakedQuad.class,
 				DashBakedQuadCollection.class,
 				DashAndPredicate.class,
@@ -83,23 +80,6 @@ public class DashLoaderClient implements DashEntrypoint {
 
 	@Override
 	public void onDashLoaderSave(List<MissingHandler<?>> handlers) {
-		handlers.add(new MissingHandler<>(
-				BakedModel.class,
-				(bakedModel, registryWriter) -> {
-					var map = ModelModule.MISSING_WRITE.get(Cache.Status.SAVE);
-					if (map == null) {
-						return null;
-					}
-
-					if (map.containsKey(bakedModel)) {
-						return map.get(bakedModel);
-					}
-
-					final DashMissingDashModel value = DashMissingDashModel.IDENTITY;
-					map.put(bakedModel, value);
-					return value;
-				}
-		));
 		handlers.add(new MissingHandler<>(
 				Identifier.class,
 				(identifier, registryWriter) -> {

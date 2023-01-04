@@ -5,10 +5,11 @@ import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashModule;
 import dev.notalpha.dashloader.api.config.ConfigHandler;
 import dev.notalpha.dashloader.api.config.Option;
-import dev.notalpha.dashloader.client.model.fallback.DashMissingDashModel;
+import dev.notalpha.dashloader.client.model.fallback.UnbakedBakedModel;
 import dev.notalpha.dashloader.io.data.collection.IntIntList;
 import dev.notalpha.dashloader.misc.OptionData;
 import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
+import dev.notalpha.dashloader.registry.RegistryAddException;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -27,24 +28,23 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class ModelModule implements DashModule<ModelModule.Data> {
-	public static final OptionData<HashMap<Identifier, BakedModel>> MODELS = new OptionData<>();
-	public static final OptionData<HashMap<BakedModel, DashMissingDashModel>> MISSING_WRITE = new OptionData<>();
+	public static final OptionData<HashMap<Identifier, BakedModel>> MODELS_SAVE = new OptionData<>(Cache.Status.SAVE);
+	public static final OptionData<HashMap<Identifier, UnbakedBakedModel>> MODELS_LOAD = new OptionData<>(Cache.Status.LOAD);
 	public static final OptionData<HashMap<BlockState, Identifier>> MISSING_READ = new OptionData<>();
 	public static final OptionData<HashMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>>> MULTIPART_PREDICATES = new OptionData<>(Cache.Status.SAVE);
 	@Override
 	public void reset(Cache cacheManager) {
-		MODELS.reset(cacheManager, new HashMap<>());
-		MISSING_WRITE.reset(cacheManager, new HashMap<>());
+		MODELS_SAVE.reset(cacheManager, new HashMap<>());
+		MODELS_LOAD.reset(cacheManager, new HashMap<>());
 		MISSING_READ.reset(cacheManager, new HashMap<>());
 		MULTIPART_PREDICATES.reset(cacheManager, new HashMap<>());
 	}
 
 	@Override
 	public Data save(RegistryFactory writer, StepTask task) {
-		var missingModelsWrite = MISSING_WRITE.get(Cache.Status.SAVE);
-		var models = MODELS.get(Cache.Status.SAVE);
+		var models = MODELS_SAVE.get(Cache.Status.SAVE);
 
-		if (missingModelsWrite == null || models == null) {
+		if (models == null) {
 			return null;
 		} else {
 			var outModels = new IntIntList(new ArrayList<>(models.size()));
@@ -53,15 +53,18 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 			final HashSet<Identifier> out = new HashSet<>();
 			task.doForEach(models, (identifier, bakedModel) -> {
 				if (bakedModel != null) {
-					final int add = writer.add(bakedModel);
-					if (!missingModelsWrite.containsKey(bakedModel)) {
+					try {
+						final int add = writer.add(bakedModel);
 						outModels.put(writer.add(identifier), add);
 						out.add(identifier);
+					} catch (RegistryAddException ignored) {
+						// Fallback is checked later with the blockstates missing.
 					}
 				}
 			});
 
 
+			// Check missing models for blockstates.
 			for (Block block : Registries.BLOCK) {
 				block.getStateManager().getStates().forEach((blockState) -> {
 					final ModelIdentifier modelId = BlockModels.getModelId(blockState);
@@ -77,8 +80,12 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 
 	@Override
 	public void load(Data mappings, RegistryReader reader, StepTask task) {
-		final HashMap<Identifier, BakedModel> out = new HashMap<>(mappings.models.list().size());
-		mappings.models.forEach((key, value) -> out.put(reader.get(key), reader.get(value)));
+		final HashMap<Identifier, UnbakedBakedModel> out = new HashMap<>(mappings.models.list().size());
+		mappings.models.forEach((key, value) -> {
+			BakedModel model = reader.get(value);
+			Identifier identifier = reader.get(key);
+			out.put(identifier, new UnbakedBakedModel(model, identifier));
+		});
 
 		var missingModelsRead = new HashMap<BlockState, Identifier>();
 		mappings.missingModels.forEach((blockState, modelId) -> {
@@ -87,7 +94,7 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 
 		DashLoader.LOG.info("Found {} Missing BlockState Models", missingModelsRead.size());
 		MISSING_READ.set(Cache.Status.LOAD, missingModelsRead);
-		MODELS.set(Cache.Status.LOAD, out);
+		MODELS_LOAD.set(Cache.Status.LOAD, out);
 	}
 
 	@Override

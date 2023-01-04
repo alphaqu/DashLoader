@@ -26,7 +26,7 @@ public abstract class BakedModelManagerOverride {
 	)
 
 	private void yankAssets(BakedModelManager.BakingResult bakingResult, Profiler profiler, CallbackInfo ci) {
-		ModelModule.MODELS.visit(Cache.Status.SAVE, map -> {
+		ModelModule.MODELS_SAVE.visit(Cache.Status.SAVE, map -> {
 			DashLoader.LOG.info("Yanking Minecraft Assets");
 			map.putAll(this.models);
 		});

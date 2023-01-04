@@ -3,7 +3,6 @@ package dev.notalpha.dashloader.mixin.option.cache.model;
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.client.model.ModelModule;
-import dev.notalpha.dashloader.client.model.fallback.MissingDashModel;
 import dev.notalpha.dashloader.client.model.fallback.UnbakedBakedModel;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
@@ -43,37 +42,24 @@ public abstract class ModelLoaderMixin {
 	@Mutable
 	@Shadow
 	@Final
-	private Set<Identifier> modelsToLoad;
-
-	@Mutable
-	@Shadow
-	@Final
 	private Map<Identifier, UnbakedModel> modelsToBake;
-
-	@Shadow
-	protected abstract JsonUnbakedModel loadModelFromJson(Identifier id) throws IOException;
 
 	@Inject(
 			method = "<init>",
 			at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=static_definitions", shift = At.Shift.AFTER)
 	)
 	private void injectLoadedModels(BlockColors blockColors, Profiler profiler, Map<Identifier, JsonUnbakedModel> jsonUnbakedModels, Map<Identifier, List<ModelLoader.SourceTrackedData>> blockStates, CallbackInfo ci) {
-		ModelModule.MODELS.visit(Cache.Status.LOAD, dashModels -> {
+		ModelModule.MODELS_LOAD.visit(Cache.Status.LOAD, dashModels -> {
 			DashLoader.LOG.info("Injecting {} Cached Models", dashModels.size());
-			this.unbakedModels = new HashMap<>(this.unbakedModels);
-			this.modelsToBake = new HashMap<>(this.modelsToBake);
-			this.modelsToLoad = new HashSet<>(this.modelsToLoad);
+			Map<Identifier, UnbakedModel> oldUnbakedModels = this.unbakedModels;
+			Map<Identifier, UnbakedModel> oldModelsToBake = this.modelsToBake;
+			this.unbakedModels = new HashMap<>((int) ((oldUnbakedModels.size() + dashModels.size()) / 0.75));
+			this.modelsToBake = new HashMap<>((int) ((oldModelsToBake.size() + dashModels.size()) / 0.75));
 
-			HashSet<Identifier> filter = new HashSet<>(this.unbakedModels.size() + this.modelsToBake.size());
-			filter.addAll(this.unbakedModels.keySet());
-			filter.addAll(this.modelsToBake.keySet());
-			dashModels.forEach((identifier, bakedModel) -> {
-				if (!(bakedModel instanceof MissingDashModel) && !filter.contains(identifier)) {
-					UnbakedBakedModel unbakedBakedModel = new UnbakedBakedModel(bakedModel, identifier);
-					this.unbakedModels.put(identifier, unbakedBakedModel);
-					this.modelsToBake.put(identifier, unbakedBakedModel);
-				}
-			});
+			this.unbakedModels.putAll(dashModels);
+			this.unbakedModels.putAll(oldUnbakedModels);
+			this.modelsToBake.putAll(dashModels);
+			this.modelsToBake.putAll(oldModelsToBake);
 		});
 	}
 
@@ -97,27 +83,6 @@ public abstract class ModelLoaderMixin {
 		return instance.hasNext();
 	}
 
-	@Redirect(
-			method = "<init>",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelLoader;loadModelFromJson(Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/model/json/JsonUnbakedModel;")
-	)
-	private JsonUnbakedModel pleaseDontLoadMissingModelBecauseItsReallySlowThankYou(ModelLoader instance, Identifier id) throws IOException {
-		if (ModelModule.MODELS.active(Cache.Status.LOAD)) {
-			return null;
-		}
-		return loadModelFromJson(MISSING_ID);
-	}
-
-	@Inject(
-			method = "<init>",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelLoader;addModel(Lnet/minecraft/client/util/ModelIdentifier;)V", ordinal = 0, shift = At.Shift.BEFORE)
-	)
-	private void pleaseDontLoadMissingModelBecauseItsReallySlowThankYouPart2(BlockColors blockColors, Profiler profiler, Map jsonUnbakedModels, Map blockStates, CallbackInfo ci) {
-		ModelModule.MODELS.visit(Cache.Status.LOAD, map -> {
-			this.unbakedModels.put(MISSING_ID, new UnbakedBakedModel(map.get(MISSING_ID), MISSING_ID));
-		});
-	}
-
 	@Inject(
 			method = "bake",
 			at = @At(
@@ -125,7 +90,7 @@ public abstract class ModelLoaderMixin {
 			)
 	)
 	private void countModels(BiFunction<Identifier, SpriteIdentifier, Sprite> spriteLoader, CallbackInfo ci) {
-		if (ModelModule.MODELS.active(Cache.Status.LOAD)) {
+		if (ModelModule.MODELS_LOAD.active(Cache.Status.LOAD)) {
 			// Cache stats
 			int cachedModels = 0;
 			int fallbackModels = 0;

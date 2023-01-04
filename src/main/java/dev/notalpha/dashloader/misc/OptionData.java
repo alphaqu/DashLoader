@@ -59,6 +59,10 @@ public class OptionData<D> {
 			return;
 		}
 
+		if (cacheManager == null) {
+			throw new RuntimeException("cacheManager is null. This OptionData has never been reset in its handler.");
+		}
+
 		Cache.Status currentStatus = cacheManager.getStatus();
 		if (status == currentStatus) {
 			this.dataStatus = status;

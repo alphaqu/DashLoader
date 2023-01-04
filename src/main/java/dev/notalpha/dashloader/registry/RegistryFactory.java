@@ -98,8 +98,9 @@ public final class RegistryFactory {
 		}
 
 		if (pointer == null) {
-			throw new RuntimeException("Could not find a ChunkWriter for " + targetClass + ": " + object);
+			throw new RegistryAddException(targetClass, object);
 		}
+
 		((IdentityHashMap<R, Integer>) this.dedup).put(object, pointer);
 		return pointer;
 	}
