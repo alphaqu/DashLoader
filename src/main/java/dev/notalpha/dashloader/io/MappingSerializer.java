@@ -99,9 +99,7 @@ public class MappingSerializer {
 		try {
 			ByteBufferIO io = IOHelper.load(dir.resolve("mapping.bin"));
 			for (DashModule handler : handlers) {
-				byte aByte = io.getByte();
-				DashLoader.LOG.info(": " + handler.getClass().getSimpleName() + " : " + aByte + " : " + handler.isActive());
-				if (aByte == 0 && handler.isActive()) {
+				if (io.getByte() == 0 && handler.isActive()) {
 					DashLoader.LOG.info("Recaching as " + handler.getClass().getSimpleName() + " is now active.");
 					return false;
 				} else {
