@@ -1,11 +1,9 @@
-# New Features
-- Allow people to disable toast on caching.
-- Add epic glow effects on the cache screen. 
-- Allow the toast to only show progress text when no facts are available.
-
-# Performance improvements
-- Improve model injection performance.
-- Deduplicate with identitymap to fix Identifier equals issues.
+# Bug Fixes
+- Sodium compatibility
+- Shader caching. (#23)
+- Options not working.
+- DashToast lines freaking out.
 
 # Internal chores
-- Add .equals implementations to most DashObjects
+- Reduce unsafe allocate usage.
+- Don't cache temporary data in GlUniform
