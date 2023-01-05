@@ -6,12 +6,12 @@ import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.misc.UnsafeHelper;
 import dev.notalpha.dashloader.mixin.accessor.ShaderProgramAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.render.VertexFormat;
 
 import java.util.*;
 
@@ -22,12 +22,12 @@ public final class DashShader implements DashObject<ShaderProgram> {
 	public final List<String> attributeNames;
 	public final DashShaderStage vertexShader;
 	public final DashShaderStage fragmentShader;
-	public final VertexFormatsHelper.Value format;
-	public final Map<String, DashGlUniform> loadedUniforms;
+	public final int format;
+	public final List<DashGlUniform> uniforms;
 	public final List<String> samplerNames;
 	public transient ShaderProgram toApply;
 
-	public DashShader(Map<String, Sampler> samplers, String name, DashGlBlendState blendState, List<String> attributeNames, DashShaderStage vertexShader, DashShaderStage fragmentShader, VertexFormatsHelper.Value format, Map<String, DashGlUniform> loadedUniforms, List<String> samplerNames) {
+	public DashShader(Map<String, Sampler> samplers, String name, DashGlBlendState blendState, List<String> attributeNames, DashShaderStage vertexShader, DashShaderStage fragmentShader, int format, List<DashGlUniform> uniforms, List<String> samplerNames) {
 		this.samplers = samplers;
 		this.name = name;
 		this.blendState = blendState;
@@ -35,11 +35,11 @@ public final class DashShader implements DashObject<ShaderProgram> {
 		this.vertexShader = vertexShader;
 		this.fragmentShader = fragmentShader;
 		this.format = format;
-		this.loadedUniforms = loadedUniforms;
+		this.uniforms = uniforms;
 		this.samplerNames = samplerNames;
 	}
 
-	public DashShader(ShaderProgram shader) {
+	public DashShader(ShaderProgram shader, RegistryWriter writer) {
 		ShaderProgramAccessor shaderAccess = (ShaderProgramAccessor) shader;
 
 		this.samplers = new LinkedHashMap<>();
@@ -50,9 +50,12 @@ public final class DashShader implements DashObject<ShaderProgram> {
 		this.attributeNames = shaderAccess.getAttributeNames();
 		this.vertexShader = new DashShaderStage(shader.getVertexShader());
 		this.fragmentShader = new DashShaderStage(shader.getFragmentShader());
-		this.format = VertexFormatsHelper.getEnum(shader.getFormat());
-		this.loadedUniforms = new HashMap<>();
-		shaderAccess.getLoadedUniforms().forEach((s, glUniform) -> this.loadedUniforms.put(s, new DashGlUniform(glUniform)));
+		this.format = writer.add(shader.getFormat());
+		this.uniforms = new ArrayList<>();
+		Map<String, GlUniform> loadedUniforms = shaderAccess.getLoadedUniforms();
+		shaderAccess.getUniforms().forEach((glUniform) -> {
+			this.uniforms.add(new DashGlUniform(glUniform, loadedUniforms.containsKey(glUniform.getName())));
+		});
 		this.samplerNames = shaderAccess.getSamplerNames();
 	}
 
@@ -63,19 +66,14 @@ public final class DashShader implements DashObject<ShaderProgram> {
 		ShaderProgramAccessor shaderAccess = (ShaderProgramAccessor) this.toApply;
 		//object init
 		shaderAccess.setLoadedSamplerIds(new ArrayList<>());
-		shaderAccess.setLoadedUniformIds(new ArrayList<>());
-		shaderAccess.setLoadedUniforms(new HashMap<>());
-		final ArrayList<GlUniform> uniforms = new ArrayList<>();
-		shaderAccess.setUniforms(uniforms);
-		List<Integer> loadedAttributeIds = new ArrayList<>();
+		shaderAccess.setLoadedUniformIds(new ArrayList<>());List<Integer> loadedAttributeIds = new ArrayList<>();
 		shaderAccess.setLoadedAttributeIds(loadedAttributeIds);
 
 		shaderAccess.setSamplerNames(this.samplerNames);
 
 		//<init> top
 		shaderAccess.setName(this.name);
-		final VertexFormat format = this.format.getFormat();
-		shaderAccess.setFormat(format);
+		shaderAccess.setFormat(reader.get(this.format));
 
 
 		//JsonHelper.getArray(jsonObject, "samplers", (JsonArray)null)
@@ -86,43 +84,36 @@ public final class DashShader implements DashObject<ShaderProgram> {
 		// JsonHelper.getArray(jsonObject, "attributes", (JsonArray)null);
 		shaderAccess.setAttributeNames(this.attributeNames);
 
+		final ArrayList<GlUniform> uniforms = new ArrayList<>();
+		shaderAccess.setUniforms(uniforms);
 		var uniformsOut = new HashMap<String, GlUniform>();
-
-		this.loadedUniforms.forEach((s, dashGlUniform) -> {
+		this.uniforms.forEach((dashGlUniform) -> {
 			GlUniform uniform = dashGlUniform.export(this.toApply);
 			uniforms.add(uniform);
-			uniformsOut.put(s, uniform);
+			if (dashGlUniform.loaded) {
+				uniformsOut.put(dashGlUniform.name, uniform);
+			}
 		});
+		shaderAccess.setLoadedUniforms(uniformsOut);
+
 
 		// JsonHelper.getArray(jsonObject, "uniforms", (JsonArray)null);
-		final GlUniform modelViewMatOut = uniformsOut.get("ModelViewMat");
-		final GlUniform projectionMatOut = uniformsOut.get("ProjMat");
-		final GlUniform textureMatOut = uniformsOut.get("TextureMat");
-		final GlUniform screenSizeOut = uniformsOut.get("ScreenSize");
-		final GlUniform colorModulatorOut = uniformsOut.get("ColorModulator");
-		final GlUniform light0DirectionOut = uniformsOut.get("Light0_Direction");
-		final GlUniform light1DirectionOut = uniformsOut.get("Light1_Direction");
-		final GlUniform fogStartOut = uniformsOut.get("FogStart");
-		final GlUniform fogEndOut = uniformsOut.get("FogEnd");
-		final GlUniform fogColorOut = uniformsOut.get("FogColor");
-		final GlUniform lineWidthOut = uniformsOut.get("LineWidth");
-		final GlUniform gameTimeOut = uniformsOut.get("GameTime");
-		final GlUniform chunkOffsetOut = uniformsOut.get("ChunkOffset");
-
 		this.toApply.markUniformsDirty();
-		this.toApply.modelViewMat = modelViewMatOut;
-		this.toApply.projectionMat = projectionMatOut;
-		this.toApply.textureMat = textureMatOut;
-		this.toApply.screenSize = screenSizeOut;
-		this.toApply.colorModulator = colorModulatorOut;
-		this.toApply.light0Direction = light0DirectionOut;
-		this.toApply.light1Direction = light1DirectionOut;
-		this.toApply.fogStart = fogStartOut;
-		this.toApply.fogEnd = fogEndOut;
-		this.toApply.fogColor = fogColorOut;
-		this.toApply.lineWidth = lineWidthOut;
-		this.toApply.gameTime = gameTimeOut;
-		this.toApply.chunkOffset = chunkOffsetOut;
+		this.toApply.modelViewMat = uniformsOut.get("ModelViewMat");
+		this.toApply.projectionMat = uniformsOut.get("ProjMat");
+		this.toApply.viewRotationMat = uniformsOut.get("IViewRotMat");
+		this.toApply.textureMat = uniformsOut.get("TextureMat");
+		this.toApply.screenSize = uniformsOut.get("ScreenSize");
+		this.toApply.colorModulator = uniformsOut.get("ColorModulator");
+		this.toApply.light0Direction = uniformsOut.get("Light0_Direction");
+		this.toApply.light1Direction = uniformsOut.get("Light1_Direction");
+		this.toApply.fogStart = uniformsOut.get("FogStart");
+		this.toApply.fogEnd = uniformsOut.get("FogEnd");
+		this.toApply.fogColor = uniformsOut.get("FogColor");
+		this.toApply.fogShape = uniformsOut.get("FogShape");
+		this.toApply.lineWidth = uniformsOut.get("LineWidth");
+		this.toApply.gameTime = uniformsOut.get("GameTime");
+		this.toApply.chunkOffset = uniformsOut.get("ChunkOffset");
 		return this.toApply;
 	}
 
@@ -141,7 +132,7 @@ public final class DashShader implements DashObject<ShaderProgram> {
 
 		if (this.attributeNames != null) {
 			int l = 0;
-			for (UnmodifiableIterator<String> var35 = this.format.getFormat().getAttributeNames().iterator(); var35.hasNext(); ++l) {
+			for (UnmodifiableIterator<String> var35 = this.toApply.getFormat().getAttributeNames().iterator(); var35.hasNext(); ++l) {
 				String string3 = var35.next();
 				GlUniform.bindAttribLocation(programId, l, string3);
 				loadedAttributeIds.add(l);

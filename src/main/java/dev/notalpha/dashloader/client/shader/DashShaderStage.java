@@ -7,6 +7,7 @@ import net.minecraft.client.gl.ShaderStage;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 
 public final class DashShaderStage {
 	public final ShaderStage.Type shaderType;
@@ -44,8 +45,13 @@ public final class DashShaderStage {
 	}
 
 	public ShaderStage exportProgram() {
-		final ShaderStage program = ShaderStageAccessor.create(this.shaderType, this.createProgram(this.shaderType), this.name);
-		this.shaderType.getLoadedShaders().put(this.name, program);
-		return program;
+		Map<String, ShaderStage> loadedShaders = this.shaderType.getLoadedShaders();
+		ShaderStage shaderStage = loadedShaders.get(this.name);
+		if (shaderStage == null) {
+			final ShaderStage program = ShaderStageAccessor.create(this.shaderType, this.createProgram(this.shaderType), this.name);
+			loadedShaders.put(this.name, program);
+			shaderStage = program;
+		}
+		return shaderStage;
 	}
 }

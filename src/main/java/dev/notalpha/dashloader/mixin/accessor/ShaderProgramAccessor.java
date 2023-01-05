@@ -38,6 +38,9 @@ public interface ShaderProgramAccessor {
 	Map<String, GlUniform> getLoadedUniforms();
 
 	@Accessor
+	List<GlUniform> getUniforms();
+
+	@Accessor
 	@Mutable
 	void setLoadedAttributeIds(List<Integer> loadedAttributeIds);
 
