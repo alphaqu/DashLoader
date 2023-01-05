@@ -73,14 +73,15 @@ public class DashToast implements Toast {
 		// Tick progress
 		List<Line> newList = new ArrayList<>();
 		List<Line> newListPrio = new ArrayList<>();
+		long currentTime = System.currentTimeMillis();
 		for (Line line : this.lines) {
-			if (line.tick(width, height, progress, 17f / Math.max((System.currentTimeMillis() - this.oldTime), 1f))) {
+			if (line.tick(width, height, progress, (currentTime - this.oldTime) / 17f)) {
 				newListPrio.add(line);
 			} else {
 				newList.add(line);
 			}
 		}
-		this.oldTime = System.currentTimeMillis();
+		this.oldTime = currentTime;
 		this.lines = newList;
 		this.lines.addAll(newListPrio);
 
