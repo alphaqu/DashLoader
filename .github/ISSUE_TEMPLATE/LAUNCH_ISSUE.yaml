@@ -1,0 +1,47 @@
+name: Launching Issue
+description: Create an issue about your game failing to load/cache
+title: "[LAUNCH]: "
+labels: ["type: bug", "status: idle"]
+assignees:
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue about DashLoader, we care a lot about our mod and enjoy fixing every bug.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of DashLoader are you running?
+      placeholder: 5.0.0-alpha.3
+    validations:
+      required: true
+  - type: input
+    id: mc-version
+    attributes:
+      label: Minecraft Version
+      description: What Minecraft version are you using?
+      placeholder: 1.19.3
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        Please provide **THE ENTIRE LOG** as the crashlogs don't contain much information about DashLoader.
+        Use a website like https://mclo.gs/ to upload logs. 
+        Preferably we want a log for when you create the cache (The popup at the top left is present) and another log for when DashLoader loads the cache.
+  - type: input
+    id: logs
+    attributes:
+      label: Entire Logs
+      description: Link to the logs.
+      placeholder: https://mclo.gs/5K0ChKa
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional Notes
+      description: Anything else you want to add?
+    validations:
+      required: false
