@@ -2,7 +2,6 @@ name: Launching Issue
 description: Create an issue about your game failing to load/cache
 title: "[LAUNCH]: "
 labels: ["type: bug", "status: idle"]
-assignees:
 body:
   - type: markdown
     attributes:
