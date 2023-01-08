@@ -44,12 +44,13 @@ public final class SpriteLoaderMixin {
 		SpriteModule.ATLASES.visit(Cache.Status.LOAD, map -> {
 			SpriteLoader.StitchResult cached = map.get(identifier);
 			if (cached != null) {
+				int mipLevel = cached.mipLevel();
 				// Correct the executor
-				CompletableFuture<Void> completableFuture = m > 0 ? CompletableFuture.runAsync(() -> cached.regions().values().forEach(sprite -> sprite.getContents().generateMipmaps(m)), executor) : CompletableFuture.completedFuture(null);
+				CompletableFuture<Void> completableFuture = mipLevel > 0 ? CompletableFuture.runAsync(() -> cached.regions().values().forEach(sprite -> sprite.getContents().generateMipmaps(mipLevel)), executor) : CompletableFuture.completedFuture(null);
 				cir.setReturnValue(CompletableFuture.completedFuture(new SpriteLoader.StitchResult(
 						cached.width(),
 						cached.height(),
-						cached.mipLevel(),
+						mipLevel,
 						cached.missing(),
 						cached.regions(),
 						completableFuture
