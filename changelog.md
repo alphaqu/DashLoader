@@ -1,9 +1,6 @@
 # Bug Fixes
-- Sodium compatibility
-- Shader caching. (#23)
-- Options not working.
-- DashToast lines freaking out.
+- Chests not rendering properly
 
-# Internal chores
-- Reduce unsafe allocate usage.
-- Don't cache temporary data in GlUniform
+# Internal improvements
+- (ObjectDumper): Fancy NativeImage printing
+- (ObjectDumper): Map sorting for easier comparison
