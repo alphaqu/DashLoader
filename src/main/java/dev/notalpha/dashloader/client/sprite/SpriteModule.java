@@ -1,10 +1,12 @@
 package dev.notalpha.dashloader.client.sprite;
 
 import dev.notalpha.dashloader.Cache;
+import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashModule;
 import dev.notalpha.dashloader.api.config.ConfigHandler;
 import dev.notalpha.dashloader.api.config.Option;
 import dev.notalpha.dashloader.io.data.collection.IntObjectList;
+import dev.notalpha.dashloader.misc.ObjectDumper;
 import dev.notalpha.dashloader.misc.OptionData;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
@@ -16,10 +18,12 @@ import java.util.HashMap;
 
 public class SpriteModule implements DashModule<SpriteModule.Data> {
 	public final static OptionData<HashMap<Identifier, SpriteLoader.StitchResult>> ATLASES = new OptionData<>();
+	public final static OptionData<HashMap<Identifier, Identifier>> ATLAS_IDS = new OptionData<>(Cache.Status.SAVE);
 
 	@Override
 	public void reset(Cache cacheManager) {
 		ATLASES.reset(cacheManager, new HashMap<>());
+		ATLAS_IDS.reset(cacheManager, new HashMap<>());
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package dev.notalpha.dashloader.client.sprite;
 
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.misc.UnsafeHelper;
 import dev.notalpha.dashloader.mixin.accessor.SpriteAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
@@ -33,11 +32,12 @@ public class DashSprite implements DashObject<Sprite> {
 		this.atlasId = writer.add(sprite.getAtlasId());
 		this.contents = new DashSpriteContents(sprite.getContents(), writer);
 
-		// i dont wanna deal with atlases thank you.
+		Identifier identifier = SpriteModule.ATLAS_IDS.get(Cache.Status.SAVE).get(sprite.getAtlasId());
+		SpriteLoader.StitchResult atlas = SpriteModule.ATLASES.get(Cache.Status.SAVE).get(identifier);
 		this.x = sprite.getX();
 		this.y = sprite.getY();
-		this.atlasWidth = Math.round(this.x / sprite.getMinU());
-		this.atlasHeight = Math.round(this.y / sprite.getMinV());
+		this.atlasWidth = atlas.width();
+		this.atlasHeight = atlas.height();
 	}
 
 	@Override

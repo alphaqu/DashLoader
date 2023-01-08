@@ -5,7 +5,9 @@ import dev.notalpha.dashloader.client.sprite.SpriteModule;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -16,6 +18,8 @@ import java.util.concurrent.Executor;
 @Mixin(SpriteLoader.class)
 public final class SpriteLoaderMixin {
 
+	@Shadow @Final private Identifier id;
+
 	@Inject(
 			method = "method_47661",
 			at = @At(value = "RETURN"),
@@ -23,6 +27,7 @@ public final class SpriteLoaderMixin {
 	)
 	private void dashloaderWrite(ResourceManager resourceManager, Identifier identifier, int i, Executor executor, CallbackInfoReturnable<CompletableFuture<SpriteLoader.StitchResult>> cir) {
 		SpriteModule.ATLASES.visit(Cache.Status.SAVE, map -> {
+			SpriteModule.ATLAS_IDS.get(Cache.Status.SAVE).put(id, identifier);
 			cir.setReturnValue(cir.getReturnValue().thenApply(stitchResult -> {
 				map.put(identifier, stitchResult);
 				return stitchResult;
