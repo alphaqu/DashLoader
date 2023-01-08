@@ -2,8 +2,8 @@ package dev.notalpha.dashloader.mixin.accessor;
 
 import net.minecraft.client.gl.GlBlendState;
 import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.gl.ShaderStage;
+import net.minecraft.client.gl.Program;
+import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.VertexFormat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 import java.util.List;
 import java.util.Map;
 
-@Mixin(ShaderProgram.class)
+@Mixin(Shader.class)
 public interface ShaderProgramAccessor {
 
 	@Accessor
@@ -74,7 +74,7 @@ public interface ShaderProgramAccessor {
 	@Mutable
 	void setLoadedUniforms(Map<String, GlUniform> loadedUniforms);
 
-	@Accessor
+	@Accessor("programId")
 	@Mutable
 	void setGlRef(int glRef);
 
@@ -84,11 +84,11 @@ public interface ShaderProgramAccessor {
 
 	@Accessor
 	@Mutable
-	void setVertexShader(ShaderStage vertexShader);
+	void setVertexShader(Program vertexShader);
 
 	@Accessor
 	@Mutable
-	void setFragmentShader(ShaderStage fragmentShader);
+	void setFragmentShader(Program fragmentShader);
 
 	@Accessor
 	@Mutable

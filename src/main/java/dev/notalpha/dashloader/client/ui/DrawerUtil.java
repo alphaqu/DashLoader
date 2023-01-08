@@ -1,16 +1,13 @@
 package dev.notalpha.dashloader.client.ui;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import org.joml.Matrix4f;
+import net.minecraft.util.math.Matrix4f;
 
 import java.awt.*;
-import java.util.Calendar;
-import java.util.Date;
 
 public class DrawerUtil {
 	public static final float GLOW_SIZE = 30f;

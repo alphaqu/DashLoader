@@ -5,8 +5,8 @@ import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.block.BlockState;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public final class DashBlockState implements DashObject<BlockState> {
 	public static final Identifier ITEM_FRAME = new Identifier("dashloader:itemframewhy");
@@ -41,7 +41,7 @@ public final class DashBlockState implements DashObject<BlockState> {
 				BlockState state = states.get(i);
 				if (state.equals(blockState)) {
 					pos = i;
-					owner = Registries.BLOCK.getId(block);
+					owner = Registry.BLOCK.getId(block);
 					break;
 				}
 			}
@@ -62,7 +62,7 @@ public final class DashBlockState implements DashObject<BlockState> {
 		if (id.equals(ITEM_FRAME)) {
 			return ModelLoaderAccessor.getTheItemFrameThing().getStates().get(this.pos);
 		} else {
-			return Registries.BLOCK.get(id).getStateManager().getStates().get(this.pos);
+			return Registry.BLOCK.get(id).getStateManager().getStates().get(this.pos);
 		}
 	}
 

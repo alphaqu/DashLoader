@@ -19,9 +19,9 @@ import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.registry.Registries;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,7 +65,7 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 
 
 			// Check missing models for blockstates.
-			for (Block block : Registries.BLOCK) {
+			for (Block block : Registry.BLOCK) {
 				block.getStateManager().getStates().forEach((blockState) -> {
 					final ModelIdentifier modelId = BlockModels.getModelId(blockState);
 					if (!out.contains(modelId)) {
@@ -117,7 +117,7 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 		if (staticDef != null) {
 			return staticDef;
 		} else {
-			return Registries.BLOCK.get(identifier).getStateManager();
+			return Registry.BLOCK.get(identifier).getStateManager();
 		}
 	}
 
@@ -130,7 +130,7 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 			}
 		}
 
-		return Registries.BLOCK.getId(stateManager.getOwner());
+		return Registry.BLOCK.getId(stateManager.getOwner());
 	}
 
 	public static final class Data {

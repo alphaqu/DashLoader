@@ -1,7 +1,6 @@
 package dev.notalpha.dashloader.mixin.accessor;
 
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
@@ -9,7 +8,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface IdentifierAccessor {
 
 	@Invoker("<init>")
-	static Identifier init(String namespace, String path, @Nullable Identifier.ExtraData extraData) {
+	static Identifier init(String[] strings) {
 		throw new AssertionError();
 	}
 }

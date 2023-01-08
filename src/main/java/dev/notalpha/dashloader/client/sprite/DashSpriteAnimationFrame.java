@@ -3,9 +3,9 @@ package dev.notalpha.dashloader.client.sprite;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.mixin.accessor.SpriteAnimationFrameAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
-import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.client.texture.Sprite;
 
-public final class DashSpriteAnimationFrame implements DashObject<SpriteContents.AnimationFrame> {
+public final class DashSpriteAnimationFrame implements DashObject<Sprite.AnimationFrame> {
 	public final int index;
 	public final int time;
 
@@ -14,32 +14,14 @@ public final class DashSpriteAnimationFrame implements DashObject<SpriteContents
 		this.time = time;
 	}
 
-	public DashSpriteAnimationFrame(SpriteContents.AnimationFrame animationFrame) {
+	public DashSpriteAnimationFrame(Sprite.AnimationFrame animationFrame) {
 		SpriteAnimationFrameAccessor access = ((SpriteAnimationFrameAccessor) animationFrame);
 		this.index = access.getIndex();
 		this.time = access.getTime();
 	}
 
 	@Override
-	public SpriteContents.AnimationFrame export(RegistryReader exportHandler) {
+	public Sprite.AnimationFrame export(RegistryReader reader) {
 		return SpriteAnimationFrameAccessor.newSpriteFrame(this.index, this.time);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		DashSpriteAnimationFrame that = (DashSpriteAnimationFrame) o;
-
-		if (index != that.index) return false;
-		return time == that.time;
-	}
-
-	@Override
-	public int hashCode() {
-		int result = index;
-		result = 31 * result + time;
-		return result;
 	}
 }

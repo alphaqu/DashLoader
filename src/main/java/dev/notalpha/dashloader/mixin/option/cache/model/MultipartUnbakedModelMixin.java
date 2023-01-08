@@ -46,7 +46,7 @@ public class MultipartUnbakedModelMixin {
 			locals = LocalCapture.CAPTURE_FAILSOFT,
 			cancellable = true
 	)
-	private void addPredicateInfo(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId, CallbackInfoReturnable<@Nullable BakedModel> cir, MultipartBakedModel.Builder builder) {
+	private void addPredicateInfo(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId, CallbackInfoReturnable<BakedModel> cir, MultipartBakedModel.Builder builder) {
 		ModelModule.MULTIPART_PREDICATES.visit(Cache.Status.SAVE, map -> {
 			var bakedModel = (MultipartBakedModel) builder.build();
 			var outSelectors = new ArrayList<MultipartModelSelector>();

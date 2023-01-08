@@ -2,8 +2,8 @@ package dev.notalpha.dashloader.mixin.option.cache.shader;
 
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.client.shader.ShaderModule;
-import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.resource.ResourceFactory;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,14 +16,14 @@ import java.util.HashMap;
 @Mixin(value = GameRenderer.class, priority = 69)
 public abstract class GameRendererMixin {
 	@Redirect(
-			method = "loadPrograms",
+			method = "loadShaders(Lnet/minecraft/resource/ResourceManager;)V",
 			at = @At(
 					value = "NEW",
-					target = "(Lnet/minecraft/resource/ResourceFactory;Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;)Lnet/minecraft/client/gl/ShaderProgram;"
+					target = "Lnet/minecraft/client/render/Shader;<init>"
 			)
 	)
-	private ShaderProgram shaderCreation(ResourceFactory factory, String name, VertexFormat format) throws IOException {
-		HashMap<String, ShaderProgram> shaders = ShaderModule.SHADERS.get(Cache.Status.LOAD);
+	private Shader shaderCreation(ResourceFactory factory, String name, VertexFormat format) throws IOException {
+		HashMap<String, Shader> shaders = ShaderModule.SHADERS.get(Cache.Status.LOAD);
 		if (shaders != null) {
 			// If we are reading from cache load the shader and check if its cached.
 			var shader = shaders.get(name);
@@ -33,7 +33,7 @@ public abstract class GameRendererMixin {
 			}
 		}
 
-		ShaderProgram shader = new ShaderProgram(factory, name, format);
+		Shader shader = new Shader(factory, name, format);
 		ShaderModule.SHADERS.visit(Cache.Status.SAVE, map -> map.put(name, shader));
 		return shader;
 	}

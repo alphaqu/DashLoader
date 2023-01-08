@@ -16,14 +16,18 @@ import dev.notalpha.dashloader.client.shader.DashShader;
 import dev.notalpha.dashloader.client.shader.DashVertexFormat;
 import dev.notalpha.dashloader.client.shader.ShaderModule;
 import dev.notalpha.dashloader.client.splash.SplashModule;
+import dev.notalpha.dashloader.client.sprite.DashAtlasData;
 import dev.notalpha.dashloader.client.sprite.DashImage;
 import dev.notalpha.dashloader.client.sprite.DashSprite;
 import dev.notalpha.dashloader.client.sprite.SpriteModule;
+import dev.quantumfusion.hyphen.thr.HyphenException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
+import net.minecraft.client.texture.MissingSprite;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 
@@ -41,7 +45,11 @@ public class DashLoaderClient implements DashEntrypoint {
 			entryPoint.onDashLoaderInit(cacheManagerFactory);
 		}
 
-		CACHE = cacheManagerFactory.build(Path.of("./dashloader-cache/client/"));
+		try {
+			CACHE = cacheManagerFactory.build(Path.of("./dashloader-cache/client/"));
+		} catch (HyphenException e) {
+			throw new RuntimeException(e.toString());
+		}
 	}
 
 	@Override
@@ -55,6 +63,7 @@ public class DashLoaderClient implements DashEntrypoint {
 		for (Class<?> aClass : new Class[]{
 				DashIdentifier.class,
 				DashModelIdentifier.class,
+				DashAtlasData.class,
 				DashBasicBakedModel.class,
 				DashBuiltinBakedModel.class,
 				DashMultipartBakedModel.class,
@@ -90,6 +99,16 @@ public class DashLoaderClient implements DashEntrypoint {
 					} else {
 						return new DashIdentifier(identifier);
 					}
+				}
+		));
+		handlers.add(new MissingHandler<>(
+				Sprite.class,
+				(sprite, registryWriter) -> {
+					if (sprite instanceof MissingSprite m) {
+						return new DashSprite(m, registryWriter);
+					}
+
+					return null;
 				}
 		));
 		handlers.add(new MissingHandler<>(

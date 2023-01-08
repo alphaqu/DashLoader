@@ -1,36 +1,40 @@
 package dev.notalpha.dashloader.client.font;
 
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.io.data.collection.IntIntList;
 import dev.notalpha.dashloader.misc.UnsafeHelper;
-import dev.notalpha.dashloader.mixin.accessor.FontImageAccessor;
 import dev.notalpha.dashloader.mixin.accessor.UnicodeTextureFontAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
-import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
-import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
-import net.minecraft.client.font.TrueTypeFont;
 import net.minecraft.client.font.UnicodeTextureFont;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.util.Identifier;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public final class DashUnicodeFont implements DashObject<UnicodeTextureFont> {
-
-
-	public final @DataNullable Integer @DataFixedArraySize(256) [] images;
 	public final byte[] sizes;
+	public final String template;
+	public final IntIntList images;
 
-	public DashUnicodeFont(Integer[] images, byte[] sizes) {
-		this.images = images;
+	public DashUnicodeFont(byte[] sizes, String template, IntIntList images) {
 		this.sizes = sizes;
+		this.template = template;
+		this.images = images;
 	}
 
 	public DashUnicodeFont(UnicodeTextureFont rawFont, RegistryWriter writer) {
-		this.images = new Integer[256];
+		this.images = new IntIntList();
 		UnicodeTextureFontAccessor font = ((UnicodeTextureFontAccessor) rawFont);
-		UnicodeTextureFont.FontImage[] fontImages = font.getFontImages();
-		for (int i = 0; i < fontImages.length; i++) {
-			UnicodeTextureFont.FontImage fontImage = fontImages[i];
-			this.images[i] = fontImage == null ? null : writer.add(((FontImageAccessor) fontImage).getImage());
-		}
+		font.getImages().forEach(
+				(identifier, nativeImage) -> {
+					this.images.put(writer.add(identifier), writer.add(nativeImage));
+				}
+		);
+
 		this.sizes = font.getSizes();
+		this.template = font.getTemplate();
 	}
 
 
@@ -38,14 +42,13 @@ public final class DashUnicodeFont implements DashObject<UnicodeTextureFont> {
 		UnicodeTextureFont font = UnsafeHelper.allocateInstance(UnicodeTextureFont.class);
 		UnicodeTextureFontAccessor accessor = ((UnicodeTextureFontAccessor) font);
 		accessor.setSizes(this.sizes);
-		UnicodeTextureFont.FontImage[] fontImages = new UnicodeTextureFont.FontImage[256];
+		accessor.setTemplate(this.template);
 
-
-		for (int i = 0; i < images.length; i++) {
-			Integer image = images[i];
-			fontImages[i] = image == null ? null : FontImageAccessor.create(this.sizes, handler.get(image));
-		}
-		accessor.setFontImages(fontImages);
+		Map<Identifier, NativeImage> images = new HashMap<>();
+		this.images.forEach((key, value) ->  {
+			images.put(handler.get(key), handler.get(value));
+		});
+		accessor.setImages(images);
 		return font;
 	}
 }

@@ -2,39 +2,42 @@ package dev.notalpha.dashloader.client.sprite;
 
 import dev.notalpha.dashloader.mixin.accessor.SpriteAnimationAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
-import net.minecraft.client.texture.SpriteContents;
-
+import dev.notalpha.dashloader.registry.RegistryWriter;
+import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.Sprite.AnimationFrame;
 
 public final class DashSpriteAnimation {
 	public final List<DashSpriteAnimationFrame> frames;
 	public final int frameCount;
-	public final boolean interpolation;
+	@DataNullable
+	public final DashSpriteInterpolation interpolation;
 
 	public DashSpriteAnimation(
 			List<DashSpriteAnimationFrame> frames,
 			int frameCount,
-			boolean interpolation) {
+			DashSpriteInterpolation interpolation) {
 		this.frames = frames;
 		this.frameCount = frameCount;
 		this.interpolation = interpolation;
 	}
 
 
-	public DashSpriteAnimation(SpriteContents.Animation animation) {
+	public DashSpriteAnimation(Sprite.Animation animation, RegistryWriter registry) {
 		SpriteAnimationAccessor access = ((SpriteAnimationAccessor) animation);
 		this.frames = new ArrayList<>();
 		for (var frame : access.getFrames()) {
 			this.frames.add(new DashSpriteAnimationFrame(frame));
 		}
 		this.frameCount = access.getFrameCount();
-		this.interpolation = access.getInterpolation();
+		this.interpolation = access.getInterpolation() == null ? null : new DashSpriteInterpolation(access.getInterpolation(), registry);
 	}
 
 
-	public SpriteContents.Animation export(SpriteContents owner, RegistryReader registry) {
-		var framesOut = new ArrayList<SpriteContents.AnimationFrame>();
+	public Sprite.Animation export(Sprite owner, RegistryReader registry) {
+		var framesOut = new ArrayList<AnimationFrame>();
 		for (var frame : this.frames) {
 			framesOut.add(frame.export(registry));
 		}
@@ -43,27 +46,7 @@ public final class DashSpriteAnimation {
 				owner,
 				framesOut,
 				this.frameCount,
-				this.interpolation
+				this.interpolation == null ? null : this.interpolation.export(owner, registry)
 		);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		DashSpriteAnimation that = (DashSpriteAnimation) o;
-
-		if (frameCount != that.frameCount) return false;
-		if (interpolation != that.interpolation) return false;
-		return frames.equals(that.frames);
-	}
-
-	@Override
-	public int hashCode() {
-		int result = frames.hashCode();
-		result = 31 * result + frameCount;
-		result = 31 * result + (interpolation ? 1 : 0);
-		return result;
 	}
 }

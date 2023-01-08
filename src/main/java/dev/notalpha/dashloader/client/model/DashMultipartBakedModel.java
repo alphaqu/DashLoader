@@ -2,29 +2,18 @@ package dev.notalpha.dashloader.client.model;
 
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.client.model.predicates.BooleanSelector;
-import dev.notalpha.dashloader.io.data.collection.IntObjectList;
-import dev.notalpha.dashloader.misc.UnsafeHelper;
-import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.notalpha.dashloader.mixin.accessor.MultipartBakedModelAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.dashloader.registry.RegistryWriter;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.MultipartBakedModel;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
-import net.minecraft.registry.Registries;
-import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 
 public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> {

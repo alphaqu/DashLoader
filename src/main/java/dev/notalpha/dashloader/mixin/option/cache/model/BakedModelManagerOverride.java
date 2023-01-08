@@ -5,6 +5,8 @@ import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.client.model.ModelModule;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,11 +23,11 @@ public abstract class BakedModelManagerOverride {
 	@Shadow
 	private Map<Identifier, BakedModel> models;
 
-	@Inject(method = "upload",
+	@Inject(method = "apply*",
 			at = @At(value = "TAIL")
 	)
 
-	private void yankAssets(BakedModelManager.BakingResult bakingResult, Profiler profiler, CallbackInfo ci) {
+	private void yankAssets(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
 		ModelModule.MODELS_SAVE.visit(Cache.Status.SAVE, map -> {
 			DashLoader.LOG.info("Yanking Minecraft Assets");
 			map.putAll(this.models);

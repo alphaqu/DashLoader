@@ -1,15 +1,15 @@
 package dev.notalpha.dashloader.mixin.accessor;
 
-import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.client.texture.Sprite;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(SpriteContents.AnimationFrame.class)
+@Mixin(Sprite.AnimationFrame.class)
 public interface SpriteAnimationFrameAccessor {
 
 	@Invoker("<init>")
-	static SpriteContents.AnimationFrame newSpriteFrame(int index, int time) {
+	static Sprite.AnimationFrame newSpriteFrame(int index, int time) {
 		throw new AssertionError();
 	}
 

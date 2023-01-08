@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.client.shader;
 
+import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.gl.ShaderProgram;
 
 public final class DashGlUniform {
 	public final int count;
@@ -24,7 +24,7 @@ public final class DashGlUniform {
 		this.loaded = loaded;
 	}
 
-	public GlUniform export(ShaderProgram shader) {
+	public GlUniform export(GlShader shader) {
 		return new GlUniform(this.name, this.dataType, this.count, shader);
 	}
 }

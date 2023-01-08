@@ -1,13 +1,12 @@
 package dev.notalpha.dashloader.mixin.accessor;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.gl.ShaderProgramSetupView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 @Mixin(GlUniform.class)
 public interface GlUniformAccessor {
@@ -34,5 +33,5 @@ public interface GlUniformAccessor {
 
 	@Accessor
 	@Mutable
-	void setProgram(ShaderProgramSetupView program);
+	void setProgram(GlShader program);
 }

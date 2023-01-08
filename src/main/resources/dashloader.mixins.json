@@ -11,7 +11,6 @@
     "accessor.BitmapFontAccessor",
     "accessor.BitmapFontGlyphAccessor",
     "accessor.BuiltinBakedModelAccessor",
-    "accessor.EffectShaderStageAccessor",
     "accessor.FontManagerAccessor",
     "accessor.FontStorageAccessor",
     "accessor.GlBlendStateAccessor",
@@ -32,7 +31,6 @@
     "accessor.SpriteAccessor",
     "accessor.SpriteAnimationAccessor",
     "accessor.SpriteAnimationFrameAccessor",
-    "accessor.SpriteLoaderStitchResultAccessor",
     "accessor.TrueTypeFontAccessor",
     "accessor.UnicodeTextureFontAccessor",
     "accessor.WeightedBakedModelAccessor",
@@ -54,7 +52,6 @@
     "option.cache.model.MultipartUnbakedModelMixin",
     "option.cache.shader.GameRendererMixin",
     "option.cache.shader.GlStateManagerMixin",
-    "option.cache.sprite.SpriteLoaderMixin",
     "option.misc.AffineTransformationMixin",
     "option.misc.ModelIdentifierMixin"
   ],
@@ -62,11 +59,15 @@
     "defaultRequire": 1
   },
   "client": [
-    "accessor.FontImageAccessor",
+    "accessor.MipmapHelperAccessor",
     "accessor.ModelIdentifierAccessor",
     "accessor.ShaderStageAccessor$TypeAccessor",
-    "accessor.SpriteContentsAccessor",
+    "accessor.SpriteAtlasTextureAccessor",
+    "accessor.SpriteAtlasTextureDataAccessor",
+    "accessor.SpriteInterpolationAccessor",
     "accessor.VertexFormatAccessor",
-    "option.misc.ModelLoaderBakedModelCacheKeyMixin"
+    "option.cache.sprite.SpriteAtlasTextureMixin",
+    "option.cache.sprite.SpriteInfoMixin",
+    "option.cache.sprite.SpriteInterpolationMixin"
   ]
 }

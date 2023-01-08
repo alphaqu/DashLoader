@@ -10,9 +10,9 @@ import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vector4f;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -90,12 +90,12 @@ public class DashToast implements Toast {
 		{
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			Vector4f vec = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
-			vec.mul(matrixStack.peek().getPositionMatrix());
+			vec.transform(matrixStack.peek().getPositionMatrix());
 			Window window = manager.getClient().getWindow();
 			double scale = window.getScaleFactor();
 			RenderSystem.enableScissor(
-					(int) (vec.x * scale),
-					(int) (window.getFramebufferHeight() - (vec.y * scale) - height * scale),
+					(int) (vec.getX() * scale),
+					(int) (window.getFramebufferHeight() - (vec.getY() * scale) - height * scale),
 					(int) (width * scale),
 					(int) (height * scale));
 		}
@@ -153,11 +153,11 @@ public class DashToast implements Toast {
 		RenderSystem.enableBlend();
 		RenderSystem.disableTexture();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		Matrix4f matrix = ms.peek().getPositionMatrix();
 		consumer.accept(matrix, bufferBuilder);
-		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+		BufferRenderer.drawWithShader(bufferBuilder.end());
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}

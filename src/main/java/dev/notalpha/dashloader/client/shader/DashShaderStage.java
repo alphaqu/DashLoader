@@ -3,24 +3,24 @@ package dev.notalpha.dashloader.client.shader;
 import com.mojang.blaze3d.platform.GlStateManager;
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.mixin.accessor.ShaderStageAccessor;
-import net.minecraft.client.gl.ShaderStage;
+import net.minecraft.client.gl.Program;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
 
 public final class DashShaderStage {
-	public final ShaderStage.Type shaderType;
+	public final Program.Type shaderType;
 	public final String name;
 	public final List<String> shader;
 
-	public DashShaderStage(ShaderStage.Type shaderType, String name, List<String> shader) {
+	public DashShaderStage(Program.Type shaderType, String name, List<String> shader) {
 		this.shaderType = shaderType;
 		this.name = name;
 		this.shader = shader;
 	}
 
-	public DashShaderStage(ShaderStage program) {
+	public DashShaderStage(Program program) {
 		ShaderStageAccessor access = (ShaderStageAccessor) program;
 		this.shaderType = access.getType();
 		this.name = program.getName();
@@ -31,7 +31,7 @@ public final class DashShaderStage {
 		this.shader = shader;
 	}
 
-	public int createProgram(ShaderStage.Type type) {
+	public int createProgram(Program.Type type) {
 		//noinspection ConstantConditions (MixinAccessor shit)
 		int i = GlStateManager.glCreateShader(((ShaderStageAccessor.TypeAccessor) (Object) type).getGlType());
 		GlStateManager.glShaderSource(i, this.shader);
@@ -44,11 +44,11 @@ public final class DashShaderStage {
 		}
 	}
 
-	public ShaderStage exportProgram() {
-		Map<String, ShaderStage> loadedShaders = this.shaderType.getLoadedShaders();
-		ShaderStage shaderStage = loadedShaders.get(this.name);
+	public Program exportProgram() {
+		Map<String, Program> loadedShaders = this.shaderType.getProgramCache();
+		Program shaderStage = loadedShaders.get(this.name);
 		if (shaderStage == null) {
-			final ShaderStage program = ShaderStageAccessor.create(this.shaderType, this.createProgram(this.shaderType), this.name);
+			final Program program = ShaderStageAccessor.create(this.shaderType, this.createProgram(this.shaderType), this.name);
 			loadedShaders.put(this.name, program);
 			shaderStage = program;
 		}

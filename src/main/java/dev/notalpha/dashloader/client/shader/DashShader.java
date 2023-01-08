@@ -11,11 +11,12 @@ import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.render.Shader;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public final class DashShader implements DashObject<ShaderProgram> {
+public final class DashShader implements DashObject<Shader> {
 	public final Map<String, Sampler> samplers;
 	public final String name;
 	public final DashGlBlendState blendState;
@@ -25,7 +26,7 @@ public final class DashShader implements DashObject<ShaderProgram> {
 	public final int format;
 	public final List<DashGlUniform> uniforms;
 	public final List<String> samplerNames;
-	public transient ShaderProgram toApply;
+	public transient Shader toApply;
 
 	public DashShader(Map<String, Sampler> samplers, String name, DashGlBlendState blendState, List<String> attributeNames, DashShaderStage vertexShader, DashShaderStage fragmentShader, int format, List<DashGlUniform> uniforms, List<String> samplerNames) {
 		this.samplers = samplers;
@@ -39,7 +40,7 @@ public final class DashShader implements DashObject<ShaderProgram> {
 		this.samplerNames = samplerNames;
 	}
 
-	public DashShader(ShaderProgram shader, RegistryWriter writer) {
+	public DashShader(Shader shader, RegistryWriter writer) {
 		ShaderProgramAccessor shaderAccess = (ShaderProgramAccessor) shader;
 
 		this.samplers = new LinkedHashMap<>();
@@ -61,8 +62,8 @@ public final class DashShader implements DashObject<ShaderProgram> {
 
 
 	@Override
-	public ShaderProgram export(RegistryReader reader) {
-		this.toApply = UnsafeHelper.allocateInstance(ShaderProgram.class);
+	public Shader export(RegistryReader reader) {
+		this.toApply = UnsafeHelper.allocateInstance(Shader.class);
 		ShaderProgramAccessor shaderAccess = (ShaderProgramAccessor) this.toApply;
 		//object init
 		shaderAccess.setLoadedSamplerIds(new ArrayList<>());
