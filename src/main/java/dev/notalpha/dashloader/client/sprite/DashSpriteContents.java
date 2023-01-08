@@ -20,15 +20,13 @@ public final class DashSpriteContents {
 
 	public final int width;
 	public final int height;
-	public final int mipMaps;
 
-	public DashSpriteContents(int id, int image, @Nullable DashSpriteAnimation animation, int width, int height, int mipMaps) {
+	public DashSpriteContents(int id, int image, @Nullable DashSpriteAnimation animation, int width, int height) {
 		this.id = id;
 		this.image = image;
 		this.animation = animation;
 		this.width = width;
 		this.height = height;
-		this.mipMaps = mipMaps;
 	}
 
 	public DashSpriteContents(SpriteContents contents, RegistryWriter writer) {
@@ -37,7 +35,6 @@ public final class DashSpriteContents {
 		this.image = writer.add(access.getImage());
 		this.width = contents.getWidth();
 		this.height = contents.getHeight();
-		this.mipMaps = access.getMipmapLevelsImages().length - 1;
 		SpriteContents.Animation animation = access.getAnimation();
 		this.animation = animation == null ? null : new DashSpriteAnimation(animation);
 	}
@@ -67,7 +64,6 @@ public final class DashSpriteContents {
 		if (image != that.image) return false;
 		if (width != that.width) return false;
 		if (height != that.height) return false;
-		if (mipMaps != that.mipMaps) return false;
 		return Objects.equals(animation, that.animation);
 	}
 
@@ -78,7 +74,6 @@ public final class DashSpriteContents {
 		result = 31 * result + (animation != null ? animation.hashCode() : 0);
 		result = 31 * result + width;
 		result = 31 * result + height;
-		result = 31 * result + mipMaps;
 		return result;
 	}
 }
