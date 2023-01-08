@@ -1,5 +1,6 @@
 package dev.notalpha.dashloader.misc;
 
+import net.minecraft.client.texture.NativeImage;
 import org.apache.commons.lang3.builder.MultilineRecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -27,11 +28,17 @@ public class ObjectDumper {
 					buffer.append("<id>");
 					return;
 				}
+				if (value instanceof NativeImage image) {
+					buffer.append("Image{ format: ").append(image.getFormat()).append(", size: ").append(image.getWidth()).append("x").append(image.getHeight()).append(" }");
+					return;
+				}
 
 				if (value instanceof IntBuffer) {
 					buffer.append("IntBuffer");
 					return;
-				} else if (value instanceof FloatBuffer) {
+				}
+
+				if (value instanceof FloatBuffer) {
 					buffer.append("FloatBuffer");
 					return;
 				}
