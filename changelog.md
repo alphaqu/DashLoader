@@ -1,6 +1,5 @@
 # Bug Fixes
-- Chests not rendering properly
+- 0x0 allocation error.
 
 # Internal improvements
-- (ObjectDumper): Fancy NativeImage printing
-- (ObjectDumper): Map sorting for easier comparison
+- Remove mipmap field in SpriteContents
