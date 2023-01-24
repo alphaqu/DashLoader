@@ -21,10 +21,7 @@ import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> {
@@ -65,7 +62,11 @@ public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> 
 			componentsOut.add(Pair.of(predicate, compModel));
 		});
 
-		return new MultipartBakedModel(componentsOut);
+		MultipartBakedModel multipartBakedModel = new MultipartBakedModel(componentsOut);
+		MultipartBakedModelAccessor access = (MultipartBakedModelAccessor) multipartBakedModel;
+		// Fixes race condition which strangely does not happen in vanilla a ton?
+		access.setStateCache(Collections.synchronizedMap(access.getStateCache()));
+		return multipartBakedModel;
 	}
 
 	public static final class Component {

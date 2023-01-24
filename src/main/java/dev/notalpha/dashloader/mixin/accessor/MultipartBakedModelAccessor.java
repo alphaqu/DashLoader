@@ -35,25 +35,5 @@ public interface MultipartBakedModelAccessor {
 
 	@Accessor
 	@Mutable
-	void setAmbientOcclusion(boolean ambientOcclusion);
-
-	@Accessor
-	@Mutable
-	void setDepthGui(boolean depthGui);
-
-	@Accessor
-	@Mutable
-	void setSideLit(boolean sideLit);
-
-	@Accessor
-	@Mutable
 	void setSprite(Sprite sprite);
-
-	@Accessor
-	@Mutable
-	void setTransformations(ModelTransformation transformations);
-
-	@Accessor
-	@Mutable
-	void setItemPropertyOverrides(ModelOverrideList itemPropertyOverrides);
 }
