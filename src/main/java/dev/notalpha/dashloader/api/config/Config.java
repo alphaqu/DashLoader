@@ -9,6 +9,7 @@ import java.util.Map;
 public class Config {
 	public Map<String, Boolean> options = new LinkedHashMap<>();
 	public byte compression = 3;
+	public int maxCaches = 5;
 	public List<String> customSplashLines = new ArrayList<>();
 	public boolean addDefaultSplashLines = true;
 	public boolean showCachingToast = true;
