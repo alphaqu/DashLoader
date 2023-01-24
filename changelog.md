@@ -1,5 +1,6 @@
 # Bug Fixes
-- 0x0 allocation error.
+- MultipartBakedModel race condition crash
 
-# Internal improvements
-- Remove mipmap field in SpriteContents
+# Features
+- Cache limit
+- Single threaded cache reading
