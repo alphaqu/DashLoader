@@ -12,5 +12,6 @@ public class Config {
 	public int maxCaches = 5;
 	public List<String> customSplashLines = new ArrayList<>();
 	public boolean addDefaultSplashLines = true;
+	public boolean singleThreadedReading = false;
 	public boolean showCachingToast = true;
 }

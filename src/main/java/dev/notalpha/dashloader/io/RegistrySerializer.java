@@ -3,6 +3,7 @@ package dev.notalpha.dashloader.io;
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.config.Config;
 import dev.notalpha.dashloader.api.config.ConfigHandler;
 import dev.notalpha.dashloader.io.data.CacheInfo;
 import dev.notalpha.dashloader.io.data.ChunkInfo;
@@ -187,7 +188,14 @@ public class RegistrySerializer {
 				}
 			});
 		}
-		ThreadHandler.INSTANCE.parallelRunnable(runnables);
+
+		if (ConfigHandler.INSTANCE.config.singleThreadedReading) {
+			for (Runnable runnable : runnables) {
+				runnable.run();
+			}
+		} else {
+			ThreadHandler.INSTANCE.parallelRunnable(runnables);
+		}
 
 		return out;
 	}
