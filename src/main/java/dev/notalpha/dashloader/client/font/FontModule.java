@@ -22,6 +22,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.stb.STBTTFontinfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ public class FontModule implements DashModule<FontModule.Data> {
 	@Override
 	public void reset(Cache cacheManager) {
 		DATA.reset(cacheManager, new Object2ObjectOpenHashMap<>());
+		FONT_TO_IDENT.reset(cacheManager, new HashMap<>());
 	}
 
 	@Override
