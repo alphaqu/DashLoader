@@ -217,7 +217,7 @@ public final class Cache {
 	public void setStatus(Status status) {
 		if (this.status != status) {
 			this.status = status;
-			DashLoader.LOG.info("\u001B[46m\u001B[30m DashLoader Status change {}\n\u001B[0m", status);
+			DashLoader.LOG.info("\u001B[46;30m DashLoader Status change {}\n\u001B[49;39m", status);
 			this.cacheHandlers.forEach(handler -> handler.reset(this));
 		}
 	}
