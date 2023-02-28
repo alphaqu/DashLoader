@@ -13,6 +13,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
+import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -64,7 +65,7 @@ public final class DashTrueTypeFont implements DashObject<TrueTypeFont> {
 	@Override
 	public TrueTypeFont export(RegistryReader handler) {
 		STBTTFontinfo sTBTTFontinfo = STBTTFontinfo.malloc();
-		ByteBuffer byteBuffer2 = ByteBuffer.allocateDirect(this.ttfBuffer.length);
+		ByteBuffer byteBuffer2 = MemoryUtil.memAlloc(this.ttfBuffer.length);
 		byteBuffer2.put(this.ttfBuffer);
 		byteBuffer2.flip();
 		if (!STBTruetype.stbtt_InitFont(sTBTTFontinfo, byteBuffer2)) {

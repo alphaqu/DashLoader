@@ -2,6 +2,7 @@ package dev.notalpha.dashloader.client.sprite;
 
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.io.def.DataUnsafeByteBuffer;
+import dev.notalpha.dashloader.io.def.NativeImageData;
 import dev.notalpha.dashloader.mixin.accessor.NativeImageAccessor;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import net.minecraft.client.texture.NativeImage;
@@ -10,8 +11,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.ByteBuffer;
 
 public final class DashImage implements DashObject<NativeImage> {
-	@DataUnsafeByteBuffer
-	public final ByteBuffer image;
+	public final NativeImageData image;
 	public final NativeImage.Format format;
 	public final boolean useSTB;
 	public final int width;
@@ -26,13 +26,14 @@ public final class DashImage implements DashObject<NativeImage> {
 		final int capacity = this.width * this.height * this.format.getChannelCount();
 		final long pointer = nativeImageAccess.getPointer();
 
+		this.useSTB = nativeImageAccess.getIsStbImage();
+
 		ByteBuffer image1 = MemoryUtil.memByteBuffer(pointer, capacity);
 		image1.limit(capacity);
-		this.image = image1;
-		this.useSTB = nativeImageAccess.getIsStbImage();
+		this.image = new NativeImageData(image1, this.useSTB);
 	}
 
-	public DashImage(ByteBuffer image, NativeImage.Format format, boolean useSTB, int width, int height) {
+	public DashImage(NativeImageData image, NativeImage.Format format, boolean useSTB, int width, int height) {
 		this.image = image;
 		this.format = format;
 		this.useSTB = useSTB;
@@ -48,8 +49,8 @@ public final class DashImage implements DashObject<NativeImage> {
 	 */
 	@Override
 	public NativeImage export(final RegistryReader registry) {
-		image.rewind();
-		long pointer = MemoryUtil.memAddress(image);
+		image.buffer.rewind();
+		long pointer = MemoryUtil.memAddress(image.buffer);
 		return NativeImageAccessor.init(this.format, this.width, this.height, this.useSTB, pointer);
 	}
 }

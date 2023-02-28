@@ -1,7 +1,8 @@
 package dev.notalpha.dashloader.io;
 
 import dev.notalpha.dashloader.api.config.ConfigHandler;
-import dev.notalpha.dashloader.io.def.UnsafeByteBufferDef;
+import dev.notalpha.dashloader.io.def.NativeImageData;
+import dev.notalpha.dashloader.io.def.NativeImageDataDef;
 import dev.notalpha.dashloader.registry.data.ChunkData;
 import dev.quantumfusion.hyphen.HyphenSerializer;
 import dev.quantumfusion.hyphen.SerializerFactory;
@@ -11,7 +12,6 @@ import dev.quantumfusion.taski.builtin.StepTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.file.Path;
 
 public class Serializer<O> {
@@ -21,7 +21,7 @@ public class Serializer<O> {
 		var factory = SerializerFactory.createDebug(ByteBufferIO.class, aClass);
 		factory.addGlobalAnnotation(ChunkData.class, DataSubclasses.class, new Class[]{ChunkData.class});
 		factory.setClassName(getSerializerClassName(aClass));
-		factory.addDynamicDef(ByteBuffer.class, UnsafeByteBufferDef::new);
+		factory.addDynamicDef(NativeImageData.class, (clazz, serializerHandler) -> new NativeImageDataDef(serializerHandler, clazz));
 		this.serializer = factory.build();
 	}
 
