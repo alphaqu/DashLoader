@@ -136,6 +136,16 @@ tasks.register("getVersion") {
 }
 
 publishing {
+    repositories {
+        maven {
+            name = "notalpha"
+            url = "https://notalpha.dev/maven/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
     publications {
         maven(MavenPublication) {
             from components.java
