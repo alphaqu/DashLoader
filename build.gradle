@@ -25,7 +25,7 @@ repositories {
         url 'https://jitpack.io'
     }
     maven {
-        url 'https://quantumfusion.dev/maven'
+        url 'https://notalpha.dev/maven'
     }
 }
 
@@ -42,8 +42,8 @@ dependencies {
     // TODO jákob if you need modmenu uncomment this and in gradle.properties - !alpha
     // modImplementation "com.terraformersmc:modmenu:$project.modmenu_version"
 
-    implementation "dev.quantumfusion:Hyphen:0.4.0-rc.2"
-    include "dev.quantumfusion:Hyphen:0.4.0-rc.2"
+    implementation "dev.quantumfusion:Hyphen:0.4.0-rc.3"
+    include "dev.quantumfusion:Hyphen:0.4.0-rc.3"
 
     implementation "dev.quantumfusion:Taski:2.1.0"
     include "dev.quantumfusion:Taski:2.1.0"
