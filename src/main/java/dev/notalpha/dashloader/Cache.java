@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -105,6 +106,7 @@ public final class Cache {
 							DashLoader.LOG.error("Could not remove cache {}", oldestPath);
 						}
 					}
+				} catch (NoSuchFileException ignored) {
 				} catch (IOException io) {
 					DashLoader.LOG.error("Could not enforce maximum cache ", io);
 				}
