@@ -1,5 +1,6 @@
 package dev.notalpha.dashloader.client.shader;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.mixin.accessor.ShaderStageAccessor;
@@ -33,25 +34,21 @@ public final class DashShaderStage {
 
 	public int createProgram(ShaderStage.Type type) {
 		//noinspection ConstantConditions (MixinAccessor shit)
-		int i = GlStateManager.glCreateShader(((ShaderStageAccessor.TypeAccessor) (Object) type).getGlType());
-		GlStateManager.glShaderSource(i, this.shader);
-		GlStateManager.glCompileShader(i);
-		if (GlStateManager.glGetShaderi(i, 35713) == 0) {
-			String string2 = StringUtils.trim(GlStateManager.glGetShaderInfoLog(i, 32768));
-			throw new RuntimeException("Couldn't compile " + type.getName() + " : " + string2);
+		int id = GlStateManager.glCreateShader(((ShaderStageAccessor.TypeAccessor) (Object) type).getGlType());
+		GlStateManager.glShaderSource(id, this.shader);
+		GlStateManager.glCompileShader(id);
+		if (GlStateManager.glGetShaderi(id, GlConst.GL_COMPILE_STATUS) == 0) {
+			String errorString = StringUtils.trim(GlStateManager.glGetShaderInfoLog(id, 32768));
+			throw new RuntimeException("Couldn't compile " + type.getName() + " : " + errorString);
 		} else {
-			return i;
+			return id;
 		}
 	}
 
 	public ShaderStage exportProgram() {
 		Map<String, ShaderStage> loadedShaders = this.shaderType.getLoadedShaders();
-		ShaderStage shaderStage = loadedShaders.get(this.name);
-		if (shaderStage == null) {
-			final ShaderStage program = ShaderStageAccessor.create(this.shaderType, this.createProgram(this.shaderType), this.name);
-			loadedShaders.put(this.name, program);
-			shaderStage = program;
-		}
-		return shaderStage;
+		final ShaderStage program = ShaderStageAccessor.create(this.shaderType, this.createProgram(this.shaderType), this.name);
+		loadedShaders.put(this.name, program);
+		return program;
 	}
 }
