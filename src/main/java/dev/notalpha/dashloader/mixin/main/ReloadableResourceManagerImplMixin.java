@@ -26,14 +26,13 @@ public class ReloadableResourceManagerImplMixin {
 		ProfilerUtil.RELOAD_START = System.currentTimeMillis();
 		ResourcePackManager manager = MinecraftClient.getInstance().getResourcePackManager();
 		List<String> values = new ArrayList<>();
-		for (String enabledName : manager.getEnabledNames()) {
-			ResourcePackProfile profile = manager.getProfile(enabledName);
+
+		for (ResourcePackProfile profile : manager.getEnabledProfiles()) {
 			if (profile != null) {
 				values.add(profile.getName() + "N" + profile.getDisplayName().getString() + "D" + profile.getDescription().getString());
 			}
 		}
 
-		values.sort(String::compareTo);
 		DashLoaderClient.CACHE.setHash(DigestUtils.md5Hex(values.toString()).toUpperCase());
 		DashLoaderClient.CACHE.start();
 	}
