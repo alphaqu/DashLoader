@@ -11,18 +11,15 @@ import java.nio.IntBuffer;
 
 @Mixin(GlUniform.class)
 public interface GlUniformAccessor {
-
-	@Accessor
-	@Mutable
-	void setCount(int count);
-
-	@Accessor
-	@Mutable
-	void setDataType(int dataType);
-
 	@Accessor
 	@Mutable
 	void setIntData(IntBuffer intData);
+
+	@Accessor
+	IntBuffer getIntData();
+
+	@Accessor
+	FloatBuffer getFloatData();
 
 	@Accessor
 	@Mutable
@@ -31,8 +28,4 @@ public interface GlUniformAccessor {
 	@Accessor
 	@Mutable
 	void setName(String name);
-
-	@Accessor
-	@Mutable
-	void setProgram(ShaderProgramSetupView program);
 }

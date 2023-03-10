@@ -20,6 +20,9 @@ import java.nio.file.StandardOpenOption;
 public class IOHelper {
 
 	public static int[] toArray(IntBuffer buffer) {
+		if (buffer == null) {
+			return null;
+		}
 		buffer.rewind();
 		int[] foo = new int[buffer.remaining()];
 		buffer.get(foo);
@@ -27,6 +30,10 @@ public class IOHelper {
 	}
 
 	public static float[] toArray(FloatBuffer buffer) {
+		if (buffer == null) {
+			return null;
+		}
+
 		buffer.rewind();
 		float[] foo = new float[buffer.remaining()];
 		buffer.get(foo);
@@ -34,6 +41,10 @@ public class IOHelper {
 	}
 
 	public static IntBuffer fromArray(int[] arr) {
+		if (arr == null) {
+			return null;
+		}
+
 		var buffer = MemoryUtil.memAllocInt(arr.length);
 		buffer.put(arr);
 		buffer.rewind();
@@ -41,6 +52,10 @@ public class IOHelper {
 	}
 
 	public static FloatBuffer fromArray(float[] arr) {
+		if (arr == null) {
+			return null;
+		}
+
 		var buffer = MemoryUtil.memAllocFloat(arr.length);
 		buffer.put(arr);
 		buffer.rewind();
