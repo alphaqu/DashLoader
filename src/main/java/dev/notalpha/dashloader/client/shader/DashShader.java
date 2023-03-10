@@ -1,5 +1,6 @@
 package dev.notalpha.dashloader.client.shader;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.UnmodifiableIterator;
 import com.mojang.blaze3d.platform.GlStateManager;
 import dev.notalpha.dashloader.api.DashObject;
@@ -12,6 +13,8 @@ import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.gl.ShaderStage;
+import net.minecraft.util.JsonHelper;
 
 import java.util.*;
 
@@ -66,10 +69,10 @@ public final class DashShader implements DashObject<ShaderProgram> {
 		ShaderProgramAccessor shaderAccess = (ShaderProgramAccessor) this.toApply;
 		//object init
 		shaderAccess.setLoadedSamplerIds(new ArrayList<>());
-		shaderAccess.setLoadedUniformIds(new ArrayList<>());List<Integer> loadedAttributeIds = new ArrayList<>();
-		shaderAccess.setLoadedAttributeIds(loadedAttributeIds);
+		shaderAccess.setLoadedUniformIds(new ArrayList<>());
+		shaderAccess.setLoadedAttributeIds(new ArrayList<>());
 
-		shaderAccess.setSamplerNames(this.samplerNames);
+		shaderAccess.setSamplerNames(new ArrayList<>(this.samplerNames));
 
 		//<init> top
 		shaderAccess.setName(this.name);
@@ -82,7 +85,7 @@ public final class DashShader implements DashObject<ShaderProgram> {
 		shaderAccess.setSamplers(samplersOut);
 
 		// JsonHelper.getArray(jsonObject, "attributes", (JsonArray)null);
-		shaderAccess.setAttributeNames(this.attributeNames);
+		shaderAccess.setAttributeNames(new ArrayList<>(this.attributeNames));
 
 		final ArrayList<GlUniform> uniforms = new ArrayList<>();
 		shaderAccess.setUniforms(uniforms);
@@ -129,13 +132,12 @@ public final class DashShader implements DashObject<ShaderProgram> {
 		final int programId = GlStateManager.glCreateProgram();
 		shaderAccess.setGlRef(programId);
 
-
 		if (this.attributeNames != null) {
-			int l = 0;
-			for (UnmodifiableIterator<String> var35 = this.toApply.getFormat().getAttributeNames().iterator(); var35.hasNext(); ++l) {
-				String string3 = var35.next();
-				GlUniform.bindAttribLocation(programId, l, string3);
-				loadedAttributeIds.add(l);
+			ImmutableList<String> names = this.toApply.getFormat().getAttributeNames();
+			for (int i = 0; i < names.size(); i++) {
+				String attributeName = names.get(i);
+				GlUniform.bindAttribLocation(programId, i, attributeName);
+				loadedAttributeIds.add(i);
 			}
 		}
 		GlProgramManager.linkProgram(this.toApply);
