@@ -28,7 +28,6 @@ public abstract class GameRendererMixin {
 			// If we are reading from cache load the shader and check if its cached.
 			var shader = shaders.get(name);
 			if (shader != null) {
-				// Loads OpenGL shader.
 				return shader;
 			}
 		}
