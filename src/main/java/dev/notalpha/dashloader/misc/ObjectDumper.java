@@ -19,7 +19,6 @@ public class ObjectDumper {
 			setFieldNameValueSeparator(": ");
 			setUseIdentityHashCode(false);
 			setUseShortClassName(true);
-
 		}
 
 		public void appendDetail(StringBuffer buffer, String fieldName, Object value) {
@@ -33,15 +32,43 @@ public class ObjectDumper {
 					return;
 				}
 
-				if (value instanceof IntBuffer) {
-					buffer.append("IntBuffer");
+				if (value instanceof IntBuffer buffer1) {
+					buffer.append("IntBuffer [");
+					int limit = buffer1.limit();
+					if (limit < 50) {
+						buffer1.rewind();
+						for (int i = 0; i < limit; i++) {
+							float v = buffer1.get();
+							buffer.append(v);
+							buffer.append(", ");
+						}
+					}
+					buffer.append("]");
 					return;
 				}
 
-				if (value instanceof FloatBuffer) {
-					buffer.append("FloatBuffer");
+				if (value instanceof FloatBuffer buffer1) {
+					buffer.append("FloatBuffer [");
+					int limit = buffer1.limit();
+					if (limit < 50) {
+						buffer1.rewind();
+						for (int i = 0; i < limit; i++) {
+							float v = buffer1.get();
+							buffer.append(v);
+							buffer.append(", ");
+						}
+					}
+					buffer.append("]");
 					return;
 				}
+
+				if (value instanceof Enum<?> enumValue) {
+					buffer.append(enumValue.name());
+					return;
+				}
+			} else {
+				buffer.append("null");
+				return;
 			}
 
 			try {
@@ -51,6 +78,8 @@ public class ObjectDumper {
 				String result = s.split("@")[0];
 				buffer.append(result);
 			} catch (Exception e) {
+				e.printStackTrace();
+
 				buffer.append("unknown");
 				try {
 					Field spaces = MultilineRecursiveToStringStyle.class.getDeclaredField("spaces");
@@ -80,16 +109,6 @@ public class ObjectDumper {
 		protected void appendIdentityHashCode(StringBuffer buffer, Object object) {
 
 
-		}
-	}
-
-	public static class Hi {
-		public Hi hello;
-		private final int value;
-
-		public Hi(Hi hello, int value) {
-			this.hello = hello;
-			this.value = value;
 		}
 	}
 }
