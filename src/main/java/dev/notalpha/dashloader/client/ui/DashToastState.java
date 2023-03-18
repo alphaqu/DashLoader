@@ -21,7 +21,7 @@ public final class DashToastState {
 
 
 	public DashToastState() {
-		var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
+		var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage();
 		DashLoader.LOG.info(langCode);
 		var stream = this.getClass().getClassLoader().getResourceAsStream("dashloader/lang/" + langCode + ".json");
 		this.translations = new HashMap<>();

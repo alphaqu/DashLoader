@@ -3,6 +3,7 @@ package dev.notalpha.dashloader.client.ui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.notalpha.dashloader.misc.HahaManager;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
@@ -29,6 +30,7 @@ public class DashToast implements Toast {
 	private final String fact = HahaManager.getFact();
 	private long oldTime = System.currentTimeMillis();
 	public final DashToastState state;
+
 	private static void drawVertex(Matrix4f m4f, BufferBuilder bb, float z, float x, float y, Color color) {
 		bb.vertex(m4f, x, y, z).color(color.red(), color.green(), color.blue(), color.alpha()).next();
 	}
@@ -85,9 +87,8 @@ public class DashToast implements Toast {
 
 		// Setup scissor
 		{
-			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			Vector4f vec = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
-			vec.mul(matrixStack.peek().getPositionMatrix());
+			vec.mul(matrices.peek().getPositionMatrix());
 			Window window = manager.getClient().getWindow();
 			double scale = window.getScaleFactor();
 			RenderSystem.enableScissor(
@@ -148,14 +149,12 @@ public class DashToast implements Toast {
 	private void drawBatched(MatrixStack ms, BiConsumer<Matrix4f, BufferBuilder> consumer) {
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		RenderSystem.enableBlend();
-		RenderSystem.disableTexture();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		Matrix4f matrix = ms.peek().getPositionMatrix();
 		consumer.accept(matrix, bufferBuilder);
 		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}
 

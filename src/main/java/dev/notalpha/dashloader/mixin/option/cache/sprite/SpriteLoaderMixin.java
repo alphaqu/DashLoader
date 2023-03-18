@@ -21,7 +21,7 @@ public final class SpriteLoaderMixin {
 	@Shadow @Final private Identifier id;
 
 	@Inject(
-			method = "method_47661",
+			method = "load(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/Identifier;ILjava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;",
 			at = @At(value = "RETURN"),
 			cancellable = true
 	)
@@ -36,7 +36,7 @@ public final class SpriteLoaderMixin {
 	}
 
 	@Inject(
-			method = "method_47661",
+			method = "load(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/Identifier;ILjava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;",
 			at = @At(value = "HEAD"),
 			cancellable = true
 	)

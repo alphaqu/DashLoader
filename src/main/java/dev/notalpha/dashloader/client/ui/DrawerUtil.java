@@ -29,7 +29,7 @@ public class DrawerUtil {
 	public static void drawRect(MatrixStack matrixStack, int x, int y, int width, int height, Color color) {
 		final int x2 = width + x;
 		final int y2 = height + y;
-		DrawableHelper.fill(matrixStack, x, y, x2, y2, convertColor(color));
+		DrawableHelper.fill(matrixStack, x, y, x2, y2, color.argb());
 	}
 
 	public static void drawText(MatrixStack matrixStack, TextRenderer textRenderer, int x, int y, String text, Color color) {

@@ -1,5 +1,7 @@
 package dev.notalpha.dashloader.client.ui;
 
+import net.minecraft.client.gui.DrawableHelper;
+
 public class Color {
 	private final int rgba;
 
@@ -16,15 +18,15 @@ public class Color {
 	}
 
 	public int red() {
-		return (rgba >> 24) & 0xFF;
+		return (rgba >>> 24) & 0xFF;
 	}
 
 	public int green() {
-		return (rgba >> 16) & 0xFF;
+		return (rgba >>> 16) & 0xFF;
 	}
 
 	public int blue() {
-		return (rgba >> 8) & 0xFF;
+		return (rgba >>> 8) & 0xFF;
 	}
 
 	public int alpha() {
@@ -32,7 +34,7 @@ public class Color {
 	}
 
 	public int rgb() {
-		return rgba >> 8;
+		return rgba >>> 8;
 	}
 
 	public int rgba() {
