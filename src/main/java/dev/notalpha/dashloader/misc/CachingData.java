@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public class OptionData<D> {
+public class CachingData<D> {
 	@Nullable
 	private D data;
 
@@ -18,12 +18,12 @@ public class OptionData<D> {
 	@Nullable
 	private final Cache.Status onlyOn;
 
-	public OptionData(@Nullable Cache.Status onlyOn) {
+	public CachingData(@Nullable Cache.Status onlyOn) {
 		this.data = null;
 		this.onlyOn = onlyOn;
 	}
 
-	public OptionData() {
+	public CachingData() {
 		this(null);
 	}
 

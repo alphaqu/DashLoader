@@ -7,7 +7,7 @@ import dev.notalpha.dashloader.api.config.ConfigHandler;
 import dev.notalpha.dashloader.api.config.Option;
 import dev.notalpha.dashloader.client.model.fallback.UnbakedBakedModel;
 import dev.notalpha.dashloader.io.data.collection.IntIntList;
-import dev.notalpha.dashloader.misc.OptionData;
+import dev.notalpha.dashloader.misc.CachingData;
 import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.notalpha.dashloader.registry.RegistryAddException;
 import dev.notalpha.dashloader.registry.RegistryFactory;
@@ -28,10 +28,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class ModelModule implements DashModule<ModelModule.Data> {
-	public static final OptionData<HashMap<Identifier, BakedModel>> MODELS_SAVE = new OptionData<>(Cache.Status.SAVE);
-	public static final OptionData<HashMap<Identifier, UnbakedBakedModel>> MODELS_LOAD = new OptionData<>(Cache.Status.LOAD);
-	public static final OptionData<HashMap<BlockState, Identifier>> MISSING_READ = new OptionData<>();
-	public static final OptionData<HashMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>>> MULTIPART_PREDICATES = new OptionData<>(Cache.Status.SAVE);
+	public static final CachingData<HashMap<Identifier, BakedModel>> MODELS_SAVE = new CachingData<>(Cache.Status.SAVE);
+	public static final CachingData<HashMap<Identifier, UnbakedBakedModel>> MODELS_LOAD = new CachingData<>(Cache.Status.LOAD);
+	public static final CachingData<HashMap<BlockState, Identifier>> MISSING_READ = new CachingData<>();
+	public static final CachingData<HashMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>>> MULTIPART_PREDICATES = new CachingData<>(Cache.Status.SAVE);
 	@Override
 	public void reset(Cache cacheManager) {
 		MODELS_SAVE.reset(cacheManager, new HashMap<>());

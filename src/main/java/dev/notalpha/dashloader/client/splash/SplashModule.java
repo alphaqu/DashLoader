@@ -4,7 +4,7 @@ import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.api.DashModule;
 import dev.notalpha.dashloader.api.config.ConfigHandler;
 import dev.notalpha.dashloader.api.config.Option;
-import dev.notalpha.dashloader.misc.OptionData;
+import dev.notalpha.dashloader.misc.CachingData;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -14,7 +14,7 @@ import java.util.List;
 
 
 public class SplashModule implements DashModule<SplashModule.Data> {
-	public static final OptionData<List<String>> TEXTS = new OptionData<>();
+	public static final CachingData<List<String>> TEXTS = new CachingData<>();
 
 	@Override
 	public void reset(Cache cacheManager) {

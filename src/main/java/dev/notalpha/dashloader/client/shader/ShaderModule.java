@@ -5,7 +5,7 @@ import dev.notalpha.dashloader.api.DashModule;
 import dev.notalpha.dashloader.api.config.ConfigHandler;
 import dev.notalpha.dashloader.api.config.Option;
 import dev.notalpha.dashloader.io.data.collection.ObjectIntList;
-import dev.notalpha.dashloader.misc.OptionData;
+import dev.notalpha.dashloader.misc.CachingData;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -19,8 +19,8 @@ import java.util.Map;
 
 
 public class ShaderModule implements DashModule<ShaderModule.Data> {
-	public static final OptionData<HashMap<String, ShaderProgram>> SHADERS = new OptionData<>();
-	public static final OptionData<Int2ObjectMap<List<String>>> WRITE_PROGRAM_SOURCES = new OptionData<>(Cache.Status.SAVE);
+	public static final CachingData<HashMap<String, ShaderProgram>> SHADERS = new CachingData<>();
+	public static final CachingData<Int2ObjectMap<List<String>>> WRITE_PROGRAM_SOURCES = new CachingData<>(Cache.Status.SAVE);
 
 	@Override
 	public void reset(Cache cacheManager) {

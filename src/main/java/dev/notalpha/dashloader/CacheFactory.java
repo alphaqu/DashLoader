@@ -12,12 +12,12 @@ import java.util.List;
 public class CacheFactory {
 	private static final Logger LOGGER = LogManager.getLogger("CacherFactory");
 	private final List<DashObjectClass<?, ?>> dashObjects;
-	private final List<DashModule<?>> cacheHandlers;
+	private final List<DashModule<?>> modules;
 	private boolean failed = false;
 
 	public CacheFactory() {
 		this.dashObjects = new ArrayList<>();
-		this.cacheHandlers = new ArrayList<>();
+		this.modules = new ArrayList<>();
 	}
 
 	public void addDashObject(Class<?> dashClass) {
@@ -30,8 +30,8 @@ public class CacheFactory {
 		this.dashObjects.add(new DashObjectClass<>(dashClass));
 	}
 
-	public void addCacheHandler(DashModule<?> handler) {
-		this.cacheHandlers.add(handler);
+	public void addModule(DashModule<?> handler) {
+		this.modules.add(handler);
 	}
 
 	public Cache build(Path cacheDir) {
@@ -41,14 +41,14 @@ public class CacheFactory {
 
 		// Set dashobject ids
 		this.dashObjects.sort(Comparator.comparing(o -> o.getDashClass().getName()));
-		this.cacheHandlers.sort(Comparator.comparing(o -> o.getDataClass().getName()));
+		this.modules.sort(Comparator.comparing(o -> o.getDataClass().getName()));
 		List<DashObjectClass<?, ?>> objects = this.dashObjects;
 		for (int i = 0; i < objects.size(); i++) {
 			DashObjectClass<?, ?> dashObject = objects.get(i);
 			dashObject.dashObjectId = i;
 		}
 
-		return new Cache(cacheDir.resolve(DashLoader.MOD_HASH + "/"), cacheHandlers, dashObjects);
+		return new Cache(cacheDir.resolve(DashLoader.MOD_HASH + "/"), modules, dashObjects);
 
 	}
 }

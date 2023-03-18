@@ -46,11 +46,11 @@ public class DashLoaderClient implements DashEntrypoint {
 
 	@Override
 	public void onDashLoaderInit(CacheFactory factory) {
-		factory.addCacheHandler(new FontModule());
-		factory.addCacheHandler(new ModelModule());
-		factory.addCacheHandler(new ShaderModule());
-		factory.addCacheHandler(new SplashModule());
-		factory.addCacheHandler(new SpriteModule());
+		factory.addModule(new FontModule());
+		factory.addModule(new ModelModule());
+		factory.addModule(new ShaderModule());
+		factory.addModule(new SplashModule());
+		factory.addModule(new SpriteModule());
 
 		for (Class<?> aClass : new Class[]{
 				DashIdentifier.class,
