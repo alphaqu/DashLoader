@@ -1,7 +1,6 @@
 package dev.notalpha.dashloader.client.ui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.misc.HahaManager;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.*;
@@ -14,12 +13,10 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class DashToast implements Toast {
 	private static final int PROGRESS_BAR_HEIGHT = 2;
@@ -33,7 +30,7 @@ public class DashToast implements Toast {
 	private long oldTime = System.currentTimeMillis();
 	public final DashToastState state;
 	private static void drawVertex(Matrix4f m4f, BufferBuilder bb, float z, float x, float y, Color color) {
-		bb.vertex(m4f, x, y, z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
+		bb.vertex(m4f, x, y, z).color(color.red(), color.green(), color.blue(), color.alpha()).next();
 	}
 
 	public int getWidth() {
@@ -178,7 +175,7 @@ public class DashToast implements Toast {
 			this.width = DashToast.this.random.nextInt(30, 50);
 			this.height = DashToast.this.random.nextInt(2, 5);
 			this.colorKind = ColorKind.Neutral;
-			this.color = Color.red;
+			this.color = new Color(0xFF0000FF);
 		}
 
 		public boolean tick(int screenWidth, int screenHeight, float progress, float delta) {

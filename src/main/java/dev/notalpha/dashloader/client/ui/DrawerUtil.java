@@ -1,6 +1,5 @@
 package dev.notalpha.dashloader.client.ui;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
@@ -8,9 +7,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 
-import java.awt.*;
-import java.util.Calendar;
-import java.util.Date;
 
 public class DrawerUtil {
 	public static final float GLOW_SIZE = 30f;
@@ -37,11 +33,11 @@ public class DrawerUtil {
 	}
 
 	public static void drawText(MatrixStack matrixStack, TextRenderer textRenderer, int x, int y, String text, Color color) {
-		DrawableHelper.drawTextWithShadow(matrixStack, textRenderer, Text.of(text), x, y - (textRenderer.fontHeight), color.getRGB() | 0xff000000);
+		DrawableHelper.drawTextWithShadow(matrixStack, textRenderer, Text.of(text), x, y - (textRenderer.fontHeight), color.argb());
 	}
 
 	private static void drawVertex(Matrix4f m4f, BufferBuilder bb, float x, float y, Color color) {
-		bb.vertex(m4f, x, y, 0f).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
+		bb.vertex(m4f, x, y, 0f).color(color.red(), color.green(), color.blue(), color.alpha()).next();
 	}
 	public static void drawGlow(Matrix4f b4, BufferBuilder bb, float x, float y, float width, float height, float strength, Color color, boolean topLeft, boolean topRight, boolean bottomLeft, boolean bottomRight) {
 		Color end = withOpacity(color, 0);
@@ -52,10 +48,10 @@ public class DrawerUtil {
 		Color bl = bottomLeft ? glow : end;
 		Color br = bottomRight ? glow : end;
 
-		Color tlEnd = new Color(tl.getRed(), tl.getGreen(), tl.getBlue(), 0);
-		Color trEnd = new Color(tr.getRed(), tr.getGreen(), tr.getBlue(), 0);
-		Color blEnd = new Color(bl.getRed(), bl.getGreen(), bl.getBlue(), 0);
-		Color brEnd = new Color(br.getRed(), br.getGreen(), br.getBlue(), 0);
+		Color tlEnd = new Color(tl.red(), tl.green(), tl.blue(), 0);
+		Color trEnd = new Color(tr.red(), tr.green(), tr.blue(), 0);
+		Color blEnd = new Color(bl.red(), bl.green(), bl.blue(), 0);
+		Color brEnd = new Color(br.red(), br.green(), br.blue(), 0);
 
 		float x2 = x + width;
 		float y2 = y + height;
@@ -115,12 +111,12 @@ public class DrawerUtil {
 		drawVertex(b4, bb,  x - GLOW_SIZE, y, tlEnd); // left top
 	}
 	public static int convertColor(Color color) {
-		return color.getRGB() | color.getAlpha() << 24;
+		return color.rgb() | color.alpha() << 24;
 	}
 
 	public static Color withOpacity(Color color, float opacity) {
-		float currentOpacity = color.getAlpha() / 255f;
-		return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) ((opacity * currentOpacity) * 255));
+		float currentOpacity = color.alpha() / 255f;
+		return new Color(color.red(), color.green(), color.blue(), (int) ((opacity * currentOpacity) * 255));
 	}
 
 
@@ -151,10 +147,10 @@ public class DrawerUtil {
 		}
 		double iRatio = 1.0f - ratio;
 
-		int a = (int) ((i1.getAlpha() * iRatio) + (i2.getAlpha() * ratio));
-		int r = (int) ((i1.getRed() * iRatio) + (i2.getRed() * ratio));
-		int g = (int) ((i1.getGreen() * iRatio) + (i2.getGreen() * ratio));
-		int b = (int) ((i1.getBlue() * iRatio) + (i2.getBlue() * ratio));
+		int a = (int) ((i1.alpha() * iRatio) + (i2.alpha() * ratio));
+		int r = (int) ((i1.red() * iRatio) + (i2.red() * ratio));
+		int g = (int) ((i1.green() * iRatio) + (i2.green() * ratio));
+		int b = (int) ((i1.blue() * iRatio) + (i2.blue() * ratio));
 
 		return new Color(r, g, b, a);
 	}
