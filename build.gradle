@@ -3,7 +3,7 @@ plugins {
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id "com.modrinth.minotaur" version "2.+"
 
-    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'fabric-loom' version '1.1-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -25,7 +25,7 @@ repositories {
         url 'https://jitpack.io'
     }
     maven {
-        url 'https://notalpha.dev/maven'
+        url 'https://notalpha.dev/maven/releases/'
     }
 }
 
@@ -48,10 +48,10 @@ dependencies {
     implementation "dev.quantumfusion:Taski:2.1.0"
     include "dev.quantumfusion:Taski:2.1.0"
 
-    implementation 'com.github.luben:zstd-jni:1.5.2-2'
-    include 'com.github.luben:zstd-jni:1.5.2-2'
+    implementation 'com.github.luben:zstd-jni:1.5.4-2'
+    include 'com.github.luben:zstd-jni:1.5.4-2'
 
-    modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.69.1+1.19.3");
+    modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.76.0+1.19.3");
 }
 
 test {
