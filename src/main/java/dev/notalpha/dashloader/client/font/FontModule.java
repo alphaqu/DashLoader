@@ -5,7 +5,7 @@ import dev.notalpha.dashloader.api.DashModule;
 import dev.notalpha.dashloader.api.config.ConfigHandler;
 import dev.notalpha.dashloader.api.config.Option;
 import dev.notalpha.dashloader.io.data.collection.IntObjectList;
-import dev.notalpha.dashloader.misc.OptionData;
+import dev.notalpha.dashloader.misc.CachingData;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -28,8 +28,8 @@ import java.util.Map;
 
 public class FontModule implements DashModule<FontModule.Data> {
 	public static FontManager FONTMANAGER;
-	public static final OptionData<Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>>> DATA = new OptionData<>();
-	public static final OptionData<Map<STBTTFontinfo, Identifier>> FONT_TO_IDENT = new OptionData<>();
+	public static final CachingData<Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>>> DATA = new CachingData<>();
+	public static final CachingData<Map<STBTTFontinfo, Identifier>> FONT_TO_IDENT = new CachingData<>();
 
 	@Override
 	public void reset(Cache cacheManager) {

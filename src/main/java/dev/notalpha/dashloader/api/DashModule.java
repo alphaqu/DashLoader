@@ -14,7 +14,9 @@ public interface DashModule<M> {
 
 	Class<M> getDataClass();
 
-	boolean isActive();
+	default boolean isActive() {
+		return true;
+	}
 
 	default float taskWeight() {
 		return 100;
