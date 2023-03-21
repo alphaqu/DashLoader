@@ -1,7 +1,5 @@
 package dev.notalpha.dashloader.api.cache;
 
-import dev.notalpha.dashloader.api.cache.CacheStatus;
-import dev.notalpha.dashloader.api.cache.DashCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

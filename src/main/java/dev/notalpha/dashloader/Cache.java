@@ -1,20 +1,18 @@
 package dev.notalpha.dashloader;
 
-import dev.notalpha.dashloader.api.*;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.api.cache.DashCache;
 import dev.notalpha.dashloader.api.cache.DashModule;
-import dev.notalpha.dashloader.api.cache.MissingHandler;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.MappingSerializer;
 import dev.notalpha.dashloader.io.RegistrySerializer;
 import dev.notalpha.dashloader.io.data.CacheInfo;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
+import dev.notalpha.dashloader.registry.MissingHandler;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReaderImpl;
 import dev.notalpha.dashloader.registry.data.StageData;
 import dev.quantumfusion.taski.builtin.StepTask;
-import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +22,6 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -38,15 +35,17 @@ public final class Cache implements DashCache {
 	// DashLoader metadata
 	private final List<DashModule<?>> cacheHandlers;
 	private final List<DashObjectClass<?, ?>> dashObjects;
+	private final List<MissingHandler<?>> missingHandlers;
 
 	// Serializers
 	private final RegistrySerializer registrySerializer;
 	private final MappingSerializer mappingsSerializer;
 
-	Cache(Path cacheDir, List<DashModule<?>> cacheHandlers, List<DashObjectClass<?, ?>> dashObjects) {
+	Cache(Path cacheDir, List<DashModule<?>> cacheHandlers, List<DashObjectClass<?, ?>> dashObjects, List<MissingHandler<?>> missingHandlers) {
 		this.cacheDir = cacheDir;
 		this.cacheHandlers = cacheHandlers;
 		this.dashObjects = dashObjects;
+		this.missingHandlers = missingHandlers;
 		this.registrySerializer = new RegistrySerializer(dashObjects);
 		this.mappingsSerializer = new MappingSerializer(cacheHandlers);
 	}
@@ -120,12 +119,7 @@ public final class Cache implements DashCache {
 				taskConsumer.accept(main);
 			}
 
-			// Setup handlers
-			List<MissingHandler<?>> handlers = new ArrayList<>();
-			for (DashEntrypoint entryPoint : FabricLoader.getInstance().getEntrypoints("dashloader", DashEntrypoint.class)) {
-				entryPoint.onDashLoaderSave(handlers);
-			}
-			RegistryFactory factory = RegistryFactory.create(handlers, dashObjects);
+			RegistryFactory factory = RegistryFactory.create(missingHandlers, dashObjects);
 
 			// Mappings
 			mappingsSerializer.save(ourDir, factory, cacheHandlers, main);

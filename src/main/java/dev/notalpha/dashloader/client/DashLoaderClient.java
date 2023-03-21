@@ -3,7 +3,8 @@ package dev.notalpha.dashloader.client;
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.CacheFactory;
 import dev.notalpha.dashloader.api.DashEntrypoint;
-import dev.notalpha.dashloader.api.cache.MissingHandler;
+import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.cache.DashCacheFactory;
 import dev.notalpha.dashloader.client.blockstate.DashBlockState;
 import dev.notalpha.dashloader.client.font.*;
 import dev.notalpha.dashloader.client.identifier.DashIdentifier;
@@ -45,14 +46,14 @@ public class DashLoaderClient implements DashEntrypoint {
 	}
 
 	@Override
-	public void onDashLoaderInit(CacheFactory factory) {
+	public void onDashLoaderInit(DashCacheFactory factory) {
 		factory.addModule(new FontModule());
 		factory.addModule(new ModelModule());
 		factory.addModule(new ShaderModule());
 		factory.addModule(new SplashModule());
 		factory.addModule(new SpriteModule());
 
-		for (Class<?> aClass : new Class[]{
+		for (Class<? extends DashObject<?>> aClass : new Class[]{
 				DashIdentifier.class,
 				DashModelIdentifier.class,
 				DashBasicBakedModel.class,
@@ -78,11 +79,7 @@ public class DashLoaderClient implements DashEntrypoint {
 		}) {
 			factory.addDashObject(aClass);
 		}
-	}
-
-	@Override
-	public void onDashLoaderSave(List<MissingHandler<?>> handlers) {
-		handlers.add(new MissingHandler<>(
+		factory.addMissingHandler(
 				Identifier.class,
 				(identifier, registryWriter) -> {
 					if (identifier instanceof ModelIdentifier m) {
@@ -91,8 +88,8 @@ public class DashLoaderClient implements DashEntrypoint {
 						return new DashIdentifier(identifier);
 					}
 				}
-		));
-		handlers.add(new MissingHandler<>(
+		);
+		factory.addMissingHandler(
 				MultipartModelSelector.class,
 				(selector, writer) -> {
 					if (selector == MultipartModelSelector.TRUE) {
@@ -111,6 +108,6 @@ public class DashLoaderClient implements DashEntrypoint {
 						throw new RuntimeException("someone is having fun with lambda selectors again");
 					}
 				}
-		));
+		);
 	}
 }

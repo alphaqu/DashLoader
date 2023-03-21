@@ -1,12 +1,7 @@
 package dev.notalpha.dashloader.api;
 
-import dev.notalpha.dashloader.CacheFactory;
-import dev.notalpha.dashloader.api.cache.MissingHandler;
-
-import java.util.List;
+import dev.notalpha.dashloader.api.cache.DashCacheFactory;
 
 public interface DashEntrypoint {
-	void onDashLoaderInit(CacheFactory factory);
-
-	void onDashLoaderSave(List<MissingHandler<?>> handlers);
+	void onDashLoaderInit(DashCacheFactory factory);
 }

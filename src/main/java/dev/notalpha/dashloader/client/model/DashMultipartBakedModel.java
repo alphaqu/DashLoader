@@ -1,9 +1,9 @@
 package dev.notalpha.dashloader.client.model;
 
-import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.RegistryReader;
 import dev.notalpha.dashloader.api.RegistryWriter;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.mixin.accessor.MultipartBakedModelAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;

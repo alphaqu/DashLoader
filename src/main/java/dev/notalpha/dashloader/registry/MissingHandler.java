@@ -1,11 +1,11 @@
-package dev.notalpha.dashloader.api.cache;
+package dev.notalpha.dashloader.registry;
 
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.RegistryWriter;
 
 import java.util.function.BiFunction;
 
-public class MissingHandler<R> {
+public final class MissingHandler<R> {
 	public final Class<R> parentClass;
 	public final BiFunction<R, RegistryWriter, DashObject<?>> func;
 

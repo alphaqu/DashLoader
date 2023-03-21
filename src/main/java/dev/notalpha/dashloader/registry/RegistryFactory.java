@@ -2,7 +2,6 @@ package dev.notalpha.dashloader.registry;
 
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.cache.MissingHandler;
 import dev.notalpha.dashloader.api.RegistryWriter;
 import dev.notalpha.dashloader.misc.RegistryUtil;
 import dev.notalpha.dashloader.registry.data.ChunkData;

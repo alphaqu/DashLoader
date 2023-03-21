@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.client.font;
 
-import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.RegistryReader;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.io.IOHelper;
 import dev.notalpha.dashloader.misc.UnsafeHelper;
 import dev.notalpha.dashloader.mixin.accessor.TrueTypeFontAccessor;

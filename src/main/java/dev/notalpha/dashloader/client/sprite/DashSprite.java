@@ -1,9 +1,9 @@
 package dev.notalpha.dashloader.client.sprite;
 
-import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.RegistryReader;
 import dev.notalpha.dashloader.api.RegistryWriter;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.mixin.accessor.SpriteAccessor;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteLoader;

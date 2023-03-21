@@ -1,9 +1,9 @@
 package dev.notalpha.dashloader.io;
 
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.api.cache.DashModule;
 import dev.notalpha.dashloader.api.RegistryReader;
 import dev.notalpha.dashloader.api.RegistryWriter;
+import dev.notalpha.dashloader.api.cache.DashModule;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import dev.quantumfusion.taski.Task;

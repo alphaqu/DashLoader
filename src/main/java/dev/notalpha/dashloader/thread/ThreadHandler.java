@@ -4,12 +4,9 @@ import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.registry.RegistryReaderImpl;
 import dev.notalpha.dashloader.registry.data.ChunkData;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.IntFunction;
 
 public final class ThreadHandler {
 	public static final int THREADS = Runtime.getRuntime().availableProcessors();
