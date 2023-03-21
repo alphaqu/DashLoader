@@ -1,14 +1,13 @@
-package dev.notalpha.dashloader.api;
+package dev.notalpha.dashloader.api.cache;
 
-import dev.notalpha.dashloader.Cache;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.RegistryReader;
+import dev.notalpha.dashloader.api.RegistryWriter;
 import dev.quantumfusion.taski.builtin.StepTask;
 
 public interface DashModule<M> {
-	void reset(Cache cacheManager);
+	void reset(DashCache cacheManager);
 
-	M save(RegistryFactory writer, StepTask task);
+	M save(RegistryWriter writer, StepTask task);
 
 	void load(M mappings, RegistryReader reader, StepTask task);
 

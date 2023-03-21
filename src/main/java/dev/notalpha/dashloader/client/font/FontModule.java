@@ -1,13 +1,13 @@
 package dev.notalpha.dashloader.client.font;
 
-import dev.notalpha.dashloader.Cache;
-import dev.notalpha.dashloader.api.DashModule;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
-import dev.notalpha.dashloader.api.config.Option;
-import dev.notalpha.dashloader.io.data.collection.IntObjectList;
-import dev.notalpha.dashloader.misc.CachingData;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.*;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
+import dev.notalpha.dashloader.api.cache.DashCache;
+import dev.notalpha.dashloader.api.cache.DashModule;
+import dev.notalpha.dashloader.config.ConfigHandler;
+import dev.notalpha.dashloader.config.Option;
+import dev.notalpha.dashloader.api.collection.IntObjectList;
+import dev.notalpha.dashloader.api.cache.CachingData;
 import dev.quantumfusion.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -32,15 +32,15 @@ public class FontModule implements DashModule<FontModule.Data> {
 	public static final CachingData<Map<STBTTFontinfo, Identifier>> FONT_TO_IDENT = new CachingData<>();
 
 	@Override
-	public void reset(Cache cacheManager) {
+	public void reset(DashCache cacheManager) {
 		DATA.reset(cacheManager, new Object2ObjectOpenHashMap<>());
 		FONT_TO_IDENT.reset(cacheManager, new HashMap<>());
 	}
 
 	@Override
-	public Data save(RegistryFactory writer, StepTask task) {
+	public Data save(RegistryWriter writer, StepTask task) {
 		var fontMap = new IntObjectList<DashFontStorage>();
-		Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> identifierPairObject2ObjectMap = DATA.get(Cache.Status.SAVE);
+		Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> identifierPairObject2ObjectMap = DATA.get(CacheStatus.SAVE);
 		identifierPairObject2ObjectMap.forEach((identifier, fontList) -> {
 			List<Integer> fontsOut = new ArrayList<>();
 			for (Font font : fontList.getValue()) {
@@ -67,7 +67,7 @@ public class FontModule implements DashModule<FontModule.Data> {
 			out.put(reader.get(key), Pair.of(charactersByWidth, fontsOut));
 		});
 
-		DATA.set(Cache.Status.LOAD, out);
+		DATA.set(CacheStatus.LOAD, out);
 	}
 
 	@Override

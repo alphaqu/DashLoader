@@ -1,6 +1,7 @@
-package dev.notalpha.dashloader.api;
+package dev.notalpha.dashloader.api.cache;
 
-import dev.notalpha.dashloader.registry.RegistryWriter;
+import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.RegistryWriter;
 
 import java.util.function.BiFunction;
 

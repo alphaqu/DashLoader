@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.client.font;
 
+import dev.notalpha.dashloader.api.RegistryReader;
+import dev.notalpha.dashloader.api.RegistryWriter;
 import dev.notalpha.dashloader.mixin.accessor.BitmapFontGlyphAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.client.font.BitmapFont;
 
 public final class DashBitmapFontGlyph {

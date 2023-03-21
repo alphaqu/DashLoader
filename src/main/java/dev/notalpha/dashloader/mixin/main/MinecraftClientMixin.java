@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.mixin.main;
 
-import dev.notalpha.dashloader.Cache;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,8 +27,8 @@ public abstract class MinecraftClientMixin {
 	private void reloadComplete(boolean thing, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
 		cir.getReturnValue().thenRun(() -> {
 			// Reset the manager
-			if (DashLoaderClient.CACHE.getStatus() == Cache.Status.LOAD) {
-				DashLoaderClient.CACHE.setStatus(Cache.Status.IDLE);
+			if (DashLoaderClient.CACHE.getStatus() == CacheStatus.LOAD) {
+				DashLoaderClient.CACHE.setStatus(CacheStatus.IDLE);
 			}
 		});
 	}

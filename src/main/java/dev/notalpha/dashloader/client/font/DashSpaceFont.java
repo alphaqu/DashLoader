@@ -1,11 +1,9 @@
 package dev.notalpha.dashloader.client.font;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.RegistryReader;
 import it.unimi.dsi.fastutil.ints.Int2FloatArrayMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import net.minecraft.client.font.BlankFont;
-import net.minecraft.client.font.Font;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.SpaceFont;
 

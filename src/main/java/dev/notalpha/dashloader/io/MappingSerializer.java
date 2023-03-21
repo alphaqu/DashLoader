@@ -1,10 +1,10 @@
 package dev.notalpha.dashloader.io;
 
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.api.DashModule;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.cache.DashModule;
+import dev.notalpha.dashloader.api.RegistryReader;
+import dev.notalpha.dashloader.api.RegistryWriter;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
@@ -31,7 +31,7 @@ public class MappingSerializer {
 
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void save(Path dir, RegistryFactory factory, List<DashModule<?>> handlers, StepTask parent) {
+	public void save(Path dir, RegistryWriter writer, List<DashModule<?>> handlers, StepTask parent) {
 		List<WeightedStageTask.WeightedStage> tasks = new ArrayList<>();
 		for (DashModule<?> value : handlers) {
 			tasks.add(new WeightedStageTask.WeightedStage(value.taskWeight(), new StepTask(value.getDataClass().getSimpleName(), 1)));
@@ -45,7 +45,7 @@ public class MappingSerializer {
 		for (DashModule<?> handler : handlers) {
 			Task task = stageTask.getStages().get(i).task;
 			if (handler.isActive()) {
-				Object object = handler.save(factory, (StepTask) task);
+				Object object = handler.save(writer, (StepTask) task);
 				Class<?> dataClass = handler.getDataClass();
 				if (object.getClass() != dataClass) {
 					throw new RuntimeException("Handler DataClass does not match the output of saveMappings on " + handler.getClass());

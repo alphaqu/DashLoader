@@ -2,13 +2,12 @@ package dev.notalpha.dashloader.client.shader;
 
 import com.google.common.collect.ImmutableMap;
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.RegistryReader;
 import dev.notalpha.dashloader.mixin.accessor.VertexFormatAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormatElement;
 import net.minecraft.client.render.VertexFormats;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;

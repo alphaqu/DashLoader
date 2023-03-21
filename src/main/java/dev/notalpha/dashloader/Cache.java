@@ -1,15 +1,17 @@
 package dev.notalpha.dashloader;
 
-import dev.notalpha.dashloader.api.DashEntrypoint;
-import dev.notalpha.dashloader.api.DashModule;
-import dev.notalpha.dashloader.api.MissingHandler;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
+import dev.notalpha.dashloader.api.*;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
+import dev.notalpha.dashloader.api.cache.DashCache;
+import dev.notalpha.dashloader.api.cache.DashModule;
+import dev.notalpha.dashloader.api.cache.MissingHandler;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.MappingSerializer;
 import dev.notalpha.dashloader.io.RegistrySerializer;
 import dev.notalpha.dashloader.io.data.CacheInfo;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
 import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.registry.RegistryReaderImpl;
 import dev.notalpha.dashloader.registry.data.StageData;
 import dev.quantumfusion.taski.builtin.StepTask;
 import net.fabricmc.loader.api.FabricLoader;
@@ -25,12 +27,11 @@ import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class Cache {
+public final class Cache implements DashCache {
 	private static final String METADATA_FILE_NAME = "metadata.bin";
-	private Status status;
+	private CacheStatus status;
 	private String hash;
 	private final Path cacheDir;
 
@@ -52,17 +53,17 @@ public final class Cache {
 
 	public void start() {
 		if (this.exists()) {
-			this.setStatus(Cache.Status.LOAD);
+			this.setStatus(CacheStatus.LOAD);
 			this.load();
 		} else {
-			this.setStatus(Cache.Status.SAVE);
+			this.setStatus(CacheStatus.SAVE);
 		}
 	}
 
 	public boolean save(@Nullable Consumer<StepTask> taskConsumer) {
 		DashLoader.LOG.info("Starting DashLoader Caching");
 		try {
-			if (status != Status.SAVE) {
+			if (status != CacheStatus.SAVE) {
 				throw new RuntimeException("Status is not SAVE");
 			}
 
@@ -146,14 +147,14 @@ public final class Cache {
 			return true;
 		} catch (Throwable thr) {
 			DashLoader.LOG.error("Failed caching", thr);
-			this.setStatus(Status.SAVE);
+			this.setStatus(CacheStatus.SAVE);
 			this.clear();
 			return false;
 		}
 	}
 
 	public void load() {
-		this.status = Status.LOAD;
+		this.status = CacheStatus.LOAD;
 		long start = System.currentTimeMillis();
 		try {
 			StepTask task = new StepTask("Loading DashCache", 3);
@@ -165,7 +166,7 @@ public final class Cache {
 
 			// File reading
 			StageData[] stageData = registrySerializer.deserialize(cacheDir, info, dashObjects);
-			RegistryReader reader = new RegistryReader(info, stageData);
+			RegistryReaderImpl reader = new RegistryReaderImpl(info, stageData);
 
 			// Exporting assets
 			task.run(() -> {
@@ -174,7 +175,7 @@ public final class Cache {
 
 			// Loading mappings
 			if (!mappingsSerializer.load(cacheDir, reader, cacheHandlers)) {
-				this.setStatus(Status.SAVE);
+				this.setStatus(CacheStatus.SAVE);
 				this.clear();
 				return;
 			}
@@ -182,7 +183,7 @@ public final class Cache {
 			DashLoader.LOG.info("Loaded cache in {}", ProfilerUtil.getTimeStringFromStart(start));
 		} catch (Exception e) {
 			DashLoader.LOG.error("Summoned CrashLoader in {}", ProfilerUtil.getTimeStringFromStart(start), e);
-			this.setStatus(Status.SAVE);
+			this.setStatus(CacheStatus.SAVE);
 			this.clear();
 		}
 	}
@@ -212,11 +213,7 @@ public final class Cache {
 	}
 
 
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
+	public void setStatus(CacheStatus status) {
 		if (this.status != status) {
 			this.status = status;
 			DashLoader.LOG.info("\u001B[46m\u001B[30m DashLoader Status change {}\n\u001B[0m", status);
@@ -224,20 +221,7 @@ public final class Cache {
 		}
 	}
 
-	public enum Status {
-		/**
-		 * Idle
-		 */
-		IDLE,
-		/**
-		 * The cache manager is in the process of loading a cache.
-		 */
-		LOAD,
-		/**
-		 * The cache manager is creating a cache.
-		 */
-		SAVE,
+	public CacheStatus getStatus() {
+		return status;
 	}
-
-
 }

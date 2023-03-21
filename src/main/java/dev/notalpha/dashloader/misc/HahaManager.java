@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.misc;
 
-import dev.notalpha.dashloader.api.config.ConfigHandler;
-import dev.notalpha.dashloader.api.config.Config;
+import dev.notalpha.dashloader.config.Config;
+import dev.notalpha.dashloader.config.ConfigHandler;
 
 import java.util.ArrayList;
 import java.util.List;

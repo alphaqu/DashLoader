@@ -3,7 +3,7 @@ package dev.notalpha.dashloader.client;
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.CacheFactory;
 import dev.notalpha.dashloader.api.DashEntrypoint;
-import dev.notalpha.dashloader.api.MissingHandler;
+import dev.notalpha.dashloader.api.cache.MissingHandler;
 import dev.notalpha.dashloader.client.blockstate.DashBlockState;
 import dev.notalpha.dashloader.client.font.*;
 import dev.notalpha.dashloader.client.identifier.DashIdentifier;

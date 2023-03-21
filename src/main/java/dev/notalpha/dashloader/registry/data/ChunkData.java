@@ -2,7 +2,7 @@ package dev.notalpha.dashloader.registry.data;
 
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.registry.RegistryReaderImpl;
 import dev.notalpha.dashloader.thread.ThreadHandler;
 
 public class ChunkData<R, D extends DashObject<R>> {
@@ -18,17 +18,17 @@ public class ChunkData<R, D extends DashObject<R>> {
 		this.dashables = dashables;
 	}
 
-	public void preExport(RegistryReader reader) {
+	public void preExport(RegistryReaderImpl reader) {
 		for (Entry<D> entry : this.dashables) {
 			entry.data.preExport(reader);
 		}
 	}
 
-	public void export(Object[] data, RegistryReader registry) {
+	public void export(Object[] data, RegistryReaderImpl registry) {
 		ThreadHandler.INSTANCE.parallelExport(this.dashables, data, registry);
 	}
 
-	public void postExport(RegistryReader reader) {
+	public void postExport(RegistryReaderImpl reader) {
 		for (Entry<D> entry : this.dashables) {
 			entry.data.postExport(reader);
 		}

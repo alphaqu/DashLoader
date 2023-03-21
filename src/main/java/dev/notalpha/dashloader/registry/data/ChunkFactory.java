@@ -2,10 +2,10 @@ package dev.notalpha.dashloader.registry.data;
 
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.RegistryWriter;
 import dev.notalpha.dashloader.misc.RegistryUtil;
 import dev.notalpha.dashloader.registry.FactoryBinding;
 import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 

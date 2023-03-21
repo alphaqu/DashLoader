@@ -1,7 +1,5 @@
 package dev.notalpha.dashloader.api;
 
-import dev.notalpha.dashloader.registry.RegistryReader;
-
 /**
  * The Exportable interface is the interface to implement when adding DashLoader cache support to a registry object.
  *

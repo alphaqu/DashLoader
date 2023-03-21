@@ -2,11 +2,9 @@ package dev.notalpha.dashloader.client.identifier;
 
 
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.RegistryReader;
 import dev.notalpha.dashloader.mixin.accessor.ModelIdentifierAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.util.Identifier;
 
 public final class DashModelIdentifier implements DashObject<ModelIdentifier> {
 	public final String namespace;

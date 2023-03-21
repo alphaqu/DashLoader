@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.mixin.option.cache.model;
 
-import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.model.ModelModule;
 import dev.notalpha.dashloader.client.model.fallback.UnbakedBakedModel;
 import net.minecraft.block.BlockState;
@@ -22,11 +22,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
-
-import static net.minecraft.client.render.model.ModelLoader.MISSING_ID;
 
 @Mixin(value = ModelLoader.class, priority = 69420)
 public abstract class ModelLoaderMixin {
@@ -49,7 +49,7 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=static_definitions", shift = At.Shift.AFTER)
 	)
 	private void injectLoadedModels(BlockColors blockColors, Profiler profiler, Map<Identifier, JsonUnbakedModel> jsonUnbakedModels, Map<Identifier, List<ModelLoader.SourceTrackedData>> blockStates, CallbackInfo ci) {
-		ModelModule.MODELS_LOAD.visit(Cache.Status.LOAD, dashModels -> {
+		ModelModule.MODELS_LOAD.visit(CacheStatus.LOAD, dashModels -> {
 			DashLoader.LOG.info("Injecting {} Cached Models", dashModels.size());
 			Map<Identifier, UnbakedModel> oldUnbakedModels = this.unbakedModels;
 			Map<Identifier, UnbakedModel> oldModelsToBake = this.modelsToBake;
@@ -71,7 +71,7 @@ public abstract class ModelLoaderMixin {
 			at = @At(value = "INVOKE", target = "Ljava/util/Iterator;hasNext()Z", ordinal = 0)
 	)
 	private boolean loadMissingModels(Iterator instance) {
-		var map = ModelModule.MISSING_READ.get(Cache.Status.LOAD);
+		var map = ModelModule.MISSING_READ.get(CacheStatus.LOAD);
 		if (map != null) {
 			for (BlockState blockState : map.keySet()) {
 				// load thing lambda
@@ -90,7 +90,7 @@ public abstract class ModelLoaderMixin {
 			)
 	)
 	private void countModels(BiFunction<Identifier, SpriteIdentifier, Sprite> spriteLoader, CallbackInfo ci) {
-		if (ModelModule.MODELS_LOAD.active(Cache.Status.LOAD)) {
+		if (ModelModule.MODELS_LOAD.active(CacheStatus.LOAD)) {
 			// Cache stats
 			int cachedModels = 0;
 			int fallbackModels = 0;

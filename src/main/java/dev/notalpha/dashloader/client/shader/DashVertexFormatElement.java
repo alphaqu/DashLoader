@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.client.shader;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.RegistryReader;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.VertexFormatElement;
 import net.minecraft.client.render.VertexFormats;

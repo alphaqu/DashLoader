@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.mixin.option.cache.font;
 
-import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.font.FontModule;
 import dev.notalpha.dashloader.mixin.accessor.FontManagerAccessor;
 import dev.notalpha.dashloader.mixin.accessor.FontStorageAccessor;
@@ -34,7 +34,7 @@ public class FontManagerOverride {
 			cancellable = true
 	)
 	private void overridePrepare(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<Map<Identifier, List<Font>>> cir) {
-		FontModule.DATA.visit(Cache.Status.LOAD, data -> {
+		FontModule.DATA.visit(CacheStatus.LOAD, data -> {
 			DashLoader.LOG.info("Preparing fonts");
 			Map<Identifier, List<Font>> out = new Object2ObjectOpenHashMap<>();
 			data.forEach(
@@ -51,7 +51,7 @@ public class FontManagerOverride {
 			cancellable = true
 	)
 	private void overrideApply(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		FontModule.DATA.visit(Cache.Status.LOAD, data -> {
+		FontModule.DATA.visit(CacheStatus.LOAD, data -> {
 			profiler.startTick();
 			profiler.push("closing");
 			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) FontModule.FONTMANAGER;
@@ -87,7 +87,7 @@ public class FontManagerOverride {
 	@SuppressWarnings("UnresolvedMixinReference")
 	@Inject(method = {"method_18635", "apply*"}, at = @At(value = "TAIL"))
 	private void applyInject(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		FontModule.DATA.visit(Cache.Status.SAVE, data -> {
+		FontModule.DATA.visit(CacheStatus.SAVE, data -> {
 			data.clear();
 			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) FontModule.FONTMANAGER;
 			final Map<Identifier, FontStorage> fontStorages = fontManagerAccessor.getFontStorages();

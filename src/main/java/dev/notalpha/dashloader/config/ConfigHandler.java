@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.api.config;
+package dev.notalpha.dashloader.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

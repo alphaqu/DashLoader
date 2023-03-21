@@ -2,7 +2,7 @@ package dev.notalpha.dashloader.client.shader;
 
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
-import dev.notalpha.dashloader.Cache;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.mixin.accessor.ShaderStageAccessor;
 import net.minecraft.client.gl.ShaderStage;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ public final class DashShaderStage {
 		ShaderStageAccessor access = (ShaderStageAccessor) program;
 		this.shaderType = access.getType();
 		this.name = program.getName();
-		List<String> shader = ShaderModule.WRITE_PROGRAM_SOURCES.get(Cache.Status.SAVE).get(access.getGlRef());
+		List<String> shader = ShaderModule.WRITE_PROGRAM_SOURCES.get(CacheStatus.SAVE).get(access.getGlRef());
 		if (shader == null) {
 			throw new RuntimeException();
 		}

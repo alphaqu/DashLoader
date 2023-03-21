@@ -1,10 +1,10 @@
 package dev.notalpha.dashloader.client.font;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.io.data.collection.IntObjectList;
+import dev.notalpha.dashloader.api.RegistryReader;
+import dev.notalpha.dashloader.api.RegistryWriter;
+import dev.notalpha.dashloader.api.collection.IntObjectList;
 import dev.notalpha.dashloader.mixin.accessor.BitmapFontAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.client.font.BitmapFont;
 

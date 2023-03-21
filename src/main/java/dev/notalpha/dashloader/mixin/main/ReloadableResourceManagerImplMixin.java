@@ -1,6 +1,5 @@
 package dev.notalpha.dashloader.mixin.main;
 
-import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
 import net.minecraft.client.MinecraftClient;

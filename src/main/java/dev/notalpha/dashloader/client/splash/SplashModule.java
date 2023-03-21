@@ -1,12 +1,12 @@
 package dev.notalpha.dashloader.client.splash;
 
-import dev.notalpha.dashloader.Cache;
-import dev.notalpha.dashloader.api.DashModule;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
-import dev.notalpha.dashloader.api.config.Option;
-import dev.notalpha.dashloader.misc.CachingData;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.*;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
+import dev.notalpha.dashloader.api.cache.DashCache;
+import dev.notalpha.dashloader.api.cache.DashModule;
+import dev.notalpha.dashloader.config.ConfigHandler;
+import dev.notalpha.dashloader.config.Option;
+import dev.notalpha.dashloader.api.cache.CachingData;
 import dev.quantumfusion.taski.builtin.StepTask;
 
 import java.util.ArrayList;
@@ -17,18 +17,18 @@ public class SplashModule implements DashModule<SplashModule.Data> {
 	public static final CachingData<List<String>> TEXTS = new CachingData<>();
 
 	@Override
-	public void reset(Cache cacheManager) {
+	public void reset(DashCache cacheManager) {
 		TEXTS.reset(cacheManager, new ArrayList<>());
 	}
 
 	@Override
-	public Data save(RegistryFactory writer, StepTask task) {
-		return new Data(TEXTS.get(Cache.Status.SAVE));
+	public Data save(RegistryWriter writer, StepTask task) {
+		return new Data(TEXTS.get(CacheStatus.SAVE));
 	}
 
 	@Override
 	public void load(Data mappings, RegistryReader reader, StepTask task) {
-		TEXTS.set(Cache.Status.LOAD, mappings.splashList);
+		TEXTS.set(CacheStatus.LOAD, mappings.splashList);
 	}
 
 	@Override

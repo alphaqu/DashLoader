@@ -1,11 +1,7 @@
 package dev.notalpha.dashloader.client.model.predicates;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.json.MultipartModelSelector;
-
-import java.util.function.Predicate;
+import dev.notalpha.dashloader.api.RegistryReader;
 
 public final class DashStaticPredicate implements DashObject<BooleanSelector> {
 	public final boolean value;

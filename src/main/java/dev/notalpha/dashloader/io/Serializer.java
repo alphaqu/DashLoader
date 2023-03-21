@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.io;
 
-import dev.notalpha.dashloader.api.config.ConfigHandler;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.def.NativeImageData;
 import dev.notalpha.dashloader.io.def.NativeImageDataDef;
 import dev.notalpha.dashloader.registry.data.ChunkData;

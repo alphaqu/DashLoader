@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.io.data.collection;
+package dev.notalpha.dashloader.api.collection;
 
 import java.util.ArrayList;
 import java.util.List;

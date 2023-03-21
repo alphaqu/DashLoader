@@ -1,13 +1,13 @@
 package dev.notalpha.dashloader.client.sprite;
 
-import dev.notalpha.dashloader.Cache;
-import dev.notalpha.dashloader.api.DashModule;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
-import dev.notalpha.dashloader.api.config.Option;
-import dev.notalpha.dashloader.io.data.collection.IntObjectList;
-import dev.notalpha.dashloader.misc.CachingData;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.*;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
+import dev.notalpha.dashloader.api.cache.DashCache;
+import dev.notalpha.dashloader.api.cache.DashModule;
+import dev.notalpha.dashloader.config.ConfigHandler;
+import dev.notalpha.dashloader.config.Option;
+import dev.notalpha.dashloader.api.collection.IntObjectList;
+import dev.notalpha.dashloader.api.cache.CachingData;
 import dev.quantumfusion.taski.builtin.StepTask;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.util.Identifier;
@@ -16,19 +16,19 @@ import java.util.HashMap;
 
 public class SpriteModule implements DashModule<SpriteModule.Data> {
 	public final static CachingData<HashMap<Identifier, SpriteLoader.StitchResult>> ATLASES = new CachingData<>();
-	public final static CachingData<HashMap<Identifier, Identifier>> ATLAS_IDS = new CachingData<>(Cache.Status.SAVE);
+	public final static CachingData<HashMap<Identifier, Identifier>> ATLAS_IDS = new CachingData<>(CacheStatus.SAVE);
 
 	@Override
-	public void reset(Cache cacheManager) {
+	public void reset(DashCache cacheManager) {
 		ATLASES.reset(cacheManager, new HashMap<>());
 		ATLAS_IDS.reset(cacheManager, new HashMap<>());
 	}
 
 	@Override
-	public Data save(RegistryFactory writer, StepTask task) {
+	public Data save(RegistryWriter writer, StepTask task) {
 		var results = new IntObjectList<DashStitchResult>();
 
-		var map = ATLASES.get(Cache.Status.SAVE);
+		var map = ATLASES.get(CacheStatus.SAVE);
 		task.doForEach(map, (identifier, stitchResult) -> {
 			StepTask atlases = new StepTask("atlas", stitchResult.regions().size());
 			task.setSubTask(atlases);
@@ -45,7 +45,7 @@ public class SpriteModule implements DashModule<SpriteModule.Data> {
 			stitchResults.put(reader.get(identifier), stitchResult.export(reader));
 		});
 
-		ATLASES.set(Cache.Status.LOAD, stitchResults);
+		ATLASES.set(CacheStatus.LOAD, stitchResults);
 	}
 
 	@Override

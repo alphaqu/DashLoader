@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader;
 
-import dev.notalpha.dashloader.api.DashModule;
+import dev.notalpha.dashloader.api.cache.DashModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

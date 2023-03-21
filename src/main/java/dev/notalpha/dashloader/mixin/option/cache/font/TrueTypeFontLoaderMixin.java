@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.mixin.option.cache.font;
 
-import dev.notalpha.dashloader.Cache;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.font.FontModule;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.TrueTypeFontLoader;
@@ -27,7 +27,7 @@ public class TrueTypeFontLoaderMixin {
 			locals = LocalCapture.CAPTURE_FAILSOFT
 	)
 	private void loadInject(ResourceManager manager, CallbackInfoReturnable<Font> cir, STBTTFontinfo sTBTTFontinfo) {
-		FontModule.FONT_TO_IDENT.visit(Cache.Status.SAVE, map -> {
+		FontModule.FONT_TO_IDENT.visit(CacheStatus.SAVE, map -> {
 			map.put(sTBTTFontinfo, this.filename);
 		});
 	}

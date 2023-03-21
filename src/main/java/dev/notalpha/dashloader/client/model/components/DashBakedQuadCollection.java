@@ -1,8 +1,8 @@
 package dev.notalpha.dashloader.client.model.components;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
+import dev.notalpha.dashloader.api.RegistryReader;
+import dev.notalpha.dashloader.api.RegistryWriter;
 import net.minecraft.client.render.model.BakedQuad;
 
 import java.util.ArrayList;

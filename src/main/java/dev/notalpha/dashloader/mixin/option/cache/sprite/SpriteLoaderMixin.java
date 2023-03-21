@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.mixin.option.cache.sprite;
 
-import dev.notalpha.dashloader.Cache;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.sprite.SpriteModule;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.resource.ResourceManager;
@@ -26,8 +26,8 @@ public final class SpriteLoaderMixin {
 			cancellable = true
 	)
 	private void dashloaderWrite(ResourceManager resourceManager, Identifier identifier, int i, Executor executor, CallbackInfoReturnable<CompletableFuture<SpriteLoader.StitchResult>> cir) {
-		SpriteModule.ATLASES.visit(Cache.Status.SAVE, map -> {
-			SpriteModule.ATLAS_IDS.get(Cache.Status.SAVE).put(id, identifier);
+		SpriteModule.ATLASES.visit(CacheStatus.SAVE, map -> {
+			SpriteModule.ATLAS_IDS.get(CacheStatus.SAVE).put(id, identifier);
 			cir.setReturnValue(cir.getReturnValue().thenApply(stitchResult -> {
 				map.put(identifier, stitchResult);
 				return stitchResult;
@@ -41,7 +41,7 @@ public final class SpriteLoaderMixin {
 			cancellable = true
 	)
 	private void dashloaderRead(ResourceManager resourceManager, Identifier identifier, int m, Executor executor, CallbackInfoReturnable<CompletableFuture<SpriteLoader.StitchResult>> cir) {
-		SpriteModule.ATLASES.visit(Cache.Status.LOAD, map -> {
+		SpriteModule.ATLASES.visit(CacheStatus.LOAD, map -> {
 			SpriteLoader.StitchResult cached = map.get(identifier);
 			if (cached != null) {
 				int mipLevel = cached.mipLevel();

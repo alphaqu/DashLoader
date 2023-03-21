@@ -2,19 +2,21 @@ package dev.notalpha.dashloader.registry;
 
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.MissingHandler;
+import dev.notalpha.dashloader.api.cache.MissingHandler;
+import dev.notalpha.dashloader.api.RegistryWriter;
 import dev.notalpha.dashloader.misc.RegistryUtil;
 import dev.notalpha.dashloader.registry.data.ChunkData;
 import dev.notalpha.dashloader.registry.data.ChunkFactory;
 import dev.notalpha.dashloader.registry.data.StageData;
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.Object2ByteMap;
+import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 
-public final class RegistryFactory {
+public final class RegistryFactory implements RegistryWriter {
 	private final IdentityHashMap<?, Integer> dedup = new IdentityHashMap<>();
 	private final Object2ByteMap<Class<?>> target2chunkMappings;
 	private final Object2ByteMap<Class<?>> dash2chunkMappings;
@@ -53,7 +55,7 @@ public final class RegistryFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <R, D extends DashObject<R>> int add(R object) {
+	public <R> int add(R object) {
 		if (this.dedup.containsKey(object)) {
 			return this.dedup.get(object);
 		}
@@ -68,8 +70,8 @@ public final class RegistryFactory {
 		{
 			byte chunkPos = this.target2chunkMappings.getOrDefault(targetClass, (byte) -1);
 			if (chunkPos != -1) {
-				var chunk = (ChunkFactory<R, D>) this.chunks[chunkPos];
-				var entry = RegistryWriter.create(this, writer -> {
+				var chunk = (ChunkFactory) this.chunks[chunkPos];
+				var entry = TrackedRegistryFactory.create(this, writer -> {
 					return chunk.create(object, writer);
 				});
 				pointer = chunk.add(entry, this);
@@ -80,8 +82,8 @@ public final class RegistryFactory {
 		if (pointer == null) {
 			for (MissingHandler missingHandler : this.missingHandlers) {
 				if (missingHandler.parentClass.isAssignableFrom(targetClass)) {
-					var entry = RegistryWriter.create(this, writer -> {
-						return (D) missingHandler.func.apply(object, writer);
+					var entry = TrackedRegistryFactory.create(this, writer -> {
+						return missingHandler.func.apply(object, writer);
 					});
 					if (entry.data != null) {
 						var dashClass = entry.data.getClass();
@@ -89,7 +91,7 @@ public final class RegistryFactory {
 						if (chunkPos == -1) {
 							throw new RuntimeException("Could not find a ChunkWriter for DashClass " + dashClass);
 						}
-						var chunk = (ChunkFactory<R, D>) this.chunks[chunkPos];
+						var chunk = (ChunkFactory) this.chunks[chunkPos];
 						pointer = chunk.add(entry, this);
 						break;
 					}
