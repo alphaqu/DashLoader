@@ -13,7 +13,7 @@ import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.config.Option;
 import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
 import dev.notalpha.dashloader.registry.RegistryAddException;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.StepTask;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.block.BlockModels;

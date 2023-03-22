@@ -12,7 +12,7 @@ import dev.notalpha.dashloader.registry.MissingHandler;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReaderImpl;
 import dev.notalpha.dashloader.registry.data.StageData;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.StepTask;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 

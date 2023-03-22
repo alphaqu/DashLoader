@@ -8,7 +8,7 @@ import dev.notalpha.hyphen.HyphenSerializer;
 import dev.notalpha.hyphen.SerializerFactory;
 import dev.notalpha.hyphen.io.ByteBufferIO;
 import dev.notalpha.hyphen.scan.annotations.DataSubclasses;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.StepTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

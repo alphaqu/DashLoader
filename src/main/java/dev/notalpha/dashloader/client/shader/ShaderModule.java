@@ -9,7 +9,7 @@ import dev.notalpha.dashloader.api.cache.DashModule;
 import dev.notalpha.dashloader.api.collection.ObjectIntList;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.config.Option;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.client.gl.ShaderProgram;

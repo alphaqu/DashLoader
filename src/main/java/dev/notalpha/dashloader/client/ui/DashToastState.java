@@ -1,10 +1,10 @@
 package dev.notalpha.dashloader.client.ui;
 
 import dev.notalpha.dashloader.DashLoader;
-import dev.quantumfusion.taski.ParentTask;
-import dev.quantumfusion.taski.Task;
-import dev.quantumfusion.taski.builtin.AbstractTask;
-import dev.quantumfusion.taski.builtin.StaticTask;
+import dev.notalpha.taski.ParentTask;
+import dev.notalpha.taski.Task;
+import dev.notalpha.taski.builtin.AbstractTask;
+import dev.notalpha.taski.builtin.StaticTask;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Language;
 

@@ -6,9 +6,9 @@ import dev.notalpha.dashloader.api.RegistryWriter;
 import dev.notalpha.dashloader.api.cache.DashModule;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.hyphen.io.ByteBufferIO;
-import dev.quantumfusion.taski.Task;
-import dev.quantumfusion.taski.builtin.StepTask;
-import dev.quantumfusion.taski.builtin.WeightedStageTask;
+import dev.notalpha.taski.Task;
+import dev.notalpha.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.WeightedStageTask;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 

@@ -8,7 +8,7 @@ import dev.notalpha.dashloader.api.cache.DashCache;
 import dev.notalpha.dashloader.api.cache.DashModule;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.config.Option;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.StepTask;
 
 import java.util.ArrayList;
 import java.util.List;

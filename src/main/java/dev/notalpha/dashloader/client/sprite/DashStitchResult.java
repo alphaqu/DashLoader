@@ -3,7 +3,7 @@ package dev.notalpha.dashloader.client.sprite;
 import dev.notalpha.dashloader.api.RegistryReader;
 import dev.notalpha.dashloader.api.RegistryWriter;
 import dev.notalpha.dashloader.api.collection.IntIntList;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteLoader;

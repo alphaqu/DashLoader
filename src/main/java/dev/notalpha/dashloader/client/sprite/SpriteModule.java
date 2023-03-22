@@ -9,7 +9,7 @@ import dev.notalpha.dashloader.api.cache.DashModule;
 import dev.notalpha.dashloader.api.collection.IntObjectList;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.config.Option;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.StepTask;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.util.Identifier;
 
