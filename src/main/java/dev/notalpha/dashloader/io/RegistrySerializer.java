@@ -17,7 +17,7 @@ import dev.notalpha.dashloader.registry.data.ChunkData;
 import dev.notalpha.dashloader.registry.data.ChunkFactory;
 import dev.notalpha.dashloader.registry.data.StageData;
 import dev.notalpha.dashloader.thread.ThreadHandler;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
+import dev.notalpha.hyphen.io.ByteBufferIO;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;

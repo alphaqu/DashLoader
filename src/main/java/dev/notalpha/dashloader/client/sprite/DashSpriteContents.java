@@ -4,7 +4,7 @@ import dev.notalpha.dashloader.api.RegistryReader;
 import dev.notalpha.dashloader.api.RegistryWriter;
 import dev.notalpha.dashloader.misc.UnsafeHelper;
 import dev.notalpha.dashloader.mixin.accessor.SpriteContentsAccessor;
-import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import dev.notalpha.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
 import org.jetbrains.annotations.Nullable;

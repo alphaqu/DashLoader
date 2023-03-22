@@ -5,7 +5,7 @@ import dev.notalpha.dashloader.api.RegistryReader;
 import dev.notalpha.dashloader.api.RegistryWriter;
 import dev.notalpha.dashloader.api.cache.DashModule;
 import dev.notalpha.dashloader.config.ConfigHandler;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
+import dev.notalpha.hyphen.io.ByteBufferIO;
 import dev.quantumfusion.taski.Task;
 import dev.quantumfusion.taski.builtin.StepTask;
 import dev.quantumfusion.taski.builtin.WeightedStageTask;

@@ -4,14 +4,15 @@ import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.def.NativeImageData;
 import dev.notalpha.dashloader.io.def.NativeImageDataDef;
 import dev.notalpha.dashloader.registry.data.ChunkData;
-import dev.quantumfusion.hyphen.HyphenSerializer;
-import dev.quantumfusion.hyphen.SerializerFactory;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
-import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
+import dev.notalpha.hyphen.HyphenSerializer;
+import dev.notalpha.hyphen.SerializerFactory;
+import dev.notalpha.hyphen.io.ByteBufferIO;
+import dev.notalpha.hyphen.scan.annotations.DataSubclasses;
 import dev.quantumfusion.taski.builtin.StepTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.nio.file.Path;
 
 public class Serializer<O> {
@@ -19,9 +20,19 @@ public class Serializer<O> {
 
 	public Serializer(Class<O> aClass) {
 		var factory = SerializerFactory.createDebug(ByteBufferIO.class, aClass);
-		factory.addGlobalAnnotation(ChunkData.class, DataSubclasses.class, new Class[]{ChunkData.class});
+		factory.addAnnotationProvider(ChunkData.class, new DataSubclasses() {
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return DataSubclasses.class;
+			}
+
+			@Override
+			public Class<?>[] value() {
+				return new Class[] {ChunkData.class};
+			}
+		});
 		factory.setClassName(getSerializerClassName(aClass));
-		factory.addDynamicDef(NativeImageData.class, (clazz, serializerHandler) -> new NativeImageDataDef(serializerHandler, clazz));
+		factory.addDynamicDef(NativeImageData.class, NativeImageDataDef::new);
 		this.serializer = factory.build();
 	}
 

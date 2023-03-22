@@ -3,7 +3,7 @@ package dev.notalpha.dashloader.client.model.components;
 import dev.notalpha.dashloader.api.RegistryReader;
 import dev.notalpha.dashloader.api.RegistryWriter;
 import dev.notalpha.dashloader.mixin.accessor.ModelOverrideListBakedOverrideAccessor;
-import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import dev.notalpha.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import org.jetbrains.annotations.Nullable;
