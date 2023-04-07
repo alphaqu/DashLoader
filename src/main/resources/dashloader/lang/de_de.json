@@ -1,0 +1,11 @@
+{
+  "debug": "Debug-Modus in config aktiviert.",
+  "save": "Initialisierung",
+  "save.cache": "Caching",
+  "save.cache.model": "Modelle Cachen",
+  "save.cache.image": "Bilder Cachen",
+  "save.cache.misc": "Caching miscellaneous",
+  "save.serialize": "Serialisierung",
+  "save.serialize.fragment": "Fragmente Serialisieren",
+  "save.serialize.mapping": "mappings Serialisieren"
+}
