@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -29,7 +30,12 @@ public class ReloadableResourceManagerImplMixin {
 
 		for (ResourcePackProfile profile : manager.getEnabledProfiles()) {
 			if (profile != null) {
-				values.add(profile.getName() + "N" + profile.getDisplayName().getString() + "D" + profile.getDescription().getString());
+				// Use server resource pack display name to differentiate them across each-other
+				if (Objects.equals(profile.getName(), "server")) {
+					values.add(profile.getDisplayName().getString() + "-" + profile.getDescription().getString() + "/");
+				} else {
+					values.add(profile.getName() + "/");
+				}
 			}
 		}
 
