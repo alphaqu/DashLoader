@@ -43,9 +43,7 @@ public final class DashStitchResult {
 
 	public SpriteLoader.StitchResult export(RegistryReader reader) {
 		Map<Identifier, Sprite> regions = new Object2ObjectOpenHashMap<>();
-		this.regions.forEach((key, value) -> {
-			regions.put(reader.get(key), reader.get(value));
-		});
+		this.regions.forEach((key, value) -> regions.put(reader.get(key), reader.get(value)));
 
 		return new SpriteLoader.StitchResult(
 				this.width,

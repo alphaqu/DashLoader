@@ -15,7 +15,7 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-    mavenCentral();
+    mavenCentral()
     mavenLocal()
     maven {
         name "Sonatype Snapshots"
@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.github.luben:zstd-jni:1.5.2-2'
     include 'com.github.luben:zstd-jni:1.5.2-2'
 
-    modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.76.0+1.19.4");
+    modCompileOnly fabricApi.module("fabric-renderer-indigo", "0.76.0+1.19.4")
 }
 
 test {
@@ -95,12 +95,12 @@ jar {
 modrinth {
     token = project.hasProperty("modrinthApiKey") ? project.modrinthApiKey : ""
     projectId = 'ZfQ3kTvR'
-    changelog = file("changelog.md").getText();
+    changelog = file("changelog.md").getText()
     versionNumber = project.version
     versionName = "$project.version".split("\\+")[0] + " for $project.minecraft_version"
     uploadFile = remapJar
     versionType = "alpha"
-    gameVersions = ['1.19.3']
+    gameVersions = ['1.19.4']
     loaders = ['fabric', 'quilt']
 }
 
@@ -109,10 +109,10 @@ curseforge {
     project {
         id = '472772'
         changelogType = "markdown"
-        changelog = file("changelog.md");
+        changelog = file("changelog.md")
         releaseType = 'alpha'
 
-        addGameVersion "1.19.3"
+        addGameVersion "1.19.4"
         addGameVersion "Fabric"
         addGameVersion "Quilt"
         addGameVersion "Java 17"

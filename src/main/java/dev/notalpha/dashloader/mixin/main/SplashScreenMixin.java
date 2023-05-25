@@ -2,7 +2,6 @@ package dev.notalpha.dashloader.mixin.main;
 
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.api.config.Config;
 import dev.notalpha.dashloader.api.config.ConfigHandler;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import dev.notalpha.dashloader.client.ui.DashToast;

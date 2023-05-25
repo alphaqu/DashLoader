@@ -36,9 +36,7 @@ public class ShaderModule implements DashModule<ShaderModule.Data> {
 		}
 
 		var shaders = new ObjectIntList<String>();
-		task.doForEach(minecraftData, (s, shader) -> {
-			shaders.put(s, writer.add(shader));
-		});
+		task.doForEach(minecraftData, (s, shader) -> shaders.put(s, writer.add(shader)));
 
 		return new Data(shaders);
 	}

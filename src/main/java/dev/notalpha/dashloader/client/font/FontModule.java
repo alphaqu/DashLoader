@@ -41,6 +41,7 @@ public class FontModule implements DashModule<FontModule.Data> {
 	public Data save(RegistryFactory writer, StepTask task) {
 		var fontMap = new IntObjectList<DashFontStorage>();
 		Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> identifierPairObject2ObjectMap = DATA.get(Cache.Status.SAVE);
+		//noinspection DataFlowIssue
 		identifierPairObject2ObjectMap.forEach((identifier, fontList) -> {
 			List<Integer> fontsOut = new ArrayList<>();
 			for (Font font : fontList.getValue()) {

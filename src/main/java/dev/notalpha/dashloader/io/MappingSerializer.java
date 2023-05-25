@@ -54,6 +54,7 @@ public class MappingSerializer {
 			} else {
 				objects.add(null);
 			}
+			//noinspection DataFlowIssue
 			task.finish();
 			i++;
 		}

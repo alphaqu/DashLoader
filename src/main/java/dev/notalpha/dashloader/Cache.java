@@ -25,7 +25,6 @@ import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class Cache {
@@ -168,9 +167,7 @@ public final class Cache {
 			RegistryReader reader = new RegistryReader(info, stageData);
 
 			// Exporting assets
-			task.run(() -> {
-				reader.export(task::setSubTask);
-			});
+			task.run(() -> reader.export(task::setSubTask));
 
 			// Loading mappings
 			if (!mappingsSerializer.load(cacheDir, reader, cacheHandlers)) {

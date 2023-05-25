@@ -3,7 +3,6 @@ package dev.notalpha.dashloader.io;
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.config.Config;
 import dev.notalpha.dashloader.api.config.ConfigHandler;
 import dev.notalpha.dashloader.io.data.CacheInfo;
 import dev.notalpha.dashloader.io.data.ChunkInfo;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RegistrySerializer {
 	private static final int MIN_PER_THREAD_FRAGMENT_SIZE = 1024 * 1024 * 20;
 	// 1GB
