@@ -3,7 +3,7 @@ package dev.notalpha.dashloader.api;
 import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.StepTask;
 
 public interface DashModule<M> {
 	void reset(Cache cacheManager);

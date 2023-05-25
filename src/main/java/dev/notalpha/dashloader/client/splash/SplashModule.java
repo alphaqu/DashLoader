@@ -7,7 +7,7 @@ import dev.notalpha.dashloader.api.config.Option;
 import dev.notalpha.dashloader.misc.CachingData;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.StepTask;
 
 import java.util.ArrayList;
 import java.util.List;

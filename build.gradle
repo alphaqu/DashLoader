@@ -25,7 +25,7 @@ repositories {
         url 'https://jitpack.io'
     }
     maven {
-        url 'https://notalpha.dev/maven'
+        url "https://notalpha.dev/maven/releases"
     }
 }
 
@@ -45,8 +45,8 @@ dependencies {
     implementation "dev.quantumfusion:Hyphen:0.4.0-rc.3"
     include "dev.quantumfusion:Hyphen:0.4.0-rc.3"
 
-    implementation "dev.quantumfusion:Taski:2.1.0"
-    include "dev.quantumfusion:Taski:2.1.0"
+    implementation "dev.notalpha:Taski:2.1.0"
+    include "dev.notalpha:Taski:2.1.0"
 
     implementation 'com.github.luben:zstd-jni:1.5.2-2'
     include 'com.github.luben:zstd-jni:1.5.2-2'

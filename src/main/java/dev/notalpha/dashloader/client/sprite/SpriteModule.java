@@ -8,7 +8,7 @@ import dev.notalpha.dashloader.io.data.collection.IntObjectList;
 import dev.notalpha.dashloader.misc.CachingData;
 import dev.notalpha.dashloader.registry.RegistryFactory;
 import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.builtin.StepTask;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.util.Identifier;
 

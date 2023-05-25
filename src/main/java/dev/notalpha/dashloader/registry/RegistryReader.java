@@ -3,8 +3,8 @@ package dev.notalpha.dashloader.registry;
 
 import dev.notalpha.dashloader.io.data.CacheInfo;
 import dev.notalpha.dashloader.registry.data.StageData;
-import dev.quantumfusion.taski.Task;
-import dev.quantumfusion.taski.builtin.StepTask;
+import dev.notalpha.taski.Task;
+import dev.notalpha.taski.builtin.StepTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

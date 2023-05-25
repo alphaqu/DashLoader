@@ -9,7 +9,7 @@ import dev.notalpha.dashloader.client.ui.DashToast;
 import dev.notalpha.dashloader.client.ui.DashToastState;
 import dev.notalpha.dashloader.client.ui.DashToastStatus;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
-import dev.quantumfusion.taski.builtin.StaticTask;
+import dev.notalpha.taski.builtin.StaticTask;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
