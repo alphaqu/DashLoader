@@ -31,28 +31,6 @@
 	},
 	"custom": {
 		"dashloader:disableoption": [
-		],
-		"dashloader:dashobject" : [
-			"dev.quantumfusion.dashloader.data.DashIdentifier",
-			"dev.quantumfusion.dashloader.data.DashModelIdentifier",
-			"dev.quantumfusion.dashloader.data.model.DashBasicBakedModel",
-			"dev.quantumfusion.dashloader.data.model.DashBuiltinBakedModel",
-			"dev.quantumfusion.dashloader.data.model.DashMultipartBakedModel",
-			"dev.quantumfusion.dashloader.data.model.DashWeightedBakedModel",
-			"dev.quantumfusion.dashloader.fallback.model.DashMissingDashModel",
-			"dev.quantumfusion.dashloader.data.model.components.DashBakedQuad",
-			"dev.quantumfusion.dashloader.data.model.predicates.DashAndPredicate",
-			"dev.quantumfusion.dashloader.data.model.predicates.DashOrPredicate",
-			"dev.quantumfusion.dashloader.data.model.predicates.DashSimplePredicate",
-			"dev.quantumfusion.dashloader.data.model.predicates.DashStaticPredicate",
-			"dev.quantumfusion.dashloader.data.image.DashImage",
-			"dev.quantumfusion.dashloader.data.image.DashSpriteImpl",
-			"dev.quantumfusion.dashloader.data.font.DashBitmapFont",
-			"dev.quantumfusion.dashloader.data.font.DashBlankFont",
-			"dev.quantumfusion.dashloader.data.font.DashSpaceFont",
-			"dev.quantumfusion.dashloader.data.font.DashTrueTypeFont",
-			"dev.quantumfusion.dashloader.data.font.DashUnicodeFont",
-			"dev.quantumfusion.dashloader.data.blockstate.DashBlockState"
 		]
 	},
 	"breaks" : {
