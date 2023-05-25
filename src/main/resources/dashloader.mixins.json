@@ -37,6 +37,7 @@
     "accessor.UnicodeTextureFontAccessor",
     "accessor.WeightedBakedModelAccessor",
     "accessor.WeightedBakedModelEntryAccessor",
+    "accessor.ZipResourcePackAccessor",
     "main.BootstrapMixin",
     "main.KeyboardMixin",
     "main.MainMixin",

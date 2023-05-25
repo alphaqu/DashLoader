@@ -3,6 +3,7 @@ package dev.notalpha.dashloader.mixin.main;
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
+import dev.notalpha.dashloader.mixin.accessor.ZipResourcePackAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.*;
 import net.minecraft.util.Unit;
@@ -12,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,12 +30,21 @@ public class ReloadableResourceManagerImplMixin {
 		ResourcePackManager manager = MinecraftClient.getInstance().getResourcePackManager();
 		List<String> values = new ArrayList<>();
 
+		// Use server resource pack display name to differentiate them across each-other
+		for (ResourcePack pack : packs) {
+			if (Objects.equals(pack.getName(), "server")) {
+				if (pack instanceof ZipResourcePack zipResourcePack) {
+					ZipResourcePackAccessor zipPack = (ZipResourcePackAccessor) zipResourcePack;
+					Path path = zipPack.getBackingZipFile().toPath();
+					values.add(path.toString());
+				}
+			}
+		}
+
 		for (ResourcePackProfile profile : manager.getEnabledProfiles()) {
 			if (profile != null) {
-				// Use server resource pack display name to differentiate them across each-other
-				if (Objects.equals(profile.getName(), "server")) {
-					values.add(profile.getDisplayName().getString() + "-" + profile.getDescription().getString() + "/");
-				} else {
+				// Skip server as we have a special case where we use its path instead which contains its hash
+				if (!Objects.equals(profile.getName(), "server")) {
 					values.add(profile.getName() + "/");
 				}
 			}
