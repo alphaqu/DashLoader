@@ -3,7 +3,7 @@ package dev.notalpha.dashloader.io;
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.data.CacheInfo;
 import dev.notalpha.dashloader.io.data.ChunkInfo;
 import dev.notalpha.dashloader.io.data.fragment.CacheFragment;
@@ -12,14 +12,14 @@ import dev.notalpha.dashloader.io.data.fragment.StageFragment;
 import dev.notalpha.dashloader.io.fragment.Fragment;
 import dev.notalpha.dashloader.io.fragment.SimplePiece;
 import dev.notalpha.dashloader.io.fragment.SizePiece;
-import dev.notalpha.dashloader.registry.RegistryFactory;
+import dev.notalpha.dashloader.registry.RegistryWriterImpl;
 import dev.notalpha.dashloader.registry.data.ChunkData;
 import dev.notalpha.dashloader.registry.data.ChunkFactory;
 import dev.notalpha.dashloader.registry.data.StageData;
 import dev.notalpha.dashloader.thread.ThreadHandler;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import dev.notalpha.taski.Task;
 import dev.notalpha.taski.builtin.StepTask;
+import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class RegistrySerializer {
+	// 20MB
 	private static final int MIN_PER_THREAD_FRAGMENT_SIZE = 1024 * 1024 * 20;
 	// 1GB
 	private static final int MAX_FRAGMENT_SIZE = 1024 * 1024 * 1024;
@@ -50,7 +51,7 @@ public class RegistrySerializer {
 		return (Serializer<D>) this.serializers.get(dashObject.getDashClass());
 	}
 
-	public CacheInfo serialize(Path dir, RegistryFactory factory, Consumer<Task> taskConsumer) throws IOException {
+	public CacheInfo serialize(Path dir, RegistryWriterImpl factory, Consumer<Task> taskConsumer) throws IOException {
 		StageData[] stages = factory.export();
 
 		SimplePiece[] value = new SimplePiece[stages.length];

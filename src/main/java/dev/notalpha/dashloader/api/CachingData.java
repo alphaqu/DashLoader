@@ -1,6 +1,7 @@
-package dev.notalpha.dashloader.misc;
+package dev.notalpha.dashloader.api;
 
-import dev.notalpha.dashloader.Cache;
+import dev.notalpha.dashloader.api.cache.Cache;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,12 +14,12 @@ public class CachingData<D> {
 	private Cache cacheManager;
 
 	@Nullable
-	private Cache.Status dataStatus;
+	private CacheStatus dataStatus;
 
 	@Nullable
-	private final Cache.Status onlyOn;
+	private final CacheStatus onlyOn;
 
-	public CachingData(@Nullable Cache.Status onlyOn) {
+	public CachingData(@Nullable CacheStatus onlyOn) {
 		this.data = null;
 		this.onlyOn = onlyOn;
 	}
@@ -27,7 +28,7 @@ public class CachingData<D> {
 		this(null);
 	}
 
-	public void visit(Cache.Status status, Consumer<D> consumer) {
+	public void visit(CacheStatus status, Consumer<D> consumer) {
 		if (this.active(status)) {
 			consumer.accept(this.data);
 		}
@@ -37,7 +38,7 @@ public class CachingData<D> {
 	/**
 	 * Gets the value or returns null if its status does not match the current state.
 	 **/
-	public @Nullable D get(Cache.Status status) {
+	public @Nullable D get(CacheStatus status) {
 		if (this.active(status)) {
 			return this.data;
 		}
@@ -52,7 +53,7 @@ public class CachingData<D> {
 	/**
 	 * Sets the optional data to the intended status
 	 **/
-	public void set(Cache.Status status, @NotNull D data) {
+	public void set(CacheStatus status, @NotNull D data) {
 		if (onlyOn != null && onlyOn != status) {
 			this.data = null;
 			this.dataStatus = null;
@@ -63,14 +64,14 @@ public class CachingData<D> {
 			throw new RuntimeException("cacheManager is null. This OptionData has never been reset in its handler.");
 		}
 
-		Cache.Status currentStatus = cacheManager.getStatus();
+		CacheStatus currentStatus = cacheManager.getStatus();
 		if (status == currentStatus) {
 			this.dataStatus = status;
 			this.data = data;
 		}
 	}
 
-	public boolean active(Cache.Status status) {
+	public boolean active(CacheStatus status) {
 		return status == this.dataStatus && status == cacheManager.getStatus() && this.data != null && (onlyOn == null || onlyOn == status);
 	}
 }

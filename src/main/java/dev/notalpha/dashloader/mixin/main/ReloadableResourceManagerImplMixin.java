@@ -1,5 +1,6 @@
 package dev.notalpha.dashloader.mixin.main;
 
+import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
 import dev.notalpha.dashloader.mixin.accessor.ZipResourcePackAccessor;
@@ -49,7 +50,8 @@ public class ReloadableResourceManagerImplMixin {
 			}
 		}
 
-		DashLoaderClient.CACHE.setHash(DigestUtils.md5Hex(values.toString()).toUpperCase());
-		DashLoaderClient.CACHE.start();
+		String hash = DigestUtils.md5Hex(values.toString()).toUpperCase();
+		DashLoader.LOG.info("Hash changed to " + hash);
+		DashLoaderClient.CACHE.load(hash);
 	}
 }

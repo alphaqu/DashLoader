@@ -3,7 +3,6 @@ package dev.notalpha.dashloader.client.ui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.notalpha.dashloader.misc.HahaManager;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;

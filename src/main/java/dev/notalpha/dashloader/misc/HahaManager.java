@@ -1,12 +1,12 @@
 package dev.notalpha.dashloader.misc;
 
-import dev.notalpha.dashloader.api.config.ConfigHandler;
-import dev.notalpha.dashloader.api.config.Config;
+import dev.notalpha.dashloader.config.Config;
+import dev.notalpha.dashloader.config.ConfigHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HahaManager {
+public final class HahaManager {
 	private static final String[] FACTS = {
 			"Dash was for the cool kids",
 			"fun fact: 1 + 1 = 11",

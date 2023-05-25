@@ -1,29 +1,36 @@
 package dev.notalpha.dashloader.api;
 
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
 
 /**
- * The Exportable interface is the interface to implement when adding DashLoader cache support to a registry object.
+ * A DashObject is responsible for making normal objects serializable
+ * by mapping them to a more serializable format and deduplicating inner objects through the registry.
  *
- * @param <R> Raw Object.
+ * @param <R> The target object which it's adding support to.
  */
 @SuppressWarnings("unused")
 public interface DashObject<R> {
 	/**
-	 * Runs before {@link DashObject#export(RegistryReader)} on the main thread.
+	 * Runs before export on the main thread.
+	 *
+	 * @see DashObject#export(RegistryReader)
 	 */
 	@SuppressWarnings("unused")
 	default void preExport(RegistryReader reader) {
 	}
 
 	/**
-	 * Runs in parallel returning the target object.
+	 * The export method converts the DashObject into the original counterpart which was provided on save.
+	 * <br><br>
+	 * Note: This runs in parallel meaning that it does not run on the Main thread. If you need to load things on the main thread use {@link DashObject#postExport(RegistryReader)}
 	 */
 	@SuppressWarnings("unused")
 	R export(RegistryReader reader);
 
 	/**
-	 * Runs after {@link DashObject#export(RegistryReader)} on the main thread.
+	 * Runs after export on the main thread.
+	 *
+	 * @see DashObject#export(RegistryReader)
 	 */
 	@SuppressWarnings("unused")
 	default void postExport(RegistryReader reader) {

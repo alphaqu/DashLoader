@@ -3,13 +3,15 @@ package dev.notalpha.dashloader;
 import dev.notalpha.dashloader.api.DashEntrypoint;
 import dev.notalpha.dashloader.api.DashModule;
 import dev.notalpha.dashloader.api.MissingHandler;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
+import dev.notalpha.dashloader.api.cache.Cache;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.MappingSerializer;
 import dev.notalpha.dashloader.io.RegistrySerializer;
 import dev.notalpha.dashloader.io.data.CacheInfo;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.registry.RegistryReaderImpl;
+import dev.notalpha.dashloader.registry.RegistryWriterImpl;
 import dev.notalpha.dashloader.registry.data.StageData;
 import dev.notalpha.taski.builtin.StepTask;
 import net.fabricmc.loader.api.FabricLoader;
@@ -27,9 +29,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public final class Cache {
+public final class CacheImpl implements Cache {
 	private static final String METADATA_FILE_NAME = "metadata.bin";
-	private Status status;
+	private CacheStatus status;
 	private String hash;
 	private final Path cacheDir;
 
@@ -41,7 +43,7 @@ public final class Cache {
 	private final RegistrySerializer registrySerializer;
 	private final MappingSerializer mappingsSerializer;
 
-	Cache(Path cacheDir, List<DashModule<?>> cacheHandlers, List<DashObjectClass<?, ?>> dashObjects) {
+	CacheImpl(Path cacheDir, List<DashModule<?>> cacheHandlers, List<DashObjectClass<?, ?>> dashObjects) {
 		this.cacheDir = cacheDir;
 		this.cacheHandlers = cacheHandlers;
 		this.dashObjects = dashObjects;
@@ -49,21 +51,23 @@ public final class Cache {
 		this.mappingsSerializer = new MappingSerializer(cacheHandlers);
 	}
 
-	public void start() {
+	public void load(String name) {
+		this.hash = name;
+
 		if (this.exists()) {
-			this.setStatus(Cache.Status.LOAD);
-			this.load();
+			this.setStatus(CacheStatus.LOAD);
+			this.loadCache();
 		} else {
-			this.setStatus(Cache.Status.SAVE);
+			this.setStatus(CacheStatus.SAVE);
 		}
 	}
 
 	public boolean save(@Nullable Consumer<StepTask> taskConsumer) {
+		if (status != CacheStatus.SAVE) {
+			throw new RuntimeException("Status is not SAVE");
+		}
 		DashLoader.LOG.info("Starting DashLoader Caching");
 		try {
-			if (status != Status.SAVE) {
-				throw new RuntimeException("Status is not SAVE");
-			}
 
 			Path ourDir = getDir();
 
@@ -123,7 +127,7 @@ public final class Cache {
 			for (DashEntrypoint entryPoint : FabricLoader.getInstance().getEntrypoints("dashloader", DashEntrypoint.class)) {
 				entryPoint.onDashLoaderSave(handlers);
 			}
-			RegistryFactory factory = RegistryFactory.create(handlers, dashObjects);
+			RegistryWriterImpl factory = RegistryWriterImpl.create(handlers, dashObjects);
 
 			// Mappings
 			mappingsSerializer.save(ourDir, factory, cacheHandlers, main);
@@ -145,14 +149,17 @@ public final class Cache {
 			return true;
 		} catch (Throwable thr) {
 			DashLoader.LOG.error("Failed caching", thr);
-			this.setStatus(Status.SAVE);
-			this.clear();
+			this.setStatus(CacheStatus.SAVE);
+			this.remove();
 			return false;
 		}
 	}
 
-	public void load() {
-		this.status = Status.LOAD;
+	private void loadCache() {
+		if (status != CacheStatus.LOAD) {
+			throw new RuntimeException("Status is not LOAD");
+		}
+
 		long start = System.currentTimeMillis();
 		try {
 			StepTask task = new StepTask("Loading DashCache", 3);
@@ -164,41 +171,41 @@ public final class Cache {
 
 			// File reading
 			StageData[] stageData = registrySerializer.deserialize(cacheDir, info, dashObjects);
-			RegistryReader reader = new RegistryReader(info, stageData);
+			RegistryReaderImpl reader = new RegistryReaderImpl(info, stageData);
 
 			// Exporting assets
 			task.run(() -> reader.export(task::setSubTask));
 
 			// Loading mappings
 			if (!mappingsSerializer.load(cacheDir, reader, cacheHandlers)) {
-				this.setStatus(Status.SAVE);
-				this.clear();
+				this.setStatus(CacheStatus.SAVE);
+				this.remove();
 				return;
 			}
 
 			DashLoader.LOG.info("Loaded cache in {}", ProfilerUtil.getTimeStringFromStart(start));
 		} catch (Exception e) {
 			DashLoader.LOG.error("Summoned CrashLoader in {}", ProfilerUtil.getTimeStringFromStart(start), e);
-			this.setStatus(Status.SAVE);
-			this.clear();
+			this.setStatus(CacheStatus.SAVE);
+			this.remove();
 		}
-	}
-
-	public void setHash(String hash) {
-		DashLoader.LOG.info("Hash changed to " + hash);
-		this.hash = hash;
 	}
 
 	public boolean exists() {
 		return Files.exists(this.getDir());
 	}
 
-	public void clear() {
+	public void remove() {
 		try {
 			FileUtils.deleteDirectory(this.getDir().toFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void reset() {
+		this.setStatus(CacheStatus.IDLE);
 	}
 
 	public Path getDir() {
@@ -209,32 +216,15 @@ public final class Cache {
 	}
 
 
-	public Status getStatus() {
+	public CacheStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	private void setStatus(CacheStatus status) {
 		if (this.status != status) {
 			this.status = status;
 			DashLoader.LOG.info("\u001B[46m\u001B[30m DashLoader Status change {}\n\u001B[0m", status);
 			this.cacheHandlers.forEach(handler -> handler.reset(this));
 		}
 	}
-
-	public enum Status {
-		/**
-		 * Idle
-		 */
-		IDLE,
-		/**
-		 * The cache manager is in the process of loading a cache.
-		 */
-		LOAD,
-		/**
-		 * The cache manager is creating a cache.
-		 */
-		SAVE,
-	}
-
-
 }

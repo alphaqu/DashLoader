@@ -2,10 +2,10 @@ package dev.notalpha.dashloader.registry.data;
 
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.misc.RegistryUtil;
+import dev.notalpha.dashloader.api.registry.RegistryUtil;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.registry.FactoryBinding;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryWriter;
+import dev.notalpha.dashloader.registry.RegistryWriterImpl;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -31,7 +31,7 @@ public class ChunkFactory<R, D extends DashObject<R>> {
 		return this.factory.create(raw, writer);
 	}
 
-	public int add(Entry<D> entry, RegistryFactory factory) {
+	public int add(Entry<D> entry, RegistryWriterImpl factory) {
 		int existing = deduplication.getOrDefault(entry.data, -1);
 		if (existing != -1) {
 			return RegistryUtil.createId(existing, chunkId);

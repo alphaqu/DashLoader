@@ -2,7 +2,7 @@ package dev.notalpha.dashloader.registry.data;
 
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.thread.ThreadHandler;
 
 public class ChunkData<R, D extends DashObject<R>> {

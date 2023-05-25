@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.registry.data;
 
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
 
 public class StageData {
 	public final ChunkData<?, ?>[] chunks;

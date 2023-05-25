@@ -3,57 +3,70 @@ package dev.notalpha.dashloader.registry;
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.MissingHandler;
-import dev.notalpha.dashloader.misc.RegistryUtil;
+import dev.notalpha.dashloader.api.registry.RegistryAddException;
+import dev.notalpha.dashloader.api.registry.RegistryUtil;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.registry.data.ChunkData;
 import dev.notalpha.dashloader.registry.data.ChunkFactory;
 import dev.notalpha.dashloader.registry.data.StageData;
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.Object2ByteMap;
+import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 
-public final class RegistryFactory {
+public final class RegistryWriterImpl implements RegistryWriter {
 	private final IdentityHashMap<?, Integer> dedup = new IdentityHashMap<>();
 	private final Object2ByteMap<Class<?>> target2chunkMappings;
 	private final Object2ByteMap<Class<?>> dash2chunkMappings;
 	private final List<MissingHandler<?>> missingHandlers;
 	public final ChunkFactory<?, ?>[] chunks;
 
-	private RegistryFactory(ChunkFactory<?, ?>[] chunks, List<MissingHandler<?>> missingHandlers) {
+	private RegistryWriterImpl(ChunkFactory<?, ?>[] chunks, List<MissingHandler<?>> missingHandlers) {
 		this.target2chunkMappings = new Object2ByteOpenHashMap<>();
 		this.dash2chunkMappings = new Object2ByteOpenHashMap<>();
 		this.missingHandlers = missingHandlers;
 		this.chunks = chunks;
 	}
 
-	public static <R, D extends DashObject<R>> RegistryFactory create(List<MissingHandler<?>> missingHandlers, List<DashObjectClass<?, ?>> dashObjects) {
+	public static <R, D extends DashObject<R>> RegistryWriterImpl create(List<MissingHandler<?>> missingHandlers, List<DashObjectClass<?, ?>> dashObjects) {
+		if (dashObjects.size() > 63) {
+			throw new RuntimeException("Hit group limit of 63. Please contact notalpha if you hit this limit!");
+		}
 
 		//noinspection unchecked
 		ChunkFactory<R, D>[] chunks = new ChunkFactory[dashObjects.size()];
-		RegistryFactory writer = new RegistryFactory(chunks, missingHandlers);
+		RegistryWriterImpl writer = new RegistryWriterImpl(chunks, missingHandlers);
 
-		if (dashObjects.size() > 63) {
-			throw new RuntimeException("Hit group limit of 63. Please contact QuantumFusion if you hit this limit!");
-		}
 
 		for (int i = 0; i < dashObjects.size(); i++) {
 			final DashObjectClass<R, D> dashObject = (DashObjectClass<R, D>) dashObjects.get(i);
-			var factory = FactoryBinding.create(dashObject);
+
 			var dashClass = dashObject.getDashClass();
+			var targetClass = dashObject.getTargetClass();
+			byte old = writer.target2chunkMappings.put(targetClass, (byte) i);
+			if (old != -1) {
+				DashObjectClass<?, ?> conflicting = dashObjects.get(old);
+				throw new IllegalStateException("DashObjects \"" + dashObject.getDashClass() + "\" and \"" + conflicting.getDashClass() + "\" have the same target class \"" + targetClass + "\".");
+			}
+
+			writer.dash2chunkMappings.put(dashClass, (byte) i);
+			var factory = FactoryBinding.create(dashObject);
 			var name = dashClass.getSimpleName();
 			chunks[i] = new ChunkFactory<>((byte) i, name, factory, dashObject);
-
-			writer.target2chunkMappings.put(dashObject.getTargetClass(), (byte) i);
-			writer.dash2chunkMappings.put(dashClass, (byte) i);
 		}
 
 		return writer;
 	}
 
+	public <R> int add(R object) {
+		return this.addObject(object);
+	}
+
 	@SuppressWarnings("unchecked")
-	public <R, D extends DashObject<R>> int add(R object) {
+	private <R, D extends DashObject<R>> int addObject(R object) {
 		if (this.dedup.containsKey(object)) {
 			return this.dedup.get(object);
 		}
@@ -69,7 +82,7 @@ public final class RegistryFactory {
 			byte chunkPos = this.target2chunkMappings.getOrDefault(targetClass, (byte) -1);
 			if (chunkPos != -1) {
 				var chunk = (ChunkFactory<R, D>) this.chunks[chunkPos];
-				var entry = RegistryWriter.create(this, writer -> {
+				var entry = TrackingRegistryWriterImpl.create(this, writer -> {
 					return chunk.create(object, writer);
 				});
 				pointer = chunk.add(entry, this);
@@ -80,7 +93,7 @@ public final class RegistryFactory {
 		if (pointer == null) {
 			for (MissingHandler missingHandler : this.missingHandlers) {
 				if (missingHandler.parentClass.isAssignableFrom(targetClass)) {
-					var entry = RegistryWriter.create(this, writer -> {
+					var entry = TrackingRegistryWriterImpl.create(this, writer -> {
 						return (D) missingHandler.func.apply(object, writer);
 					});
 					if (entry.data != null) {

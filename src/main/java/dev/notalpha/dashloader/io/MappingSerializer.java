@@ -2,13 +2,13 @@ package dev.notalpha.dashloader.io;
 
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.DashModule;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.taski.Task;
 import dev.notalpha.taski.builtin.StepTask;
 import dev.notalpha.taski.builtin.WeightedStageTask;
+import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -31,7 +31,7 @@ public class MappingSerializer {
 
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void save(Path dir, RegistryFactory factory, List<DashModule<?>> handlers, StepTask parent) {
+	public void save(Path dir, RegistryWriter factory, List<DashModule<?>> handlers, StepTask parent) {
 		List<WeightedStageTask.WeightedStage> tasks = new ArrayList<>();
 		for (DashModule<?> value : handlers) {
 			tasks.add(new WeightedStageTask.WeightedStage(value.taskWeight(), new StepTask(value.getDataClass().getSimpleName(), 1)));

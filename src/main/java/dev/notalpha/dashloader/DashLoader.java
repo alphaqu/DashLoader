@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 
-public class DashLoader {
+public final class DashLoader {
 	private static final String VERSION = FabricLoader.getInstance()
 			.getModContainer("dashloader")
 			.orElseThrow(() -> new IllegalStateException("DashLoader not found... apparently! WTF?"))

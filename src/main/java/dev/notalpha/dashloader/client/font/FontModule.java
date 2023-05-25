@@ -1,13 +1,14 @@
 package dev.notalpha.dashloader.client.font;
 
-import dev.notalpha.dashloader.Cache;
+import dev.notalpha.dashloader.api.CachingData;
 import dev.notalpha.dashloader.api.DashModule;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
-import dev.notalpha.dashloader.api.config.Option;
-import dev.notalpha.dashloader.io.data.collection.IntObjectList;
-import dev.notalpha.dashloader.misc.CachingData;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
+import dev.notalpha.dashloader.api.cache.Cache;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
+import dev.notalpha.dashloader.api.collection.IntObjectList;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
+import dev.notalpha.dashloader.config.ConfigHandler;
+import dev.notalpha.dashloader.config.Option;
 import dev.notalpha.taski.builtin.StepTask;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -32,24 +33,24 @@ public class FontModule implements DashModule<FontModule.Data> {
 	public static final CachingData<Map<STBTTFontinfo, Identifier>> FONT_TO_IDENT = new CachingData<>();
 
 	@Override
-	public void reset(Cache cacheManager) {
-		DATA.reset(cacheManager, new Object2ObjectOpenHashMap<>());
-		FONT_TO_IDENT.reset(cacheManager, new HashMap<>());
+	public void reset(Cache cache) {
+		DATA.reset(cache, new Object2ObjectOpenHashMap<>());
+		FONT_TO_IDENT.reset(cache, new HashMap<>());
 	}
 
 	@Override
-	public Data save(RegistryFactory writer, StepTask task) {
+	public Data save(RegistryWriter factory, StepTask task) {
 		var fontMap = new IntObjectList<DashFontStorage>();
-		Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> identifierPairObject2ObjectMap = DATA.get(Cache.Status.SAVE);
+		Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> identifierPairObject2ObjectMap = DATA.get(CacheStatus.SAVE);
 		//noinspection DataFlowIssue
 		identifierPairObject2ObjectMap.forEach((identifier, fontList) -> {
 			List<Integer> fontsOut = new ArrayList<>();
 			for (Font font : fontList.getValue()) {
-				fontsOut.add(writer.add(font));
+				fontsOut.add(factory.add(font));
 			}
 			IntObjectList<List<Integer>> charactersByWidth = new IntObjectList<>();
 			fontList.getKey().forEach(charactersByWidth::put);
-			fontMap.put(writer.add(identifier), new DashFontStorage(charactersByWidth, fontsOut));
+			fontMap.put(factory.add(identifier), new DashFontStorage(charactersByWidth, fontsOut));
 			task.next();
 		});
 
@@ -57,9 +58,9 @@ public class FontModule implements DashModule<FontModule.Data> {
 	}
 
 	@Override
-	public void load(Data mappings, RegistryReader reader, StepTask task) {
+	public void load(Data data, RegistryReader reader, StepTask task) {
 		Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> out = new Object2ObjectOpenHashMap<>();
-		mappings.fontMap.forEach((key, value) -> {
+		data.fontMap.forEach((key, value) -> {
 			List<Font> fontsOut = new ArrayList<>();
 			value.fonts.forEach(fontPointer -> fontsOut.add(reader.get(fontPointer)));
 
@@ -68,7 +69,7 @@ public class FontModule implements DashModule<FontModule.Data> {
 			out.put(reader.get(key), Pair.of(charactersByWidth, fontsOut));
 		});
 
-		DATA.set(Cache.Status.LOAD, out);
+		DATA.set(CacheStatus.LOAD, out);
 	}
 
 	@Override

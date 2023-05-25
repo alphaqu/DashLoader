@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.mixin;
 
-import dev.notalpha.dashloader.api.config.ConfigHandler;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;

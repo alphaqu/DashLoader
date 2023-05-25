@@ -1,10 +1,10 @@
 package dev.notalpha.dashloader.client.model;
 
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.client.model.components.DashWeightedModelEntry;
 import dev.notalpha.dashloader.mixin.accessor.WeightedBakedModelAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.WeightedBakedModel;
 import net.minecraft.util.collection.Weighted.Present;

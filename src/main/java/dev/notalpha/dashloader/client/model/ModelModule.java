@@ -1,17 +1,18 @@
 package dev.notalpha.dashloader.client.model;
 
-import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.api.CachingData;
 import dev.notalpha.dashloader.api.DashModule;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
-import dev.notalpha.dashloader.api.config.Option;
+import dev.notalpha.dashloader.api.cache.Cache;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
+import dev.notalpha.dashloader.api.collection.IntIntList;
+import dev.notalpha.dashloader.api.registry.RegistryAddException;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.client.model.fallback.UnbakedBakedModel;
-import dev.notalpha.dashloader.io.data.collection.IntIntList;
-import dev.notalpha.dashloader.misc.CachingData;
+import dev.notalpha.dashloader.config.ConfigHandler;
+import dev.notalpha.dashloader.config.Option;
 import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
-import dev.notalpha.dashloader.registry.RegistryAddException;
-import dev.notalpha.dashloader.registry.RegistryFactory;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import dev.notalpha.taski.builtin.StepTask;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,21 +29,22 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class ModelModule implements DashModule<ModelModule.Data> {
-	public static final CachingData<HashMap<Identifier, BakedModel>> MODELS_SAVE = new CachingData<>(Cache.Status.SAVE);
-	public static final CachingData<HashMap<Identifier, UnbakedBakedModel>> MODELS_LOAD = new CachingData<>(Cache.Status.LOAD);
+	public static final CachingData<HashMap<Identifier, BakedModel>> MODELS_SAVE = new CachingData<>(CacheStatus.SAVE);
+	public static final CachingData<HashMap<Identifier, UnbakedBakedModel>> MODELS_LOAD = new CachingData<>(CacheStatus.LOAD);
 	public static final CachingData<HashMap<BlockState, Identifier>> MISSING_READ = new CachingData<>();
-	public static final CachingData<HashMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>>> MULTIPART_PREDICATES = new CachingData<>(Cache.Status.SAVE);
+	public static final CachingData<HashMap<BakedModel, Pair<List<MultipartModelSelector>, StateManager<Block, BlockState>>>> MULTIPART_PREDICATES = new CachingData<>(CacheStatus.SAVE);
+
 	@Override
-	public void reset(Cache cacheManager) {
-		MODELS_SAVE.reset(cacheManager, new HashMap<>());
-		MODELS_LOAD.reset(cacheManager, new HashMap<>());
-		MISSING_READ.reset(cacheManager, new HashMap<>());
-		MULTIPART_PREDICATES.reset(cacheManager, new HashMap<>());
+	public void reset(Cache cache) {
+		MODELS_SAVE.reset(cache, new HashMap<>());
+		MODELS_LOAD.reset(cache, new HashMap<>());
+		MISSING_READ.reset(cache, new HashMap<>());
+		MULTIPART_PREDICATES.reset(cache, new HashMap<>());
 	}
 
 	@Override
-	public Data save(RegistryFactory writer, StepTask task) {
-		var models = MODELS_SAVE.get(Cache.Status.SAVE);
+	public Data save(RegistryWriter factory, StepTask task) {
+		var models = MODELS_SAVE.get(CacheStatus.SAVE);
 
 		if (models == null) {
 			return null;
@@ -54,8 +56,8 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 			task.doForEach(models, (identifier, bakedModel) -> {
 				if (bakedModel != null) {
 					try {
-						final int add = writer.add(bakedModel);
-						outModels.put(writer.add(identifier), add);
+						final int add = factory.add(bakedModel);
+						outModels.put(factory.add(identifier), add);
 						out.add(identifier);
 					} catch (RegistryAddException ignored) {
 						// Fallback is checked later with the blockstates missing.
@@ -69,7 +71,7 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 				block.getStateManager().getStates().forEach((blockState) -> {
 					final ModelIdentifier modelId = BlockModels.getModelId(blockState);
 					if (!out.contains(modelId)) {
-						missingModels.put(writer.add(blockState), writer.add(modelId));
+						missingModels.put(factory.add(blockState), factory.add(modelId));
 					}
 				});
 			}
@@ -79,22 +81,22 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 	}
 
 	@Override
-	public void load(Data mappings, RegistryReader reader, StepTask task) {
-		final HashMap<Identifier, UnbakedBakedModel> out = new HashMap<>(mappings.models.list().size());
-		mappings.models.forEach((key, value) -> {
+	public void load(Data data, RegistryReader reader, StepTask task) {
+		final HashMap<Identifier, UnbakedBakedModel> out = new HashMap<>(data.models.list().size());
+		data.models.forEach((key, value) -> {
 			BakedModel model = reader.get(value);
 			Identifier identifier = reader.get(key);
 			out.put(identifier, new UnbakedBakedModel(model, identifier));
 		});
 
 		var missingModelsRead = new HashMap<BlockState, Identifier>();
-		mappings.missingModels.forEach((blockState, modelId) -> {
+		data.missingModels.forEach((blockState, modelId) -> {
 			missingModelsRead.put(reader.get(blockState), reader.get(modelId));
 		});
 
 		DashLoader.LOG.info("Found {} Missing BlockState Models", missingModelsRead.size());
-		MISSING_READ.set(Cache.Status.LOAD, missingModelsRead);
-		MODELS_LOAD.set(Cache.Status.LOAD, out);
+		MISSING_READ.set(CacheStatus.LOAD, missingModelsRead);
+		MODELS_LOAD.set(CacheStatus.LOAD, out);
 	}
 
 	@Override

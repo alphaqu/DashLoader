@@ -1,14 +1,14 @@
 package dev.notalpha.dashloader.io;
 
-import dev.notalpha.dashloader.api.config.ConfigHandler;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.def.NativeImageData;
 import dev.notalpha.dashloader.io.def.NativeImageDataDef;
 import dev.notalpha.dashloader.registry.data.ChunkData;
+import dev.notalpha.taski.builtin.StepTask;
 import dev.quantumfusion.hyphen.HyphenSerializer;
 import dev.quantumfusion.hyphen.SerializerFactory;
 import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
-import dev.notalpha.taski.builtin.StepTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

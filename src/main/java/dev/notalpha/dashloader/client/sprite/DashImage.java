@@ -1,10 +1,9 @@
 package dev.notalpha.dashloader.client.sprite;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.io.def.DataUnsafeByteBuffer;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.io.def.NativeImageData;
 import dev.notalpha.dashloader.mixin.accessor.NativeImageAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import net.minecraft.client.texture.NativeImage;
 import org.lwjgl.system.MemoryUtil;
 

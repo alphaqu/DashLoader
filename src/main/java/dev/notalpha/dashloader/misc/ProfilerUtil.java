@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.misc;
 
 
-public class ProfilerUtil {
+public final class ProfilerUtil {
 	public static long RELOAD_START = 0;
 
 	public static String getTimeStringFromStart(long start) {

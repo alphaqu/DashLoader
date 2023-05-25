@@ -1,19 +1,15 @@
 package dev.notalpha.dashloader.client.model.predicates;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.mixin.accessor.AndMultipartModelSelectorAccessor;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.mixin.accessor.OrMultipartModelSelectorAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 
 
 public final class DashOrPredicate implements DashObject<OrMultipartModelSelector> {

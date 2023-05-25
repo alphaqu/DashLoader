@@ -1,9 +1,10 @@
 package dev.notalpha.dashloader.client;
 
-import dev.notalpha.dashloader.Cache;
-import dev.notalpha.dashloader.CacheFactory;
 import dev.notalpha.dashloader.api.DashEntrypoint;
+import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.MissingHandler;
+import dev.notalpha.dashloader.api.cache.Cache;
+import dev.notalpha.dashloader.api.cache.CacheFactory;
 import dev.notalpha.dashloader.client.blockstate.DashBlockState;
 import dev.notalpha.dashloader.client.font.*;
 import dev.notalpha.dashloader.client.identifier.DashIdentifier;
@@ -35,7 +36,7 @@ public class DashLoaderClient implements DashEntrypoint {
 	public static boolean NEEDS_RELOAD = false;
 
 	static {
-		CacheFactory cacheManagerFactory = new CacheFactory();
+		CacheFactory cacheManagerFactory = CacheFactory.create();
 		List<DashEntrypoint> entryPoints = FabricLoader.getInstance().getEntrypoints("dashloader", DashEntrypoint.class);
 		for (DashEntrypoint entryPoint : entryPoints) {
 			entryPoint.onDashLoaderInit(cacheManagerFactory);
@@ -52,7 +53,8 @@ public class DashLoaderClient implements DashEntrypoint {
 		factory.addModule(new SplashModule());
 		factory.addModule(new SpriteModule());
 
-		for (Class<?> aClass : new Class[]{
+		//noinspection unchecked
+		for (Class<? extends DashObject<?>> aClass : new Class[]{
 				DashIdentifier.class,
 				DashModelIdentifier.class,
 				DashBasicBakedModel.class,

@@ -29,7 +29,7 @@ public class KeyboardMixin {
 	private void f3tReloadWorld(int key, CallbackInfoReturnable<Boolean> cir) {
 		if (!this.shiftHeld) {
 			DashLoader.LOG.info("Clearing cache.");
-			DashLoaderClient.CACHE.clear();
+			DashLoaderClient.CACHE.remove();
 		}
 	}
 

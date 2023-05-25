@@ -25,7 +25,6 @@ public class DrawerUtil {
 	};
 
 
-
 	public static void drawRect(MatrixStack matrixStack, int x, int y, int width, int height, Color color) {
 		final int x2 = width + x;
 		final int y2 = height + y;
@@ -39,6 +38,7 @@ public class DrawerUtil {
 	private static void drawVertex(Matrix4f m4f, BufferBuilder bb, float x, float y, Color color) {
 		bb.vertex(m4f, x, y, 0f).color(color.red(), color.green(), color.blue(), color.alpha()).next();
 	}
+
 	public static void drawGlow(Matrix4f b4, BufferBuilder bb, float x, float y, float width, float height, float strength, Color color, boolean topLeft, boolean topRight, boolean bottomLeft, boolean bottomRight) {
 		Color end = withOpacity(color, 0);
 		Color glow = withOpacity(color, GLOW_STRENGTH * strength);
@@ -105,11 +105,12 @@ public class DrawerUtil {
 		drawVertex(b4, bb, x2 + GLOW_SIZE, y, trEnd); // right top
 
 		// Left
-		drawVertex(b4, bb,  x - GLOW_SIZE, y2, blEnd); // left bottom
-		drawVertex(b4, bb,  x, y2, bl); // right bottom
-		drawVertex(b4, bb,  x, y, tl); // right top
-		drawVertex(b4, bb,  x - GLOW_SIZE, y, tlEnd); // left top
+		drawVertex(b4, bb, x - GLOW_SIZE, y2, blEnd); // left bottom
+		drawVertex(b4, bb, x, y2, bl); // right bottom
+		drawVertex(b4, bb, x, y, tl); // right top
+		drawVertex(b4, bb, x - GLOW_SIZE, y, tlEnd); // left top
 	}
+
 	public static int convertColor(Color color) {
 		return color.rgb() | color.alpha() << 24;
 	}

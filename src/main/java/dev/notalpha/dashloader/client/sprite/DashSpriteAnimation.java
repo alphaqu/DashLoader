@@ -1,7 +1,7 @@
 package dev.notalpha.dashloader.client.sprite;
 
+import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.mixin.accessor.SpriteAnimationAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import net.minecraft.client.texture.SpriteContents;
 
 import java.util.ArrayList;

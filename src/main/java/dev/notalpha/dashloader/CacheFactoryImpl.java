@@ -1,6 +1,9 @@
 package dev.notalpha.dashloader;
 
 import dev.notalpha.dashloader.api.DashModule;
+import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.cache.Cache;
+import dev.notalpha.dashloader.api.cache.CacheFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,18 +12,18 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class CacheFactory {
-	private static final Logger LOGGER = LogManager.getLogger("CacherFactory");
+public class CacheFactoryImpl implements CacheFactory {
+	private static final Logger LOGGER = LogManager.getLogger("CacheFactory");
 	private final List<DashObjectClass<?, ?>> dashObjects;
 	private final List<DashModule<?>> modules;
 	private boolean failed = false;
 
-	public CacheFactory() {
+	public CacheFactoryImpl() {
 		this.dashObjects = new ArrayList<>();
 		this.modules = new ArrayList<>();
 	}
 
-	public void addDashObject(Class<?> dashClass) {
+	public void addDashObject(Class<? extends DashObject<?>> dashClass) {
 		final Class<?>[] interfaces = dashClass.getInterfaces();
 		if (interfaces.length == 0) {
 			LOGGER.error("No DashObject interface found. Class: {}", dashClass.getSimpleName());
@@ -30,8 +33,8 @@ public class CacheFactory {
 		this.dashObjects.add(new DashObjectClass<>(dashClass));
 	}
 
-	public void addModule(DashModule<?> handler) {
-		this.modules.add(handler);
+	public void addModule(DashModule<?> module) {
+		this.modules.add(module);
 	}
 
 	public Cache build(Path cacheDir) {
@@ -48,7 +51,7 @@ public class CacheFactory {
 			dashObject.dashObjectId = i;
 		}
 
-		return new Cache(cacheDir.resolve(DashLoader.MOD_HASH + "/"), modules, dashObjects);
+		return new CacheImpl(cacheDir.resolve(DashLoader.MOD_HASH + "/"), modules, dashObjects);
 
 	}
 }

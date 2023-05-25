@@ -1,12 +1,13 @@
 package dev.notalpha.dashloader.mixin.main;
 
-import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.DashLoader;
-import dev.notalpha.dashloader.api.config.ConfigHandler;
+import dev.notalpha.dashloader.api.cache.Cache;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import dev.notalpha.dashloader.client.ui.DashToast;
 import dev.notalpha.dashloader.client.ui.DashToastState;
 import dev.notalpha.dashloader.client.ui.DashToastStatus;
+import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
 import dev.notalpha.taski.builtin.StaticTask;
 import net.minecraft.client.MinecraftClient;
@@ -55,9 +56,8 @@ public class SplashScreenMixin {
 		}
 
 		DashLoader.LOG.info("Minecraft reloaded in {}", ProfilerUtil.getTimeStringFromStart(ProfilerUtil.RELOAD_START));
-		if (DashLoaderClient.CACHE.getStatus() == Cache.Status.SAVE && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
-			Cache cache = DashLoaderClient.CACHE;
-
+		Cache cache = DashLoaderClient.CACHE;
+		if (DashLoaderClient.CACHE.getStatus() == CacheStatus.SAVE && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
 			DashToastState rawState;
 			if (ConfigHandler.INSTANCE.config.showCachingToast) {
 				DashToast toast = new DashToast();
@@ -87,13 +87,13 @@ public class SplashScreenMixin {
 					state.task = new StaticTask("Crash", 0);
 					state.setStatus(DashToastStatus.CRASHED);
 				}
-				cache.setStatus(Cache.Status.IDLE);
+				cache.reset();
 				state.setDone();
 			});
 			thread.setName("dashloader-thread");
 			thread.start();
 		} else {
-			DashLoaderClient.CACHE.setStatus(Cache.Status.IDLE);
+			cache.reset();
 		}
 	}
 

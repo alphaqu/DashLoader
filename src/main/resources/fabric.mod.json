@@ -1,40 +1,40 @@
 {
-	"schemaVersion" : 1,
-	"id" : "dashloader",
-	"version" : "${version}",
-	"name" : "DashLoader",
-	"description" : "Launch at the speed of Light.",
-	"authors" : [
-		"!alpha",
-		"leocth"
-	],
-	"contact" : {
-		"homepage" : "https://discord.gg/VeFTrtCkrb",
-		"sources" : "https://github.com/QuantumFusionMC/DashLoader-Definition"
-	},
-	"entrypoints": {
-		"dashloader": [
-          "dev.notalpha.dashloader.client.DashLoaderClient"
-		]
-	},
-	"license" : "LGPL-3.0-only",
-	"icon" : "dashloader/textures/icon.png",
-	"environment" : "client",
-	"accessWidener" : "dashloader.accesswidener",
-	"mixins" : [
-		"dashloader.mixins.json"
-	],
-	"depends" : {
-		"fabricloader" : ">=0.11.3",
-		"minecraft" : "1.19.x",
-		"java" : ">=17"
-	},
-	"custom": {
-		"dashloader:disableoption": [
-		]
-	},
-	"breaks" : {
-		"sodium" : "<=0.1.0",
-		"fabric-api" : "<0.81.0"
-	}
+  "schemaVersion": 1,
+  "id": "dashloader",
+  "version": "${version}",
+  "name": "DashLoader",
+  "description": "Launch at the speed of Light.",
+  "authors": [
+    "!alpha",
+    "leocth"
+  ],
+  "contact": {
+    "homepage": "https://discord.gg/VeFTrtCkrb",
+    "sources": "https://github.com/QuantumFusionMC/DashLoader-Definition"
+  },
+  "entrypoints": {
+    "dashloader": [
+      "dev.notalpha.dashloader.client.DashLoaderClient"
+    ]
+  },
+  "license": "LGPL-3.0-only",
+  "icon": "dashloader/textures/icon.png",
+  "environment": "client",
+  "accessWidener": "dashloader.accesswidener",
+  "mixins": [
+    "dashloader.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "minecraft": "1.19.x",
+    "java": ">=17"
+  },
+  "custom": {
+    "dashloader:disableoption": [
+    ]
+  },
+  "breaks": {
+    "sodium": "<=0.1.0",
+    "fabric-api": "<0.81.0"
+  }
 }

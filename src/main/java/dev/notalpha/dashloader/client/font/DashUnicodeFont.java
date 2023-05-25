@@ -1,14 +1,13 @@
 package dev.notalpha.dashloader.client.font;
 
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.misc.UnsafeHelper;
 import dev.notalpha.dashloader.mixin.accessor.FontImageAccessor;
 import dev.notalpha.dashloader.mixin.accessor.UnicodeTextureFontAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import dev.quantumfusion.hyphen.scan.annotations.DataFixedArraySize;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
-import net.minecraft.client.font.TrueTypeFont;
 import net.minecraft.client.font.UnicodeTextureFont;
 
 public final class DashUnicodeFont implements DashObject<UnicodeTextureFont> {

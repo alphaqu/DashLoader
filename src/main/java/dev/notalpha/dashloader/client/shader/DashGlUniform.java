@@ -6,9 +6,6 @@ import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.ShaderProgram;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
 public final class DashGlUniform {
 	public final int dataType;
 	public final boolean loaded;
@@ -34,7 +31,6 @@ public final class DashGlUniform {
 		this.name = glUniform.getName();
 		this.loaded = loaded;
 	}
-
 
 
 	public GlUniform export(ShaderProgram shader) {

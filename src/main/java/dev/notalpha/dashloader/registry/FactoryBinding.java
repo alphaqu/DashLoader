@@ -2,6 +2,7 @@ package dev.notalpha.dashloader.registry;
 
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;

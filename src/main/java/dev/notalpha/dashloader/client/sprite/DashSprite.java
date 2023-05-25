@@ -1,10 +1,10 @@
 package dev.notalpha.dashloader.client.sprite;
 
-import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.mixin.accessor.SpriteAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
-import dev.notalpha.dashloader.registry.RegistryWriter;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.util.Identifier;
@@ -32,8 +32,8 @@ public class DashSprite implements DashObject<Sprite> {
 		this.atlasId = writer.add(sprite.getAtlasId());
 		this.contents = new DashSpriteContents(sprite.getContents(), writer);
 
-		Identifier identifier = SpriteModule.ATLAS_IDS.get(Cache.Status.SAVE).get(sprite.getAtlasId());
-		SpriteLoader.StitchResult atlas = SpriteModule.ATLASES.get(Cache.Status.SAVE).get(identifier);
+		Identifier identifier = SpriteModule.ATLAS_IDS.get(CacheStatus.SAVE).get(sprite.getAtlasId());
+		SpriteLoader.StitchResult atlas = SpriteModule.ATLASES.get(CacheStatus.SAVE).get(identifier);
 		this.x = sprite.getX();
 		this.y = sprite.getY();
 		this.atlasWidth = atlas.width();

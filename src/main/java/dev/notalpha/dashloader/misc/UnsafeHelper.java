@@ -3,7 +3,7 @@ package dev.notalpha.dashloader.misc;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-public class UnsafeHelper {
+public final class UnsafeHelper {
 
 	public static final sun.misc.Unsafe UNSAFE = getUnsafeInstance();
 

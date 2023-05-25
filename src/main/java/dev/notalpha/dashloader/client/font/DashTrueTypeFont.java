@@ -1,11 +1,11 @@
 package dev.notalpha.dashloader.client.font;
 
-import dev.notalpha.dashloader.Cache;
 import dev.notalpha.dashloader.api.DashObject;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.io.IOHelper;
 import dev.notalpha.dashloader.misc.UnsafeHelper;
 import dev.notalpha.dashloader.mixin.accessor.TrueTypeFontAccessor;
-import dev.notalpha.dashloader.registry.RegistryReader;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TrueTypeFont;
@@ -43,7 +43,7 @@ public final class DashTrueTypeFont implements DashObject<TrueTypeFont> {
 
 	public DashTrueTypeFont(TrueTypeFont font) {
 		TrueTypeFontAccessor fontAccess = (TrueTypeFontAccessor) font;
-		final Identifier ttFont = FontModule.FONT_TO_IDENT.get(Cache.Status.SAVE).get(fontAccess.getInfo());
+		final Identifier ttFont = FontModule.FONT_TO_IDENT.get(CacheStatus.SAVE).get(fontAccess.getInfo());
 		byte[] data = null;
 		try {
 			Optional<Resource> resource = MinecraftClient.getInstance().getResourceManager().getResource(new Identifier(ttFont.getNamespace(), "font/" + ttFont.getPath()));

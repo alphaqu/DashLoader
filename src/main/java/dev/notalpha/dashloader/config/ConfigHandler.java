@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.api.config;
+package dev.notalpha.dashloader.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,6 +15,7 @@ import java.util.EnumMap;
 
 public class ConfigHandler {
 	private static final EnumMap<Option, Boolean> OPTION_ACTIVE = new EnumMap<>(Option.class);
+
 	static {
 		for (Option value : Option.values()) {
 			OPTION_ACTIVE.put(value, true);

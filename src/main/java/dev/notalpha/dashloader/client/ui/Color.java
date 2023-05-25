@@ -1,7 +1,5 @@
 package dev.notalpha.dashloader.client.ui;
 
-import net.minecraft.client.gui.DrawableHelper;
-
 public class Color {
 	private final int rgba;
 

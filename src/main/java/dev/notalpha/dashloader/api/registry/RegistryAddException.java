@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.registry;
+package dev.notalpha.dashloader.api.registry;
 
 public class RegistryAddException extends RuntimeException {
 	public final Class<?> targetClass;
