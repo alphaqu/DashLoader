@@ -1,9 +1,8 @@
 package dev.notalpha.dashloader.client.ui;
 
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 
@@ -25,14 +24,14 @@ public class DrawerUtil {
 	};
 
 
-	public static void drawRect(MatrixStack matrixStack, int x, int y, int width, int height, Color color) {
+	public static void drawRect(DrawContext context, int x, int y, int width, int height, Color color) {
 		final int x2 = width + x;
 		final int y2 = height + y;
-		DrawableHelper.fill(matrixStack, x, y, x2, y2, color.argb());
+		context.fill(x, y, x2, y2, color.argb());
 	}
 
-	public static void drawText(MatrixStack matrixStack, TextRenderer textRenderer, int x, int y, String text, Color color) {
-		DrawableHelper.drawTextWithShadow(matrixStack, textRenderer, Text.of(text), x, y - (textRenderer.fontHeight), color.argb());
+	public static void drawText(DrawContext context, TextRenderer textRenderer, int x, int y, String text, Color color) {
+		context.drawTextWithShadow(textRenderer, Text.of(text), x, y - (textRenderer.fontHeight), color.argb());
 	}
 
 	private static void drawVertex(Matrix4f m4f, BufferBuilder bb, float x, float y, Color color) {

@@ -8,8 +8,17 @@ accessible class net/minecraft/client/render/model/json/ModelOverrideList$BakedO
 accessible class net/minecraft/client/render/model/json/ModelOverrideList$InlinedCondition
 accessible class net/minecraft/client/render/model/BakedModelManager$BakingResult
 accessible class net/minecraft/client/render/model/ModelLoader$BakedModelCacheKey
-accessible class net/minecraft/client/font/UnicodeTextureFont$FontImage
+accessible class net/minecraft/client/font/UnihexFont$UnicodeTextureGlyph
+accessible class net/minecraft/client/font/UnihexFont$FontImage16x16
+accessible class net/minecraft/client/font/UnihexFont$FontImage8x16
+accessible class net/minecraft/client/font/UnihexFont$FontImage32x16
+accessible class net/minecraft/client/font/FontStorage$GlyphPair
 accessible class net/minecraft/util/Identifier$ExtraData
+accessible class net/minecraft/client/font/FontStorage$GlyphPair
+accessible method net/minecraft/client/font/UnihexFont$FontImage8x16 <init> ([B)V
+accessible method net/minecraft/client/font/UnihexFont$FontImage16x16 <init> ([S)V
+accessible method net/minecraft/client/font/UnihexFont$FontImage32x16 <init> ([II)V
+accessible method net/minecraft/client/font/UnihexFont$UnicodeTextureGlyph <init> (Lnet/minecraft/client/font/UnihexFont$BitmapGlyph;II)V
 mutable field net/minecraft/client/gl/ShaderProgram modelViewMat Lnet/minecraft/client/gl/GlUniform;
 mutable field net/minecraft/client/gl/ShaderProgram projectionMat Lnet/minecraft/client/gl/GlUniform;
 mutable field net/minecraft/client/gl/ShaderProgram viewRotationMat Lnet/minecraft/client/gl/GlUniform;

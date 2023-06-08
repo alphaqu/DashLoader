@@ -5,8 +5,8 @@ import dev.notalpha.dashloader.api.collection.IntObjectList;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.mixin.accessor.BitmapFontAccessor;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.client.font.BitmapFont;
+import net.minecraft.client.font.GlyphContainer;
 
 import java.util.ArrayList;
 
@@ -24,11 +24,14 @@ public final class DashBitmapFont implements DashObject<BitmapFont> {
 		BitmapFontAccessor font = ((BitmapFontAccessor) bitmapFont);
 		this.image = writer.add(font.getImage());
 		this.glyphs = new IntObjectList<>(new ArrayList<>());
-		font.getGlyphs().forEach((integer, bitmapFontGlyph) -> this.glyphs.put(integer, new DashBitmapFontGlyph(bitmapFontGlyph, writer)));
+		font.getGlyphs().forEachGlyph((integer, bitmapFontGlyph) -> this.glyphs.put(integer, new DashBitmapFontGlyph(bitmapFontGlyph, writer)));
 	}
 
 	public BitmapFont export(RegistryReader reader) {
-		Int2ObjectOpenHashMap<BitmapFont.BitmapFontGlyph> out = new Int2ObjectOpenHashMap<>();
+		GlyphContainer<BitmapFont.BitmapFontGlyph> out = new GlyphContainer<>(
+				BitmapFont.BitmapFontGlyph[]::new,
+				BitmapFont.BitmapFontGlyph[][]::new
+		);
 		this.glyphs.forEach((key, value) -> out.put(key, value.export(reader)));
 		return BitmapFontAccessor.init(reader.get(this.image), out);
 	}

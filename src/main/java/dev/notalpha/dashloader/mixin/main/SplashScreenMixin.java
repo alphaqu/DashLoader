@@ -11,6 +11,7 @@ import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
 import dev.notalpha.taski.builtin.StaticTask;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.toast.Toast;
@@ -44,10 +45,10 @@ public class SplashScreenMixin {
 	private boolean reloading;
 
 	@Inject(
-			method = "render(Lnet/minecraft/client/util/math/MatrixStack;IIF)V",
+			method = "render",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J", shift = At.Shift.BEFORE, ordinal = 1)
 	)
-	private void done(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+	private void done(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		this.client.setOverlay(null);
 		if (this.client.currentScreen != null) {
 			if (this.client.currentScreen instanceof TitleScreen) {
@@ -98,10 +99,10 @@ public class SplashScreenMixin {
 	}
 
 	@Inject(
-			method = "render(Lnet/minecraft/client/util/math/MatrixStack;IIF)V",
+			method = "render",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/ResourceReload;isComplete()Z", shift = At.Shift.BEFORE)
 	)
-	private void removeMinimumTime(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+	private void removeMinimumTime(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		if (this.reloadCompleteTime == -1L && this.reload.isComplete()) {
 			this.reloading = false;
 		}

@@ -9,6 +9,7 @@ import dev.quantumfusion.hyphen.HyphenSerializer;
 import dev.quantumfusion.hyphen.SerializerFactory;
 import dev.quantumfusion.hyphen.io.ByteBufferIO;
 import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
+import net.minecraft.client.font.UnihexFont;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -21,6 +22,11 @@ public class Serializer<O> {
 		var factory = SerializerFactory.createDebug(ByteBufferIO.class, aClass);
 		factory.addGlobalAnnotation(ChunkData.class, DataSubclasses.class, new Class[]{ChunkData.class});
 		factory.setClassName(getSerializerClassName(aClass));
+		factory.addGlobalAnnotation(UnihexFont.BitmapGlyph.class, DataSubclasses.class, new Class[]{
+				UnihexFont.FontImage32x16.class,
+				UnihexFont.FontImage16x16.class,
+				UnihexFont.FontImage8x16.class,
+		});
 		factory.addDynamicDef(NativeImageData.class, (clazz, serializerHandler) -> new NativeImageDataDef(serializerHandler, clazz));
 		this.serializer = factory.build();
 	}

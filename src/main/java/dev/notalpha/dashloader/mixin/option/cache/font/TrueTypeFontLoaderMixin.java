@@ -16,10 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(TrueTypeFontLoader.class)
-public class TrueTypeFontLoaderMixin {
-	@Shadow
-	@Final
-	private Identifier filename;
+public abstract class TrueTypeFontLoaderMixin {
+
+	@Shadow public abstract Identifier location();
 
 	@Inject(
 			method = "load",
@@ -28,7 +27,7 @@ public class TrueTypeFontLoaderMixin {
 	)
 	private void loadInject(ResourceManager manager, CallbackInfoReturnable<Font> cir, STBTTFontinfo sTBTTFontinfo) {
 		FontModule.FONT_TO_IDENT.visit(CacheStatus.SAVE, map -> {
-			map.put(sTBTTFontinfo, this.filename);
+			map.put(sTBTTFontinfo, location());
 		});
 	}
 }

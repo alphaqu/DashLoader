@@ -18,10 +18,10 @@ public interface FontStorageAccessor {
 	void setWhiteRectangleGlyphRenderer(GlyphRenderer renderer);
 
 	@Accessor
-	Int2ObjectMap<GlyphRenderer> getGlyphRendererCache();
+	GlyphContainer<GlyphRenderer> getGlyphRendererCache();
 
 	@Accessor
-	Int2ObjectMap<Glyph> getGlyphCache();
+	GlyphContainer<FontStorage.GlyphPair> getGlyphCache();
 
 	@Accessor
 	Int2ObjectMap<IntList> getCharactersByWidth();

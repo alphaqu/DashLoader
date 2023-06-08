@@ -3,6 +3,7 @@ package dev.notalpha.dashloader.client.ui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.notalpha.dashloader.misc.HahaManager;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
@@ -52,7 +53,7 @@ public class DashToast implements Toast {
 
 
 	@Override
-	public Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
+	public Visibility draw(DrawContext context, ToastManager manager, long startTime) {
 		final int width = this.getWidth();
 		final int height = this.getHeight();
 		final int barY = height - PROGRESS_BAR_HEIGHT;
@@ -85,6 +86,7 @@ public class DashToast implements Toast {
 
 
 		// Setup scissor
+		MatrixStack matrices = context.getMatrices();
 		{
 			Vector4f vec = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
 			vec.mul(matrices.peek().getPositionMatrix());
@@ -98,7 +100,7 @@ public class DashToast implements Toast {
 		}
 
 		// Draw the ui
-		DrawerUtil.drawRect(matrices, 0, 0, width, height, DrawerUtil.BACKGROUND_COLOR);
+		DrawerUtil.drawRect(context, 0, 0, width, height, DrawerUtil.BACKGROUND_COLOR);
 
 		// Draw the background lines.
 		this.drawBatched(matrices, (matrix4f, bufferBuilder) -> {
@@ -112,17 +114,17 @@ public class DashToast implements Toast {
 		// Draw progress text
 		String progressText = this.state.getProgressText();
 		int progressTextY = this.fact != null ? barY - PADDING : (barY / 2) + (textRenderer.fontHeight / 2);
-		DrawerUtil.drawText(matrices, textRenderer, PADDING, progressTextY, this.state.getText(), DrawerUtil.STATUS_COLOR);
-		DrawerUtil.drawText(matrices, textRenderer, (width - PADDING) - textRenderer.getWidth(progressText), progressTextY, progressText, DrawerUtil.STATUS_COLOR);
+		DrawerUtil.drawText(context, textRenderer, PADDING, progressTextY, this.state.getText(), DrawerUtil.STATUS_COLOR);
+		DrawerUtil.drawText(context, textRenderer, (width - PADDING) - textRenderer.getWidth(progressText), progressTextY, progressText, DrawerUtil.STATUS_COLOR);
 
 		if (this.fact != null) {
 			// Draw the fun fact
-			DrawerUtil.drawText(matrices, textRenderer, PADDING, textRenderer.fontHeight + PADDING, this.fact, DrawerUtil.FOREGROUND_COLOR);
+			DrawerUtil.drawText(context, textRenderer, PADDING, textRenderer.fontHeight + PADDING, this.fact, DrawerUtil.FOREGROUND_COLOR);
 		}
 
 		// Draw progress bar
-		DrawerUtil.drawRect(matrices, 0, barY, width, PROGRESS_BAR_HEIGHT, DrawerUtil.PROGRESS_TRACK);
-		DrawerUtil.drawRect(matrices, 0, barY, (int) (width * progress), PROGRESS_BAR_HEIGHT, progressColor);
+		DrawerUtil.drawRect(context, 0, barY, width, PROGRESS_BAR_HEIGHT, DrawerUtil.PROGRESS_TRACK);
+		DrawerUtil.drawRect(context, 0, barY, (int) (width * progress), PROGRESS_BAR_HEIGHT, progressColor);
 
 		// Epic rtx graphics. aka i slapped some glow on the things.
 		this.drawBatched(matrices, (matrix4f, bb) -> {

@@ -34,7 +34,7 @@
     "accessor.SpriteAnimationFrameAccessor",
     "accessor.SpriteLoaderStitchResultAccessor",
     "accessor.TrueTypeFontAccessor",
-    "accessor.UnicodeTextureFontAccessor",
+    "accessor.UnihexFontAccessor",
     "accessor.WeightedBakedModelAccessor",
     "accessor.WeightedBakedModelEntryAccessor",
     "accessor.ZipResourcePackAccessor",
@@ -63,7 +63,6 @@
     "defaultRequire": 1
   },
   "client": [
-    "accessor.FontImageAccessor",
     "accessor.ModelIdentifierAccessor",
     "accessor.ShaderStageAccessor$TypeAccessor",
     "accessor.SpriteContentsAccessor",
