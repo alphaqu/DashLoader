@@ -2,7 +2,6 @@ package dev.notalpha.dashloader.registry;
 
 import dev.notalpha.dashloader.DashObjectClass;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.MissingHandler;
 import dev.notalpha.dashloader.api.registry.RegistryAddException;
 import dev.notalpha.dashloader.api.registry.RegistryUtil;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
@@ -26,7 +25,11 @@ public final class RegistryWriterImpl implements RegistryWriter {
 
 	private RegistryWriterImpl(ChunkFactory<?, ?>[] chunks, List<MissingHandler<?>> missingHandlers) {
 		this.target2chunkMappings = new Object2ByteOpenHashMap<>();
+		this.target2chunkMappings.defaultReturnValue((byte) -1);
+
 		this.dash2chunkMappings = new Object2ByteOpenHashMap<>();
+		this.dash2chunkMappings.defaultReturnValue((byte) -1);
+
 		this.missingHandlers = missingHandlers;
 		this.chunks = chunks;
 	}
@@ -79,7 +82,7 @@ public final class RegistryWriterImpl implements RegistryWriter {
 		Integer pointer = null;
 		// If we have a dashObject supporting the target we create using its factory constructor
 		{
-			byte chunkPos = this.target2chunkMappings.getOrDefault(targetClass, (byte) -1);
+			byte chunkPos = this.target2chunkMappings.getByte(targetClass);
 			if (chunkPos != -1) {
 				var chunk = (ChunkFactory<R, D>) this.chunks[chunkPos];
 				var entry = TrackingRegistryWriterImpl.create(this, writer -> {
@@ -98,7 +101,7 @@ public final class RegistryWriterImpl implements RegistryWriter {
 					});
 					if (entry.data != null) {
 						var dashClass = entry.data.getClass();
-						byte chunkPos = this.dash2chunkMappings.getOrDefault(dashClass, (byte) -1);
+						byte chunkPos = this.dash2chunkMappings.getByte(dashClass);
 						if (chunkPos == -1) {
 							throw new RuntimeException("Could not find a ChunkWriter for DashClass " + dashClass);
 						}

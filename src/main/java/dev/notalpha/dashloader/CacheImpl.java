@@ -2,7 +2,7 @@ package dev.notalpha.dashloader;
 
 import dev.notalpha.dashloader.api.DashEntrypoint;
 import dev.notalpha.dashloader.api.DashModule;
-import dev.notalpha.dashloader.api.MissingHandler;
+import dev.notalpha.dashloader.registry.MissingHandler;
 import dev.notalpha.dashloader.api.cache.Cache;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.config.ConfigHandler;
@@ -38,15 +38,17 @@ public final class CacheImpl implements Cache {
 	// DashLoader metadata
 	private final List<DashModule<?>> cacheHandlers;
 	private final List<DashObjectClass<?, ?>> dashObjects;
+	private final List<MissingHandler<?>> missingHandlers;
 
 	// Serializers
 	private final RegistrySerializer registrySerializer;
 	private final MappingSerializer mappingsSerializer;
 
-	CacheImpl(Path cacheDir, List<DashModule<?>> cacheHandlers, List<DashObjectClass<?, ?>> dashObjects) {
+	CacheImpl(Path cacheDir, List<DashModule<?>> cacheHandlers, List<DashObjectClass<?, ?>> dashObjects, List<MissingHandler<?>> missingHandlers) {
 		this.cacheDir = cacheDir;
 		this.cacheHandlers = cacheHandlers;
 		this.dashObjects = dashObjects;
+		this.missingHandlers = missingHandlers;
 		this.registrySerializer = new RegistrySerializer(dashObjects);
 		this.mappingsSerializer = new MappingSerializer(cacheHandlers);
 	}
@@ -122,12 +124,7 @@ public final class CacheImpl implements Cache {
 				taskConsumer.accept(main);
 			}
 
-			// Setup handlers
-			List<MissingHandler<?>> handlers = new ArrayList<>();
-			for (DashEntrypoint entryPoint : FabricLoader.getInstance().getEntrypoints("dashloader", DashEntrypoint.class)) {
-				entryPoint.onDashLoaderSave(handlers);
-			}
-			RegistryWriterImpl factory = RegistryWriterImpl.create(handlers, dashObjects);
+ 			RegistryWriterImpl factory = RegistryWriterImpl.create(missingHandlers, dashObjects);
 
 			// Mappings
 			mappingsSerializer.save(ourDir, factory, cacheHandlers, main);

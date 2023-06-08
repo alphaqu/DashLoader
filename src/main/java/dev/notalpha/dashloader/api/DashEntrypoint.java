@@ -15,10 +15,4 @@ public interface DashEntrypoint {
 	 * @param factory Factory to register your DashObjects/Modules to.
 	 */
 	void onDashLoaderInit(CacheFactory factory);
-
-	/**
-	 * Runs when DashLoader is about to start creating a cache.
-	 * This is where you provide missing handlers for dashloader to use when it fails to serialize an object.
-	 */
-	void onDashLoaderSave(List<MissingHandler<?>> handlers);
 }

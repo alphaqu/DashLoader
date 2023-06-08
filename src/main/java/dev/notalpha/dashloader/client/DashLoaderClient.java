@@ -2,7 +2,6 @@ package dev.notalpha.dashloader.client;
 
 import dev.notalpha.dashloader.api.DashEntrypoint;
 import dev.notalpha.dashloader.api.DashObject;
-import dev.notalpha.dashloader.api.MissingHandler;
 import dev.notalpha.dashloader.api.cache.Cache;
 import dev.notalpha.dashloader.api.cache.CacheFactory;
 import dev.notalpha.dashloader.client.blockstate.DashBlockState;
@@ -53,6 +52,37 @@ public class DashLoaderClient implements DashEntrypoint {
 		factory.addModule(new SplashModule());
 		factory.addModule(new SpriteModule());
 
+		factory.addMissingHandler(
+				Identifier.class,
+				(identifier, registryWriter) -> {
+					if (identifier instanceof ModelIdentifier m) {
+						return new DashModelIdentifier(m);
+					} else {
+						return new DashIdentifier(identifier);
+					}
+				}
+		);
+		factory.addMissingHandler(
+				MultipartModelSelector.class,
+				(selector, writer) -> {
+					if (selector == MultipartModelSelector.TRUE) {
+						return new DashStaticPredicate(true);
+					} else if (selector == MultipartModelSelector.FALSE) {
+						return new DashStaticPredicate(false);
+					} else if (selector instanceof AndMultipartModelSelector s) {
+						return new DashAndPredicate(s, writer);
+					} else if (selector instanceof OrMultipartModelSelector s) {
+						return new DashOrPredicate(s, writer);
+					} else if (selector instanceof SimpleMultipartModelSelector s) {
+						return new DashSimplePredicate(s);
+					} else if (selector instanceof BooleanSelector s) {
+						return new DashStaticPredicate(s.selector);
+					} else {
+						throw new RuntimeException("someone is having fun with lambda selectors again");
+					}
+				}
+		);
+
 		//noinspection unchecked
 		for (Class<? extends DashObject<?>> aClass : new Class[]{
 				DashIdentifier.class,
@@ -80,39 +110,5 @@ public class DashLoaderClient implements DashEntrypoint {
 		}) {
 			factory.addDashObject(aClass);
 		}
-	}
-
-	@Override
-	public void onDashLoaderSave(List<MissingHandler<?>> handlers) {
-		handlers.add(new MissingHandler<>(
-				Identifier.class,
-				(identifier, registryWriter) -> {
-					if (identifier instanceof ModelIdentifier m) {
-						return new DashModelIdentifier(m);
-					} else {
-						return new DashIdentifier(identifier);
-					}
-				}
-		));
-		handlers.add(new MissingHandler<>(
-				MultipartModelSelector.class,
-				(selector, writer) -> {
-					if (selector == MultipartModelSelector.TRUE) {
-						return new DashStaticPredicate(true);
-					} else if (selector == MultipartModelSelector.FALSE) {
-						return new DashStaticPredicate(false);
-					} else if (selector instanceof AndMultipartModelSelector s) {
-						return new DashAndPredicate(s, writer);
-					} else if (selector instanceof OrMultipartModelSelector s) {
-						return new DashOrPredicate(s, writer);
-					} else if (selector instanceof SimpleMultipartModelSelector s) {
-						return new DashSimplePredicate(s);
-					} else if (selector instanceof BooleanSelector s) {
-						return new DashStaticPredicate(s.selector);
-					} else {
-						throw new RuntimeException("someone is having fun with lambda selectors again");
-					}
-				}
-		));
 	}
 }
