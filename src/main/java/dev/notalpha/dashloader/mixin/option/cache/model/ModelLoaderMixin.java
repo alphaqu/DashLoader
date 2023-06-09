@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,16 +49,12 @@ public abstract class ModelLoaderMixin {
 	)
 	private void injectLoadedModels(BlockColors blockColors, Profiler profiler, Map<Identifier, JsonUnbakedModel> jsonUnbakedModels, Map<Identifier, List<ModelLoader.SourceTrackedData>> blockStates, CallbackInfo ci) {
 		ModelModule.MODELS_LOAD.visit(CacheStatus.LOAD, dashModels -> {
-			DashLoader.LOG.info("Injecting {} Cached Models", dashModels.size());
-			Map<Identifier, UnbakedModel> oldUnbakedModels = this.unbakedModels;
-			Map<Identifier, UnbakedModel> oldModelsToBake = this.modelsToBake;
-			this.unbakedModels = new HashMap<>((int) ((oldUnbakedModels.size() + dashModels.size()) / 0.75));
-			this.modelsToBake = new HashMap<>((int) ((oldModelsToBake.size() + dashModels.size()) / 0.75));
-
+			int total = dashModels.size();
+			this.unbakedModels.keySet().forEach(dashModels::remove);
+			this.modelsToBake.keySet().forEach(dashModels::remove);
+			DashLoader.LOG.info("Injecting {}/{} Cached Models", dashModels.size(), total);
 			this.unbakedModels.putAll(dashModels);
-			this.unbakedModels.putAll(oldUnbakedModels);
 			this.modelsToBake.putAll(dashModels);
-			this.modelsToBake.putAll(oldModelsToBake);
 		});
 	}
 
