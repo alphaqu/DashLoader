@@ -66,6 +66,7 @@
     "accessor.ShaderStageAccessor$TypeAccessor",
     "accessor.SpriteContentsAccessor",
     "accessor.VertexFormatAccessor",
+    "option.misc.MipmapHelperMixin",
     "option.misc.ModelLoaderBakedModelCacheKeyMixin"
   ]
 }
