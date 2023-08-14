@@ -31,7 +31,10 @@
   },
   "custom": {
     "dashloader:disableoption": [
-    ]
+    ],
+    "sodium:options": {
+      "mixin.features.shader.uniform": false
+    }
   },
   "breaks": {
     "sodium": "<=0.1.0",
