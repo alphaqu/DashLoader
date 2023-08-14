@@ -26,7 +26,7 @@ public interface CacheFactory {
 	 *
 	 * @param dashClass The class
 	 */
-	void addDashObject(Class<? extends DashObject<?>> dashClass);
+	void addDashObject(Class<? extends DashObject<?, ?>> dashClass);
 
 	/**
 	 * Adds a module to the Cache. Please note only enabled Modules will actually be cached.
@@ -42,7 +42,7 @@ public interface CacheFactory {
 	 *             If this function returns a non-null value, it will use that DashObject for serialization of that object.
 	 * @param <R> The super class of the objects being missed.
 	 */
-	<R> void addMissingHandler(Class<R> rClass, BiFunction<R, RegistryWriter, DashObject<? extends R>> func);
+	<R> void addMissingHandler(Class<R> rClass, BiFunction<R, RegistryWriter, DashObject<? extends R, ?>> func);
 
 	/**
 	 * Builds the cache object.

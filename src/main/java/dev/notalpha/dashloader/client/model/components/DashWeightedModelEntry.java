@@ -2,9 +2,8 @@ package dev.notalpha.dashloader.client.model.components;
 
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
-import dev.notalpha.dashloader.mixin.accessor.WeightedBakedModelEntryAccessor;
+import dev.notalpha.dashloader.client.model.DashWeightedBakedModel;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.util.collection.Weight;
 import net.minecraft.util.collection.Weighted;
 
 public final class DashWeightedModelEntry {
@@ -21,9 +20,8 @@ public final class DashWeightedModelEntry {
 	}
 
 
-	public Weighted.Present<BakedModel> export(RegistryReader handler) {
-		//noinspection unchecked
-		return WeightedBakedModelEntryAccessor.init(handler.get(this.model), Weight.of(this.weight));
+	public DashWeightedBakedModel.DazyImpl.Entry export(RegistryReader handler) {
+		return new DashWeightedBakedModel.DazyImpl.Entry(this.weight, handler.get(this.model));
 	}
 
 	@Override

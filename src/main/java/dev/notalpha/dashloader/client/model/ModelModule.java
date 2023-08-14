@@ -9,6 +9,7 @@ import dev.notalpha.dashloader.api.collection.IntIntList;
 import dev.notalpha.dashloader.api.registry.RegistryAddException;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
+import dev.notalpha.dashloader.client.Dazy;
 import dev.notalpha.dashloader.client.model.fallback.UnbakedBakedModel;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.config.Option;
@@ -84,9 +85,9 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 	public void load(Data data, RegistryReader reader, StepTask task) {
 		final HashMap<Identifier, UnbakedBakedModel> out = new HashMap<>(data.models.list().size());
 		data.models.forEach((key, value) -> {
-			BakedModel model = reader.get(value);
+			Dazy<? extends BakedModel> model = reader.get(value);
 			Identifier identifier = reader.get(key);
-			out.put(identifier, new UnbakedBakedModel(model, identifier));
+			out.put(identifier, new UnbakedBakedModel(model));
 		});
 
 		var missingModelsRead = new HashMap<BlockState, Identifier>();

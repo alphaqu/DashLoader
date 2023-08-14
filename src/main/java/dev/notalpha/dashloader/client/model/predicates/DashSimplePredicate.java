@@ -6,7 +6,7 @@ import dev.notalpha.dashloader.mixin.accessor.SimpleMultipartModelSelectorAccess
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
 
 
-public final class DashSimplePredicate implements DashObject<SimpleMultipartModelSelector> {
+public final class DashSimplePredicate implements DashObject<SimpleMultipartModelSelector, SimpleMultipartModelSelector> {
 	public final String key;
 	public final String valueString;
 

@@ -8,7 +8,7 @@ import dev.notalpha.dashloader.mixin.accessor.UnihexFontAccessor;
 import net.minecraft.client.font.GlyphContainer;
 import net.minecraft.client.font.UnihexFont;
 
-public final class DashUnihexFont implements DashObject<UnihexFont> {
+public final class DashUnihexFont implements DashObject<UnihexFont, UnihexFont> {
 
 
 	public final IntObjectList<UnihexFont.UnicodeTextureGlyph> glyphs;

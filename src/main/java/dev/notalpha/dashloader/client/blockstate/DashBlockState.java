@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
-public final class DashBlockState implements DashObject<BlockState> {
+public final class DashBlockState implements DashObject<BlockState, BlockState> {
 	public static final Identifier ITEM_FRAME = new Identifier("dashloader:itemframewhy");
 	public final int owner;
 	public final int pos;

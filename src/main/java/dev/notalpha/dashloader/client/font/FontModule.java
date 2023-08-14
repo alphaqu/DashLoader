@@ -28,48 +28,62 @@ import java.util.List;
 import java.util.Map;
 
 public class FontModule implements DashModule<FontModule.Data> {
-	public static FontManager FONTMANAGER;
-	public static final CachingData<Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>>> DATA = new CachingData<>();
+	public static final CachingData<ProviderIndex> DATA = new CachingData<>();
 	public static final CachingData<Map<STBTTFontinfo, Identifier>> FONT_TO_IDENT = new CachingData<>();
 
 	@Override
 	public void reset(Cache cache) {
-		DATA.reset(cache, new Object2ObjectOpenHashMap<>());
+		DATA.reset(cache, new ProviderIndex(new HashMap<>(), new ArrayList<>()));
 		FONT_TO_IDENT.reset(cache, new HashMap<>());
 	}
 
 	@Override
 	public Data save(RegistryWriter factory, StepTask task) {
-		var fontMap = new IntObjectList<DashFontStorage>();
-		Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> identifierPairObject2ObjectMap = DATA.get(CacheStatus.SAVE);
-		//noinspection DataFlowIssue
-		identifierPairObject2ObjectMap.forEach((identifier, fontList) -> {
-			List<Integer> fontsOut = new ArrayList<>();
-			for (Font font : fontList.getValue()) {
-				fontsOut.add(factory.add(font));
+		ProviderIndex providerIndex = DATA.get(CacheStatus.SAVE);
+		assert providerIndex != null;
+
+
+		int taskSize = 0;
+		for (List<Font> value : providerIndex.providers.values()) {
+			taskSize += value.size();
+		}
+		taskSize += providerIndex.allProviders.size();
+		task.reset(taskSize);
+
+		var providers = new IntObjectList<List<Integer>>();
+		providerIndex.providers.forEach((identifier, fonts) -> {
+			var values = new ArrayList<Integer>();
+			for (Font font : fonts) {
+				values.add(factory.add(font));
+				task.next();
 			}
-			IntObjectList<List<Integer>> charactersByWidth = new IntObjectList<>();
-			fontList.getKey().forEach(charactersByWidth::put);
-			fontMap.put(factory.add(identifier), new DashFontStorage(charactersByWidth, fontsOut));
-			task.next();
+			providers.put(factory.add(identifier), values);
 		});
 
-		return new Data(fontMap);
+		var allProviders = new ArrayList<Integer>();
+		for (Font allProvider : providerIndex.allProviders) {
+			allProviders.add(factory.add(allProvider));
+			task.next();
+		}
+
+		return new Data(new DashProviderIndex(providers, allProviders));
 	}
 
 	@Override
 	public void load(Data data, RegistryReader reader, StepTask task) {
-		Object2ObjectMap<Identifier, Pair<Int2ObjectMap<IntList>, List<Font>>> out = new Object2ObjectOpenHashMap<>();
-		data.fontMap.forEach((key, value) -> {
-			List<Font> fontsOut = new ArrayList<>();
-			value.fonts.forEach(fontPointer -> fontsOut.add(reader.get(fontPointer)));
-
-			Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<>();
-			value.charactersByWidth.forEach((key1, value1) -> charactersByWidth.put(key1, new IntArrayList(value1)));
-			out.put(reader.get(key), Pair.of(charactersByWidth, fontsOut));
+		ProviderIndex index = new ProviderIndex(new HashMap<>(), new ArrayList<>());
+		data.fontMap.providers.forEach((key, value) -> {
+			var fonts = new ArrayList<Font>();
+			for (Integer i : value) {
+				fonts.add(reader.get(i));
+			}
+			index.providers.put(reader.get(key), fonts);
 		});
 
-		DATA.set(CacheStatus.LOAD, out);
+		data.fontMap.allProviders.forEach((value) -> {
+			index.allProviders.add(reader.get(value));
+		});
+		DATA.set(CacheStatus.LOAD, index);
 	}
 
 	@Override
@@ -83,20 +97,31 @@ public class FontModule implements DashModule<FontModule.Data> {
 	}
 
 	public static final class Data {
-		public final IntObjectList<DashFontStorage> fontMap;
+		public final DashProviderIndex fontMap;
 
-		public Data(IntObjectList<DashFontStorage> fontMap) {
+		public Data(DashProviderIndex fontMap) {
 			this.fontMap = fontMap;
 		}
 	}
 
-	public static final class DashFontStorage {
-		public final IntObjectList<List<Integer>> charactersByWidth;
-		public final List<Integer> fonts;
+	public static final class DashProviderIndex {
+		public final IntObjectList<List<Integer>> providers;
+		public final List<Integer> allProviders;
 
-		public DashFontStorage(IntObjectList<List<Integer>> charactersByWidth, List<Integer> fonts) {
-			this.charactersByWidth = charactersByWidth;
-			this.fonts = fonts;
+		public DashProviderIndex(IntObjectList<List<Integer>> providers, List<Integer> allProviders) {
+			this.providers = providers;
+			this.allProviders = allProviders;
+		}
+	}
+
+	public static final class ProviderIndex {
+		public final Map<Identifier, List<Font>> providers;
+		public final List<Font> allProviders;
+
+
+		public ProviderIndex(Map<Identifier, List<Font>> providers, List<Font> allProviders) {
+			this.providers = providers;
+			this.allProviders = allProviders;
 		}
 	}
 }

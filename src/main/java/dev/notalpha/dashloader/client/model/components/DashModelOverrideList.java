@@ -2,11 +2,15 @@ package dev.notalpha.dashloader.client.model.components;
 
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
+import dev.notalpha.dashloader.client.Dazy;
 import dev.notalpha.dashloader.mixin.accessor.ModelOverrideListAccessor;
 import net.minecraft.client.render.model.json.ModelOverrideList;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 public final class DashModelOverrideList {
 	public final DashModelOverrideListBakedOverride[] overrides;
@@ -33,23 +37,18 @@ public final class DashModelOverrideList {
 		}
 	}
 
-	public ModelOverrideList export(RegistryReader reader) {
-		var out = ModelOverrideListAccessor.newModelOverrideList();
-		ModelOverrideListAccessor access = (ModelOverrideListAccessor) out;
-
+	public DazyImpl export(RegistryReader reader) {
 		var conditionTypesOut = new Identifier[this.conditionTypes.length];
 		for (int i = 0; i < this.conditionTypes.length; i++) {
 			conditionTypesOut[i] = reader.get(this.conditionTypes[i]);
 		}
 
-		var overridesOut = new ModelOverrideList.BakedOverride[this.overrides.length];
+		var overridesOut = new DashModelOverrideListBakedOverride.DazyImpl[this.overrides.length];
 		for (int i = 0; i < this.overrides.length; i++) {
 			overridesOut[i] = this.overrides[i].export(reader);
 		}
 
-		access.setConditionTypes(conditionTypesOut);
-		access.setOverrides(overridesOut);
-		return out;
+		return new DazyImpl(overridesOut, conditionTypesOut);
 	}
 
 	@Override
@@ -69,5 +68,29 @@ public final class DashModelOverrideList {
 		int result = Arrays.hashCode(overrides);
 		result = 31 * result + Arrays.hashCode(conditionTypes);
 		return result;
+	}
+
+	public static class DazyImpl extends Dazy<ModelOverrideList> {
+		public final DashModelOverrideListBakedOverride.DazyImpl[] overrides;
+		public final Identifier[] conditionTypes; //identifiers
+
+		public DazyImpl(DashModelOverrideListBakedOverride.DazyImpl[] overrides, Identifier[] conditionTypes) {
+			this.overrides = overrides;
+			this.conditionTypes = conditionTypes;
+		}
+
+		@Override
+		protected ModelOverrideList resolve(Function<SpriteIdentifier, Sprite> spriteLoader) {
+			var out = ModelOverrideListAccessor.newModelOverrideList();
+			ModelOverrideListAccessor access = (ModelOverrideListAccessor) out;
+
+			var overridesOut = new ModelOverrideList.BakedOverride[this.overrides.length];
+			for (int i = 0; i < this.overrides.length; i++) {
+				overridesOut[i] = this.overrides[i].get(spriteLoader);
+			}
+			access.setConditionTypes(conditionTypes);
+			access.setOverrides(overridesOut);
+			return out;
+		}
 	}
 }

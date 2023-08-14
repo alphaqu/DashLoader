@@ -1,6 +1,7 @@
 package dev.notalpha.dashloader.mixin.main;
 
 import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import net.minecraft.client.Keyboard;
 import org.lwjgl.glfw.GLFW;
@@ -28,8 +29,10 @@ public class KeyboardMixin {
 	)
 	private void f3tReloadWorld(int key, CallbackInfoReturnable<Boolean> cir) {
 		if (!this.shiftHeld) {
-			DashLoader.LOG.info("Clearing cache.");
-			DashLoaderClient.CACHE.remove();
+			if (DashLoaderClient.CACHE.getStatus() == CacheStatus.IDLE) {
+				DashLoader.LOG.info("Clearing cache.");
+				DashLoaderClient.CACHE.remove();
+			}
 		}
 	}
 

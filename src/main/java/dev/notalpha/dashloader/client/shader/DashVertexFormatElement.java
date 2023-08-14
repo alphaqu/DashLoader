@@ -9,7 +9,7 @@ import net.minecraft.client.render.VertexFormats;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DashVertexFormatElement implements DashObject<VertexFormatElement> {
+public class DashVertexFormatElement implements DashObject<VertexFormatElement, VertexFormatElement> {
 	public static final List<VertexFormatElement> BUILT_IN = new ArrayList<>();
 
 	static {

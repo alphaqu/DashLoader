@@ -5,7 +5,7 @@ import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.thread.ThreadHandler;
 
-public class ChunkData<R, D extends DashObject<R>> {
+public class ChunkData<R, D extends DashObject<R, ?>> {
 	public final byte chunkId;
 	public final String name;
 	public final DashObjectClass<?, ?> dashObject;

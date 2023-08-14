@@ -10,7 +10,7 @@ import net.minecraft.client.font.GlyphContainer;
 
 import java.util.ArrayList;
 
-public final class DashBitmapFont implements DashObject<BitmapFont> {
+public final class DashBitmapFont implements DashObject<BitmapFont, BitmapFont> {
 	public final int image;
 	public final IntObjectList<DashBitmapFontGlyph> glyphs;
 

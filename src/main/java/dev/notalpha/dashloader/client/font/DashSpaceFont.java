@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.SpaceFont;
 
-public final class DashSpaceFont implements DashObject<SpaceFont> {
+public final class DashSpaceFont implements DashObject<SpaceFont, SpaceFont> {
 	public final int[] ints;
 	public final float[] floats;
 

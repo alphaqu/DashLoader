@@ -3,7 +3,7 @@ package dev.notalpha.dashloader.client.model.predicates;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 
-public final class DashStaticPredicate implements DashObject<BooleanSelector> {
+public final class DashStaticPredicate implements DashObject<BooleanSelector, BooleanSelector> {
 	public final boolean value;
 
 	public DashStaticPredicate(boolean value) {

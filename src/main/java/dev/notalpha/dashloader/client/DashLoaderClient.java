@@ -8,6 +8,7 @@ import dev.notalpha.dashloader.client.blockstate.DashBlockState;
 import dev.notalpha.dashloader.client.font.*;
 import dev.notalpha.dashloader.client.identifier.DashIdentifier;
 import dev.notalpha.dashloader.client.identifier.DashModelIdentifier;
+import dev.notalpha.dashloader.client.identifier.DashSpriteIdentifier;
 import dev.notalpha.dashloader.client.model.*;
 import dev.notalpha.dashloader.client.model.components.DashBakedQuad;
 import dev.notalpha.dashloader.client.model.components.DashBakedQuadCollection;
@@ -24,6 +25,7 @@ import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 
@@ -62,6 +64,11 @@ public class DashLoaderClient implements DashEntrypoint {
 					}
 				}
 		);
+
+		factory.addMissingHandler(
+				Sprite.class,
+				DashSprite::new
+		);
 		factory.addMissingHandler(
 				MultipartModelSelector.class,
 				(selector, writer) -> {
@@ -84,7 +91,7 @@ public class DashLoaderClient implements DashEntrypoint {
 		);
 
 		//noinspection unchecked
-		for (Class<? extends DashObject<?>> aClass : new Class[]{
+		for (Class<? extends DashObject<?, ?>> aClass : new Class[]{
 				DashIdentifier.class,
 				DashModelIdentifier.class,
 				DashBasicBakedModel.class,
@@ -93,6 +100,7 @@ public class DashLoaderClient implements DashEntrypoint {
 				DashWeightedBakedModel.class,
 				DashBakedQuad.class,
 				DashBakedQuadCollection.class,
+				DashSpriteIdentifier.class,
 				DashAndPredicate.class,
 				DashOrPredicate.class,
 				DashSimplePredicate.class,

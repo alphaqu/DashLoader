@@ -6,7 +6,7 @@ import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.mixin.accessor.ModelIdentifierAccessor;
 import net.minecraft.client.util.ModelIdentifier;
 
-public final class DashModelIdentifier implements DashObject<ModelIdentifier> {
+public final class DashModelIdentifier implements DashObject<ModelIdentifier, ModelIdentifier> {
 	public final String namespace;
 	public final String path;
 	public final String variant;

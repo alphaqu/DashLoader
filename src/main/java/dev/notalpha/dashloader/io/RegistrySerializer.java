@@ -47,7 +47,7 @@ public class RegistrySerializer {
 		}
 	}
 
-	public <D extends DashObject<?>> Serializer<D> getSerializer(DashObjectClass<?, D> dashObject) {
+	public <D extends DashObject<?, ?>> Serializer<D> getSerializer(DashObjectClass<?, D> dashObject) {
 		return (Serializer<D>) this.serializers.get(dashObject.getDashClass());
 	}
 

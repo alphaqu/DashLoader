@@ -12,7 +12,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChunkFactory<R, D extends DashObject<R>> {
+public class ChunkFactory<R, D extends DashObject<R, ?>> {
 	public final byte chunkId;
 	public final String name;
 	public final DashObjectClass<R, D> dashObject;

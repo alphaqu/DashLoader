@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
  * @param <R> Raw
  * @param <D> Dashable
  */
-public final class DashObjectClass<R, D extends DashObject<R>> {
+public final class DashObjectClass<R, D extends DashObject<R, ?>> {
 	private final Class<D> dashClass;
 	@Nullable
 	private Class<R> targetClass;

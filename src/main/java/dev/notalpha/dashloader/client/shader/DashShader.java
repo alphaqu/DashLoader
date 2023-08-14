@@ -15,7 +15,7 @@ import net.minecraft.client.gl.ShaderProgram;
 
 import java.util.*;
 
-public final class DashShader implements DashObject<ShaderProgram> {
+public final class DashShader implements DashObject<ShaderProgram, ShaderProgram> {
 	public final Map<String, Sampler> samplers;
 	public final String name;
 	public final DashGlBlendState blendState;

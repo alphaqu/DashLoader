@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DashVertexFormat implements DashObject<VertexFormat> {
+public class DashVertexFormat implements DashObject<VertexFormat, VertexFormat> {
 	public static final List<VertexFormat> BUILT_IN = new ArrayList<>();
 
 	static {

@@ -3,107 +3,42 @@ package dev.notalpha.dashloader.mixin.option.cache.font;
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.font.FontModule;
-import dev.notalpha.dashloader.mixin.accessor.FontManagerAccessor;
-import dev.notalpha.dashloader.mixin.accessor.FontStorageAccessor;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.client.font.BuiltinEmptyGlyph;
-import net.minecraft.client.font.Font;
+import dev.notalpha.dashloader.mixin.accessor.FontManagerProviderIndexAccessor;
 import net.minecraft.client.font.FontManager;
-import net.minecraft.client.font.FontStorage;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
-import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.List;
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
-@Mixin(targets = "net/minecraft/client/font/FontManager$1")
+@Mixin(FontManager.class)
 public class FontManagerOverride {
 
-	@SuppressWarnings("UnresolvedMixinReference")
 	@Inject(
-			method = {"method_18638", "prepare*"},
+			method = "loadIndex",
 			at = @At(value = "HEAD"),
 			cancellable = true
 	)
-	private void overridePrepare(ResourceManager resourceManager, Profiler profiler, CallbackInfoReturnable<Map<Identifier, List<Font>>> cir) {
+	private void loadFonts(ResourceManager resourceManager, Executor executor, CallbackInfoReturnable<CompletableFuture<FontManager.ProviderIndex>> cir) {
 		FontModule.DATA.visit(CacheStatus.LOAD, data -> {
-			DashLoader.LOG.info("Preparing fonts");
-			Map<Identifier, List<Font>> out = new Object2ObjectOpenHashMap<>();
-			data.forEach(
-					(identifier, int2ObjectMapListPair) -> out.put(identifier, int2ObjectMapListPair.getValue())
-			);
-			cir.setReturnValue(out);
+			DashLoader.LOG.info("Providing fonts");
+			cir.setReturnValue(CompletableFuture.completedFuture(FontManagerProviderIndexAccessor.create(data.providers, data.allProviders)));
 		});
 	}
 
-	@SuppressWarnings("UnresolvedMixinReference")
 	@Inject(
-			method = {"method_18635", "apply*"},
-			at = @At(value = "HEAD"),
-			cancellable = true
+			method = "reload(Lnet/minecraft/client/font/FontManager$ProviderIndex;Lnet/minecraft/util/profiler/Profiler;)V",
+			at = @At(value = "HEAD")
 	)
-	private void overrideApply(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		FontModule.DATA.visit(CacheStatus.LOAD, data -> {
-			profiler.startTick();
-			profiler.push("closing");
-			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) FontModule.FONTMANAGER;
-			final Map<Identifier, FontStorage> fontStorages = fontManagerAccessor.getFontStorages();
-
-			fontStorages.values().forEach(FontStorage::close);
-			fontStorages.clear();
-
-			DashLoader.LOG.info("Applying fonts off-thread");
-			profiler.swap("reloading");
-			data.forEach((identifier, entry) -> {
-				FontStorage fontStorage = new FontStorage(fontManagerAccessor.getTextureManager(), identifier);
-				FontStorageAccessor access = (FontStorageAccessor) fontStorage;
-				access.callCloseFonts();
-				access.callCloseGlyphAtlases();
-				access.getGlyphRendererCache().clear();
-				access.getGlyphCache().clear();
-				access.getCharactersByWidth().clear();
-				access.setBlankGlyphRenderer(BuiltinEmptyGlyph.MISSING.bake(access::callGetGlyphRenderer));
-				access.setWhiteRectangleGlyphRenderer(BuiltinEmptyGlyph.WHITE.bake(access::callGetGlyphRenderer));
-
-				access.getCharactersByWidth().putAll(entry.getKey());
-				access.getFonts().addAll(entry.getValue());
-				fontStorages.put(identifier, fontStorage);
-			});
-
-			profiler.pop();
-			profiler.endTick();
-			ci.cancel();
-		});
-	}
-
-	@SuppressWarnings("UnresolvedMixinReference")
-	@Inject(method = {"method_18635", "apply*"}, at = @At(value = "TAIL"))
-	private void applyInject(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
-		FontModule.DATA.visit(CacheStatus.SAVE, data -> {
-			data.clear();
-			final FontManagerAccessor fontManagerAccessor = (FontManagerAccessor) FontModule.FONTMANAGER;
-			final Map<Identifier, FontStorage> fontStorages = fontManagerAccessor.getFontStorages();
-			fontStorages.forEach((identifier, fontStorage) -> {
-				var access = ((FontStorageAccessor) fontStorage);
-				data.put(identifier, Pair.of(access.getCharactersByWidth(), access.getFonts()));
-			});
-		});
-	}
-
-	@Mixin(FontManager.class)
-	private static class LeoFontSolution {
-		@Inject(method = "<init>", at = @At(value = "TAIL"))
-		private void initInject(TextureManager manager, CallbackInfo ci) {
-			FontModule.FONTMANAGER = ((FontManager) (Object) this);
+	private void saveFonts(FontManager.ProviderIndex index, Profiler profiler, CallbackInfo ci) {
+		if (FontModule.DATA.active(CacheStatus.SAVE)) {
+			DashLoader.LOG.info("Saving fonts");
+			FontModule.DATA.set(CacheStatus.SAVE, new FontModule.ProviderIndex(index.providers(), index.allProviders()));
 		}
 	}
-
 }

@@ -9,7 +9,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
-public final class DashImage implements DashObject<NativeImage> {
+public final class DashImage implements DashObject<NativeImage, NativeImage> {
 	public final NativeImageData image;
 	public final NativeImage.Format format;
 	public final boolean useSTB;

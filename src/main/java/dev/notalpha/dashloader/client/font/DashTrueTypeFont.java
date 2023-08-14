@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public final class DashTrueTypeFont implements DashObject<TrueTypeFont> {
+public final class DashTrueTypeFont implements DashObject<TrueTypeFont, TrueTypeFont> {
 	public final byte[] ttfBuffer;
 	public final float oversample;
 	public final List<Integer> excludedCharacters;

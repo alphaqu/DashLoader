@@ -6,10 +6,10 @@ import dev.notalpha.dashloader.api.registry.RegistryReader;
  * A DashObject is responsible for making normal objects serializable
  * by mapping them to a more serializable format and deduplicating inner objects through the registry.
  *
- * @param <R> The target object which it's adding support to.
+ * @param <I> The target object which it's adding support to.
  */
 @SuppressWarnings("unused")
-public interface DashObject<R> {
+public interface DashObject<I, O> {
 	/**
 	 * Runs before export on the main thread.
 	 *
@@ -25,7 +25,7 @@ public interface DashObject<R> {
 	 * Note: This runs in parallel meaning that it does not run on the Main thread. If you need to load things on the main thread use {@link DashObject#postExport(RegistryReader)}
 	 */
 	@SuppressWarnings("unused")
-	R export(RegistryReader reader);
+	O export(RegistryReader reader);
 
 	/**
 	 * Runs after export on the main thread.

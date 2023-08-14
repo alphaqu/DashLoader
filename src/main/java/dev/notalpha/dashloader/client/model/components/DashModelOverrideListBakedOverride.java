@@ -2,14 +2,18 @@ package dev.notalpha.dashloader.client.model.components;
 
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
+import dev.notalpha.dashloader.client.Dazy;
 import dev.notalpha.dashloader.mixin.accessor.ModelOverrideListBakedOverrideAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 
 public final class DashModelOverrideListBakedOverride {
 	public final DashModelOverrideListInlinedCondition[] conditions;
@@ -32,13 +36,13 @@ public final class DashModelOverrideListBakedOverride {
 		}
 	}
 
-	public ModelOverrideList.BakedOverride export(RegistryReader reader) {
+	public DazyImpl export(RegistryReader reader) {
 		var conditionsOut = new ModelOverrideList.InlinedCondition[this.conditions.length];
 		for (int i = 0; i < this.conditions.length; i++) {
 			conditionsOut[i] = this.conditions[i].export();
 		}
 
-		return ModelOverrideListBakedOverrideAccessor.newModelOverrideListBakedOverride(conditionsOut, this.model == null ? null : reader.get(this.model));
+		return new DazyImpl(conditionsOut, this.model == null ? null : reader.get(this.model));
 	}
 
 	@Override
@@ -58,5 +62,23 @@ public final class DashModelOverrideListBakedOverride {
 		int result = Arrays.hashCode(conditions);
 		result = 31 * result + (model != null ? model.hashCode() : 0);
 		return result;
+	}
+
+
+	public static class DazyImpl extends Dazy<ModelOverrideList.BakedOverride> {
+		public final ModelOverrideList.InlinedCondition[] conditions;
+		@Nullable
+		public final Dazy<? extends BakedModel> model;
+
+		public DazyImpl(ModelOverrideList.InlinedCondition[] conditions, Dazy<? extends BakedModel> model) {
+			this.conditions = conditions;
+			this.model = model;
+		}
+
+		@Override
+		protected ModelOverrideList.BakedOverride resolve(Function<SpriteIdentifier, Sprite> spriteLoader) {
+			BakedModel bakedModel = model == null ? null : model.get(spriteLoader);
+			return ModelOverrideListBakedOverrideAccessor.newModelOverrideListBakedOverride(conditions, bakedModel);
+		}
 	}
 }

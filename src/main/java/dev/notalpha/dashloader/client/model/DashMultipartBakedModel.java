@@ -4,20 +4,24 @@ import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
+import dev.notalpha.dashloader.client.Dazy;
 import dev.notalpha.dashloader.mixin.accessor.MultipartBakedModelAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.MultipartBakedModel;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> {
+public class DashMultipartBakedModel implements DashObject<MultipartBakedModel, DashMultipartBakedModel.DazyImpl> {
 	public final List<Component> components;
 
 	public DashMultipartBakedModel(List<Component> components) {
@@ -45,21 +49,16 @@ public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> 
 	}
 
 	@Override
-	public MultipartBakedModel export(RegistryReader reader) {
-		List<Pair<Predicate<BlockState>, BakedModel>> componentsOut = new ArrayList<>(this.components.size());
+	public DazyImpl export(RegistryReader reader) {
+		List<DazyImpl.Component> componentsOut = new ArrayList<>(this.components.size());
 		this.components.forEach(component -> {
-			BakedModel compModel = reader.get(component.model);
+			Dazy<? extends BakedModel> compModel = reader.get(component.model);
 			Identifier compIdentifier = reader.get(component.identifier);
 			MultipartModelSelector compSelector = reader.get(component.selector);
 			Predicate<BlockState> predicate = compSelector.getPredicate(ModelModule.getStateManager(compIdentifier));
-			componentsOut.add(Pair.of(predicate, compModel));
+			componentsOut.add(new DazyImpl.Component(compModel, predicate));
 		});
-
-		MultipartBakedModel multipartBakedModel = new MultipartBakedModel(componentsOut);
-		MultipartBakedModelAccessor access = (MultipartBakedModelAccessor) multipartBakedModel;
-		// Fixes race condition which strangely does not happen in vanilla a ton?
-		access.setStateCache(Collections.synchronizedMap(access.getStateCache()));
-		return multipartBakedModel;
+		return new DazyImpl(componentsOut);
 	}
 
 	public static final class Component {
@@ -108,6 +107,42 @@ public class DashMultipartBakedModel implements DashObject<MultipartBakedModel> 
 	@Override
 	public int hashCode() {
 		return components.hashCode();
+	}
+
+	public static class DazyImpl extends Dazy<MultipartBakedModel> {
+		public final List<Component> components;
+
+		public DazyImpl(List<Component> components) {
+			this.components = components;
+		}
+
+		@Override
+		protected MultipartBakedModel resolve(Function<SpriteIdentifier, Sprite> spriteLoader) {
+			List<Pair<Predicate<BlockState>, BakedModel>> componentsOut = new ArrayList<>(this.components.size());
+
+			for (Component component : components) {
+				var model = component.model.get(spriteLoader);
+				var selector = component.selector;
+				componentsOut.add(Pair.of(selector, model));
+			}
+
+			MultipartBakedModel multipartBakedModel = new MultipartBakedModel(componentsOut);
+			MultipartBakedModelAccessor access = (MultipartBakedModelAccessor) multipartBakedModel;
+			// Fixes race condition which strangely does not happen in vanilla a ton?
+			access.setStateCache(Collections.synchronizedMap(access.getStateCache()));
+			return multipartBakedModel;
+		}
+
+
+		public static class Component {
+			public final Dazy<? extends BakedModel> model;
+			public final Predicate<BlockState> selector;
+
+			public Component(Dazy<? extends BakedModel> model, Predicate<BlockState> selector) {
+				this.model = model;
+				this.selector = selector;
+			}
+		}
 	}
 }
 

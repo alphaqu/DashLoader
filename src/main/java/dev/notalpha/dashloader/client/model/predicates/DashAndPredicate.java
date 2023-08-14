@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public final class DashAndPredicate implements DashObject<AndMultipartModelSelector> {
+public final class DashAndPredicate implements DashObject<AndMultipartModelSelector, AndMultipartModelSelector> {
 	public final int[] selectors;
 
 	public DashAndPredicate(int[] selectors) {

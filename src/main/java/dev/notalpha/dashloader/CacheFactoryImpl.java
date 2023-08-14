@@ -29,7 +29,7 @@ public class CacheFactoryImpl implements CacheFactory {
 	}
 
 	@Override
-	public void addDashObject(Class<? extends DashObject<?>> dashClass) {
+	public void addDashObject(Class<? extends DashObject<?, ?>> dashClass) {
 		final Class<?>[] interfaces = dashClass.getInterfaces();
 		if (interfaces.length == 0) {
 			LOGGER.error("No DashObject interface found. Class: {}", dashClass.getSimpleName());
@@ -45,7 +45,7 @@ public class CacheFactoryImpl implements CacheFactory {
 	}
 
 	@Override
-	public <R> void addMissingHandler(Class<R> rClass, BiFunction<R, RegistryWriter, DashObject<? extends R>> func) {
+	public <R> void addMissingHandler(Class<R> rClass, BiFunction<R, RegistryWriter, DashObject<? extends R, ?>> func) {
 		this.missingHandlers.add(new MissingHandler<>(rClass, func));
 	}
 

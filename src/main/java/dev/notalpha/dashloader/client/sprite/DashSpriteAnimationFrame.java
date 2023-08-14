@@ -5,7 +5,7 @@ import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.mixin.accessor.SpriteAnimationFrameAccessor;
 import net.minecraft.client.texture.SpriteContents;
 
-public final class DashSpriteAnimationFrame implements DashObject<SpriteContents.AnimationFrame> {
+public final class DashSpriteAnimationFrame implements DashObject<SpriteContents.AnimationFrame, SpriteContents.AnimationFrame> {
 	public final int index;
 	public final int time;
 

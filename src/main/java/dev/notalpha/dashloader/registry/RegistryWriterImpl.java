@@ -34,7 +34,7 @@ public final class RegistryWriterImpl implements RegistryWriter {
 		this.chunks = chunks;
 	}
 
-	public static <R, D extends DashObject<R>> RegistryWriterImpl create(List<MissingHandler<?>> missingHandlers, List<DashObjectClass<?, ?>> dashObjects) {
+	public static <R, D extends DashObject<R, ?>> RegistryWriterImpl create(List<MissingHandler<?>> missingHandlers, List<DashObjectClass<?, ?>> dashObjects) {
 		if (dashObjects.size() > 63) {
 			throw new RuntimeException("Hit group limit of 63. Please contact notalpha if you hit this limit!");
 		}
@@ -69,7 +69,7 @@ public final class RegistryWriterImpl implements RegistryWriter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <R, D extends DashObject<R>> int addObject(R object) {
+	private <R, D extends DashObject<R,?>> int addObject(R object) {
 		if (this.dedup.containsKey(object)) {
 			return this.dedup.get(object);
 		}

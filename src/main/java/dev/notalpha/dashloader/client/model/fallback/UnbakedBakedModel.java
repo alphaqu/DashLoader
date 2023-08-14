@@ -1,5 +1,6 @@
 package dev.notalpha.dashloader.client.model.fallback;
 
+import dev.notalpha.dashloader.client.Dazy;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.Baker;
 import net.minecraft.client.render.model.ModelBakeSettings;
@@ -18,12 +19,10 @@ import java.util.function.Function;
 /**
  * An unbaked model which holds a baked model, used for fallback to reuse cached models.
  */
-public class UnbakedBakedModel extends JsonUnbakedModel implements UnbakedModel {
-	private final BakedModel bakedModel;
+public class UnbakedBakedModel implements UnbakedModel {
+	private final Dazy<? extends BakedModel> bakedModel;
 
-	public UnbakedBakedModel(BakedModel bakedModel, Identifier identifier) {
-		super(null, List.of(), Map.of(), bakedModel.useAmbientOcclusion(), GuiLight.ITEM, ModelTransformation.NONE, List.of());
-		this.id = identifier.toString();
+	public UnbakedBakedModel(Dazy<? extends BakedModel> bakedModel) {
 		this.bakedModel = bakedModel;
 	}
 
@@ -38,6 +37,6 @@ public class UnbakedBakedModel extends JsonUnbakedModel implements UnbakedModel 
 
 	@Override
 	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-		return this.bakedModel;
+		return this.bakedModel.get(textureGetter);
 	}
 }
