@@ -114,7 +114,7 @@ curseforge {
         releaseType = 'beta'
 
         addGameVersion "1.20"
-        addGameVersion "1.20-1"
+        addGameVersion "1.20.1"
         addGameVersion "Fabric"
         addGameVersion "Quilt"
         addGameVersion "Java 17"
