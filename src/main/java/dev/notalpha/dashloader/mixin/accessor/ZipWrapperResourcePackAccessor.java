@@ -6,8 +6,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.io.File;
 
-@Mixin(ZipResourcePack.class)
-public interface ZipResourcePackAccessor {
+@Mixin(ZipResourcePack.ZipFileWrapper.class)
+public interface ZipWrapperResourcePackAccessor {
 	@Accessor
-	ZipResourcePack.ZipFileWrapper getZipFile();
+	File getFile();
 }

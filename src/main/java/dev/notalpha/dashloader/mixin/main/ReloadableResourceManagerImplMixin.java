@@ -4,6 +4,7 @@ import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import dev.notalpha.dashloader.misc.ProfilerUtil;
 import dev.notalpha.dashloader.mixin.accessor.ZipResourcePackAccessor;
+import dev.notalpha.dashloader.mixin.accessor.ZipWrapperResourcePackAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.*;
 import net.minecraft.util.Unit;
@@ -35,7 +36,7 @@ public class ReloadableResourceManagerImplMixin {
 			if (Objects.equals(pack.getName(), "server")) {
 				if (pack instanceof ZipResourcePack zipResourcePack) {
 					ZipResourcePackAccessor zipPack = (ZipResourcePackAccessor) zipResourcePack;
-					Path path = zipPack.getBackingZipFile().toPath();
+					Path path = ((ZipWrapperResourcePackAccessor)zipPack.getZipFile()).getFile().toPath();
 					values.add(path.toString());
 				}
 			}

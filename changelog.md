@@ -1,6 +1,5 @@
-# Fixes
-- Fix sodium 0.5 incompatibility
+# Features
+- 1.20.2
+- Fast mipmaps
+- More stable font and sprite resolution
 
-# Internal Changes
-- Switch to vineflower
-- Update loom

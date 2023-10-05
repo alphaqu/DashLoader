@@ -38,6 +38,7 @@
     "accessor.WeightedBakedModelAccessor",
     "accessor.WeightedBakedModelEntryAccessor",
     "accessor.ZipResourcePackAccessor",
+    "accessor.ZipWrapperResourcePackAccessor",
     "main.BootstrapMixin",
     "main.KeyboardMixin",
     "main.MainMixin",
