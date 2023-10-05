@@ -79,9 +79,6 @@ public final class DashBakedQuad implements DashObject<BakedQuad, DashBakedQuad.
 		@Override
 		protected BakedQuad resolve(Function<SpriteIdentifier, Sprite> spriteLoader) {
 			Sprite sprite = this.sprite.get(spriteLoader);
-			if (sprite.getClass() != Sprite.class) {
-				System.out.println(sprite);
-			}
 			return new BakedQuad(vertexData, colorIndex, face, sprite, shade);
 		}
 	}

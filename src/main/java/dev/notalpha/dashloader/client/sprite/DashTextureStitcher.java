@@ -1,6 +1,9 @@
 package dev.notalpha.dashloader.client.sprite;
 
 import dev.notalpha.dashloader.DashLoader;
+import dev.notalpha.dashloader.api.collection.IntObjectList;
+import dev.notalpha.dashloader.api.registry.RegistryReader;
+import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import net.minecraft.client.texture.TextureStitcher;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -10,10 +13,10 @@ import java.util.Map;
 
 public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends TextureStitcher<T> {
 	@Nullable
-	private Data<T> data;
+	private ExportedData<T> data;
 	private int remainingSlots;
 
-	public DashTextureStitcher(int maxWidth, int maxHeight, int mipLevel, @Nullable Data<T> data) {
+	public DashTextureStitcher(int maxWidth, int maxHeight, int mipLevel, @Nullable ExportedData<T> data) {
 		super(maxWidth, maxHeight, mipLevel);
 		this.data = data;
 		this.remainingSlots = data == null ? 0 : data.slots.size();
@@ -112,23 +115,48 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 	}
 
 	public static class Data<T extends TextureStitcher.Stitchable> {
-		public final Map<Identifier, DashTextureSlot<T>> slots;
+		public final IntObjectList<DashTextureSlot<T>> slots;
 		public final int width;
 		public final int height;
 
-		public Data(Map<Identifier, DashTextureSlot<T>> slots, int width, int height) {
+		public Data(IntObjectList<DashTextureSlot<T>> slots, int width, int height) {
 			this.slots = slots;
 			this.width = width;
 			this.height = height;
 		}
 
-		public Data(TextureStitcher<T> stitcher) {
-			this.slots = new HashMap<>();
+		public Data(RegistryWriter factory, TextureStitcher<T> stitcher) {
+			this.slots = new IntObjectList<>();
 			stitcher.getStitchedSprites((info, x, y) -> {
-				this.slots.put(info.getId(), new DashTextureSlot<>(x, y, info.getWidth(), info.getHeight()));
+				this.slots.put(factory.add(info.getId()), new DashTextureSlot<>(x, y, info.getWidth(), info.getHeight()));
 			});
 			this.width = stitcher.getWidth();
 			this.height = stitcher.getHeight();
+		}
+
+		public ExportedData<T> export(RegistryReader reader) {
+			var output = new HashMap<Identifier, DashTextureSlot<T>>();
+			this.slots.forEach((key, value) -> {
+				output.put(reader.get(key), value);
+			});
+
+			return new ExportedData<>(
+					output,
+					width,
+					height
+			);
+		}
+	}
+
+	public static class ExportedData<T extends TextureStitcher.Stitchable> {
+		public final Map<Identifier, DashTextureSlot<T>> slots;
+		public final int width;
+		public final int height;
+
+		public ExportedData(Map<Identifier, DashTextureSlot<T>> slots, int width, int height) {
+			this.slots = slots;
+			this.width = width;
+			this.height = height;
 		}
 	}
 }

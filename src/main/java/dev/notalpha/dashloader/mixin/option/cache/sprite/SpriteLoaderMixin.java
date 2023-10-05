@@ -2,7 +2,7 @@ package dev.notalpha.dashloader.mixin.option.cache.sprite;
 
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.sprite.DashTextureStitcher;
-import dev.notalpha.dashloader.client.sprite.SpriteModule;
+import dev.notalpha.dashloader.client.sprite.SpriteStitcherModule;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.TextureStitcher;
@@ -32,8 +32,8 @@ public final class SpriteLoaderMixin {
 			at = @At(value = "NEW", target = "(III)Lnet/minecraft/client/texture/TextureStitcher;")
 	)
 	private TextureStitcher dashloaderStitcherLoad(int maxWidth, int maxHeight, int mipLevel) {
-		if (SpriteModule.STITCHERS_LOAD.active(CacheStatus.LOAD)) {
-			var map = SpriteModule.STITCHERS_LOAD.get(CacheStatus.LOAD);
+		if (SpriteStitcherModule.STITCHERS_LOAD.active(CacheStatus.LOAD)) {
+			var map = SpriteStitcherModule.STITCHERS_LOAD.get(CacheStatus.LOAD);
 			var data = map.get(id);
 			if (data != null) {
 				return new DashTextureStitcher(maxWidth, maxHeight, mipLevel, data);
@@ -49,7 +49,7 @@ public final class SpriteLoaderMixin {
 			locals = LocalCapture.CAPTURE_FAILSOFT
 	)
 	private void dashloaderStitcherSave(List<SpriteContents> sprites, int mipLevel, Executor executor, CallbackInfoReturnable<SpriteLoader.StitchResult> cir, int i, TextureStitcher<SpriteContents> textureStitcher) {
-		SpriteModule.STITCHERS_SAVE.visit(CacheStatus.SAVE, map -> {
+		SpriteStitcherModule.STITCHERS_SAVE.visit(CacheStatus.SAVE, map -> {
 			map.add(Pair.of(id, textureStitcher));
 		});
 	}

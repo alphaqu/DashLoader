@@ -19,7 +19,7 @@ import dev.notalpha.dashloader.client.shader.ShaderModule;
 import dev.notalpha.dashloader.client.splash.SplashModule;
 import dev.notalpha.dashloader.client.sprite.DashImage;
 import dev.notalpha.dashloader.client.sprite.DashSprite;
-import dev.notalpha.dashloader.client.sprite.SpriteModule;
+import dev.notalpha.dashloader.client.sprite.SpriteStitcherModule;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
@@ -52,7 +52,7 @@ public class DashLoaderClient implements DashEntrypoint {
 		factory.addModule(new ModelModule());
 		factory.addModule(new ShaderModule());
 		factory.addModule(new SplashModule());
-		factory.addModule(new SpriteModule());
+		factory.addModule(new SpriteStitcherModule());
 
 		factory.addMissingHandler(
 				Identifier.class,

@@ -6,23 +6,21 @@ import dev.notalpha.dashloader.api.DashModule;
 import dev.notalpha.dashloader.api.cache.Cache;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.api.collection.IntObjectList;
-import dev.notalpha.dashloader.api.collection.ObjectObjectList;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.config.Option;
 import dev.notalpha.taski.builtin.StepTask;
-import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.TextureStitcher;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
-public class SpriteModule implements DashModule<SpriteModule.Data> {
+public class SpriteStitcherModule implements DashModule<SpriteStitcherModule.Data> {
 	//public final static CachingData<HashMap<Identifier, SpriteLoader.StitchResult>> ATLASES = new CachingData<>();
 	public final static CachingData<List<Pair<Identifier, TextureStitcher<?>>>> STITCHERS_SAVE = new CachingData<>(CacheStatus.SAVE);
-	public final static CachingData<Map<Identifier, DashTextureStitcher.Data<?>>> STITCHERS_LOAD = new CachingData<>(CacheStatus.LOAD);
+	public final static CachingData<Map<Identifier, DashTextureStitcher.ExportedData<?>>> STITCHERS_LOAD = new CachingData<>(CacheStatus.LOAD);
 	//public final static CachingData<HashMap<Identifier, Identifier>> ATLAS_IDS = new CachingData<>(CacheStatus.SAVE);
 
 	@Override
@@ -34,7 +32,7 @@ public class SpriteModule implements DashModule<SpriteModule.Data> {
 	}
 
 	@Override
-	public Data save(RegistryWriter factory, StepTask task) {
+	public Data save(RegistryWriter writer, StepTask task) {
 		task.reset(2);
 
 		var stitchers = new HashMap<Identifier, DashTextureStitcher.Data<?>>();
@@ -43,7 +41,7 @@ public class SpriteModule implements DashModule<SpriteModule.Data> {
 			stepTask.doForEach(STITCHERS_SAVE.get(CacheStatus.SAVE), (pair) -> {
 				var identifier = pair.getLeft();
 				var textureStitcher = pair.getRight();
-				DashTextureStitcher.Data<?> existing = stitchers.put(identifier, new DashTextureStitcher.Data<>(textureStitcher));
+				DashTextureStitcher.Data<?> existing = stitchers.put(identifier, new DashTextureStitcher.Data<>(writer, textureStitcher));
 				if (existing != null) {
 					duplicate.add(identifier);
 				}
@@ -55,6 +53,12 @@ public class SpriteModule implements DashModule<SpriteModule.Data> {
 		});
 
 
+		var output = new IntObjectList<DashTextureStitcher.Data<?>>();
+
+		stitchers.forEach((identifier, data) -> {
+			output.put(writer.add(identifier), data);
+		});
+
 		//var results = new IntObjectList<DashStitchResult>();
 		//task.run(new StepTask("Caching Atlases"), (stepTask) -> {
 		//	var map = ATLASES.get(CacheStatus.SAVE);
@@ -65,9 +69,7 @@ public class SpriteModule implements DashModule<SpriteModule.Data> {
 		//	});
 		//});
 
-		return new Data(
-			//	results,
-				stitchers);
+		return new Data(output);
 	}
 
 	@Override
@@ -78,7 +80,11 @@ public class SpriteModule implements DashModule<SpriteModule.Data> {
 		//});
 //
 		//ATLASES.set(CacheStatus.LOAD, stitchResults);
-		STITCHERS_LOAD.set(CacheStatus.LOAD, data.stitchers);
+		var map = new HashMap<Identifier, DashTextureStitcher.ExportedData<?>>();
+		data.stitchers.forEach((key, value) -> {
+			map.put(reader.get(key), value.export(reader));
+		});
+		STITCHERS_LOAD.set(CacheStatus.LOAD, map);
 	}
 
 	@Override
@@ -93,11 +99,11 @@ public class SpriteModule implements DashModule<SpriteModule.Data> {
 
 	public static final class Data {
 	//	public final IntObjectList<DashStitchResult> results;
-		public final Map<Identifier, DashTextureStitcher.Data<?>> stitchers;
+		public final IntObjectList<DashTextureStitcher.Data<?>> stitchers;
 
 		public Data(
 			//	IntObjectList<DashStitchResult> results,
-			Map<Identifier, DashTextureStitcher.Data<?>> stitchers) {
+			IntObjectList<DashTextureStitcher.Data<?>> stitchers) {
 		//	this.results = results;
 			this.stitchers = stitchers;
 		}
