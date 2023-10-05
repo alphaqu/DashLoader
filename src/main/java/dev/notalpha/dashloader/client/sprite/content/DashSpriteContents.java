@@ -1,5 +1,6 @@
-package dev.notalpha.dashloader.client.sprite;
+package dev.notalpha.dashloader.client.sprite.content;
 
+import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.misc.UnsafeHelper;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public final class DashSpriteContents {
+public final class DashSpriteContents implements DashObject<SpriteContents, SpriteContents> {
 	public final int id;
 	public final int image;
 	@Nullable

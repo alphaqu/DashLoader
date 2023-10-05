@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class CachingData<D> {
 	@Nullable
@@ -46,14 +47,22 @@ public class CachingData<D> {
 	}
 
 	public void reset(Cache cacheManager, @NotNull D data) {
+		reset(cacheManager, () -> data);
+	}
+
+	public void reset(Cache cacheManager, Supplier<@NotNull D> data) {
 		this.cacheManager = cacheManager;
 		set(cacheManager.getStatus(), data);
+	}
+
+	public void set(CacheStatus status, @NotNull D data) {
+		set(status, () -> data);
 	}
 
 	/**
 	 * Sets the optional data to the intended status
 	 **/
-	public void set(CacheStatus status, @NotNull D data) {
+	public void set(CacheStatus status, Supplier<@NotNull D> data) {
 		if (onlyOn != null && onlyOn != status) {
 			this.data = null;
 			this.dataStatus = null;
@@ -67,7 +76,7 @@ public class CachingData<D> {
 		CacheStatus currentStatus = cacheManager.getStatus();
 		if (status == currentStatus) {
 			this.dataStatus = status;
-			this.data = data;
+			this.data = data.get();
 		}
 	}
 

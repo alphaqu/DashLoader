@@ -6,7 +6,7 @@ import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.client.Dazy;
 import dev.notalpha.dashloader.client.model.components.DashModelOverrideList;
 import dev.notalpha.dashloader.client.model.components.DashModelTransformation;
-import dev.notalpha.dashloader.client.sprite.DashSprite;
+import dev.notalpha.dashloader.client.sprite.content.DashSprite;
 import dev.notalpha.dashloader.mixin.accessor.BuiltinBakedModelAccessor;
 import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.BuiltinBakedModel;

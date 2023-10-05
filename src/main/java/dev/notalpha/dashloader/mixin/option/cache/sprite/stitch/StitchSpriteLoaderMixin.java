@@ -1,8 +1,8 @@
-package dev.notalpha.dashloader.mixin.option.cache.sprite;
+package dev.notalpha.dashloader.mixin.option.cache.sprite.stitch;
 
 import dev.notalpha.dashloader.api.cache.CacheStatus;
-import dev.notalpha.dashloader.client.sprite.DashTextureStitcher;
-import dev.notalpha.dashloader.client.sprite.SpriteStitcherModule;
+import dev.notalpha.dashloader.client.sprite.stitch.DashTextureStitcher;
+import dev.notalpha.dashloader.client.sprite.stitch.SpriteStitcherModule;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.TextureStitcher;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 
 @Mixin(SpriteLoader.class)
-public final class SpriteLoaderMixin {
+public final class StitchSpriteLoaderMixin {
 
 	@Shadow
 	@Final

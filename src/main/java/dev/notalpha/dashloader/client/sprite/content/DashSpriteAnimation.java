@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.client.sprite;
+package dev.notalpha.dashloader.client.sprite.content;
 
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.mixin.accessor.SpriteAnimationAccessor;

@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.client.sprite;
+package dev.notalpha.dashloader.client.sprite.stitch;
 
 import net.minecraft.client.texture.TextureStitcher;
 
