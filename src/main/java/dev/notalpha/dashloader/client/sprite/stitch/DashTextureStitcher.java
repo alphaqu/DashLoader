@@ -20,6 +20,13 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 		super(maxWidth, maxHeight, mipLevel);
 		this.data = data;
 		this.remainingSlots = data == null ? 0 : data.slots.size();
+
+		if (data != null) {
+			DashTextureSlot<T> tDashTextureSlot = data.slots.get(new Identifier("minecraft", "wither"));
+			if (tDashTextureSlot != null) {
+				System.out.println(tDashTextureSlot.width + "x" + tDashTextureSlot.height);
+			}
+		}
 	}
 
 	@Override
@@ -65,7 +72,7 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 		slot.contents = info;
 
 		if (slot.width != info.getWidth() || slot.height != info.getHeight()) {
-			DashLoader.LOG.warn("Sprite {} had changed dimensions since last launch, falling back.", id);
+			DashLoader.LOG.warn("Sprite {} had changed dimensions ({}x{} -> {}x{}) since last launch, falling back.", id, slot.width, slot.height, info.getWidth(), info.getHeight());
 			doFallback();
 			return;
 		}

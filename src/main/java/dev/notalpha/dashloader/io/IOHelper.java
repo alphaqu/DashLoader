@@ -2,13 +2,15 @@ package dev.notalpha.dashloader.io;
 
 import com.github.luben.zstd.Zstd;
 import dev.notalpha.taski.builtin.StepTask;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
+import dev.notalpha.hyphen.io.ByteBufferIO;
+import dev.notalpha.hyphen.io.UnsafeIO;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.system.MemoryUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -62,30 +64,29 @@ public final class IOHelper {
 		return buffer;
 	}
 
-	public static void save(Path path, StepTask task, ByteBufferIO io, int fileSize, byte compressionLevel) throws IOException {
+	public static void save(Path path, StepTask task, UnsafeIO io, int fileSize, byte compressionLevel) throws IOException {
 		io.rewind();
-		io.byteBuffer.limit(fileSize);
 		try (FileChannel channel = createFile(path)) {
 			if (compressionLevel > 0) {
 				task.reset(4);
 				// Allocate
 				final long maxSize = Zstd.compressBound(fileSize);
-				final var dst = ByteBufferIO.createDirect((int) maxSize);
+				final var dst = UnsafeIO.create((int) maxSize);
 				task.next();
 
 				// Compress
-				final long size = Zstd.compress(dst.byteBuffer, io.byteBuffer, compressionLevel);
+				final long size = Zstd.compressUnsafe(dst.address(), maxSize, io.address(), fileSize, compressionLevel);
 				task.next();
 
 				// Write
 				dst.rewind();
-				dst.byteBuffer.limit((int) size);
 				final var map = channel.map(FileChannel.MapMode.READ_WRITE, 0, size + 5).order(ByteOrder.LITTLE_ENDIAN);
 				task.next();
 
 				map.put(compressionLevel);
 				map.putInt(fileSize);
-				map.put(dst.byteBuffer);
+				ByteBuffer byteBuffer = MemoryUtil.memByteBufferSafe(dst.address(), (int) maxSize);
+				map.put(byteBuffer);
 				io.close();
 				dst.close();
 			} else {
@@ -94,24 +95,26 @@ public final class IOHelper {
 				task.next();
 				ByteBufferIO file = ByteBufferIO.wrap(map);
 				file.putByte(compressionLevel);
-				file.putByteBuffer(io.byteBuffer, fileSize);
+				ByteBuffer byteBuffer = MemoryUtil.memByteBufferSafe(io.address(), fileSize);
+				file.putByteBuffer(byteBuffer, fileSize);
 				task.next();
 			}
 		}
 	}
 
-	public static ByteBufferIO load(Path path) throws IOException {
+	public static UnsafeIO load(Path path) throws IOException {
 		try (FileChannel channel = openFile(path)) {
-			var buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).order(ByteOrder.LITTLE_ENDIAN);
+			long fileSize = channel.size();
+			var buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, fileSize).order(ByteOrder.LITTLE_ENDIAN);
 			// Check compression
 			if (buffer.get() > 0) {
 				final int size = buffer.getInt();
-				final var dst = ByteBufferIO.createDirect(size);
-				Zstd.decompress(dst.byteBuffer, buffer);
+				final var dst = UnsafeIO.create(size);
+				Zstd.decompressUnsafe(dst.address(), size, MemoryUtil.memAddress(buffer), fileSize);
 				dst.rewind();
 				return dst;
 			} else {
-				return ByteBufferIO.wrap(buffer);
+				return UnsafeIO.wrap(buffer);
 			}
 		}
 	}

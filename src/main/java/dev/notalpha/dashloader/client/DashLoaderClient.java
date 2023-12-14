@@ -6,6 +6,8 @@ import dev.notalpha.dashloader.api.cache.Cache;
 import dev.notalpha.dashloader.api.cache.CacheFactory;
 import dev.notalpha.dashloader.client.blockstate.DashBlockState;
 import dev.notalpha.dashloader.client.font.*;
+import dev.notalpha.dashloader.client.fs.DashFileNode;
+import dev.notalpha.dashloader.client.fs.FileSystemModule;
 import dev.notalpha.dashloader.client.identifier.DashIdentifier;
 import dev.notalpha.dashloader.client.identifier.DashModelIdentifier;
 import dev.notalpha.dashloader.client.identifier.DashSpriteIdentifier;
@@ -56,6 +58,7 @@ public class DashLoaderClient implements DashEntrypoint {
 		factory.addModule(new SplashModule());
 		factory.addModule(new SpriteStitcherModule());
 		factory.addModule(new SpriteContentModule());
+		factory.addModule(new FileSystemModule());
 
 		factory.addMissingHandler(
 				Identifier.class,

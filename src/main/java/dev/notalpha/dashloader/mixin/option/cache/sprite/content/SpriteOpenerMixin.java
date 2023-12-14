@@ -34,14 +34,14 @@ public interface SpriteOpenerMixin {
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/Resource;getInputStream()Ljava/io/InputStream;", shift = At.Shift.BEFORE)
 	)
 	private static void dashloaderLoad(Collection<ResourceMetadataReader<?>> metadatas, Identifier id, Resource resource, CallbackInfoReturnable<SpriteContents> cir, ResourceMetadata resourceMetadata) {
-		var dashSpriteData = SpriteContentModule.SOURCE.get(CacheStatus.LOAD);
-		if (dashSpriteData != null) {
-			SpriteContents spriteContents = dashSpriteData.get(id);
-			if (spriteContents != null) {
-				((SpriteContentsAccessor) spriteContents).setMetadata(resourceMetadata);
-				cir.setReturnValue(spriteContents);
-			}
-		}
+		//var dashSpriteData = SpriteContentModule.SOURCE.get(CacheStatus.LOAD);
+		//if (dashSpriteData != null) {
+		//	SpriteContents spriteContents = dashSpriteData.get(id);
+		//	if (spriteContents != null) {
+		//		((SpriteContentsAccessor) spriteContents).setMetadata(resourceMetadata);
+		//		cir.setReturnValue(spriteContents);
+		//	}
+		//}
 	}
 
 	@Inject(
@@ -49,9 +49,9 @@ public interface SpriteOpenerMixin {
 			at = @At(value = "RETURN")
 	)
 	private static void dashloaderSave(Collection<?> collection, Identifier id, Resource resource, CallbackInfoReturnable<SpriteContents> cir) {
-		var dashSpriteData = SpriteContentModule.SOURCE.get(CacheStatus.SAVE);
-		if (dashSpriteData != null) {
-			dashSpriteData.put(id, cir.getReturnValue());
-		}
+		//var dashSpriteData = SpriteContentModule.SOURCE.get(CacheStatus.SAVE);
+		//if (dashSpriteData != null) {
+		//	dashSpriteData.put(id, cir.getReturnValue());
+		//}
 	}
 }

@@ -19,7 +19,8 @@ import dev.notalpha.dashloader.registry.data.StageData;
 import dev.notalpha.dashloader.thread.ThreadHandler;
 import dev.notalpha.taski.Task;
 import dev.notalpha.taski.builtin.StepTask;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
+import dev.notalpha.hyphen.io.ByteBufferIO;
+import dev.notalpha.hyphen.io.UnsafeIO;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -32,7 +33,7 @@ import java.util.function.Consumer;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class RegistrySerializer {
 	// 20MB
-	private static final int MIN_PER_THREAD_FRAGMENT_SIZE = 1024 * 1024 * 20;
+	private static final int MIN_PER_THREAD_FRAGMENT_SIZE = 1024 * 1024 * 4;
 	// 1GB
 	private static final int MAX_FRAGMENT_SIZE = 1024 * 1024 * 1024;
 	private final Object2ObjectMap<Class<?>, Serializer<?>> serializers;
@@ -109,7 +110,7 @@ public class RegistrySerializer {
 			DashLoader.LOG.info("Serializing fragment " + k);
 			CacheFragment fragment = fragments.get(k);
 			List<StageFragment> stageFragmentMetadata = fragment.stages;
-			ByteBufferIO io = ByteBufferIO.createDirect((int) fragment.info.fileSize);
+			UnsafeIO io = UnsafeIO.create((int) fragment.info.fileSize);
 
 
 			int taskSize = 0;
@@ -182,7 +183,7 @@ public class RegistrySerializer {
 			int finalJ = j;
 			runnables.add(() -> {
 				try {
-					ByteBufferIO io = IOHelper.load(fragmentFilePath(dir, finalJ));
+					UnsafeIO io = IOHelper.load(fragmentFilePath(dir, finalJ));
 					deserialize(out, io, fragment);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
@@ -202,7 +203,7 @@ public class RegistrySerializer {
 	}
 
 
-	private void deserialize(StageData[] data, ByteBufferIO io, CacheFragment fragment) {
+	private void deserialize(StageData[] data, UnsafeIO io, CacheFragment fragment) {
 		for (int i = 0; i < fragment.stages.size(); i++) {
 			StageFragment stageFragment = fragment.stages.get(i);
 			StageData stage = data[fragment.info.rangeStart + i];

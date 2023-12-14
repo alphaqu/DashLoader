@@ -19,10 +19,11 @@ import java.util.function.Function;
 /**
  * An unbaked model which holds a baked model, used for fallback to reuse cached models.
  */
-public class UnbakedBakedModel implements UnbakedModel {
+public class UnbakedBakedModel extends JsonUnbakedModel {
 	private final Dazy<? extends BakedModel> bakedModel;
 
 	public UnbakedBakedModel(Dazy<? extends BakedModel> bakedModel) {
+		super(null, List.of(), Map.of(), false, GuiLight.BLOCK, ModelTransformation.NONE, List.of());
 		this.bakedModel = bakedModel;
 	}
 

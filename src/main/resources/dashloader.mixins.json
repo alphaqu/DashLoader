@@ -57,7 +57,10 @@
     "option.cache.shader.GlStateManagerMixin",
     "option.cache.sprite.stitch.StitchSpriteLoaderMixin",
     "option.misc.AffineTransformationMixin",
-    "option.misc.ModelIdentifierMixin"
+    "option.misc.DefaultResourcePackMixin",
+    "option.misc.InputSupplierMixin",
+    "option.misc.ModelIdentifierMixin",
+    "option.misc.ResourceFinderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -67,6 +70,7 @@
     "accessor.ShaderStageAccessor$TypeAccessor",
     "accessor.SpriteContentsAccessor",
     "accessor.VertexFormatAccessor",
+    "option.cache.sprite.content.ContentSpriteLoaderMixin",
     "option.cache.sprite.content.SpriteOpenerMixin",
     "option.misc.MipmapHelperMixin",
     "option.misc.ModelLoaderBakedModelCacheKeyMixin"

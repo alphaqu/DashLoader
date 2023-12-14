@@ -5,37 +5,59 @@ import dev.notalpha.dashloader.io.def.NativeImageData;
 import dev.notalpha.dashloader.io.def.NativeImageDataDef;
 import dev.notalpha.dashloader.registry.data.ChunkData;
 import dev.notalpha.taski.builtin.StepTask;
-import dev.quantumfusion.hyphen.HyphenSerializer;
-import dev.quantumfusion.hyphen.SerializerFactory;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
-import dev.quantumfusion.hyphen.scan.annotations.DataSubclasses;
+import dev.notalpha.hyphen.HyphenSerializer;
+import dev.notalpha.hyphen.SerializerFactory;
+import dev.notalpha.hyphen.io.ByteBufferIO;
+import dev.notalpha.hyphen.io.UnsafeIO;
+import dev.notalpha.hyphen.scan.annotations.DataSubclasses;
 import net.minecraft.client.font.UnihexFont;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.nio.file.Path;
 
 public class Serializer<O> {
-	private final HyphenSerializer<ByteBufferIO, O> serializer;
+	private final HyphenSerializer<UnsafeIO, O> serializer;
 
 	public Serializer(Class<O> aClass) {
-		var factory = SerializerFactory.createDebug(ByteBufferIO.class, aClass);
-		factory.addGlobalAnnotation(ChunkData.class, DataSubclasses.class, new Class[]{ChunkData.class});
-		factory.setClassName(getSerializerClassName(aClass));
-		factory.addGlobalAnnotation(UnihexFont.BitmapGlyph.class, DataSubclasses.class, new Class[]{
-				UnihexFont.FontImage32x16.class,
-				UnihexFont.FontImage16x16.class,
-				UnihexFont.FontImage8x16.class,
+		var factory = SerializerFactory.createDebug(UnsafeIO.class, aClass);
+		factory.addAnnotationProvider(ChunkData.class, new DataSubclasses() {
+			@Override
+			public Class<?>[] value() {
+				return  new Class[]{ChunkData.class};
+			}
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return DataSubclasses.class;
+			}
 		});
-		factory.addDynamicDef(NativeImageData.class, (clazz, serializerHandler) -> new NativeImageDataDef(serializerHandler, clazz));
+		factory.setClassName(getSerializerClassName(aClass));
+		factory.addAnnotationProvider(UnihexFont.BitmapGlyph.class, new DataSubclasses() {
+			@Override
+			public Class<?>[] value() {
+				return  new Class[]{
+						UnihexFont.FontImage32x16.class,
+						UnihexFont.FontImage16x16.class,
+						UnihexFont.FontImage8x16.class,
+				};
+			}
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return DataSubclasses.class;
+			}
+		});
+		factory.addDynamicDef(NativeImageData.class, NativeImageDataDef::new);
 		this.serializer = factory.build();
 	}
 
-	public O get(ByteBufferIO io) {
+	public O get(UnsafeIO io) {
 		return this.serializer.get(io);
 	}
 
-	public void put(ByteBufferIO io, O data) {
+	public void put(UnsafeIO io, O data) {
 		this.serializer.put(io, data);
 	}
 
@@ -45,7 +67,7 @@ public class Serializer<O> {
 
 	public void save(Path path, StepTask task, O data) {
 		var measure = (int) this.serializer.measure(data);
-		var io = ByteBufferIO.createDirect(measure);
+		var io = UnsafeIO.create(measure);
 		this.serializer.put(io, data);
 		io.rewind();
 		try {
@@ -58,8 +80,10 @@ public class Serializer<O> {
 
 	public O load(Path path) {
 		try {
-			ByteBufferIO io = IOHelper.load(path);
-			return this.serializer.get(io);
+			UnsafeIO io = IOHelper.load(path);
+			O o = this.serializer.get(io);
+			io.close();
+			return o;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

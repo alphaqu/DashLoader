@@ -18,10 +18,13 @@ accessible class net/minecraft/client/font/FontStorage$GlyphPair
 accessible class net/minecraft/client/font/FontManager$ProviderIndex
 accessible class net/minecraft/resource/ZipResourcePack$ZipFileWrapper
 accessible class net/minecraft/client/MinecraftClient$LoadingContext
+accessible class net/minecraft/resource/fs/ResourcePath
+accessible class net/minecraft/resource/fs/ResourceFile
 accessible method net/minecraft/client/font/UnihexFont$FontImage8x16 <init> ([B)V
 accessible method net/minecraft/client/font/UnihexFont$FontImage16x16 <init> ([S)V
 accessible method net/minecraft/client/font/UnihexFont$FontImage32x16 <init> ([II)V
 accessible method net/minecraft/client/font/UnihexFont$UnicodeTextureGlyph <init> (Lnet/minecraft/client/font/UnihexFont$BitmapGlyph;II)V
+accessible field net/minecraft/resource/fs/ResourcePath file Lnet/minecraft/resource/fs/ResourceFile;
 mutable field net/minecraft/client/gl/ShaderProgram modelViewMat Lnet/minecraft/client/gl/GlUniform;
 mutable field net/minecraft/client/gl/ShaderProgram projectionMat Lnet/minecraft/client/gl/GlUniform;
 mutable field net/minecraft/client/gl/ShaderProgram viewRotationMat Lnet/minecraft/client/gl/GlUniform;

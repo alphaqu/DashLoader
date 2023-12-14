@@ -8,7 +8,8 @@ import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.taski.Task;
 import dev.notalpha.taski.builtin.StepTask;
 import dev.notalpha.taski.builtin.WeightedStageTask;
-import dev.quantumfusion.hyphen.io.ByteBufferIO;
+import dev.notalpha.hyphen.io.ByteBufferIO;
+import dev.notalpha.hyphen.io.UnsafeIO;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -76,7 +77,7 @@ public class MappingSerializer {
 			}
 		}
 
-		ByteBufferIO io = ByteBufferIO.createDirect(measure);
+		UnsafeIO io = UnsafeIO.create(measure);
 		for (Object object : objects) {
 			if (object == null) {
 				io.putByte((byte) 0);
@@ -98,7 +99,7 @@ public class MappingSerializer {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public boolean load(Path dir, RegistryReader reader, List<DashModule<?>> handlers) {
 		try {
-			ByteBufferIO io = IOHelper.load(dir.resolve("mapping.bin"));
+			UnsafeIO io = IOHelper.load(dir.resolve("mapping.bin"));
 			for (DashModule handler : handlers) {
 				if (io.getByte() == 0 && handler.isActive()) {
 					DashLoader.LOG.info("Recaching as " + handler.getClass().getSimpleName() + " is now active.");
@@ -113,6 +114,7 @@ public class MappingSerializer {
 					}
 				}
 			}
+			io.close();
 
 			return true;
 		} catch (IOException e) {

@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.client.model.components;
 
-import dev.quantumfusion.hyphen.scan.annotations.DataNullable;
+import dev.notalpha.hyphen.scan.annotations.DataNullable;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.render.model.json.Transformation;
 import org.jetbrains.annotations.Nullable;

@@ -1,10 +1,10 @@
 package dev.notalpha.dashloader;
 
 import dev.notalpha.dashloader.api.DashObject;
-import dev.quantumfusion.hyphen.util.ScanUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -42,11 +42,11 @@ public final class DashObjectClass<R, D extends DashObject<R, ?>> {
 
 			boolean foundDashObject = false;
 			for (Type genericInterface : genericInterfaces) {
-				if (ScanUtil.getClassFrom(genericInterface) == DashObject.class) {
+				if (getClassFrom(genericInterface) == DashObject.class) {
 					foundDashObject = true;
 					if (genericInterface instanceof ParameterizedType targetClass) {
 						Type[] actualTypeArguments = targetClass.getActualTypeArguments();
-						Class<?> classFrom = ScanUtil.getClassFrom(actualTypeArguments[0]);
+						Class<?> classFrom = getClassFrom(actualTypeArguments[0]);
 						if (classFrom == null) {
 							throw new RuntimeException(this.dashClass + " has a non resolvable DashObject parameter");
 						}
@@ -64,6 +64,29 @@ public final class DashObjectClass<R, D extends DashObject<R, ?>> {
 		return this.targetClass;
 	}
 
+	public static Class<?> getClassFrom(AnnotatedType type) {
+		return getClassFrom(type.getType());
+	}
+
+	public static Class<?> getClassFrom(Type type) {
+		final Class<?> aClass = getClassFromOrNull(type);
+		if (aClass == null) {
+			throw new IllegalArgumentException(type.getClass() + ": " + type);
+		}
+		return aClass;
+	}
+
+	@Nullable
+	public static Class<?> getClassFromOrNull(Type type) {
+		if (type instanceof Class<?> c) {
+			return c;
+		}
+		if (type instanceof ParameterizedType pt) {
+			return getClassFrom(pt.getRawType());
+		}
+
+		return null;
+	}
 
 	public int getDashObjectId() {
 		return dashObjectId;
