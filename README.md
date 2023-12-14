@@ -3,7 +3,7 @@ Welcome to the codebase where DashLoader lives! Please report any issues you fin
 <center>
     <p align="center"  style="font-family: sans-serif, tahoma, arial, helvetica; font-size: 18px;">
         <!-- Features -->
-        <img src="https://quantumfusion.dev/assets/dashloader/features-new.png" alt="Description" width="1000"/>
+        <img src="https://notalpha.dev/assets/dashloader/features-new.png" alt="Description" width="1000"/>
         <br/>
         This mod accelerates the Minecraft Asset Loading system by caching all of its content, This leads to a much faster
         game load.
@@ -28,11 +28,11 @@ Welcome to the codebase where DashLoader lives! Please report any issues you fin
         If you want to just show off the speed of DashLoader you can press <code>shift + f3 + t</code>
         <br/><br/><br/>
         <!-- Community -->
-        <img src="https://quantumfusion.dev/assets/dashloader/community-new.png" alt="Community" width="1000"/>
+        <img src="https://notalpha.dev/assets/dashloader/community-new.png" alt="Community" width="1000"/>
         <br/>
         <img src="https://i.imgur.com/qbysL1T.png" alt="Discord" width="500"/>
         <!-- Sponsors -->
-        <img src="https://quantumfusion.dev/assets/dashloader/sponsors-new.png" alt="Sponsors" width="1000"/>
+        <img src="https://notalpha.dev/assets/dashloader/sponsors-new.png" alt="Sponsors" width="1000"/>
         <br/>
         <a href="https://www.yourkit.com/java/profiler/">YourKit</a>
         Makes amazing profilers for both Java and .NET.
@@ -42,7 +42,7 @@ Welcome to the codebase where DashLoader lives! Please report any issues you fin
         Creates excellent IDEs for all programmers and have provided us with access to their enterprise products for use to
         develop DashLoader and Hyphen.
         <!-- Donate -->
-        <img src="https://quantumfusion.dev/assets/dashloader/donate-new.png" alt="Donate" width="1000"/>
+        <img src="https://notalpha.dev/assets/dashloader/donate-new.png" alt="Donate" width="1000"/>
         <br/>
         I have a <a href="https://ko-fi.com/notequalalpha">Ko-Fi page</a> if you would like to Support me. <br/>
         Please only support me if you like what I do, and you are not in a bad financial situation to do so.
