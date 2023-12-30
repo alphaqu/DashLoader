@@ -1,0 +1,11 @@
+{
+  "debug": "Налагодження увімкнено.",
+  "save": "Ініціалізація",
+  "save.cache": "Кешування",
+  "save.cache.model": "Кешування моделей",
+  "save.cache.image": "Кешування зображень",
+  "save.cache.misc": "Кешування ресурсів",
+  "save.serialize": "Серіалізація",
+  "save.serialize.fragment": "Серіалізація фрагментів",
+  "save.serialize.mapping": "Серіалізація картувань"
+}
