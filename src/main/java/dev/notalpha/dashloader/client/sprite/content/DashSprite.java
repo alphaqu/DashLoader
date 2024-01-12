@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.client.sprite;
+package dev.notalpha.dashloader.client.sprite.content;
 
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;

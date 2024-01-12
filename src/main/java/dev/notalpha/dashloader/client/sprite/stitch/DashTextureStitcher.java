@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.client.sprite;
+package dev.notalpha.dashloader.client.sprite.stitch;
 
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.collection.IntObjectList;

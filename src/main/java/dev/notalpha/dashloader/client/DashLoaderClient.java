@@ -17,9 +17,11 @@ import dev.notalpha.dashloader.client.shader.DashShader;
 import dev.notalpha.dashloader.client.shader.DashVertexFormat;
 import dev.notalpha.dashloader.client.shader.ShaderModule;
 import dev.notalpha.dashloader.client.splash.SplashModule;
-import dev.notalpha.dashloader.client.sprite.DashImage;
-import dev.notalpha.dashloader.client.sprite.DashSprite;
-import dev.notalpha.dashloader.client.sprite.SpriteStitcherModule;
+import dev.notalpha.dashloader.client.sprite.content.DashImage;
+import dev.notalpha.dashloader.client.sprite.content.DashSprite;
+import dev.notalpha.dashloader.client.sprite.content.DashSpriteContents;
+import dev.notalpha.dashloader.client.sprite.content.SpriteContentModule;
+import dev.notalpha.dashloader.client.sprite.stitch.SpriteStitcherModule;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.model.json.AndMultipartModelSelector;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
@@ -53,6 +55,7 @@ public class DashLoaderClient implements DashEntrypoint {
 		factory.addModule(new ShaderModule());
 		factory.addModule(new SplashModule());
 		factory.addModule(new SpriteStitcherModule());
+		factory.addModule(new SpriteContentModule());
 
 		factory.addMissingHandler(
 				Identifier.class,
@@ -107,6 +110,7 @@ public class DashLoaderClient implements DashEntrypoint {
 				DashStaticPredicate.class,
 				DashImage.class,
 				DashSprite.class,
+				DashSpriteContents.class,
 				DashBitmapFont.class,
 				DashBlankFont.class,
 				DashSpaceFont.class,

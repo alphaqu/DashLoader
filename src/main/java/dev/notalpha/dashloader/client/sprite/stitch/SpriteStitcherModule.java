@@ -1,4 +1,4 @@
-package dev.notalpha.dashloader.client.sprite;
+package dev.notalpha.dashloader.client.sprite.stitch;
 
 import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.CachingData;
@@ -18,17 +18,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.*;
 
 public class SpriteStitcherModule implements DashModule<SpriteStitcherModule.Data> {
-	//public final static CachingData<HashMap<Identifier, SpriteLoader.StitchResult>> ATLASES = new CachingData<>();
 	public final static CachingData<List<Pair<Identifier, TextureStitcher<?>>>> STITCHERS_SAVE = new CachingData<>(CacheStatus.SAVE);
 	public final static CachingData<Map<Identifier, DashTextureStitcher.ExportedData<?>>> STITCHERS_LOAD = new CachingData<>(CacheStatus.LOAD);
-	//public final static CachingData<HashMap<Identifier, Identifier>> ATLAS_IDS = new CachingData<>(CacheStatus.SAVE);
 
 	@Override
 	public void reset(Cache cache) {
-	//	ATLASES.reset(cache, new HashMap<>());
 		STITCHERS_SAVE.reset(cache, new ArrayList<>());
 		STITCHERS_LOAD.reset(cache, new HashMap<>());
-		//ATLAS_IDS.reset(cache, new HashMap<>());
 	}
 
 	@Override
@@ -74,12 +70,6 @@ public class SpriteStitcherModule implements DashModule<SpriteStitcherModule.Dat
 
 	@Override
 	public void load(Data data, RegistryReader reader, StepTask task) {
-		//HashMap<Identifier, SpriteLoader.StitchResult> stitchResults = new HashMap<>(data.results.list().size());
-		//data.results.forEach((identifier, stitchResult) -> {
-		//	stitchResults.put(reader.get(identifier), stitchResult.export(reader));
-		//});
-//
-		//ATLASES.set(CacheStatus.LOAD, stitchResults);
 		var map = new HashMap<Identifier, DashTextureStitcher.ExportedData<?>>();
 		data.stitchers.forEach((key, value) -> {
 			map.put(reader.get(key), value.export(reader));
@@ -94,17 +84,14 @@ public class SpriteStitcherModule implements DashModule<SpriteStitcherModule.Dat
 
 	@Override
 	public boolean isActive() {
-		return ConfigHandler.optionActive(Option.CACHE_SPRITES);
+		return ConfigHandler.optionActive(Option.CACHE_SPRITE_STITCHING);
 	}
 
 	public static final class Data {
-	//	public final IntObjectList<DashStitchResult> results;
 		public final IntObjectList<DashTextureStitcher.Data<?>> stitchers;
 
 		public Data(
-			//	IntObjectList<DashStitchResult> results,
 			IntObjectList<DashTextureStitcher.Data<?>> stitchers) {
-		//	this.results = results;
 			this.stitchers = stitchers;
 		}
 	}

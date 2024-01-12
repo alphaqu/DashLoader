@@ -4,9 +4,12 @@ public enum Option {
 	CACHE_MODEL_LOADER(
 			"cache.model",
 			"Caches BakedModels which allows the game to load extremely fast"),
-	CACHE_SPRITES(
-			"cache.sprite",
-			"Caches Sprite/Atlases which allows the game to load textures extremely fast"),
+	CACHE_SPRITE_STITCHING(
+			"cache.sprite.stitch",
+			"Caches sprite stitching"),
+	CACHE_SPRITE_CONTENT(
+			"cache.sprite.content",
+			"Caches sprite loading"),
 	CACHE_FONT(
 			"cache.font",
 			"Caches all of the fonts and their images."),
