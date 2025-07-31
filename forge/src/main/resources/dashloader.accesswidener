@@ -1,0 +1,37 @@
+accessWidener v1 named
+accessible class net/minecraft/client/texture/SpriteContents$Interpolation
+accessible class net/minecraft/client/texture/SpriteContents$Animation
+accessible class net/minecraft/client/texture/SpriteContents$AnimationFrame
+accessible class net/minecraft/client/particle/ParticleManager$SimpleSpriteProvider
+accessible class net/minecraft/client/font/BitmapFont$BitmapFontGlyph
+accessible class net/minecraft/client/render/model/json/ModelOverrideList$BakedOverride
+accessible class net/minecraft/client/render/model/json/ModelOverrideList$InlinedCondition
+accessible class net/minecraft/client/render/model/BakedModelManager$BakingResult
+accessible class net/minecraft/client/render/model/ModelLoader$BakedModelCacheKey
+accessible class net/minecraft/client/font/UnihexFont$UnicodeTextureGlyph
+accessible class net/minecraft/client/font/UnihexFont$FontImage16x16
+accessible class net/minecraft/client/font/UnihexFont$FontImage8x16
+accessible class net/minecraft/client/font/UnihexFont$FontImage32x16
+accessible class net/minecraft/client/font/FontStorage$GlyphPair
+accessible class net/minecraft/util/Identifier$ExtraData
+accessible class net/minecraft/client/font/FontStorage$GlyphPair
+accessible class net/minecraft/client/font/FontManager$ProviderIndex
+accessible method net/minecraft/client/font/UnihexFont$FontImage8x16 <init> ([B)V
+accessible method net/minecraft/client/font/UnihexFont$FontImage16x16 <init> ([S)V
+accessible method net/minecraft/client/font/UnihexFont$FontImage32x16 <init> ([II)V
+accessible method net/minecraft/client/font/UnihexFont$UnicodeTextureGlyph <init> (Lnet/minecraft/client/font/UnihexFont$BitmapGlyph;II)V
+mutable field net/minecraft/client/gl/ShaderProgram modelViewMat Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram projectionMat Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram viewRotationMat Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram textureMat Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram screenSize Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram colorModulator Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram light0Direction Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram light1Direction Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram fogStart Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram fogEnd Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram fogColor Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram fogShape Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram lineWidth Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram gameTime Lnet/minecraft/client/gl/GlUniform;
+mutable field net/minecraft/client/gl/ShaderProgram chunkOffset Lnet/minecraft/client/gl/GlUniform;

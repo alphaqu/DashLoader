@@ -1,0 +1,11 @@
+{
+  "debug": "Debug Mode is active in config.",
+  "save": "Initializing",
+  "save.cache": "Caching",
+  "save.cache.model": "Caching models",
+  "save.cache.image": "Caching images",
+  "save.cache.misc": "Caching miscellaneous",
+  "save.serialize": "Serializing",
+  "save.serialize.fragment": "Serializing fragments",
+  "save.serialize.mapping": "Serializing mappings"
+}
