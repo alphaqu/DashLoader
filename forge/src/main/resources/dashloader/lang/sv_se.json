@@ -1,0 +1,11 @@
+{
+  "debug": "Debug läge är på i konfigurations filen.",
+  "save": "Påbörjar",
+  "save.cache": "Laddar",
+  "save.cache.model": "Laddar modeler",
+  "save.cache.image": "Laddar bilder",
+  "save.cache.misc": "Laddar blandat",
+  "save.serialize": "Sparar",
+  "save.serialize.fragment": "Sparar fragment",
+  "save.serialize.mapping": "Sparar mappningar"
+}
