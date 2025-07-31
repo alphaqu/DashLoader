@@ -1,0 +1,44 @@
+architectury {
+    common rootProject.enabled_platforms.split(',')
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        name "Sonatype Snapshots"
+        url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
+    maven {
+        url "https://notalpha.dev/maven/releases"
+    }
+}
+
+dependencies {
+    // We depend on Fabric Loader here to use the Fabric @Environment annotations,
+    // which get remapped to the correct annotations on each platform.
+    // Do NOT use other classes from Fabric Loader.
+    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+
+    modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
+
+    implementation "dev.quantumfusion:Hyphen:0.4.0-rc.3"
+    include "dev.quantumfusion:Hyphen:0.4.0-rc.3"
+
+    implementation "dev.notalpha:Taski:2.1.0"
+    include "dev.notalpha:Taski:2.1.0"
+
+    implementation 'com.github.luben:zstd-jni:1.5.2-2'
+    include 'com.github.luben:zstd-jni:1.5.2-2'
+
+    implementation 'com.github.luben:zstd-jni:1.5.2-2'
+
+    modCompileOnly "net.fabricmc.fabric-api:fabric-renderer-indigo:1.5.2+2034447c28"
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/dashloader.accesswidener")
+}
