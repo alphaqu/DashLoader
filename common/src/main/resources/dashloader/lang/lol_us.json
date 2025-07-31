@@ -1,0 +1,11 @@
+{
+  "debug": "eyo debug is on! Check the cribby config.",
+  "save": "wakin up!",
+  "save.cache": "owoifying",
+  "save.cache.model": "uwufying anime",
+  "save.cache.image": "saving anime",
+  "save.cache.misc": "savin' stuff",
+  "save.serialize": "sending dms",
+  "save.serialize.fragment": "sending hot sha256 keys",
+  "save.serialize.mapping": "sending private key"
+}
