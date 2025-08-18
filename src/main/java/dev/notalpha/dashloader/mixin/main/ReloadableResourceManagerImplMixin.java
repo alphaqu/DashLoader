@@ -52,6 +52,8 @@ public class ReloadableResourceManagerImplMixin {
 
 		String hash = DigestUtils.md5Hex(values.toString()).toUpperCase();
 		DashLoader.LOG.info("Hash changed to {}", hash);
-		DashLoaderClient.CACHE.load(hash);
+        if (DashLoaderClient.CACHE != null) {
+            DashLoaderClient.CACHE.load(hash);
+        }
 	}
 }
