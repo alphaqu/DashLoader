@@ -1,0 +1,11 @@
+{
+  "debug": "Режимъ отладки активенъ въ конфигурацiи.",
+  "save": "Иницiализацiя",
+  "save.cache": "Кэшированiе",
+  "save.cache.model": "Кэшированiе моделей",
+  "save.cache.image": "Кэшированiе изображенiй",
+  "save.cache.misc": "Кэшированiе прочаго",
+  "save.serialize": "Серiализацiя",
+  "save.serialize.fragment": "Серiализацiя фрагментовъ",
+  "save.serialize.mapping": "Серiализацiя отображенiй"
+}
