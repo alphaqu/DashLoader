@@ -1,0 +1,184 @@
+plugins {
+    // Publishing
+    id 'com.matthewprenger.cursegradle' version '1.4.0' apply false
+    id "com.modrinth.minotaur" version "2.8.10" apply false
+
+    id 'fabric-loom' version "${loom_version}"
+    id 'maven-publish'
+}
+
+def enablePublishing = providers.gradleProperty("enablePublishing")
+        .map { it.toBoolean() }
+        .getOrElse(false)
+
+if (enablePublishing) {
+    apply plugin: "com.modrinth.minotaur"
+    apply plugin: "com.matthewprenger.cursegradle"
+}
+
+base {
+    archivesName = project.archives_base_name
+}
+version = project.mod_version
+group = project.maven_group
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url 'https://jitpack.io'
+    }
+    maven {
+        url "https://notalpha.dev/maven/releases"
+    }
+    maven {
+        name = "Terraformers"
+        url = "https://maven.terraformersmc.com/"
+    }
+    maven {
+        name = "Nucleoid"
+        url = "https://maven.nucleoid.xyz/"
+    }
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/dashloader.accesswidener")
+    log4jConfigs.from(file("log4j-dev.xml"))
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+    implementation "dev.notalpha:Hyphen:0.4.0-rc.5"
+    include "dev.notalpha:Hyphen:0.4.0-rc.5"
+
+    implementation "dev.notalpha:Taski:2.1.0"
+    include "dev.notalpha:Taski:2.1.0"
+
+    implementation 'com.github.luben:zstd-jni:1.5.7-1'
+    include 'com.github.luben:zstd-jni:1.5.7-1'
+
+    modCompileOnly fabricApi.module("fabric-renderer-indigo", project.fabric_version)
+
+    // For Modmenu
+    modRuntimeOnly fabricApi.module("fabric-api-base", project.fabric_version)
+    modRuntimeOnly fabricApi.module("fabric-key-binding-api-v1", project.fabric_version)
+    modRuntimeOnly fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
+    modRuntimeOnly fabricApi.module("fabric-resource-loader-v0", project.fabric_version)
+    modRuntimeOnly fabricApi.module("fabric-screen-api-v1", project.fabric_version)
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    // ensure that the encoding is set to UTF-8, no matter what the system default is
+    // this fixes some edge cases with special characters not displaying correctly
+    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+    // If Javadoc is generated, this must be specified in that task too.
+    it.options.encoding = "UTF-8"
+
+    // Minecraft 1.17 (21w19a) upwards uses Java 16.
+    it.options.release = 21
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    //include sources in maven publish
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName}" }
+        rename { "${it}_${project.base.archivesName}" }
+    }
+}
+
+// Publishing
+if (enablePublishing) {
+    modrinth {
+        token = project.hasProperty("modrinthApiKey") ? project.modrinthApiKey : ""
+        projectId = 'ZfQ3kTvR'
+        changelog = file("changelog.md").getText()
+        versionNumber = project.version
+        versionName = "$project.version".split("\\+")[0] + " for $project.minecraft_version"
+        uploadFile = remapJar
+        versionType = "beta"
+        gameVersions = ['1.21.10']
+        loaders = ['fabric', 'quilt']
+    }
+
+    curseforge {
+        apiKey = project.hasProperty("curseForgeApiKey") ? project.curseForgeApiKey : ""
+        project {
+            id = '472772'
+            changelogType = "markdown"
+            changelog = file("changelog.md")
+            releaseType = 'beta'
+
+            addGameVersion "1.21.10"
+            addGameVersion "Fabric"
+            addGameVersion "Quilt"
+            addGameVersion "Java 21"
+
+            mainArtifact(remapJar) {
+                displayName = "$project.version".split("\\+")[0] + " for $project.minecraft_version"
+            }
+        }
+        options {
+            forgeGradleIntegration = false
+        }
+    }
+
+    tasks.register("publishMod") {
+        dependsOn 'modrinth'
+        dependsOn 'curseforge'
+    }
+} else {
+    tasks.register("publishMod") {
+        doLast {
+            logger.lifecycle("Publishing disabled. Re-run with -PenablePublishing=true to publish.")
+        }
+    }
+}
+
+tasks.register("getVersion") {
+    print("$project.version")
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "notalpha"
+            url = "https://notalpha.dev/maven/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.notalpha.dashloader.mixin",
+  "plugin": "dev.notalpha.dashloader.mixin.MixinPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "accessor.IdentifierAccessor",
+    "accessor.ModelLoaderAccessor",
+    "main.MainMixin",
+    "option.cache.SplashTextResourceSupplierMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": []
+}
