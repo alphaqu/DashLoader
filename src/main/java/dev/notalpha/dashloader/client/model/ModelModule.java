@@ -8,7 +8,6 @@ import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.api.collection.IntIntList;
 import dev.notalpha.dashloader.api.collection.IntObjectList;
 import dev.notalpha.dashloader.api.collection.ObjectIntList;
-import dev.notalpha.dashloader.api.registry.RegistryAddException;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.client.Dazy;
@@ -144,7 +143,13 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 
 					return models;
 				});
-			} catch (RegistryAddException ignored) {
+			} catch (RuntimeException e) {
+				// NB: nested factory.add calls (e.g. multipart parts with modded model impls
+				// like Refined Storage cables, see #121) surface as wrapped RuntimeExceptions,
+				// so a narrow catch would abort the whole save. Skip + vanilla fallback instead.
+				if (missingModelParts.size() < 3) {
+					DashLoader.LOG.warn("Skipping uncacheable model part {} ({}): {}", key.id(), model.getClass().getName(), e.getMessage());
+				}
 				missingModelParts.add(factory.add(key.id()));
 			}
 		});
@@ -176,7 +181,10 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 				var regId = factory.add(model);
 				var blockModel = new IntIntList.IntInt(factory.add(rawBlockModels.get(modelId).state()), regId);
 				outBlockModels.put(factory.add(modelId), blockModel);
-			} catch (RegistryAddException ignored) {
+			} catch (RuntimeException e) {
+				if (missingBlockModels.size() < 3) {
+					DashLoader.LOG.warn("Skipping uncacheable block model {} ({}): {}", modelId.id(), model.getClass().getName(), e.getMessage());
+				}
 				missingBlockModels.add(factory.add(modelId.id()));
 			}
 		});

@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.platform.GlStateManager;
+import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.atlas.AtlasModule;
 import net.minecraft.client.texture.*;
@@ -18,7 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 @Mixin(SpriteAtlasTexture.class)
 public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
@@ -42,9 +45,19 @@ public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
 			try {
 				// mipLevel should never be greater than tasks.size()
 				if (mipLevel + 1 != tasks.size()) {
-					for (var task : tasks) {
-						task.get().close();
-					}
+					closeAll(tasks);
+					return;
+				}
+
+				// The texture was allocated for the size vanilla decided on. If that
+				// does not match the cached image, uploading it would leave the rest
+				// of the texture (and all mip levels) with the contents of the
+				// previously loaded pack. Build the atlas vanilla instead.
+				var base = tasks.get(0).get();
+				if (base == null || base.getWidth() != stitchResult.width() || base.getHeight() != stitchResult.height()) {
+					DashLoader.LOG.warn("Cached atlas for {} does not fit the texture ({}x{} cached, {}x{} needed), re-uploading vanilla.",
+							this.id, base == null ? 0 : base.getWidth(), base == null ? 0 : base.getHeight(), stitchResult.width(), stitchResult.height());
+					closeAll(tasks);
 					return;
 				}
 
@@ -59,6 +72,18 @@ public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
 				throw new RuntimeException(e);
 			}
 		});
+	}
+
+	private static void closeAll(List<FutureTask<NativeImage>> tasks) {
+		for (var task : tasks) {
+			try {
+				var image = task.get();
+				if (image != null) {
+					image.close();
+				}
+			} catch (InterruptedException | ExecutionException ignored) {
+			}
+		}
 	}
 
 	@WrapWithCondition(method = "upload", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/texture/Sprite;upload()V"))

@@ -2,6 +2,7 @@ package dev.notalpha.dashloader;
 
 import dev.notalpha.dashloader.api.DashModule;
 import dev.notalpha.dashloader.api.cache.Cache;
+import dev.notalpha.dashloader.api.cache.CacheStatusBus;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.io.MappingSerializer;
@@ -216,6 +217,8 @@ public final class CacheImpl implements Cache {
 			this.status = status;
 			DashLoader.LOG.info("\u001B[46m\u001B[30m DashLoader Status change {}\n\u001B[0m", status);
 			this.cacheHandlers.forEach(handler -> handler.reset(this));
+			// Let api consumers (other mods) react to the change as well.
+			CacheStatusBus.fireStatus(status);
 		}
 	}
 }

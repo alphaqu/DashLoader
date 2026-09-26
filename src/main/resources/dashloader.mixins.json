@@ -22,6 +22,7 @@
     "accessor.SimpleMultipartModelSelectorAccessor",
     "accessor.SpriteAnimationAccessor",
     "accessor.SpriteAnimationFrameAccessor",
+    "accessor.StitcherAccessor",
     "accessor.TrueTypeFontAccessor",
     "accessor.UnihexFontAccessor",
     "accessor.WeightedBakedModelAccessor",

@@ -13,6 +13,9 @@
     "homepage": "https://discord.gg/VeFTrtCkrb",
     "sources": "https://github.com/QuantumFusionMC/DashLoader-Definition"
   },
+  "provides": [
+    "dashloader-api"
+  ],
   "entrypoints": {
     "dashloader": [
       "dev.notalpha.dashloader.client.DashLoaderClient"

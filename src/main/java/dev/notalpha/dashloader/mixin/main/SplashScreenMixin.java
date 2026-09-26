@@ -47,7 +47,9 @@ public class SplashScreenMixin {
 		this.client.setOverlay(null);
 		if (this.client.currentScreen != null) {
 			if (this.client.currentScreen instanceof TitleScreen) {
-				this.client.currentScreen = new TitleScreen(false);
+				TitleScreen titleScreen = new TitleScreen(false);
+				titleScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
+				this.client.currentScreen = titleScreen;
 			}
 		}
 

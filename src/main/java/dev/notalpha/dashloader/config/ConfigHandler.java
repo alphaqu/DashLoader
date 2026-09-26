@@ -65,6 +65,13 @@ public class ConfigHandler {
 				DashLoader.LOG.warn("Found VulkanMod, Disabling Optional Feature {}", option.name());
 			}
 		}
+		if (isQuiltLoaderPresent()) {
+			// Quilt ships its own MixinExtras/ASM combo that breaks @Redirect processing on
+			// MipmapGenerator (ClassCastException in MixinExtras transformer -> crash while
+			// generating mipmaps). Skip the unsafe mipmap mixin; vanilla mipmaps are used instead.
+			OPTION_ACTIVE.put(Option.UNSAFE_MIPMAP_GENERATION, false);
+			DashLoader.LOG.warn("Found Quilt Loader, Disabling Optional Feature {}", Option.UNSAFE_MIPMAP_GENERATION.name());
+		}
 	}
 
 	public static boolean shouldApplyMixin(String name) {
@@ -108,5 +115,9 @@ public class ConfigHandler {
 
 	private static boolean isVulkanModPresent() {
 		return FabricLoader.getInstance().isModLoaded("vulkanmod");
+	}
+
+	private static boolean isQuiltLoaderPresent() {
+		return FabricLoader.getInstance().isModLoaded("quilt_loader");
 	}
 }

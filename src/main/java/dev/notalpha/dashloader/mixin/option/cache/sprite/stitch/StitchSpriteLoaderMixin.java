@@ -2,6 +2,7 @@ package dev.notalpha.dashloader.mixin.option.cache.sprite.stitch;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.sprite.stitch.DashTextureStitcher;
 import dev.notalpha.dashloader.client.sprite.stitch.SpriteStitcherModule;
@@ -36,7 +37,12 @@ public final class StitchSpriteLoaderMixin {
 		if (map != null) {
 			var data = map.get(id);
 			if (data != null) {
-				return new DashTextureStitcher<>(maxWidth, maxHeight, mipLevel, data);
+				if (data.matches(maxWidth, maxHeight, mipLevel)) {
+					return new DashTextureStitcher<>(maxWidth, maxHeight, mipLevel, data);
+				}
+				// Stitch parameters changed (e.g. mipmap video settings):
+				// cached packing is stale, stitch vanilla instead of corrupting the atlas.
+				DashLoader.LOG.info("Stitch parameters changed for {}, re-stitching vanilla.", id);
 			}
 		}
 

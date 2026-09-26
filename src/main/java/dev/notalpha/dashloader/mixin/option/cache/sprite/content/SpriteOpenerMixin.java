@@ -1,5 +1,6 @@
 package dev.notalpha.dashloader.mixin.option.cache.sprite.content;
 
+import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.sprite.content.SpriteContentModule;
 import dev.notalpha.dashloader.mixin.accessor.SpriteContentsAccessor;
@@ -43,11 +44,23 @@ public interface SpriteOpenerMixin {
 	private static void dashloaderSave(Collection<?> collection, Identifier id, Resource resource, CallbackInfoReturnable<SpriteContents> cir) {
 		var dashSpriteData = SpriteContentModule.SOURCE.get(CacheStatus.SAVE);
 		if (dashSpriteData != null) {
-			if (dashSpriteData.containsKey(id)) { // filter out sprites with the same id
-				dashSpriteData.put(id, null);
+			SpriteContents fresh = cir.getReturnValue();
+			if (dashSpriteData.containsKey(id)) {
+				SpriteContents existing = dashSpriteData.get(id);
+				if (existing == null || !SpriteContentModule.sameContents(existing, fresh)) {
+					// Same id, different texture (e.g. wither painting vs. wither
+					// effect icon): force the vanilla mechanism by caching null,
+					// like upstream. Already-poisoned ids stay poisoned.
+					if (existing != null) {
+						DashLoader.LOG.warn("Duplicate sprite {} with different contents, using vanilla loading.", id);
+						dashSpriteData.put(id, null);
+					}
+					return;
+				}
+				// Identical double open (resource reload): keep the first result.
 				return;
 			}
-			dashSpriteData.put(id, cir.getReturnValue());
+			dashSpriteData.put(id, fresh);
 		}
 	}
 }
