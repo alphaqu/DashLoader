@@ -43,7 +43,7 @@ public final class CacheImpl implements Cache {
 	// Serializers
 	private final RegistrySerializer registrySerializer;
 	private final MappingSerializer mappingsSerializer;
-	private CacheStatus status = CacheStatus.IDLE;
+	private volatile CacheStatus status = CacheStatus.IDLE;
 	private volatile String hash;
 
 	CacheImpl(Path cacheDir, List<DashModule<?>> cacheHandlers, List<DashObjectClass<?, ?>> dashObjects, List<MissingHandler<?>> missingHandlers) {
@@ -76,10 +76,11 @@ public final class CacheImpl implements Cache {
 		// at any moment while the game shuts down. Without the move, that would leave
 		// a half written cache that exists() reports as valid and the next launch
 		// would waste a full load attempt on it.
-		Path tmpDir = getTmpDir();
+		// Resolved once: a reload that starts while this runs on its own thread changes
+		// the hash, and the save must keep writing to the cache it was started for.
+		final Path ourDir = getDir();
+		final Path tmpDir = tmpDirOf(ourDir);
 		try {
-
-			Path ourDir = getDir();
 
 			// A leftover from a save that was killed before it could commit.
 			FileUtils.deleteQuietly(tmpDir.toFile());
@@ -156,7 +157,7 @@ public final class CacheImpl implements Cache {
 			// Commit. The rename is atomic, so getDir() either does not exist at all
 			// or is a complete cache.
 			if (Files.exists(ourDir)) {
-				this.remove();
+				FileUtils.deleteDirectory(ourDir.toFile());
 			}
 			Files.move(tmpDir, ourDir, StandardCopyOption.ATOMIC_MOVE);
 
@@ -166,7 +167,7 @@ public final class CacheImpl implements Cache {
 			DashLoader.LOG.error("Failed caching", thr);
 			this.setStatus(CacheStatus.SAVE);
 			FileUtils.deleteQuietly(tmpDir.toFile());
-			this.remove();
+			FileUtils.deleteQuietly(ourDir.toFile());
 			return false;
 		}
 	}
@@ -222,7 +223,9 @@ public final class CacheImpl implements Cache {
 
 			DashLoader.LOG.info("Loaded cache in {}", ProfilerUtil.getTimeStringFromStart(start));
 			DashLoader.LOG.info(CacheStats.format());
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			// Throwable on purpose: a broken cache (OOM, missing native library, linkage
+			// errors) has to fall back to a fresh cache instead of crashing the game.
 			DashLoader.LOG.error("Summoned CrashLoader in {}", ProfilerUtil.getTimeStringFromStart(start), e);
 			this.setStatus(CacheStatus.SAVE);
 			this.remove();
@@ -253,9 +256,8 @@ public final class CacheImpl implements Cache {
 		return cacheDir.resolve(hash + "/");
 	}
 
-	/** Temp directory a save writes to before it is moved onto {@link #getDir()}. */
-	private Path getTmpDir() {
-		Path dir = getDir();
+	/** Temp directory a save writes to before it is moved onto {@code dir}. */
+	private static Path tmpDirOf(Path dir) {
 		return dir.resolveSibling(dir.getFileName() + TMP_SUFFIX);
 	}
 

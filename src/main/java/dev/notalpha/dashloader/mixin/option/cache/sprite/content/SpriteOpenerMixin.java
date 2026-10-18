@@ -28,17 +28,20 @@ public interface SpriteOpenerMixin {
 			SpriteContents result = original.loadSprite(spriteLocation, resource);
 
 			SpriteContentModule.SOURCE.visit(CacheStatus.SAVE, map -> {
-				if (map.containsKey(spriteLocation)) {
-					SpriteContents existing = map.get(spriteLocation);
-					if (existing != null && !SpriteContentModule.sameContents(existing, result)) {
-						// Same id, different texture (e.g. wither painting vs. wither
-						// effect icon): force the vanilla mechanism by caching null.
-						DashLoader.LOG.warn("Duplicate sprite {} with different contents, using vanilla loading.", spriteLocation);
-						map.put(spriteLocation, null);
+				// check-then-put has to be atomic, sprites are loaded in parallel
+				synchronized (map) {
+					if (map.containsKey(spriteLocation)) {
+						SpriteContents existing = map.get(spriteLocation);
+						if (existing != null && !SpriteContentModule.sameContents(existing, result)) {
+							// Same id, different texture (e.g. wither painting vs. wither
+							// effect icon): force the vanilla mechanism by caching null.
+							DashLoader.LOG.warn("Duplicate sprite {} with different contents, using vanilla loading.", spriteLocation);
+							map.put(spriteLocation, null);
+						}
+						// Identical double open or already-poisoned id: keep as is.
+					} else {
+						map.put(spriteLocation, result);
 					}
-					// Identical double open or already-poisoned id: keep as is.
-				} else {
-					map.put(spriteLocation, result);
 				}
 			});
 			return result;

@@ -8,7 +8,6 @@ public enum Option {
 	CACHE_SPRITE_CONTENT("cache.sprite.content"),               // Caches sprite loading
 	CACHE_SPRITE_STITCHING("cache.sprite.stitch"),              // Caches sprite stitching
 
-	FAST_TRANSFORMATION_EQUALS("misc.AffineTransformationMixin"),
 	UNSAFE_MIPMAP_GENERATION("misc.MipmapHelper");              // Speeds up get/set pixel operations when generating mipmaps by skipping redundant safety checks
 
 	public final String mixinContains;

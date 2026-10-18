@@ -31,8 +31,7 @@
     "option.cache.font.TrueTypeFontLoaderMixin",
     "option.cache.language.ClientLanguageMixin",
     "option.cache.model.ModelManagerMixin",
-    "option.cache.sprite.stitch.StitchSpriteLoaderMixin",
-    "option.misc.AffineTransformationMixin"
+    "option.cache.sprite.stitch.StitchSpriteLoaderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

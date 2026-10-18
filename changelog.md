@@ -9,6 +9,16 @@
 - Model cache: identical block states share one model group again instead of every state getting its own group
 - Compression scratch buffer is reused across writes and sized from the actual Zstd bound
 
+- Sprite content and stitcher capture are thread safe, parallel sprite loading could corrupt the collected data
+- Fragment and compression buffers are freed after use instead of leaking native memory with the worker threads
+- Compressed cache files are unmapped after reading, deleting a cache no longer fails on Windows
+- The vanilla load time in the stats no longer includes the time needed to save the cache
+- Cache hash includes size and modification time of zip resource packs
+- A failing cache load of any kind (also errors) falls back to a new cache instead of crashing
+- A save keeps writing to its own cache directory when a reload changes the hash meanwhile
+- Duplicate DashObjects are dropped, the model module no longer returns a null mapping
+- Removed `AffineTransformationMixin` and its option, vanilla already compares by matrix
+
 # Features
 
 - Glyph map of a font is computed once and reused for all cached glyphs

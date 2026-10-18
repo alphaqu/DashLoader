@@ -13,10 +13,8 @@ java {
     targetCompatibility = JavaVersion.VERSION_25
 }
 
-// Multi-version support: override via -PmcVersion=1.21.5 -PyarnMappings=... -PfabricApiVersion=...
+// Version override: -PmcVersion=...
 def activeMcVersion = project.findProperty("mcVersion") ?: project.minecraft_version
-def activeYarn = project.findProperty("yarnMappings") ?: project.yarn_mappings
-def activeFabricApi = project.findProperty("fabricApiVersion") ?: project.fabric_version
 def baseModVersion = (project.mod_version as String).split("\\+")[0]
 
 version = "${baseModVersion}+${activeMcVersion}"
@@ -52,7 +50,6 @@ loom {
 
 dependencies {
     // To change the versions see the gradle.properties file
-    // Override for multi-version builds: -PmcVersion= -PyarnMappings= -PfabricApiVersion=
     minecraft "com.mojang:minecraft:${activeMcVersion}"
     // 26.1+ is unobfuscated: no mappings needed
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
@@ -95,7 +92,6 @@ tasks.withType(JavaCompile).configureEach {
     // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
 
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
     it.options.release = 25
 }
 
@@ -107,45 +103,8 @@ java {
 jar {
     archiveBaseName.set(project.archives_base_name)
     archiveVersion.set("${baseModVersion}+${activeMcVersion}")
-    from("LICENSE") {
+    from("LICENCE") {
         rename { "${it}_${project.archives_base_name}" }
-    }
-}
-
-// Multi-version matrix 1.21.4 - 1.21.11 (Yarn-based, single branch).
-// Usage:
-//   ./gradlew remapJar -PmcVersion=1.21.5 -PyarnMappings=1.21.5+build.1 -PfabricApiVersion=0.128.2+1.21.5
-//   ./gradlew buildAllMcVersions   (baut alle unten gelisteten Versionen, je eine .jar in build/libs)
-def mcVersionMatrix = [
-    [mc: "1.21.4",  yarn: "1.21.4+build.8",  fabricApi: "0.119.3+1.21.4"],
-    [mc: "1.21.5",  yarn: "1.21.5+build.1",  fabricApi: "0.128.2+1.21.5"],
-    [mc: "1.21.6",  yarn: "1.21.6+build.1",  fabricApi: "0.128.2+1.21.6"],
-    [mc: "1.21.7",  yarn: "1.21.7+build.8",  fabricApi: "0.129.0+1.21.7"],
-    [mc: "1.21.8",  yarn: "1.21.8+build.1",  fabricApi: "0.136.1+1.21.8"],
-    [mc: "1.21.9",  yarn: "1.21.9+build.1",  fabricApi: "0.134.1+1.21.9"],
-    [mc: "1.21.10", yarn: "1.21.10+build.3", fabricApi: "0.138.4+1.21.10"],
-    [mc: "1.21.11", yarn: "1.21.11+build.6", fabricApi: "0.141.6+1.21.11"]
-]
-
-tasks.register("listMcVersions") {
-    doLast {
-        mcVersionMatrix.each { println "${it.mc} | yarn=${it.yarn} | fabricApi=${it.fabricApi}" }
-    }
-}
-
-tasks.register("buildAllMcVersions") {
-    description = "Baut je eine .jar fuer 1.21.4 bis 1.21.11 via separaten Gradle-Runs."
-    doLast {
-        def gradlew = System.getProperty("os.name").toLowerCase().contains("win") ? "gradlew.bat" : "./gradlew"
-        mcVersionMatrix.each { e ->
-            println "=== Building ${e.mc} ==="
-            exec {
-                workingDir rootDir
-                commandLine gradlew, "remapJar", "--max-workers=1",
-                    "-PmcVersion=${e.mc}", "-PyarnMappings=${e.yarn}", "-PfabricApiVersion=${e.fabricApi}"
-            }
-        }
-        println "Alle Jars in build/libs (Dateiname enthaelt jeweils +<mcVersion>)"
     }
 }
 
@@ -173,7 +132,7 @@ curseforge {
         addGameVersion activeMcVersion
         addGameVersion "Fabric"
         addGameVersion "Quilt"
-        addGameVersion "Java 21"
+        addGameVersion "Java 25"
 
         mainArtifact(jar) {
             displayName = "${baseModVersion} for ${activeMcVersion}"

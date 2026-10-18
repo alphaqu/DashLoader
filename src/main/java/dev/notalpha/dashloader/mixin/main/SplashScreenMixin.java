@@ -70,14 +70,15 @@ public class SplashScreenMixin {
 			final Thread thread = new Thread(() -> {
 				state.setStatus(DashToastStatus.PROGRESS);
 				long start = System.currentTimeMillis();
+				// Taken before saving, the time the save needs is not part of a vanilla load.
+				long vanillaMs = start - ProfilerUtil.RELOAD_START;
 				boolean save = cache.save(stepTask -> state.task = stepTask);
 				cache.reset();
 
 				if (save) {
 					state.setOverwriteText("Created cache in " + ProfilerUtil.getTimeStringFromStart(start));
 					state.setFinished(DashToastStatus.DONE);
-					CacheStats.writeVanillaTiming(cache.getDir(),
-							System.currentTimeMillis() - ProfilerUtil.RELOAD_START);
+					CacheStats.writeVanillaTiming(cache.getDir(), vanillaMs);
 				} else {
 					// Only show toast on fail.
 					minecraft.execute(() -> {

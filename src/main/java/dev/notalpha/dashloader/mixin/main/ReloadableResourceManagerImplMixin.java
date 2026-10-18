@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,13 +34,17 @@ public class ReloadableResourceManagerImplMixin {
 		PackRepository manager = Minecraft.getInstance().getResourcePackRepository();
 		List<String> values = new ArrayList<>();
 
-		// Use server resource pack display name to differentiate them across each-other
+		// Zip packs are identified by path, size and modification time, so a pack that
+		// is replaced in place (same id, title and description) invalidates the cache.
+		// The server pack path already contains its hash.
 		for (PackResources pack : packs) {
-			if (Objects.equals(pack.packId(), "server")) {
-				if (pack instanceof FilePackResources zipResourcePack) {
-					ZipResourcePackAccessor zipPack = (ZipResourcePackAccessor) zipResourcePack;
-					Path path = ((ZipWrapperResourcePackAccessor) zipPack.getZipFileAccess()).getFile().toPath();
-					values.add(path.toString());
+			if (pack instanceof FilePackResources zipResourcePack) {
+				ZipResourcePackAccessor zipPack = (ZipResourcePackAccessor) zipResourcePack;
+				java.io.File file = ((ZipWrapperResourcePackAccessor) zipPack.getZipFileAccess()).getFile();
+				if (Objects.equals(pack.packId(), "server")) {
+					values.add(file.toPath().toString());
+				} else {
+					values.add(file.toPath() + "@" + file.length() + "@" + file.lastModified());
 				}
 			}
 		}

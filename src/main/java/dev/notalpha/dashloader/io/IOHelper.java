@@ -76,22 +76,6 @@ public final class IOHelper {
 		return buffer;
 	}
 
-	private static final ThreadLocal<ByteBuffer> COMPRESS_SCRATCH =
-			ThreadLocal.withInitial(() -> MemoryUtil.memAlloc(1));
-
-	private static ByteBuffer compressBuffer(int fileSize, byte compressionLevel) {
-		final long required = Zstd.compressBound(fileSize);
-		ByteBuffer buffer = COMPRESS_SCRATCH.get();
-		if (buffer.capacity() < required) {
-			if (buffer.capacity() > 1) {
-				MemoryUtil.memFree(buffer);
-			}
-			buffer = MemoryUtil.memAlloc((int) required);
-			COMPRESS_SCRATCH.set(buffer);
-		}
-		return buffer.clear();
-	}
-
 	public static void save(Path path, StepTask task, ByteBufferIO io, int fileSize, byte compressionLevel) throws IOException {
 		io.rewind();
 		io.byteBuffer.limit(fileSize);
@@ -100,7 +84,9 @@ public final class IOHelper {
 			try {
 				if (compressionLevel > 0) {
 					task.reset(4);
-					final ByteBuffer dst = compressBuffer(fileSize, compressionLevel);
+					// Plain malloc memory is not reclaimed by the GC, so it is released below. A
+				// thread local scratch buffer leaked once its worker thread terminated.
+				final ByteBuffer dst = MemoryUtil.memAlloc((int) Zstd.compressBound(fileSize));
 					try {
 						task.next();
 
@@ -143,7 +129,14 @@ public final class IOHelper {
 		try (FileChannel channel = openFile(path)) {
 			var buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).order(ByteOrder.LITTLE_ENDIAN);
 			// Check compression
-			if (buffer.get() > 0) {
+			if (buffer.get() <= 0) {
+				return ByteBufferIO.wrap(buffer);
+			}
+
+			// The decompressed data is copied out, so the mapping is not needed afterwards.
+			// Leaving it to the GC keeps the file locked on Windows, which breaks deleting
+			// a cache directory.
+			try {
 				final int size = buffer.getInt();
 				// memAlloc so the caller can free it right after reading via release().
 				final ByteBuffer dst = MemoryUtil.memAlloc(size).order(ByteOrder.LITTLE_ENDIAN);
@@ -155,8 +148,8 @@ public final class IOHelper {
 				}
 				dst.position(0);
 				return ByteBufferIO.wrap(dst);
-			} else {
-				return ByteBufferIO.wrap(buffer);
+			} finally {
+				unmap(buffer);
 			}
 		}
 	}

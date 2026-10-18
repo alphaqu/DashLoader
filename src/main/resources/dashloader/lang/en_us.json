@@ -11,8 +11,6 @@
   "config.CACHE_SPRITE_CONTENT.tooltip": "Caches sprite loading",
   "config.CACHE_SPRITE_STITCHING": "Sprite Stitching Cache",
   "config.CACHE_SPRITE_STITCHING.tooltip": "Caches sprite stitching",
-  "config.FAST_TRANSFORMATION_EQUALS": "Fast Equals Check",
-  "config.FAST_TRANSFORMATION_EQUALS.tooltip": "Compares Transformations by their matrix instead of by identity",
   "config.UNSAFE_MIPMAP_GENERATION": "Unsafe Mipmap generation",
   "config.UNSAFE_MIPMAP_GENERATION.tooltip": "Skips redundant safety checks when generating mipmaps",
   "config.caching_toast": "Show Caching Toast",

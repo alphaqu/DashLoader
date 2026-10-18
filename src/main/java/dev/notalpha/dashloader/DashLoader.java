@@ -35,7 +35,7 @@ public final class DashLoader {
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < versions.size(); i++) {
 			ModMetadata metadata = versions.get(i);
-			stringBuilder.append(i).append("$").append(metadata.getId()).append('&').append(metadata.getVersion().getFriendlyString());
+			stringBuilder.append(i).append("$").append(metadata.getId()).append('&').append(metadata.getVersion().getFriendlyString()).append(';');
 		}
 
 		MOD_HASH = DigestUtils.md5Hex(stringBuilder.toString()).toUpperCase();

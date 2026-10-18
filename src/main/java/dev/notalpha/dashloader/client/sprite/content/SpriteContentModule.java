@@ -13,6 +13,7 @@ import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.config.Option;
 import dev.notalpha.dashloader.mixin.accessor.SpriteContentsAccessor;
 import dev.notalpha.taski.builtin.StepTask;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.renderer.texture.SpriteContents;
@@ -23,7 +24,8 @@ public class SpriteContentModule implements DashModule<SpriteContentModule.Data>
 
 	@Override
 	public void reset(Cache cache) {
-		SOURCE.reset(cache, new HashMap<>());
+		// Sprites are opened on several reload threads at once.
+		SOURCE.reset(cache, Collections.synchronizedMap(new HashMap<>()));
 	}
 
 	@Override

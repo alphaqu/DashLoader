@@ -133,21 +133,13 @@ public class RegistrySerializer {
 		return new CacheInfo(fragments, chunks, stageSizes);
 	}
 
-	private static final ThreadLocal<ByteBuffer> SCRATCH = ThreadLocal.withInitial(() -> MemoryUtil.memAlloc(1));
-
 	private static void writeFragment(Path dir, int index, CacheFragment fragment, StageData[] stages,
 			java.util.Map<Class<?>, Serializer<?>> serializers) {
 		DashLoader.LOG.info("Serializing fragment {}", index);
 		List<StageFragment> stageFragmentMetadata = fragment.stages;
-		ByteBuffer buffer = SCRATCH.get();
-		int needed = (int) fragment.info.fileSize;
-		if (buffer.capacity() < needed) {
-			if (buffer.capacity() > 1) {
-				MemoryUtil.memFree(buffer);
-			}
-			buffer = MemoryUtil.memAlloc(needed);
-			SCRATCH.set(buffer);
-		}
+		// Not thread local: malloc memory is not reclaimed by the GC, so a buffer cached
+		// on a pool thread leaked as soon as that thread terminated.
+		ByteBuffer buffer = MemoryUtil.memAlloc(Math.max((int) fragment.info.fileSize, 1));
 		try {
 			buffer.clear();
 			ByteBufferIO io = ByteBufferIO.wrap(buffer);
@@ -175,6 +167,7 @@ public class RegistrySerializer {
 			throw new RuntimeException(e);
 		} finally {
 			buffer.position(0);
+			MemoryUtil.memFree(buffer);
 		}
 	}
 

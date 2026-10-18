@@ -23,7 +23,8 @@ public class SpriteStitcherModule implements DashModule<SpriteStitcherModule.Dat
 
 	@Override
 	public void reset(Cache cache) {
-		STITCHERS_SAVE.reset(cache, new ArrayList<>());
+		// Atlases are stitched on several reload threads at once.
+		STITCHERS_SAVE.reset(cache, Collections.synchronizedList(new ArrayList<>()));
 		STITCHERS_LOAD.reset(cache, new HashMap<>());
 	}
 

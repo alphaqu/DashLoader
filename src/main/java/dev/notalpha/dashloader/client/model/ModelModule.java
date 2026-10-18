@@ -26,14 +26,14 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * Model caching for the 1.21.5+ model system ({@link BlockStateModel}).
  * <p>
- * SAVE: {@link dev.notalpha.dashloader.mixin.option.cache.model.BakedModelManagerMixin} captures the
- * fully baked {@code Map<BlockState, BlockStateModel>} from {@code BakedModelManager.upload}.
+ * SAVE: {@link dev.notalpha.dashloader.mixin.option.cache.model.ModelManagerMixin} captures the
+ * fully baked {@code Map<BlockState, BlockStateModel>} from {@code ModelManager.apply}.
  * Every model is stored by its resolved parts; weighted models keep all variants so vanilla
  * random picking is preserved. Multipart models resolve deterministically per state, so they
  * flatten into plain part lists, no selector caching needed.
  * <p>
  * LOAD: {@link dev.notalpha.dashloader.mixin.option.cache.model.BlockStatesLoaderMixin} shortcuts
- * {@code BlockStatesLoader.load} with {@link DashBlockStateModel.DashUnbakedGrouped} wrappers,
+ * {@code BlockStateModelLoader.loadBlockStates} with {@link DashBlockStateModel.DashUnbakedGrouped} wrappers,
  * so the vanilla bake pipeline runs without any JSON parsing.
  */
 public class ModelModule implements DashModule<ModelModule.Data> {
@@ -50,7 +50,8 @@ public class ModelModule implements DashModule<ModelModule.Data> {
 	public Data save(RegistryWriter factory, StepTask task) {
 		var blockModels = BLOCK_STATE_MODELS.get(CacheStatus.SAVE);
 		if (blockModels == null) {
-			return null;
+			// A null mapping would fail in MappingSerializer, store an empty one instead.
+			return new Data(new IntIntList(new ArrayList<>()));
 		}
 
 		var outBlockModels = new IntIntList(new ArrayList<>(blockModels.size()));
