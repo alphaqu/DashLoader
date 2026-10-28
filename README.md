@@ -1,50 +1,73 @@
-# DashLoader Github
-Welcome to the codebase where DashLoader lives! Please report any issues you find with DashLoader here.
-<center>
-    <p align="center"  style="font-family: sans-serif, tahoma, arial, helvetica; font-size: 18px;">
-        <!-- Features -->
-        <img src="https://notalpha.dev/assets/dashloader/features-new.png" alt="Description" width="1000"/>
-        <br/>
-        This mod accelerates the Minecraft Asset Loading system by caching all of its content, This leads to a much faster
-        game load.
-        It does this by caching all of its content on first launch and on next launch loading back that exact cache.
-        The cache loading is hyper fast and scalable which utilises your entire system.
-        <br/><br/><br/>
-        <strong>Important notes:</strong>
-        <!-- Cache slowdown explanation -->
-        <br/><br/> &bull; The first time your launch DashLoader it will be <strong>significantly slower</strong>.
-        Because it needs to create a cache which contains all the assets minecraft normally loads.
-        This will also happen every time you change a mod/resourcepack if that configuration does not have an existing
-        cache.
-        <!-- Mod compatibility -->
-        <br/><br/> &bull; DashLoader has been known to be incompatible with a lot of mods.
-        DashLoader 3.0 has massively improved compatibility by not forcing mod developers to add explicit support to make
-        their assets cachable.
-        This means that DashLoader will load assets normally for mod assets that cannot be cached.
-        While this improves mod compatibility it hurts speed as the minecraft loading system is quite slow.
-        <!-- Artists -->
-        <br/><br/> &bull; If you use DashLoader for Developing mods or creating resource packs you can press
-        <code>f3 + t</code> to recreate the cache to load your new assets in.
-        If you want to just show off the speed of DashLoader you can press <code>shift + f3 + t</code>
-        <br/><br/><br/>
-        <!-- Community .-->
-        <img src="https://notalpha.dev/assets/dashloader/community-new.png" alt="Community" width="1000"/>
-        <br/>
-        <img src="https://i.imgur.com/qbysL1T.png" alt="Discord" width="500"/>
-        <!-- Sponsors -->
-        <img src="https://notalpha.dev/assets/dashloader/sponsors-new.png" alt="Sponsors" width="1000"/>
-        <br/>
-        <a href="https://www.yourkit.com/java/profiler/">YourKit</a>
-        Makes amazing profilers for both Java and .NET.
-        We use their Java Profiler to understand where to optimize further and make DashLoader faster.
-        <br/>
-        <a href="https://www.jetbrains.com/">JetBrains</a>
-        Creates excellent IDEs for all programmers and have provided us with access to their enterprise products for use to
-        develop DashLoader and Hyphen.
-        <!-- Donate -->
-        <img src="https://notalpha.dev/assets/dashloader/donate-new.png" alt="Donate" width="1000"/>
-        <br/>
-        I have a <a href="https://ko-fi.com/notequalalpha">Ko-Fi page</a> if you would like to Support me. <br/>
-        Please only support me if you like what I do, and you are not in a bad financial situation to do so.
-    </p>
-</center>
+<p align="center"><img src="./src/main/resources/dashloader/textures/icon.png" alt="DashLoader logo" width="128"></p>
+<h1 align="center">DashLoader</h1>
+
+<h1 align="center">
+<a href="https://www.curseforge.com/minecraft/mc-mods/dashloader"><img alt="CurseForge" src="https://img.shields.io/badge/DashLoader-CurseForge?logo=curseforge&logoColor=%23F16436&label=CurseForge&color=%23F16436"></a>
+<a href="https://modrinth.com/mod/dashloader"><img alt="Modrinth" src="https://img.shields.io/badge/DashLoader-Modrinth?logo=modrinth&logoColor=%2300AF5C&label=Modrinth&color=%2300AF5C"></a>
+<a href="https://modrinth.com/mod/dashloader-unofficial-continuation"><img alt="Modrinth fork" src="https://img.shields.io/badge/DashLoader-Modrinth?logo=modrinth&logoColor=%2300AF5C&label=Modrinth%20(fork)&color=%2300AF5C"></a>
+</h1>
+
+> [!IMPORTANT]
+> This is an unofficial continuation. The original project by [AlphaQ](https://github.com/alphaqu/DashLoader) stopped at Minecraft 1.21.4, so everything for 1.21.5 and newer lives here. Full credit for the original work goes to AlphaQ and all contributors, and this fork keeps the same LGPL-3.0-only licence.
+>
+> Looking for the original? It is archived at [alphaqu/DashLoader](https://github.com/alphaqu/DashLoader).
+
+### Welcome to DashLoader!
+
+Tired of watching the loading screen while every block model, texture, sprite and font glyph gets parsed from scratch, on every single launch?
+
+DashLoader is a client-side cache for the resource reload. The first time you start the game it does its normal work and writes the result to disk. Every launch after that reads the cache back instead, so the world loads dramatically faster. No gameplay changes, no server-side component, nothing to configure. Install it, launch twice, and judge the difference yourself.
+
+It invalidates itself the way you would expect: the cache key is derived from your mod list, the mod versions and your enabled resource packs, so adding a mod or swapping a pack produces a fresh cache on its own. Press `F3 + T` to force a rebuild while you are iterating on assets.
+
+| Aspect | Detail |
+|---|---|
+| ![Java](https://img.shields.io/badge/java-21%20%2F%2025-8A2BE2) | 1.21.x needs Java 21, 26.x needs Java 25 |
+| ![License](https://img.shields.io/badge/license-LGPL--3.0-blue) | LGPL-3.0-only, same as upstream |
+| ![Client side](https://img.shields.io/badge/client%20side-yes-5CB85C) | No server install, single-player and servers alike |
+
+## Supported versions
+
+| Status | Minecraft | Java | Loaders |
+|---|---|---|---|
+| Stable | 1.21.4 - 1.21.11 | 21 | Fabric, Quilt |
+| Beta | 26.1, 26.1.1, 26.1.2, 26.2, 26.3 | 25 | Fabric, Quilt |
+| Beta | 26.2, 26.3, 1.21.11 | 21 / 25 | NeoForge |
+| WIP | 1.16.5 | 8 | Forge, skeleton port, not feature equivalent |
+
+Every Minecraft version lives on its own branch, named `fabric-<mcVersion>`, `neoforge-<mcVersion>` or `forge-<mcVersion>`. Check which branch you are on before opening an issue, because that decides what is even buildable.
+
+## Things worth knowing
+
+- **The first launch is the slow one.** That is when the cache gets written. Every launch after that is the fast one.
+- **Uncacheable assets are skipped, not fatal.** A mod asset that cannot be represented is logged with a warning and then loaded the vanilla way, so one broken mod does not take the whole cache down with it.
+- **GPU-side caches are gone on 1.21.5 and newer.** Mojang removed the hooks DashLoader used for stitched atlases and shader caches there. Model, sprite, font and translation caching still applies.
+- **The Forge 1.16.5 port is a skeleton.** It shares no code with the other ports and does not include any of the fixes below. Use Fabric or NeoForge on 1.21.4 or newer.
+
+## What the recent builds fix
+
+The `5.1.0-beta.9.7` and `5.1.0-beta.9.8` builds addressed, among others:
+
+- A native memory leak in the serialization path, which could surface as `OutOfMemoryError: Direct buffer memory` on large modpacks even when the Java heap looked empty.
+- A cache write that could be interrupted by the game closing, leaving a half written directory that the next launch would try and fail to load. The cache is now written to a temp directory and moved into place.
+- A progress bar that could stall below 100% because the counter was updated from several threads at once.
+- A data race that could make a module silently fall back to vanilla instead of using the cache.
+- Every quad of a block model being registered twice during cache creation.
+- The cache toast sometimes disappearing instantly instead of showing its result.
+
+## Reporting issues
+
+Please include your Minecraft version, loader, the full mod list, and the relevant part of `latest.log`. If the cache is involved, `dashloader-cache` in your instance folder is worth attaching as well.
+
+## Building from source
+
+```bash
+./gradlew build
+# jars land in build/libs/dashloader-<version>+<mcVersion>.jar
+```
+
+Hyphen and Taski have to be resolvable, either from `mavenLocal` or from the vendored `libs` folder, since `notalpha.dev` is frequently unreachable.
+
+## Licence
+
+LGPL-3.0-only, unchanged from upstream. See `LICENCE`.

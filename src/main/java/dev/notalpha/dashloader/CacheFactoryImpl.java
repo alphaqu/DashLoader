@@ -61,9 +61,13 @@ public class CacheFactoryImpl implements CacheFactory {
 
 		int id = 0;
 		Class<?> lastClass = null;
-		for (DashObjectClass<?, ?> dashObject : this.dashObjects) {
+		// Duplicates are dropped from the list, otherwise they would keep an unset id and
+		// clash on the same target class when the registry is created.
+		for (var iterator = this.dashObjects.iterator(); iterator.hasNext(); ) {
+			DashObjectClass<?, ?> dashObject = iterator.next();
 			if (dashObject.getDashClass() == lastClass) {
 				DashLoader.LOG.warn("Duplicate DashObject found: {}", dashObject.getDashClass());
+				iterator.remove();
 				continue;
 			}
 			lastClass = dashObject.getDashClass();

@@ -3,29 +3,39 @@ plugins {
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id "com.modrinth.minotaur" version "2.+"
 
-    id 'fabric-loom' version '1.9-SNAPSHOT'
+    id 'java'
+    id 'net.fabricmc.fabric-loom' version '1.17.10'
     id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
+// Version override: -PmcVersion=...
+def activeMcVersion = project.findProperty("mcVersion") ?: project.minecraft_version
+def baseModVersion = (project.mod_version as String).split("\\+")[0]
+
+version = "${baseModVersion}+${activeMcVersion}"
 group = project.maven_group
+base { archivesName.set(project.archives_base_name) }
 
 repositories {
     mavenCentral()
     mavenLocal()
+    // Lokaler Fallback: lege Hyphen-0.4.0-rc.5.jar und Taski-2.1.0.jar hier ab,
+    // falls notalpha.dev (Host von dev.notalpha-Artefakten) nicht erreichbar ist.
+    flatDir { dirs 'libs' }
     maven {
         url 'https://jitpack.io'
     }
     maven {
-        url "https://notalpha.dev/maven/releases"
-    }
-    maven {
         name = "Terraformers"
         url = "https://maven.terraformersmc.com/"
+        content {
+            includeGroup "com.terraformersmc"
+        }
     }
     maven {
         name = "Nucleoid"
@@ -40,11 +50,11 @@ loom {
 
 dependencies {
     // To change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    minecraft "com.mojang:minecraft:${activeMcVersion}"
+    // 26.1+ is unobfuscated: no mappings needed
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
     implementation "dev.notalpha:Hyphen:0.4.0-rc.5"
     include "dev.notalpha:Hyphen:0.4.0-rc.5"
@@ -54,15 +64,9 @@ dependencies {
 
     implementation 'com.github.luben:zstd-jni:1.5.7-1'
     include 'com.github.luben:zstd-jni:1.5.7-1'
+    testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.11.4"
 
-    modCompileOnly fabricApi.module("fabric-renderer-indigo", project.fabric_version)
-
-    // For Modmenu
-    modRuntimeOnly fabricApi.module("fabric-api-base", project.fabric_version)
-    modRuntimeOnly fabricApi.module("fabric-key-binding-api-v1", project.fabric_version)
-    modRuntimeOnly fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
-    modRuntimeOnly fabricApi.module("fabric-resource-loader-v0", project.fabric_version)
-    modRuntimeOnly fabricApi.module("fabric-screen-api-v1", project.fabric_version)
 }
 
 test {
@@ -74,9 +78,10 @@ test {
 
 processResources {
     inputs.property "version", project.version
+    inputs.property "minecraft_version", activeMcVersion
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand "version": project.version, "minecraft_version": activeMcVersion
     }
 }
 
@@ -87,8 +92,7 @@ tasks.withType(JavaCompile).configureEach {
     // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
 
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    it.options.release = 21
+    it.options.release = 25
 }
 
 java {
@@ -97,8 +101,10 @@ java {
 }
 
 jar {
-    from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+    archiveBaseName.set(project.archives_base_name)
+    archiveVersion.set("${baseModVersion}+${activeMcVersion}")
+    from("LICENCE") {
+        rename { "${it}_${project.archives_base_name}" }
     }
 }
 
@@ -108,10 +114,10 @@ modrinth {
     projectId = 'ZfQ3kTvR'
     changelog = file("changelog.md").getText()
     versionNumber = project.version
-    versionName = "$project.version".split("\\+")[0] + " for $project.minecraft_version"
-    uploadFile = remapJar
+    versionName = "${baseModVersion} for ${activeMcVersion}"
+    uploadFile = jar
     versionType = "beta"
-    gameVersions = ['1.21.4']
+    gameVersions = [activeMcVersion]
     loaders = ['fabric', 'quilt']
 }
 
@@ -123,13 +129,13 @@ curseforge {
         changelog = file("changelog.md")
         releaseType = 'beta'
 
-        addGameVersion "1.21.4"
+        addGameVersion activeMcVersion
         addGameVersion "Fabric"
         addGameVersion "Quilt"
-        addGameVersion "Java 21"
+        addGameVersion "Java 25"
 
-        mainArtifact(remapJar) {
-            displayName = "$project.version".split("\\+")[0] + " for $project.minecraft_version"
+        mainArtifact(jar) {
+            displayName = "${baseModVersion} for ${activeMcVersion}"
         }
     }
     options {
