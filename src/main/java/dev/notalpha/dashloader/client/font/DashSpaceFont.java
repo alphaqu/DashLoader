@@ -25,7 +25,7 @@ public final class DashSpaceFont implements DashObject<SpaceFont, SpaceFont> {
 			Glyph glyph = font.getGlyph(providedGlyph);
 			assert glyph != null;
 			this.ints[i] = providedGlyph;
-			this.floats[i] = glyph.getAdvance();
+			this.floats[i] = glyph.getMetrics().getAdvance();
 			i++;
 		}
 	}

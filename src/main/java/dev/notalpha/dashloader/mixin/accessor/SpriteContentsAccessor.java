@@ -2,11 +2,13 @@ package dev.notalpha.dashloader.mixin.accessor;
 
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.resource.metadata.ResourceMetadata;
+import net.minecraft.resource.metadata.ResourceMetadataSerializer;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
+
+import java.util.List;
 
 @Mixin(SpriteContents.class)
 public interface SpriteContentsAccessor {
@@ -41,6 +43,9 @@ public interface SpriteContentsAccessor {
 	void setHeight(int height);
 
 	@Accessor
+	List<ResourceMetadataSerializer.Value<?>> getAdditionalMetadata();
+
+	@Accessor
 	@Mutable
-	void setMetadata(ResourceMetadata animation);
+	void setAdditionalMetadata(List<ResourceMetadataSerializer.Value<?>> additionalMetadata);
 }

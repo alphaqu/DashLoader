@@ -4,7 +4,7 @@ import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.client.Dazy;
-import net.minecraft.client.model.SpriteGetter;
+import net.minecraft.client.render.model.ErrorCollectingSpriteGetter;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 
@@ -47,8 +47,8 @@ public class DashSprite implements DashObject<Sprite, DashSprite.DazyImpl> {
 		}
 
 		@Override
-		protected Sprite resolve(SpriteGetter spriteLoader) {
-			return spriteLoader.get(location);
+		protected Sprite resolve(ErrorCollectingSpriteGetter spriteLoader) {
+			return spriteLoader.get(location, () -> "dashloader");
 		}
 	}
 }

@@ -1,0 +1,2 @@
+# Fallback for dev.notalpha artifacts (Hyphen, Taski) when notalpha.dev is unreachable.
+# Drop Hyphen-0.4.0-rc.5.jar and Taski-2.1.0.jar into this folder, then build offline.
