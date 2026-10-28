@@ -1,53 +1,63 @@
 package dev.notalpha.dashloader.mixin.option.cache.sprite.content;
 
+import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.sprite.content.SpriteContentModule;
-import dev.notalpha.dashloader.mixin.accessor.SpriteContentsAccessor;
-import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.client.texture.SpriteOpener;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.metadata.ResourceMetadata;
-import net.minecraft.resource.metadata.ResourceMetadataSerializer;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.Collection;
+import java.util.Set;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.atlas.SpriteResourceLoader;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
+import net.minecraft.server.packs.resources.Resource;
+import net.neoforged.neoforge.client.textures.SpriteContentsConstructor;
 
-@Mixin(SpriteOpener.class)
+/**
+ * In 1.21.11 {@code SpriteResourceLoader} is a functional interface; the implementation
+ * is the lambda returned by {@code SpriteResourceLoader.create}. Wrapping that instance
+ * preserves the LOAD (return cached contents) / SAVE (store loaded contents) behavior.
+ * On NeoForge the loader takes an extra {@code SpriteContentsConstructor} argument.
+ */
+@Mixin(SpriteResourceLoader.class)
 public interface SpriteOpenerMixin {
 	@Inject(
-			method = "method_52851",
-			cancellable = true,
-			locals = LocalCapture.CAPTURE_FAILEXCEPTION,
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/Resource;getInputStream()Ljava/io/InputStream;", shift = At.Shift.BEFORE)
+			method = "create",
+			at = @At(value = "RETURN"),
+			cancellable = true
 	)
-	private static void dashloaderLoad(Collection<ResourceMetadataSerializer<?>> metadatas, Identifier id, Resource resource, CallbackInfoReturnable<SpriteContents> cir, ResourceMetadata resourceMetadata) {
-		var dashSpriteData = SpriteContentModule.SOURCE.get(CacheStatus.LOAD);
-		if (dashSpriteData != null) {
-			SpriteContents spriteContents = dashSpriteData.get(id);
-			if (spriteContents != null) {
-				((SpriteContentsAccessor) spriteContents).setMetadata(resourceMetadata);
-				cir.setReturnValue(spriteContents);
+	private static void dashloaderWrapOpener(Set<MetadataSectionType<?>> additionalMetadata, CallbackInfoReturnable<SpriteResourceLoader> cir) {
+		SpriteResourceLoader original = cir.getReturnValue();
+		cir.setReturnValue((Identifier spriteLocation, Resource resource, SpriteContentsConstructor constructor) -> {
+			var dashSpriteData = SpriteContentModule.SOURCE.get(CacheStatus.LOAD);
+			if (dashSpriteData != null) {
+				SpriteContents cached = dashSpriteData.get(spriteLocation);
+				if (cached != null) {
+					return cached;
+				}
 			}
-		}
-	}
 
-	@Inject(
-			method = "method_52851",
-			at = @At(value = "RETURN")
-	)
-	private static void dashloaderSave(Collection<?> collection, Identifier id, Resource resource, CallbackInfoReturnable<SpriteContents> cir) {
-		var dashSpriteData = SpriteContentModule.SOURCE.get(CacheStatus.SAVE);
-		if (dashSpriteData != null) {
-			if (dashSpriteData.containsKey(id)) { // filter out sprites with the same id
-				dashSpriteData.put(id, null);
-				return;
+			SpriteContents result = original.loadSprite(spriteLocation, resource, constructor);
+
+			var saveData = SpriteContentModule.SOURCE.get(CacheStatus.SAVE);
+			if (saveData != null && result != null) {
+				if (saveData.containsKey(spriteLocation)) {
+					SpriteContents existing = saveData.get(spriteLocation);
+					if (existing != null && !SpriteContentModule.sameContents(existing, result)) {
+						// Same id, different texture (e.g. wither painting vs. wither
+						// effect icon): force the vanilla mechanism by caching null.
+						DashLoader.LOG.warn("Duplicate sprite {} with different contents, using vanilla loading.", spriteLocation);
+						saveData.put(spriteLocation, null);
+					}
+					// Identical double open or already-poisoned id: keep as is.
+				} else {
+					saveData.put(spriteLocation, result);
+				}
 			}
-			dashSpriteData.put(id, cir.getReturnValue());
-		}
+			return result;
+		});
 	}
 }

@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.mixin.accessor;
 
-import net.minecraft.client.texture.NativeImage;
+import com.mojang.blaze3d.platform.NativeImage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
@@ -13,8 +13,8 @@ public interface NativeImageAccessor {
 	}
 
 	@Accessor
-	long getPointer();
+	long getPixels();
 
 	@Accessor
-	boolean getIsStbImage();
+	boolean getUseStbFree();
 }

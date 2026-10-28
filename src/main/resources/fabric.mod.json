@@ -7,7 +7,8 @@
   "authors": [
     "!alpha",
     "bendy1234",
-    "leocth"
+    "leocth",
+    "Malionaro"
   ],
   "contact": {
     "homepage": "https://discord.gg/VeFTrtCkrb",
@@ -16,9 +17,6 @@
   "entrypoints": {
     "dashloader": [
       "dev.notalpha.dashloader.client.DashLoaderClient"
-    ],
-    "modmenu": [
-      "dev.notalpha.dashloader.client.ModMenuCompat"
     ]
   },
   "license": "LGPL-3.0-only",
@@ -29,8 +27,8 @@
     "dashloader.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.11.3",
-    "minecraft": "1.21.4",
+    "fabricloader": ">=0.16.0",
+    "minecraft": "${minecraft_version}",
     "java": ">=21"
   },
   "custom": {

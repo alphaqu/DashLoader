@@ -3,7 +3,7 @@ package dev.notalpha.dashloader.client.identifier;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.mixin.accessor.IdentifierAccessor;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 public final class DashIdentifier implements DashObject<Identifier, Identifier> {
 	public final String namespace;

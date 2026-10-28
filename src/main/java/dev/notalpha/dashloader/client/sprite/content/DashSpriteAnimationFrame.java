@@ -3,9 +3,9 @@ package dev.notalpha.dashloader.client.sprite.content;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.mixin.accessor.SpriteAnimationFrameAccessor;
-import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.SpriteContents;
 
-public final class DashSpriteAnimationFrame implements DashObject<SpriteContents.AnimationFrame, SpriteContents.AnimationFrame> {
+public final class DashSpriteAnimationFrame implements DashObject<SpriteContents.FrameInfo, SpriteContents.FrameInfo> {
 	public final int index;
 	public final int time;
 
@@ -14,13 +14,13 @@ public final class DashSpriteAnimationFrame implements DashObject<SpriteContents
 		this.time = time;
 	}
 
-	public DashSpriteAnimationFrame(SpriteContents.AnimationFrame frame) {
+	public DashSpriteAnimationFrame(SpriteContents.FrameInfo frame) {
 		this.index = frame.index();
 		this.time = frame.time();
 	}
 
 	@Override
-	public SpriteContents.AnimationFrame export(RegistryReader exportHandler) {
+	public SpriteContents.FrameInfo export(RegistryReader exportHandler) {
 		return SpriteAnimationFrameAccessor.newSpriteFrame(this.index, this.time);
 	}
 

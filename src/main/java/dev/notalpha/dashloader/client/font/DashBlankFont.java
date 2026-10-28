@@ -2,11 +2,11 @@ package dev.notalpha.dashloader.client.font;
 
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
-import net.minecraft.client.font.BlankFont;
+import net.minecraft.client.gui.font.AllMissingGlyphProvider;
 
-public final class DashBlankFont implements DashObject<BlankFont, BlankFont> {
+public final class DashBlankFont implements DashObject<AllMissingGlyphProvider, AllMissingGlyphProvider> {
 	@Override
-	public BlankFont export(RegistryReader exportHandler) {
-		return new BlankFont();
+	public AllMissingGlyphProvider export(RegistryReader exportHandler) {
+		return new AllMissingGlyphProvider();
 	}
 }

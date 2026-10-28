@@ -1,17 +1,16 @@
 package dev.notalpha.dashloader.client.font;
 
+import com.mojang.blaze3d.font.GlyphProvider;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.collection.IntIntList;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.mixin.accessor.FilterMapAccessor;
-import net.minecraft.client.font.Font;
-import net.minecraft.client.font.FontFilterType;
-
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.client.gui.font.FontOption;
 
-public class DashFontFilterPair implements DashObject<Font.FontFilterPair, Font.FontFilterPair> {
+public class DashFontFilterPair implements DashObject<GlyphProvider.Conditional, GlyphProvider.Conditional> {
 	public final int provider;
 	public final IntIntList filter;
 
@@ -20,18 +19,18 @@ public class DashFontFilterPair implements DashObject<Font.FontFilterPair, Font.
 		this.filter = filter;
 	}
 
-	public DashFontFilterPair(Font.FontFilterPair fontFilterPair, RegistryWriter writer) {
+	public DashFontFilterPair(GlyphProvider.Conditional fontFilterPair, RegistryWriter writer) {
 		this.provider = writer.add(fontFilterPair.provider());
 
 		filter = new IntIntList();
-		((FilterMapAccessor) fontFilterPair.filter()).getActiveFilters().forEach(
+		((FilterMapAccessor) fontFilterPair.filter()).getValues().forEach(
 				(key, value) -> filter.put(key.ordinal(), value ? 1 : 0));
 	}
 
 	@Override
-	public Font.FontFilterPair export(RegistryReader reader) {
-		Map<FontFilterType, Boolean> activeFilters = new HashMap<>();
-		filter.forEach((key, value) -> activeFilters.put(FontFilterType.values()[key], value == 1));
-		return new Font.FontFilterPair(reader.get(provider), new FontFilterType.FilterMap(activeFilters));
+	public GlyphProvider.Conditional export(RegistryReader reader) {
+		Map<FontOption, Boolean> activeFilters = new HashMap<>();
+		filter.forEach((key, value) -> activeFilters.put(FontOption.values()[key], value == 1));
+		return new GlyphProvider.Conditional(reader.get(provider), new FontOption.Filter(activeFilters));
 	}
 }

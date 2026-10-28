@@ -1,0 +1,43 @@
+# DashLoader NeoForge mod metadata. Dollar-brace placeholders below are expanded by
+# build.gradle's processResources from gradle.properties - edit values there.
+
+license="${mod_license}"
+
+#issueTrackerURL="https://github.com/QuantumFusionMC/DashLoader-Definition/issues"
+
+[[mods]]
+
+modId="${mod_id}"
+
+version="${mod_version}"
+
+displayName="${mod_name}"
+
+#displayURL="https://modrinth.com/mod/dashloader"
+
+authors="AlphaQ, bendy1234, leocth, Malionaro"
+
+description="Launch at the speed of Light."
+
+# Mixin config lives at the resources root (src/main/resources/dashloader.mixins.json).
+# No rename/move needed: NeoForge loads whatever path is declared here.
+[[mixins]]
+config="dashloader.mixins.json"
+
+# Access Transformer auto-detected at META-INF/accesstransformer.cfg, no declaration needed here.
+#[[accessTransformers]]
+#file="META-INF/accesstransformer.cfg"
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="[${neo_version},)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"

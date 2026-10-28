@@ -1,5 +1,7 @@
 package dev.notalpha.dashloader.client.font;
 
+import com.mojang.blaze3d.font.GlyphProvider;
+import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.CachingData;
 import dev.notalpha.dashloader.api.DashModule;
 import dev.notalpha.dashloader.api.cache.Cache;
@@ -10,14 +12,13 @@ import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.config.ConfigHandler;
 import dev.notalpha.dashloader.config.Option;
 import dev.notalpha.taski.builtin.StepTask;
-import net.minecraft.client.font.Font;
-import net.minecraft.util.Identifier;
 import org.lwjgl.util.freetype.FT_Face;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.resources.Identifier;
 
 public class FontModule implements DashModule<FontModule.Data> {
 	public static final CachingData<ProviderIndex> DATA = new CachingData<>();
@@ -35,7 +36,7 @@ public class FontModule implements DashModule<FontModule.Data> {
 		assert providerIndex != null;
 
 		int taskSize = 0;
-		for (List<Font.FontFilterPair> value : providerIndex.providers.values()) {
+		for (List<GlyphProvider.Conditional> value : providerIndex.providers.values()) {
 			taskSize += value.size();
 		}
 		taskSize += providerIndex.allProviders.size();
@@ -44,16 +45,24 @@ public class FontModule implements DashModule<FontModule.Data> {
 		var providers = new IntObjectList<List<Integer>>();
 		providerIndex.providers.forEach((identifier, fontFilterPairs) -> {
 			var values = new ArrayList<Integer>();
-			for (Font.FontFilterPair fontFilterPair : fontFilterPairs) {
-				values.add(factory.add(fontFilterPair));
+			for (GlyphProvider.Conditional fontFilterPair : fontFilterPairs) {
+				try {
+					values.add(factory.add(fontFilterPair));
+				} catch (RuntimeException e) {
+					DashLoader.LOG.warn("Skipping uncacheable font {}: {}", identifier, e.getMessage());
+				}
 				task.next();
 			}
 			providers.put(factory.add(identifier), values);
 		});
 
 		var allProviders = new ArrayList<Integer>();
-		for (Font allProvider : providerIndex.allProviders) {
-			allProviders.add(factory.add(allProvider));
+		for (GlyphProvider allProvider : providerIndex.allProviders) {
+			try {
+				allProviders.add(factory.add(allProvider));
+			} catch (RuntimeException e) {
+				DashLoader.LOG.warn("Skipping uncacheable font provider {}: {}", allProvider.getClass().getName(), e.getMessage());
+			}
 			task.next();
 		}
 
@@ -64,7 +73,7 @@ public class FontModule implements DashModule<FontModule.Data> {
 	public void load(Data data, RegistryReader reader, StepTask task) {
 		ProviderIndex index = new ProviderIndex(new HashMap<>(), new ArrayList<>());
 		data.fontMap.providers.forEach((key, value) -> {
-			var fonts = new ArrayList<Font.FontFilterPair>();
+			var fonts = new ArrayList<GlyphProvider.Conditional>();
 			for (Integer i : value) {
 				fonts.add(reader.get(i));
 			}
@@ -104,10 +113,10 @@ public class FontModule implements DashModule<FontModule.Data> {
 	}
 
 	public static final class ProviderIndex {
-		public final Map<Identifier, List<Font.FontFilterPair>> providers;
-		public final List<Font> allProviders;
+		public final Map<Identifier, List<GlyphProvider.Conditional>> providers;
+		public final List<GlyphProvider> allProviders;
 
-		public ProviderIndex(Map<Identifier, List<Font.FontFilterPair>> providers, List<Font> allProviders) {
+		public ProviderIndex(Map<Identifier, List<GlyphProvider.Conditional>> providers, List<GlyphProvider> allProviders) {
 			this.providers = providers;
 			this.allProviders = allProviders;
 		}

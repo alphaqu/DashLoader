@@ -1,29 +1,29 @@
 package dev.notalpha.dashloader.mixin.accessor;
 
-import net.minecraft.client.font.BitmapFont;
-import net.minecraft.client.texture.NativeImage;
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.gui.font.providers.BitmapProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(BitmapFont.BitmapFontGlyph.class)
+@Mixin(BitmapProvider.Glyph.class)
 public interface BitmapFontGlyphAccessor {
 	@Invoker("<init>")
-	static BitmapFont.BitmapFontGlyph init(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
+	static BitmapProvider.Glyph init(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
 		throw new AssertionError();
 	}
 
 	@Accessor
 	NativeImage getImage();
 
-	@Accessor("x")
+	@Accessor("offsetX")
 	int getX();
 
-	@Accessor("y")
+	@Accessor("offsetY")
 	int getY();
 
 	@Accessor
-	float getScaleFactor();
+	float getScale();
 
 	@Accessor
 	int getWidth();
