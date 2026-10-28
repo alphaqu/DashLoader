@@ -12,6 +12,9 @@ public final class RegistryUtil {
 	 * @return Registry ID
 	 */
 	public static int createId(int objectPos, byte chunkPos) {
+		if (objectPos < 0) {
+			throw new IllegalStateException("Object pos is negative. " + objectPos);
+		}
 		if (chunkPos > 0b111111) {
 			throw new IllegalStateException("Chunk pos is too big. " + chunkPos + " > " + 0x3f);
 		}

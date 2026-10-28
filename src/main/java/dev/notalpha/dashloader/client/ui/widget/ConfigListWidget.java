@@ -92,7 +92,7 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 					this.label,
 					(ConfigListWidget.this.width - textRenderer.getWidth(label)) / 2,
 					y + entryHeight - ConfigListWidget.this.client.textRenderer.fontHeight - 1,
-					0xFFFFFF,
+					0xFFFFFFFF,
 					false
 			);
 		}
@@ -140,7 +140,7 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 					this.label,
 					x,
 					y + (entryHeight - ConfigListWidget.this.client.textRenderer.fontHeight) / 2,
-					0xFFFFFF,
+					0xFFFFFFFF,
 					false
 			);
 
@@ -282,12 +282,21 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 
 	class IntFieldEntry extends TextFieldEntry {
 		IntFieldEntry(String label, int value, int defaultValue, IntConsumer saveCallback) {
-			super(label, String.valueOf(value), String.valueOf(defaultValue), chr -> chr >= '0' && chr <= '9', str -> saveCallback.accept(Integer.parseInt(str)));
+			super(label, String.valueOf(value), String.valueOf(defaultValue), chr -> (chr >= '0' && chr <= '9') || chr == '-', str -> saveCallback.accept(parseInt(str)));
 
 			((TextFieldWidget) this.widget).setChangedListener(text -> {
 				this.value = text.isEmpty() ? "0" : text;
 				ConfigListWidget.this.update();
 			});
+		}
+
+		private static int parseInt(String str) {
+			try {
+				return Integer.parseInt(str);
+			} catch (NumberFormatException e) {
+				boolean negative = !str.isEmpty() && str.charAt(0) == '-';
+				return negative ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+			}
 		}
 
 		@Override

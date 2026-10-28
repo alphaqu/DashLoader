@@ -1,6 +1,7 @@
 package dev.notalpha.dashloader.io;
 
 import com.github.luben.zstd.Zstd;
+import dev.notalpha.dashloader.misc.UnsafeHelper;
 import dev.notalpha.hyphen.io.ByteBufferIO;
 import dev.notalpha.taski.builtin.StepTask;
 import org.apache.commons.io.IOUtils;
@@ -14,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -78,36 +80,49 @@ public final class IOHelper {
 		io.rewind();
 		io.byteBuffer.limit(fileSize);
 		try (FileChannel channel = createFile(path)) {
-			if (compressionLevel > 0) {
-				task.reset(4);
-				// Allocate
-				final long maxSize = Zstd.compressBound(fileSize);
-				final var dst = ByteBufferIO.createDirect((int) maxSize);
-				task.next();
+			ByteBuffer map = null;
+			try {
+				if (compressionLevel > 0) {
+					task.reset(4);
+					// Allocate. Owned here and freed in finally, instead of waiting
+					// for the GC to clean up a large direct buffer.
+					final long maxSize = Zstd.compressBound(fileSize);
+					final ByteBuffer dst = MemoryUtil.memAlloc((int) maxSize);
+					try {
+						task.next();
 
-				// Compress
-				final long size = Zstd.compress(dst.byteBuffer, io.byteBuffer, compressionLevel);
-				task.next();
+						// Compress
+						final long size = Zstd.compress(dst, io.byteBuffer, compressionLevel);
+						task.next();
 
-				// Write
-				dst.rewind();
-				dst.byteBuffer.limit((int) size);
-				final var map = channel.map(FileChannel.MapMode.READ_WRITE, 0, size + 5).order(ByteOrder.LITTLE_ENDIAN);
-				task.next();
+						// Write
+						dst.position(0);
+						dst.limit((int) size);
+						map = channel.map(FileChannel.MapMode.READ_WRITE, 0, size + 5).order(ByteOrder.LITTLE_ENDIAN);
+						task.next();
 
-				map.put(compressionLevel);
-				map.putInt(fileSize);
-				map.put(dst.byteBuffer);
-				io.close();
-				dst.close();
-			} else {
-				task.reset(2);
-				final var map = channel.map(FileChannel.MapMode.READ_WRITE, 0, fileSize + 1).order(ByteOrder.LITTLE_ENDIAN);
-				task.next();
-				ByteBufferIO file = ByteBufferIO.wrap(map);
-				file.putByte(compressionLevel);
-				file.putByteBuffer(io.byteBuffer, fileSize);
-				task.next();
+						map.put(compressionLevel);
+						map.putInt(fileSize);
+						map.put(dst);
+						io.close();
+					} finally {
+						dst.position(0);
+						MemoryUtil.memFree(dst);
+					}
+				} else {
+					task.reset(2);
+					map = channel.map(FileChannel.MapMode.READ_WRITE, 0, fileSize + 1).order(ByteOrder.LITTLE_ENDIAN);
+					task.next();
+					ByteBufferIO file = ByteBufferIO.wrap(map);
+					file.putByte(compressionLevel);
+					file.putByteBuffer(io.byteBuffer, fileSize);
+					task.next();
+				}
+			} finally {
+				// Closing the channel above is not enough, the mapping outlives it and
+				// keeps the file open. Windows then refuses to move or delete the
+				// directory, which breaks the atomic cache commit in CacheImpl.save.
+				unmap(map);
 			}
 		}
 	}
@@ -118,13 +133,50 @@ public final class IOHelper {
 			// Check compression
 			if (buffer.get() > 0) {
 				final int size = buffer.getInt();
-				final var dst = ByteBufferIO.createDirect(size);
-				Zstd.decompress(dst.byteBuffer, buffer);
-				dst.rewind();
-				return dst;
+				// memAlloc so the caller can free it right after reading via release().
+				final ByteBuffer dst = MemoryUtil.memAlloc(size).order(ByteOrder.LITTLE_ENDIAN);
+				try {
+					Zstd.decompress(dst, buffer);
+				} catch (RuntimeException e) {
+					MemoryUtil.memFree(dst);
+					throw e;
+				}
+				dst.position(0);
+				return ByteBufferIO.wrap(dst);
 			} else {
 				return ByteBufferIO.wrap(buffer);
 			}
+		}
+	}
+
+	/**
+	 * Frees a buffer returned by {@link #load(Path)}.
+	 * <p>
+	 * Only buffers that {@link #load} allocated itself are freed. Without
+	 * compression the buffer is memory mapped and its lifetime belongs to the JVM,
+	 * which unmaps it on cleanup - freeing it here would be a double free.
+	 * <p>
+	 * {@link ByteBufferIO#close()} is deliberately not used for this, it only
+	 * clears the buffer and leaks the native memory until the next GC.
+	 */
+	public static void release(ByteBufferIO io) {
+		ByteBuffer buffer = io.byteBuffer;
+		if (buffer instanceof MappedByteBuffer) {
+			return;
+		}
+		if (buffer.isDirect()) {
+			buffer.position(0);
+			MemoryUtil.memFree(buffer);
+		}
+	}
+
+	/**
+	 * Releases a memory mapping created by {@link FileChannel#map}. Does nothing
+	 * for buffers that are not mapped.
+	 */
+	public static void unmap(ByteBuffer buffer) {
+		if (buffer instanceof MappedByteBuffer) {
+			UnsafeHelper.UNSAFE.invokeCleaner(buffer);
 		}
 	}
 

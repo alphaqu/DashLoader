@@ -5,8 +5,8 @@ import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.client.Dazy;
 import dev.notalpha.dashloader.client.sprite.content.DashSprite;
-import net.minecraft.client.model.SpriteGetter;
 import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.ErrorCollectingSpriteGetter;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
 
@@ -31,7 +31,7 @@ public final class DashBakedQuad implements DashObject<BakedQuad, DashBakedQuad.
 	}
 
 	public DashBakedQuad(BakedQuad bakedQuad, RegistryWriter writer) {
-		this(bakedQuad.getVertexData(), bakedQuad.getTintIndex(), bakedQuad.getFace(), bakedQuad.hasShade(), writer.add(bakedQuad.getSprite()), bakedQuad.getLightEmission());
+		this(bakedQuad.vertexData(), bakedQuad.tintIndex(), bakedQuad.face(), bakedQuad.shade(), writer.add(bakedQuad.sprite()), bakedQuad.lightEmission());
 	}
 
 	public DazyImpl export(RegistryReader handler) {
@@ -80,7 +80,7 @@ public final class DashBakedQuad implements DashObject<BakedQuad, DashBakedQuad.
 		}
 
 		@Override
-		protected BakedQuad resolve(SpriteGetter spriteLoader) {
+		protected BakedQuad resolve(ErrorCollectingSpriteGetter spriteLoader) {
 			Sprite sprite = this.sprite.get(spriteLoader);
 			return new BakedQuad(vertexData, colorIndex, face, sprite, shade, lightEmission);
 		}

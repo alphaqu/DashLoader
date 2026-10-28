@@ -1,7 +1,7 @@
 {
   "config.CACHE_ATLASES": "Atlas Cache",
   "config.CACHE_FONT": "Font Cache",
-  "config.CACHE_MODEL_LOADER": "Model Loader Cache",
+  "config.CACHE_MODEL_LOADER": "Model Loader Cache (WIP)",
   "config.CACHE_MODEL_LOADER.tooltip": "Caches BakedModels allowing the game to load extremely fast",
   "config.CACHE_SHADER": "Shader Cache",
   "config.CACHE_SPLASH_TEXT": "Splash Text Cache",

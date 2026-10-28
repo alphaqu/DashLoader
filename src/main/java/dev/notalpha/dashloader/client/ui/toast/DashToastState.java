@@ -1,25 +1,24 @@
 package dev.notalpha.dashloader.client.ui.toast;
 
-import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.misc.TranslationHelper;
 import dev.notalpha.taski.ParentTask;
 import dev.notalpha.taski.Task;
 import dev.notalpha.taski.builtin.AbstractTask;
 import dev.notalpha.taski.builtin.StaticTask;
-import net.minecraft.client.MinecraftClient;
 
 public final class DashToastState {
 	private final TranslationHelper translations;
-	public Task task = new StaticTask("Idle", 0);
-	private String overwriteText;
-	private DashToastStatus status;
+	// Written by the cache thread, read by the render thread. currentProgress and
+	// lastUpdate stay plain fields, they are only touched by the render thread.
+	public volatile Task task = new StaticTask("Idle", 0);
+	private volatile String overwriteText;
+	private volatile DashToastStatus status;
 	private double currentProgress = 0;
 	private long lastUpdate = System.currentTimeMillis();
-	private long timeDone = System.currentTimeMillis();
+	private volatile long timeDone = System.currentTimeMillis();
 
 	public DashToastState() {
-		var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage();
-		DashLoader.LOG.info(langCode);
+		// Must stay on the client thread, TranslationHelper reads the language manager.
 		this.translations = TranslationHelper.getInstance();
 	}
 
@@ -107,7 +106,19 @@ public final class DashToastState {
 		return timeDone;
 	}
 
-	public void setDone() {
+	/**
+	 * Publishes a finished toast: stamps the done time and the new status in one
+	 * step, with the status written last.
+	 * <p>
+	 * The cache thread writes {@link #overwriteText} and {@link #timeDone} while
+	 * the render thread reads them, so the status must be the final write. It is
+	 * the flag the render thread reacts to, and the volatile write publishes
+	 * everything in front of it. Writing the status first instead lets the render
+	 * thread observe {@link DashToastStatus#DONE} next to a stale done time, which
+	 * hides the toast again immediately.
+	 */
+	public void setFinished(DashToastStatus status) {
 		this.timeDone = System.currentTimeMillis();
+		this.status = status;
 	}
 }
