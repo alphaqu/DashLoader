@@ -4,6 +4,7 @@ import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import net.minecraft.client.Keyboard;
+import net.minecraft.client.input.KeyInput;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Makes f3 + t reset the cache. Also makes shift + f3 + t not reset it.
+ * 1.21.9: processF3(KeyInput) and onKey(long, int, KeyInput).
  */
 @Mixin(Keyboard.class)
 public class KeyboardMixin {
@@ -28,7 +30,7 @@ public class KeyboardMixin {
 					shift = At.Shift.BEFORE
 			)
 	)
-	private void f3tReloadWorld(int key, CallbackInfoReturnable<Boolean> cir) {
+	private void f3tReloadWorld(KeyInput keyInput, CallbackInfoReturnable<Boolean> cir) {
 		if (!this.shiftHeld) {
 			if (DashLoaderClient.CACHE.getStatus() == CacheStatus.IDLE) {
 				DashLoader.LOG.info("Clearing cache.");
@@ -41,7 +43,7 @@ public class KeyboardMixin {
 			method = "onKey",
 			at = @At("HEAD")
 	)
-	private void keyPress(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
-		this.shiftHeld = action != 0 && modifiers == GLFW.GLFW_MOD_SHIFT;
+	private void keyPress(long window, int action, KeyInput input, CallbackInfo ci) {
+		this.shiftHeld = action != 0 && input.modifiers() == GLFW.GLFW_MOD_SHIFT;
 	}
 }

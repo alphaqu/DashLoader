@@ -3,13 +3,23 @@ package dev.notalpha.dashloader.client.blockstate;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
-import dev.notalpha.dashloader.mixin.accessor.ModelLoaderAccessor;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public final class DashBlockState implements DashObject<BlockState, BlockState> {
-	public static final Identifier ITEM_FRAME = Identifier.of("dashloader", "itemframewhy");
+	// The index of a state inside its block's state list, built once per block.
+	// The linear scan this replaces ran once per cached blockstate, so a save
+	// cost O(sum of N^2) BlockState.equals over all possible states.
+	private static final Map<Block, Map<BlockState, Integer>> STATE_INDEX = new ConcurrentHashMap<>();
+
 	public final int owner;
 	public final int pos;
 
@@ -19,51 +29,32 @@ public final class DashBlockState implements DashObject<BlockState, BlockState> 
 	}
 
 	public DashBlockState(BlockState blockState, RegistryWriter writer) {
-		var block = blockState.getBlock();
-		int pos = -1;
+		Block block = blockState.getBlock();
+		Map<BlockState, Integer> index = STATE_INDEX.computeIfAbsent(block, DashBlockState::indexOf);
+		Integer found = index.get(blockState);
+		Identifier owner = Registries.BLOCK.getId(block);
 
-		Identifier owner = null;
-		{
-			var states = ModelLoaderAccessor.getTheItemFrameThing().getStates();
-			for (int i = 0; i < states.size(); i++) {
-				BlockState state = states.get(i);
-				if (state.equals(blockState)) {
-					pos = i;
-					owner = ITEM_FRAME;
-					break;
-				}
-			}
-		}
-
-		if (pos == -1) {
-			var states = block.getStateManager().getStates();
-			for (int i = 0; i < states.size(); i++) {
-				BlockState state = states.get(i);
-				if (state.equals(blockState)) {
-					pos = i;
-					owner = Registries.BLOCK.getId(block);
-					break;
-				}
-			}
-		}
-
-		if (owner == null) {
+		if (owner == null || found == null) {
 			throw new RuntimeException("Could not find a blockstate for " + blockState);
 		}
 
 		this.owner = writer.add(owner);
-		this.pos = pos;
+		this.pos = found;
+	}
+
+	private static Map<BlockState, Integer> indexOf(Block block) {
+		var states = block.getStateManager().getStates();
+		Map<BlockState, Integer> index = new HashMap<>(states.size() * 2);
+		for (int i = 0; i < states.size(); i++) {
+			index.putIfAbsent(states.get(i), i);
+		}
+		return index;
 	}
 
 	@Override
 	public BlockState export(final RegistryReader reader) {
 		final Identifier id = reader.get(this.owner);
-		// if its item frame get its state from the model loader as mojank is mojank
-		if (id.equals(ITEM_FRAME)) {
-			return ModelLoaderAccessor.getTheItemFrameThing().getStates().get(this.pos);
-		} else {
-			return Registries.BLOCK.get(id).getStateManager().getStates().get(this.pos);
-		}
+		return Registries.BLOCK.get(id).getStateManager().getStates().get(this.pos);
 	}
 
 	@Override
@@ -84,3 +75,4 @@ public final class DashBlockState implements DashObject<BlockState, BlockState> 
 		return result;
 	}
 }
+

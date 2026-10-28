@@ -4,6 +4,7 @@ import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.collection.IntObjectList;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
+import dev.notalpha.dashloader.mixin.accessor.StitcherAccessor;
 import net.minecraft.client.texture.TextureStitcher;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -115,11 +116,17 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 		public final IntObjectList<DashTextureSlot<T>> slots;
 		public final int width;
 		public final int height;
+		public final int maxWidth;
+		public final int maxHeight;
+		public final int mipLevel;
 
-		public Data(IntObjectList<DashTextureSlot<T>> slots, int width, int height) {
+		public Data(IntObjectList<DashTextureSlot<T>> slots, int width, int height, int maxWidth, int maxHeight, int mipLevel) {
 			this.slots = slots;
 			this.width = width;
 			this.height = height;
+			this.maxWidth = maxWidth;
+			this.maxHeight = maxHeight;
+			this.mipLevel = mipLevel;
 		}
 
 		public Data(RegistryWriter factory, TextureStitcher<T> stitcher) {
@@ -127,6 +134,10 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 			stitcher.getStitchedSprites((info, x, y) -> this.slots.put(factory.add(info.getId()), new DashTextureSlot<>(x, y, info.getWidth(), info.getHeight())));
 			this.width = stitcher.getWidth();
 			this.height = stitcher.getHeight();
+			StitcherAccessor access = (StitcherAccessor) stitcher;
+			this.maxWidth = access.getMaxWidth();
+			this.maxHeight = access.getMaxHeight();
+			this.mipLevel = access.getMipLevel();
 		}
 
 		public ExportedData<T> export(RegistryReader reader) {
@@ -136,7 +147,10 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 			return new ExportedData<>(
 					output,
 					width,
-					height
+					height,
+					maxWidth,
+					maxHeight,
+					mipLevel
 			);
 		}
 	}
@@ -145,11 +159,26 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 		public final Map<Identifier, DashTextureSlot<T>> slots;
 		public final int width;
 		public final int height;
+		public final int maxWidth;
+		public final int maxHeight;
+		public final int mipLevel;
 
-		public ExportedData(Map<Identifier, DashTextureSlot<T>> slots, int width, int height) {
+		public ExportedData(Map<Identifier, DashTextureSlot<T>> slots, int width, int height, int maxWidth, int maxHeight, int mipLevel) {
 			this.slots = slots;
 			this.width = width;
 			this.height = height;
+			this.maxWidth = maxWidth;
+			this.maxHeight = maxHeight;
+			this.mipLevel = mipLevel;
+		}
+
+		/**
+		 * Checks whether cached packing is reusable with current stitch parameters.
+		 */
+		public boolean matches(int maxWidth, int maxHeight, int mipLevel) {
+			return this.maxWidth == maxWidth
+					&& this.maxHeight == maxHeight
+					&& this.mipLevel == mipLevel;
 		}
 	}
 }

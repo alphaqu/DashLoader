@@ -4,8 +4,8 @@ import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.client.Dazy;
-import net.minecraft.client.model.SpriteGetter;
 import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.ErrorCollectingSpriteGetter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class DashBakedQuadCollection implements DashObject<BakedQuadCollection, 
 		}
 
 		@Override
-		protected List<BakedQuad> resolve(SpriteGetter spriteLoader) {
+		protected List<BakedQuad> resolve(ErrorCollectingSpriteGetter spriteLoader) {
 			var out = new ArrayList<BakedQuad>(quads.size());
 			quads.forEach(
 					dazyBakedQuad -> out.add(dazyBakedQuad.get(spriteLoader))
