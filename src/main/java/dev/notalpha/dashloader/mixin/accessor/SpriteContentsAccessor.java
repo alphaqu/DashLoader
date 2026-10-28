@@ -41,6 +41,9 @@ public interface SpriteContentsAccessor {
 	void setHeight(int height);
 
 	@Accessor
+	ResourceMetadata getMetadata();
+
+	@Accessor
 	@Mutable
 	void setMetadata(ResourceMetadata animation);
 }

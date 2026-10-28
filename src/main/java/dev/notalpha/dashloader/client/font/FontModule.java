@@ -1,5 +1,6 @@
 package dev.notalpha.dashloader.client.font;
 
+import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.CachingData;
 import dev.notalpha.dashloader.api.DashModule;
 import dev.notalpha.dashloader.api.cache.Cache;
@@ -45,7 +46,11 @@ public class FontModule implements DashModule<FontModule.Data> {
 		providerIndex.providers.forEach((identifier, fontFilterPairs) -> {
 			var values = new ArrayList<Integer>();
 			for (Font.FontFilterPair fontFilterPair : fontFilterPairs) {
-				values.add(factory.add(fontFilterPair));
+				try {
+					values.add(factory.add(fontFilterPair));
+				} catch (RuntimeException e) {
+					DashLoader.LOG.warn("Skipping uncacheable font {}: {}", identifier, e.getMessage());
+				}
 				task.next();
 			}
 			providers.put(factory.add(identifier), values);
@@ -53,7 +58,11 @@ public class FontModule implements DashModule<FontModule.Data> {
 
 		var allProviders = new ArrayList<Integer>();
 		for (Font allProvider : providerIndex.allProviders) {
-			allProviders.add(factory.add(allProvider));
+			try {
+				allProviders.add(factory.add(allProvider));
+			} catch (RuntimeException e) {
+				DashLoader.LOG.warn("Skipping uncacheable font provider {}: {}", allProvider.getClass().getName(), e.getMessage());
+			}
 			task.next();
 		}
 
