@@ -1,68 +1,112 @@
 plugins {
-    // Publishing
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id "com.modrinth.minotaur" version "2.+"
+    // Publishing via web UI / API (cursegradle 1.4.0 + minotaur 2.x are
+    // incompatible with Gradle 9 and break project evaluation, so they stay off).
+    // id 'com.matthewprenger.cursegradle' version '1.4.0'
+    // id "com.modrinth.minotaur" version "2.+"
 
-    id 'fabric-loom' version '1.9-SNAPSHOT'
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.147'
     id 'maven-publish'
+    id 'idea'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
 
-archivesBaseName = project.archives_base_name
+// NeoForge single-version branch: MC 26.2 (official Mojang mappings, no Yarn needed)
+def activeMcVersion = project.minecraft_version
+def baseModVersion = (project.mod_version as String).split("\\+")[0]
+
 version = project.mod_version
 group = project.maven_group
+base { archivesName.set(project.archives_base_name) }
 
 repositories {
     mavenCentral()
     mavenLocal()
+    // Lokaler Fallback: lege Hyphen-0.4.0-rc.5.jar und Taski-2.1.0.jar hier ab,
+    // falls notalpha.dev (Host von dev.notalpha-Artefakten) nicht erreichbar ist.
+    flatDir { dirs 'libs' }
     maven {
         url 'https://jitpack.io'
     }
-    maven {
-        url "https://notalpha.dev/maven/releases"
+}
+
+// Mojang ships Java 25 to end users in 26.x, so mods target Java 25.
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+neoForge {
+    // Specify the version of NeoForge to use.
+    version = project.neo_version
+
+    // Access Transformers are auto-detected at META-INF/accesstransformer.cfg, no declaration needed.
+
+    // Default run configurations.
+    runs {
+        client {
+            client()
+            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        // applies to all the run configs above
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
     }
-    maven {
-        name = "Terraformers"
-        url = "https://maven.terraformersmc.com/"
-    }
-    maven {
-        name = "Nucleoid"
-        url = "https://maven.nucleoid.xyz/"
+
+    mods {
+        // define mod <-> source bindings
+        "${project.mod_id}" {
+            sourceSet(sourceSets.main)
+        }
     }
 }
 
-loom {
-    accessWidenerPath = file("src/main/resources/dashloader.accesswidener")
-    log4jConfigs.from(file("log4j-dev.xml"))
+// Sets up a dependency configuration called 'localRuntime'.
+// This configuration should be used instead of 'runtimeOnly' to declare
+// a dependency that will be present for runtime testing but that is
+// "optional", meaning it will not be pulled by dependents of this mod.
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    // Bundled via Jar-in-Jar (replaces Loom `include`): compiles against the
+    // preferred version and embeds it with a compatible version range.
+    // (No additionalRuntimeClasspath: ModDev 2.x on 26.2 has no such config;
+    // jarJar(implementation) already covers compile+runtime.)
+    jarJar(implementation("dev.notalpha:Hyphen:0.4.0-rc.5")) {
+        version {
+            strictly '[0.4.0-rc.5]'
+            prefer '0.4.0-rc.5'
+        }
+    }
 
-    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    jarJar(implementation("dev.notalpha:Taski:2.1.0")) {
+        version {
+            strictly '[2.1.0]'
+            prefer '2.1.0'
+        }
+    }
 
-    implementation "dev.notalpha:Hyphen:0.4.0-rc.5"
-    include "dev.notalpha:Hyphen:0.4.0-rc.5"
+    jarJar(implementation('com.github.luben:zstd-jni:1.5.7-1')) {
+        version {
+            strictly '[1.5.7-1]'
+            prefer '1.5.7-1'
+        }
+    }
+    testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.11.4"
 
-    implementation "dev.notalpha:Taski:2.1.0"
-    include "dev.notalpha:Taski:2.1.0"
-
-    implementation 'com.github.luben:zstd-jni:1.5.7-1'
-    include 'com.github.luben:zstd-jni:1.5.7-1'
-
-    modCompileOnly fabricApi.module("fabric-renderer-indigo", project.fabric_version)
-
-    // For Modmenu
-    modRuntimeOnly fabricApi.module("fabric-api-base", project.fabric_version)
-    modRuntimeOnly fabricApi.module("fabric-key-binding-api-v1", project.fabric_version)
-    modRuntimeOnly fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
-    modRuntimeOnly fabricApi.module("fabric-resource-loader-v0", project.fabric_version)
-    modRuntimeOnly fabricApi.module("fabric-screen-api-v1", project.fabric_version)
 }
 
 test {
@@ -73,10 +117,24 @@ test {
 }
 
 processResources {
-    inputs.property "version", project.version
+    def replaceProperties = [
+        version          : project.version,
+        minecraft_version: activeMcVersion,
+        mod_id           : project.mod_id,
+        mod_name         : project.mod_name,
+        mod_license      : project.mod_license,
+        mod_version      : project.mod_version,
+        neo_version      : project.neo_version,
+        minecraft_version_range: project.minecraft_version_range
+    ]
+    inputs.properties replaceProperties
 
+    // Kept for reference / cross-loader jars; ignored by NeoForge at runtime.
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand replaceProperties
+    }
+    filesMatching("META-INF/neoforge.mods.toml") {
+        expand replaceProperties
     }
 }
 
@@ -87,8 +145,7 @@ tasks.withType(JavaCompile).configureEach {
     // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
 
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    it.options.release = 21
+    it.options.release = 25
 }
 
 java {
@@ -97,53 +154,62 @@ java {
 }
 
 jar {
+    archiveBaseName.set(project.archives_base_name)
+    archiveVersion.set(project.mod_version)
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "${it}_${project.archives_base_name}" }
     }
 }
 
-// Publishing
-modrinth {
-    token = project.hasProperty("modrinthApiKey") ? project.modrinthApiKey : ""
-    projectId = 'ZfQ3kTvR'
-    changelog = file("changelog.md").getText()
-    versionNumber = project.version
-    versionName = "$project.version".split("\\+")[0] + " for $project.minecraft_version"
-    uploadFile = remapJar
-    versionType = "beta"
-    gameVersions = ['1.21.4']
-    loaders = ['fabric', 'quilt']
-}
+// Publishing (disabled: plugins incompatible with Gradle 9, see top).
+// modrinth {
+//     token = project.hasProperty("modrinthApiKey") ? project.modrinthApiKey : ""
+//     projectId = 'ZfQ3kTvR'
+//     changelog = file("changelog.md").getText()
+//     versionNumber = project.version
+//     versionName = "${baseModVersion} for ${activeMcVersion}"
+//     uploadFile = jar
+//     versionType = "beta"
+//     gameVersions = [activeMcVersion]
+//     loaders = ['neoforge']
+// }
 
-curseforge {
-    apiKey = project.hasProperty("curseForgeApiKey") ? project.curseForgeApiKey : ""
-    project {
-        id = '472772'
-        changelogType = "markdown"
-        changelog = file("changelog.md")
-        releaseType = 'beta'
+// curseforge {
+//     apiKey = project.hasProperty("curseForgeApiKey") ? project.curseForgeApiKey : ""
+//     project {
+//         id = '472772'
+//         changelogType = "markdown"
+//         changelog = file("changelog.md")
+//         releaseType = 'beta'
 
-        addGameVersion "1.21.4"
-        addGameVersion "Fabric"
-        addGameVersion "Quilt"
-        addGameVersion "Java 21"
+//         addGameVersion activeMcVersion
+//         addGameVersion "NeoForge"
+//         addGameVersion "Java 25"
 
-        mainArtifact(remapJar) {
-            displayName = "$project.version".split("\\+")[0] + " for $project.minecraft_version"
-        }
-    }
-    options {
-        forgeGradleIntegration = false
-    }
-}
+//         mainArtifact(jar) {
+//             displayName = "${baseModVersion} for ${activeMcVersion}"
+//         }
+//     }
+//     options {
+//         forgeGradleIntegration = false
+//     }
+// }
 
-tasks.register("publishMod") {
-    dependsOn 'modrinth'
-    dependsOn 'curseforge'
-}
+// tasks.register("publishMod") {
+//     dependsOn 'modrinth'
+//     dependsOn 'curseforge'
+// }
 
 tasks.register("getVersion") {
     print("$project.version")
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
 }
 
 publishing {

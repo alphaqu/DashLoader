@@ -21,7 +21,14 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return ConfigHandler.shouldApplyMixin(mixinClassName);
+		try {
+			return ConfigHandler.shouldApplyMixin(mixinClassName);
+		} catch (Throwable t) {
+			// Loader APIs (config dir, mod list) may not exist yet during very
+			// early Mixin bootstrap (notably on NeoForge). Apply the mixin and
+			// let runtime option checks gate behavior instead of killing startup.
+			return true;
+		}
 	}
 
 	@Override

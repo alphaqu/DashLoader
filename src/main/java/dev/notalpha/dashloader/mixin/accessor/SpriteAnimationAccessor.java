@@ -1,25 +1,26 @@
 package dev.notalpha.dashloader.mixin.accessor;
 
-import net.minecraft.client.texture.SpriteContents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.List;
+import net.minecraft.client.renderer.texture.SpriteContents;
 
-@Mixin(SpriteContents.Animation.class)
+@Mixin(SpriteContents.AnimatedTexture.class)
 public interface SpriteAnimationAccessor {
+	// AnimatedTexture is a non-static inner class: the ctor takes the outer instance first.
 	@Invoker("<init>")
-	static SpriteContents.Animation init(SpriteContents parent, List<SpriteContents.AnimationFrame> frames, int frameCount, boolean interpolation) {
+	static SpriteContents.AnimatedTexture init(SpriteContents parent, List<SpriteContents.FrameInfo> frames, int frameRowSize, boolean interpolateFrames) {
 		throw new AssertionError();
 	}
 
 	@Accessor
-	List<SpriteContents.AnimationFrame> getFrames();
+	List<SpriteContents.FrameInfo> getFrames();
 
 	@Accessor
-	int getFrameCount();
+	int getFrameRowSize();
 
-	@Accessor
+	@Accessor("interpolateFrames")
 	boolean getInterpolation();
 }

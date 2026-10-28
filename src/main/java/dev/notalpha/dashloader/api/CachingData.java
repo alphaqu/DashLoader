@@ -11,11 +11,14 @@ import java.util.function.Supplier;
 public class CachingData<D> {
 	@Nullable
 	private final CacheStatus onlyOn;
+	// Written by the thread that builds the cache, read by the reload threads and
+	// the render thread. dataStatus is the publication flag and is always written
+	// last, so a reader that sees the matching status also sees the payload.
 	@Nullable
-	private D data;
-	private Cache cacheManager;
+	private volatile D data;
+	private volatile Cache cacheManager;
 	@Nullable
-	private CacheStatus dataStatus;
+	private volatile CacheStatus dataStatus;
 
 	public CachingData(@Nullable CacheStatus onlyOn) {
 		this.data = null;
@@ -71,8 +74,13 @@ public class CachingData<D> {
 
 		CacheStatus currentStatus = cacheManager.getStatus();
 		if (status == currentStatus) {
+			// Build first, then publish. Writing dataStatus before data let a
+			// reader see a matching status next to a stale or null payload, and
+			// active() then reported false, so the module silently fell back to
+			// vanilla instead of using the cache.
+			D value = data.get();
+			this.data = value;
 			this.dataStatus = status;
-			this.data = data.get();
 		}
 	}
 

@@ -1,10 +1,8 @@
 package dev.notalpha.dashloader.client.ui;
 
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.text.Text;
-import org.joml.Matrix4f;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.network.chat.Component;
 
 public class DrawerUtil {
 	public static final float GLOW_SIZE = 30f;
@@ -22,90 +20,47 @@ public class DrawerUtil {
 			new Color(0xa9, 0xdc, 0x76)
 	};
 
-	public static void drawRect(DrawContext context, int x, int y, int width, int height, Color color) {
+	public static void drawRect(GuiGraphicsExtractor context, int x, int y, int width, int height, Color color) {
 		final int x2 = width + x;
 		final int y2 = height + y;
 		context.fill(x, y, x2, y2, color.argb());
 	}
 
-	public static void drawText(DrawContext context, TextRenderer textRenderer, int x, int y, String text, Color color) {
-		context.drawTextWithShadow(textRenderer, Text.of(text), x, y - (textRenderer.fontHeight), color.argb());
+	public static void drawText(GuiGraphicsExtractor context, Font textRenderer, int x, int y, String text, Color color) {
+		context.text(textRenderer, Component.nullToEmpty(text), x, y - (textRenderer.lineHeight), color.argb(), false);
 	}
 
-	private static void drawVertex(Matrix4f m4f, VertexConsumer c, float x, float y, Color color) {
-		c.vertex(m4f, x, y, 0f).color(color.red(), color.green(), color.blue(), color.alpha());
-	}
-
-	public static void drawGlow(Matrix4f b4, VertexConsumer c, float x, float y, float width, float height, float strength, Color color, boolean topLeft, boolean topRight, boolean bottomLeft, boolean bottomRight) {
-		Color end = withOpacity(color, 0);
+	/**
+	 * Flat approximation of the old vertex glow: nested expanding rects with
+	 * decreasing opacity. Uses only high-level {@link GuiGraphicsExtractor} calls so it
+	 * survives the 1.21.6 render rewrite (no more immediate mode).
+	 */
+	public static void drawGlow(GuiGraphicsExtractor context, float x, float y, float width, float height, float strength, Color color, boolean topLeft, boolean topRight, boolean bottomLeft, boolean bottomRight) {
+		if (!topLeft && !topRight && !bottomLeft && !bottomRight) {
+			return;
+		}
 		Color glow = withOpacity(color, GLOW_STRENGTH * strength);
+		drawGlowClipped(context, x, y, width, height, strength, color, topLeft, topRight, bottomLeft, bottomRight,
+				(int) x - (int) GLOW_SIZE - 1, (int) y - (int) GLOW_SIZE - 1,
+				(int) width + (int) (GLOW_SIZE * 2) + 2, (int) height + (int) (GLOW_SIZE * 2) + 2);
+	}
 
-		Color tl = topLeft ? glow : end;
-		Color tr = topRight ? glow : end;
-		Color bl = bottomLeft ? glow : end;
-		Color br = bottomRight ? glow : end;
-
-		Color tlEnd = new Color(tl.red(), tl.green(), tl.blue(), 0);
-		Color trEnd = new Color(tr.red(), tr.green(), tr.blue(), 0);
-		Color blEnd = new Color(bl.red(), bl.green(), bl.blue(), 0);
-		Color brEnd = new Color(br.red(), br.green(), br.blue(), 0);
-
-		float x2 = x + width;
-		float y2 = y + height;
-
-		// Inside
-		drawVertex(b4, c, x, y2, bl); // left bottom
-		drawVertex(b4, c, x2, y2, br); // right bottom
-		drawVertex(b4, c, x2, y, tr); // right top
-		drawVertex(b4, c, x, y, tl); // left top
-
-		// Top
-		drawVertex(b4, c, x, y, tl); // left bottom
-		drawVertex(b4, c, x2, y, tr); // right bottom
-		drawVertex(b4, c, x2, y - GLOW_SIZE, trEnd); // right top
-		drawVertex(b4, c, x, y - GLOW_SIZE, tlEnd); // left top
-
-		// Top Right
-		drawVertex(b4, c, x2, y - GLOW_SIZE, trEnd); // left top
-		drawVertex(b4, c, x2, y, tr); // left bottom
-		drawVertex(b4, c, x2 + GLOW_SIZE, y, trEnd); // right bottom
-		drawVertex(b4, c, x2 + GLOW_SIZE, y - GLOW_SIZE, trEnd); // right top
-
-		// Top Left
-		drawVertex(b4, c, x, y - GLOW_SIZE, tlEnd); // right top
-		drawVertex(b4, c, x - GLOW_SIZE, y - GLOW_SIZE, tlEnd); // left top
-		drawVertex(b4, c, x - GLOW_SIZE, y, tlEnd); // left bottom
-		drawVertex(b4, c, x, y, tl); // right bottom
-
-		// Bottom
-		drawVertex(b4, c, x2, y2 + GLOW_SIZE, brEnd); // right bottom
-		drawVertex(b4, c, x2, y2, br); // right top
-		drawVertex(b4, c, x, y2, bl); // left top
-		drawVertex(b4, c, x, y2 + GLOW_SIZE, blEnd); // left bottom
-
-		// Bottom Right
-		drawVertex(b4, c, x2 + GLOW_SIZE, y2, brEnd); // right top
-		drawVertex(b4, c, x2, y2, br); // left top
-		drawVertex(b4, c, x2, y2 + GLOW_SIZE, brEnd); // left bottom
-		drawVertex(b4, c, x2 + GLOW_SIZE, y2 + GLOW_SIZE, brEnd); // right bottom
-
-		// Bottom Left
-		drawVertex(b4, c, x - GLOW_SIZE, y2, blEnd); // left top
-		drawVertex(b4, c, x - GLOW_SIZE, y2 + GLOW_SIZE, blEnd); // left bottom
-		drawVertex(b4, c, x, y2 + GLOW_SIZE, blEnd); // right bottom
-		drawVertex(b4, c, x, y2, bl); // right top
-
-		// Right
-		drawVertex(b4, c, x2, y, tr); // left top
-		drawVertex(b4, c, x2, y2, br); // left bottom
-		drawVertex(b4, c, x2 + GLOW_SIZE, y2, brEnd); // right bottom
-		drawVertex(b4, c, x2 + GLOW_SIZE, y, trEnd); // right top
-
-		// Left
-		drawVertex(b4, c, x - GLOW_SIZE, y2, blEnd); // left bottom
-		drawVertex(b4, c, x, y2, bl); // right bottom
-		drawVertex(b4, c, x, y, tl); // right top
-		drawVertex(b4, c, x - GLOW_SIZE, y, tlEnd); // left top
+	public static void drawGlowClipped(GuiGraphicsExtractor context, float x, float y, float width, float height, float strength, Color color,
+	                                   boolean topLeft, boolean topRight, boolean bottomLeft, boolean bottomRight,
+	                                   int clipX, int clipY, int clipWidth, int clipHeight) {
+		Color glow = withOpacity(color, GLOW_STRENGTH * strength);
+		int layers = 3;
+		for (int i = layers; i >= 1; i--) {
+			float spread = (GLOW_SIZE / layers) * i;
+			Color layer = withOpacity(glow, 1f - ((float) i / (layers + 1)));
+			int rx1 = Math.max(clipX, (int) (x - spread));
+			int ry1 = Math.max(clipY, (int) (y - spread));
+			int rx2 = Math.min(clipX + clipWidth, (int) (x + width + spread));
+			int ry2 = Math.min(clipY + clipHeight, (int) (y + height + spread));
+			if (rx2 > rx1 && ry2 > ry1) {
+				context.fill(rx1, ry1, rx2, ry2, layer.argb());
+			}
+		}
 	}
 
 	public static int convertColor(Color color) {
