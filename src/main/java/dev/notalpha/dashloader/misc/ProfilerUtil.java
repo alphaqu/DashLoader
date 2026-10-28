@@ -1,7 +1,13 @@
 package dev.notalpha.dashloader.misc;
 
+import dev.notalpha.dashloader.DashLoader;
+
 public final class ProfilerUtil {
 	public static long RELOAD_START = 0;
+
+	public static void phase(String name, long millis) {
+		DashLoader.LOG.info("DashLoader {} took {}", name, getTimeString(millis));
+	}
 
 	public static String getTimeStringFromStart(long start) {
 		return getTimeString(System.currentTimeMillis() - start);

@@ -48,8 +48,10 @@ public final class DashImage implements DashObject<NativeImage, NativeImage> {
 	 */
 	@Override
 	public NativeImage export(final RegistryReader registry) {
+		final NativeImage out = new NativeImage(this.format, this.width, this.height, this.useSTB);
+		final int capacity = this.width * this.height * this.format.getChannelCount();
 		image.buffer.rewind();
-		long pointer = MemoryUtil.memAddress(image.buffer);
-		return NativeImageAccessor.init(this.format, this.width, this.height, this.useSTB, pointer);
+		MemoryUtil.memCopy(MemoryUtil.memAddress(image.buffer), ((NativeImageAccessor) (Object) out).getPointer(), capacity);
+		return out;
 	}
 }
