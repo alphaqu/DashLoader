@@ -1,0 +1,100 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - fabric-1.21.4
+      - fabric-1.21.5
+      - fabric-1.21.6
+      - fabric-1.21.7
+      - fabric-1.21.8
+      - fabric-1.21.9
+      - fabric-1.21.10
+      - fabric-1.21.11
+      - fabric-26.1
+      - fabric-26.1.1
+      - fabric-26.1.2
+      - fabric-26.2
+      - fabric-26.3
+      - neoforge-1.21.11
+      - neoforge-26.2
+      - neoforge-26.3
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.branch }} (Java ${{ matrix.java }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { branch: fabric-1.21.4, java: '21' }
+          - { branch: fabric-1.21.5, java: '21' }
+          - { branch: fabric-1.21.6, java: '21' }
+          - { branch: fabric-1.21.7, java: '21' }
+          - { branch: fabric-1.21.8, java: '21' }
+          - { branch: fabric-1.21.9, java: '21' }
+          - { branch: fabric-1.21.10, java: '21' }
+          - { branch: fabric-1.21.11, java: '21' }
+          - { branch: fabric-26.1, java: '25' }
+          - { branch: fabric-26.1.1, java: '25' }
+          - { branch: fabric-26.1.2, java: '25' }
+          - { branch: fabric-26.2, java: '25' }
+          - { branch: fabric-26.3, java: '25' }
+          - { branch: neoforge-1.21.11, java: '21' }
+          - { branch: neoforge-26.2, java: '25' }
+          - { branch: neoforge-26.3, java: '25' }
+
+    steps:
+      - name: Checkout ${{ matrix.branch }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+          fetch-depth: 0
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: ${{ matrix.java }}
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: ./gradlew build --stacktrace --no-daemon
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashloader-${{ matrix.branch }}
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+  forge-1-16-5:
+    name: forge-1.16.5 (Java 8)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: forge-1.16.5
+
+      - name: Set up Java 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: '8'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        working-directory: forge-1.16.5
+        run: ./gradlew build --stacktrace --no-daemon
