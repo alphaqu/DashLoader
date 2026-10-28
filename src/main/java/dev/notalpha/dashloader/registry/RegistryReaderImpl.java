@@ -33,7 +33,9 @@ public final class RegistryReaderImpl implements RegistryReader {
 			chunkData.preExport(this);
 			chunkData.export(data, this);
 			chunkData.postExport(this);
+			task.next();
 		}
+		task.finish();
 	}
 
 	@SuppressWarnings("unchecked")

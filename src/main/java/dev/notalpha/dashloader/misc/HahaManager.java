@@ -69,7 +69,7 @@ public final class HahaManager {
 	};
 
 	public static String getFact() {
-		Config config = ConfigHandler.INSTANCE.config;
+		Config config = ConfigHandler.instance().config;
 		List<String> splashLines = new ArrayList<>(config.customSplashLines);
 		if (config.addDefaultSplashLines) {
 			splashLines.addAll(List.of(FACTS));
@@ -82,3 +82,4 @@ public final class HahaManager {
 		return splashLines.get((int) (System.currentTimeMillis() % splashLines.size()));
 	}
 }
+
