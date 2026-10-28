@@ -1,0 +1,12 @@
+{
+  "modmenu.descriptionTranslation.dashloader": "Яктылык тизлеге белән кушыгыз",
+  "debug": "Көйләүләрдә төзәтү шарты активланды.",
+  "save": "Инициализацияләү",
+  "save.cache": "Кәшләү",
+  "save.cache.model": "Моделләр кәшләү",
+  "save.cache.image": "Сурәтләр кәшләү",
+  "save.cache.misc": "Төрлеләр кәшләү",
+  "save.serialize": "Серияләү",
+  "save.serialize.fragment": "Ватыклар серияләү",
+  "save.serialize.mapping": "Чагыштырулар серияләү"
+}
