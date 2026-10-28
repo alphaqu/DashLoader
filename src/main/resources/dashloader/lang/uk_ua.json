@@ -1,0 +1,11 @@
+{
+  "debug": "Режим налагодження активний у конфігурації.",
+  "save": "Ініціалізація",
+  "save.cache": "Кешування",
+  "save.cache.model": "Кешування моделей",
+  "save.cache.image": "Кешування зображень",
+  "save.cache.misc": "Кешування різного",
+  "save.serialize": "Серіалізація",
+  "save.serialize.fragment": "Серіалізація фрагментів",
+  "save.serialize.mapping": "Серіалізація мапінгів"
+}

@@ -4,25 +4,29 @@ import dev.notalpha.dashloader.misc.TranslationHelper;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.chars.CharPredicate;
 import it.unimi.dsi.fastutil.ints.IntConsumer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.*;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> {
+public class ConfigListWidget extends ContainerObjectSelectionList<ConfigListWidget.Entry> {
 	public static final int INPUT_FIELD_WIDTH = 75;
 	public static final int RESET_BUTTON_WIDTH = 50;
 	private final TranslationHelper translations = TranslationHelper.getInstance();
 
-	public ConfigListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l) {
+	public ConfigListWidget(Minecraft minecraftClient, int i, int j, int k, int l) {
 		super(minecraftClient, i, j, k, l);
 	}
 
@@ -65,54 +69,56 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 	}
 
 	public void update() {
-		this.children().forEach(Entry::update);
+		this.children().forEach(dev.notalpha.dashloader.client.ui.widget.ConfigListWidget.Entry::update);
 	}
 
-	abstract class Entry extends ElementListWidget.Entry<Entry> {
-		public Text label;
+	abstract class Entry extends ContainerObjectSelectionList.Entry<dev.notalpha.dashloader.client.ui.widget.ConfigListWidget.Entry> {
+		public Component label;
 
 		Entry(String label) {
-			this.label = Text.of(translations.get(label));
+			this.label = Component.nullToEmpty(translations.get(label));
 		}
 
 		void update() {
 		}
 	}
 
-	class CategoryEntry extends Entry {
+	class CategoryEntry extends dev.notalpha.dashloader.client.ui.widget.ConfigListWidget.Entry {
 		CategoryEntry(String label) {
 			super(label);
 		}
 
 		@Override
-		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			final var textRenderer = ConfigListWidget.this.client.textRenderer;
-			context.drawText(
+		public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			final var textRenderer = ConfigListWidget.this.minecraft.font;
+			int entryWidth = this.getWidth();
+			int entryHeight = this.getHeight();
+			context.text(
 					textRenderer,
 					this.label,
-					(ConfigListWidget.this.width - textRenderer.getWidth(label)) / 2,
-					y + entryHeight - ConfigListWidget.this.client.textRenderer.fontHeight - 1,
-					0xFFFFFF,
+					(ConfigListWidget.this.width - textRenderer.width(label)) / 2,
+					this.getY() + entryHeight - ConfigListWidget.this.minecraft.font.lineHeight - 1,
+					0xFFFFFFFF,
 					false
 			);
 		}
 
 		@Override
-		public List<? extends Selectable> selectableChildren() {
+		public List<? extends NarratableEntry> narratables() {
 			return List.of();
 		}
 
 		@Override
-		public List<? extends Element> children() {
+		public List<? extends GuiEventListener> children() {
 			return List.of();
 		}
 	}
 
-	abstract class ConfigEntry<T> extends Entry {
-		static final Text RESET_TEXT = Text.translatable("controls.reset");
+	abstract class ConfigEntry<T> extends dev.notalpha.dashloader.client.ui.widget.ConfigListWidget.Entry {
+		static final Component RESET_TEXT = Component.translatable("controls.reset");
 		protected final T defaultValue;
-		public ClickableWidget widget;
-		public ButtonWidget resetButton;
+		public AbstractWidget widget;
+		public Button resetButton;
 		protected T value;
 		protected Tooltip tooltip;
 		protected Consumer<T> saveFunc;
@@ -123,10 +129,10 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 			this.defaultValue = defaultValue;
 			this.saveFunc = saveCallback;
 			if (translations.has(label + ".tooltip")) {
-				this.tooltip = Tooltip.of(Text.of(translations.get(label + ".tooltip")));
+				this.tooltip = Tooltip.create(Component.nullToEmpty(translations.get(label + ".tooltip")));
 			}
 
-			this.resetButton = new ButtonWidget.Builder(RESET_TEXT, button -> {
+			this.resetButton = new Button.Builder(RESET_TEXT, button -> {
 				this.value = this.defaultValue;
 				this.updateWidgetText();
 				ConfigListWidget.this.update();
@@ -134,29 +140,33 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 		}
 
 		@Override
-		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			context.drawText(
-					ConfigListWidget.this.client.textRenderer,
+		public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			int x = this.getX();
+			int y = this.getY();
+			int entryWidth = this.getWidth();
+			int entryHeight = this.getHeight();
+			context.text(
+					ConfigListWidget.this.minecraft.font,
 					this.label,
 					x,
-					y + (entryHeight - ConfigListWidget.this.client.textRenderer.fontHeight) / 2,
-					0xFFFFFF,
+					y + (entryHeight - ConfigListWidget.this.minecraft.font.lineHeight) / 2,
+					0xFFFFFFFF,
 					false
 			);
 
 			this.widget.setPosition(x + entryWidth - INPUT_FIELD_WIDTH - RESET_BUTTON_WIDTH - 5, y - 2);
-			this.widget.render(context, mouseX, mouseY, tickDelta);
+			this.widget.extractRenderState(context, mouseX, mouseY, tickDelta);
 			this.resetButton.setPosition(x + entryWidth - RESET_BUTTON_WIDTH, y - 2);
-			this.resetButton.render(context, mouseX, mouseY, tickDelta);
+			this.resetButton.extractRenderState(context, mouseX, mouseY, tickDelta);
 		}
 
 		@Override
-		public List<? extends Selectable> selectableChildren() {
+		public List<? extends NarratableEntry> narratables() {
 			return List.of(this.widget, this.resetButton);
 		}
 
 		@Override
-		public List<? extends Element> children() {
+		public List<? extends GuiEventListener> children() {
 			return List.of(this.widget, this.resetButton);
 		}
 
@@ -180,7 +190,7 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 		BoolConfigEntry(String label, boolean value, boolean defaultValue, BooleanConsumer saveCallback) {
 			super(label, value, defaultValue, saveCallback);
 
-			this.widget = new ButtonWidget.Builder(ScreenTexts.onOrOff(this.value), button -> {
+			this.widget = new Button.Builder(CommonComponents.optionStatus(this.value), button -> {
 				this.value = !(boolean) this.value;
 				updateWidgetText();
 				ConfigListWidget.this.update();
@@ -191,7 +201,7 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 
 		@Override
 		void updateWidgetText() {
-			this.widget.setMessage(ScreenTexts.onOrOff(this.value));
+			this.widget.setMessage(CommonComponents.optionStatus(this.value));
 		}
 	}
 
@@ -204,7 +214,7 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 			this.min = min;
 			this.max = max;
 
-			this.widget = new Slider(0, 0, INPUT_FIELD_WIDTH, ConfigListWidget.this.itemHeight, Text.of(String.valueOf(value)), min, max, (double) (this.value - min) / (max - min));
+			this.widget = new Slider(0, 0, INPUT_FIELD_WIDTH, ConfigListWidget.this.defaultEntryHeight, Component.nullToEmpty(String.valueOf(value)), min, max, (double) (this.value - min) / (max - min));
 			this.widget.setTooltip(this.tooltip);
 		}
 
@@ -213,11 +223,11 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 			((Slider) this.widget).setValue((double) (this.value - this.min) / (this.max - this.min));
 		}
 
-		public class Slider extends SliderWidget {
+		public class Slider extends AbstractSliderButton {
 			private final double min;
 			private final double max;
 
-			public Slider(int x, int y, int width, int height, Text message, double min, double max, double value) {
+			public Slider(int x, int y, int width, int height, Component message, double min, double max, double value) {
 				super(x, y, width, height, message, value);
 				this.min = min;
 				this.max = max;
@@ -225,7 +235,7 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 
 			@Override
 			protected void updateMessage() {
-				this.setMessage(Text.of(String.valueOf((int) this.getValue())));
+				this.setMessage(Component.nullToEmpty(String.valueOf((int) this.getValue())));
 			}
 
 			@Override
@@ -253,11 +263,11 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 			super(label, value, defaultValue, saveCallback);
 			this.filter = filter;
 
-			var textWidget = new TextFieldWidget(ConfigListWidget.this.client.textRenderer, 0, 0, INPUT_FIELD_WIDTH, 20, Text.empty()) {
+			var textWidget = new EditBox(ConfigListWidget.this.minecraft.font, 0, 0, INPUT_FIELD_WIDTH, 20, Component.empty()) {
 				@Override
-				public boolean charTyped(char chr, int modifiers) {
-					if (TextFieldEntry.this.filter.test(chr)) {
-						return super.charTyped(chr, modifiers);
+				public boolean charTyped(CharacterEvent input) {
+					if (TextFieldEntry.this.filter.test((char) input.codepoint())) {
+						return super.charTyped(input);
 					}
 					return false;
 				}
@@ -265,8 +275,8 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 
 			this.widget = textWidget;
 			textWidget.setMaxLength(Integer.MAX_VALUE);
-			textWidget.setText(String.valueOf(this.value));
-			textWidget.setChangedListener(text -> {
+			textWidget.setValue(String.valueOf(this.value));
+			textWidget.setResponder(text -> {
 				this.value = text;
 				ConfigListWidget.this.update();
 			});
@@ -276,23 +286,33 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 
 		@Override
 		void updateWidgetText() {
-			((TextFieldWidget) this.widget).setText(this.value);
+			((EditBox) this.widget).setValue(this.value);
 		}
 	}
 
 	class IntFieldEntry extends TextFieldEntry {
 		IntFieldEntry(String label, int value, int defaultValue, IntConsumer saveCallback) {
-			super(label, String.valueOf(value), String.valueOf(defaultValue), chr -> chr >= '0' && chr <= '9', str -> saveCallback.accept(Integer.parseInt(str)));
+			super(label, String.valueOf(value), String.valueOf(defaultValue),
+					chr -> (chr >= '0' && chr <= '9') || chr == '-', str -> saveCallback.accept(parseInt(str)));
 
-			((TextFieldWidget) this.widget).setChangedListener(text -> {
+			((EditBox) this.widget).setResponder(text -> {
 				this.value = text.isEmpty() ? "0" : text;
 				ConfigListWidget.this.update();
 			});
 		}
 
+		private static int parseInt(String str) {
+			try {
+				return Integer.parseInt(str);
+			} catch (NumberFormatException e) {
+				boolean negative = !str.isEmpty() && str.charAt(0) == '-';
+				return negative ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+			}
+		}
+
 		@Override
 		void updateWidgetText() {
-			((TextFieldWidget) this.widget).setText(String.valueOf(this.value));
+			((EditBox) this.widget).setValue(String.valueOf(this.value));
 		}
 	}
 }
