@@ -33,3 +33,7 @@ bin/
 build
 run/
 upload.sh
+
+dist/
+
+*.log

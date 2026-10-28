@@ -40,66 +40,59 @@ public class SplashScreenMixin {
 	private boolean reloading;
 
 	@Inject(
-			method = "render",
+			method = "method_25394",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J", shift = At.Shift.BEFORE, ordinal = 1)
 	)
 	private void done(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		this.client.setOverlay(null);
 		if (this.client.currentScreen != null) {
-			if (this.client.currentScreen instanceof TitleScreen) {
-				this.client.currentScreen = new TitleScreen(false);
-			}
+  			if (this.client.currentScreen instanceof TitleScreen) {
+  				this.client.currentScreen = new TitleScreen(false);
+  			}
 		}
 
 		DashLoader.LOG.info("Minecraft reloaded in {}", ProfilerUtil.getTimeStringFromStart(ProfilerUtil.RELOAD_START));
 		Cache cache = DashLoaderClient.CACHE;
 		if (DashLoaderClient.CACHE.getStatus() == CacheStatus.SAVE && client.getToastManager().getToast(DashToast.class, Toast.TYPE) == null) {
-			DashToastState rawState;
+			final DashToastState state;
 			if (ConfigHandler.INSTANCE.config.showCachingToast) {
 				DashToast toast = new DashToast();
 				client.getToastManager().add(toast);
-				rawState = toast.state;
+				state = toast.state;
 			} else {
-				rawState = new DashToastState();
+				state = new DashToastState();
 			}
 
 			final Thread thread = new Thread(() -> {
-				DashToastState state = rawState;
-				DashToastState finalState = state;
 				state.setStatus(DashToastStatus.PROGRESS);
 				long start = System.currentTimeMillis();
-				boolean save = cache.save(stepTask -> finalState.task = stepTask);
+				boolean save = cache.save(stepTask -> state.task = stepTask);
+				cache.reset();
+
 				if (save) {
 					state.setOverwriteText("Created cache in " + ProfilerUtil.getTimeStringFromStart(start));
-					state.setStatus(DashToastStatus.DONE);
+					state.setFinished(DashToastStatus.DONE);
 				} else {
 					// Only show toast on fail.
-					if (!ConfigHandler.INSTANCE.config.showCachingToast) {
-						DashToast toast = new DashToast();
-						client.getToastManager().add(toast);
-						state = toast.state;
-					}
-					state.setOverwriteText("Internal error, Please check logs.");
-					state.task = new StaticTask("Crash", 0);
-					state.setStatus(DashToastStatus.CRASHED);
+					client.execute(() -> {
+						DashToastState failed;
+						if (!ConfigHandler.INSTANCE.config.showCachingToast) {
+							DashToast toast = new DashToast();
+							client.getToastManager().add(toast);
+							failed = toast.state;
+						} else {
+							failed = state;
+						}
+						failed.setOverwriteText("Internal error, Please check logs.");
+						failed.task = new StaticTask("Crash", 0);
+						failed.setFinished(DashToastStatus.CRASHED);
+					});
 				}
-				cache.reset();
-				state.setDone();
-			});
-			thread.setName("dashloader-thread");
+			}, "dashloader-thread");
+			thread.setDaemon(true);
 			thread.start();
 		} else {
 			cache.reset();
-		}
-	}
-
-	@Inject(
-			method = "render",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/ResourceReload;isComplete()Z", shift = At.Shift.BEFORE)
-	)
-	private void removeMinimumTime(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-		if (this.reloadCompleteTime == -1L && this.reload.isComplete()) {
-			this.reloading = false;
 		}
 	}
 }
