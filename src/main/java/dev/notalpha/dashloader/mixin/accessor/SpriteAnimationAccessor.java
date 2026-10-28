@@ -20,6 +20,6 @@ public interface SpriteAnimationAccessor {
 	@Accessor
 	int getFrameCount();
 
-	@Accessor
+	@Accessor("interpolated")
 	boolean getInterpolation();
 }

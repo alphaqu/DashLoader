@@ -34,7 +34,7 @@ public final class DashStitchResult {
 		this.missing = writer.add(stitchResult.missing());
 
 		this.regions = new IntIntList();
-		stitchResult.regions().forEach((identifier, sprite) -> {
+		stitchResult.sprites().forEach((identifier, sprite) -> {
 			this.regions.put(writer.add(identifier), writer.add(sprite));
 			task.next();
 		});

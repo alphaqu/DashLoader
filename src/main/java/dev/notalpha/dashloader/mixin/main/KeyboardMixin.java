@@ -4,7 +4,7 @@ import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.cache.CacheStatus;
 import dev.notalpha.dashloader.client.DashLoaderClient;
 import net.minecraft.client.Keyboard;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.client.input.KeyInput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,7 +28,7 @@ public class KeyboardMixin {
 					shift = At.Shift.BEFORE
 			)
 	)
-	private void f3tReloadWorld(int key, CallbackInfoReturnable<Boolean> cir) {
+	private void f3tReloadWorld(KeyInput key, CallbackInfoReturnable<Boolean> cir) {
 		if (!this.shiftHeld) {
 			if (DashLoaderClient.CACHE.getStatus() == CacheStatus.IDLE) {
 				DashLoader.LOG.info("Clearing cache.");
@@ -41,7 +41,7 @@ public class KeyboardMixin {
 			method = "onKey",
 			at = @At("HEAD")
 	)
-	private void keyPress(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
-		this.shiftHeld = action != 0 && modifiers == GLFW.GLFW_MOD_SHIFT;
+	private void keyPress(long window, int action, KeyInput input, CallbackInfo ci) {
+		this.shiftHeld = action != 0 && input.hasShift();
 	}
 }

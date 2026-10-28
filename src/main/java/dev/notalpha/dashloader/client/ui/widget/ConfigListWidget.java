@@ -10,6 +10,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.*;
+import net.minecraft.client.input.CharInput;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
@@ -85,14 +86,16 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 		}
 
 		@Override
-		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			final var textRenderer = ConfigListWidget.this.client.textRenderer;
+			int entryWidth = this.getWidth();
+			int entryHeight = this.getHeight();
 			context.drawText(
 					textRenderer,
 					this.label,
 					(ConfigListWidget.this.width - textRenderer.getWidth(label)) / 2,
-					y + entryHeight - ConfigListWidget.this.client.textRenderer.fontHeight - 1,
-					0xFFFFFF,
+					this.getY() + entryHeight - ConfigListWidget.this.client.textRenderer.fontHeight - 1,
+					0xFFFFFFFF,
 					false
 			);
 		}
@@ -134,13 +137,17 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 		}
 
 		@Override
-		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			int x = this.getX();
+			int y = this.getY();
+			int entryWidth = this.getWidth();
+			int entryHeight = this.getHeight();
 			context.drawText(
 					ConfigListWidget.this.client.textRenderer,
 					this.label,
 					x,
 					y + (entryHeight - ConfigListWidget.this.client.textRenderer.fontHeight) / 2,
-					0xFFFFFF,
+					0xFFFFFFFF,
 					false
 			);
 
@@ -255,9 +262,9 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 
 			var textWidget = new TextFieldWidget(ConfigListWidget.this.client.textRenderer, 0, 0, INPUT_FIELD_WIDTH, 20, Text.empty()) {
 				@Override
-				public boolean charTyped(char chr, int modifiers) {
-					if (TextFieldEntry.this.filter.test(chr)) {
-						return super.charTyped(chr, modifiers);
+				public boolean charTyped(CharInput input) {
+					if (TextFieldEntry.this.filter.test((char) input.codepoint())) {
+						return super.charTyped(input);
 					}
 					return false;
 				}
@@ -282,12 +289,21 @@ public class ConfigListWidget extends ElementListWidget<ConfigListWidget.Entry> 
 
 	class IntFieldEntry extends TextFieldEntry {
 		IntFieldEntry(String label, int value, int defaultValue, IntConsumer saveCallback) {
-			super(label, String.valueOf(value), String.valueOf(defaultValue), chr -> chr >= '0' && chr <= '9', str -> saveCallback.accept(Integer.parseInt(str)));
+			super(label, String.valueOf(value), String.valueOf(defaultValue), chr -> (chr >= '0' && chr <= '9') || chr == '-', str -> saveCallback.accept(parseInt(str)));
 
 			((TextFieldWidget) this.widget).setChangedListener(text -> {
 				this.value = text.isEmpty() ? "0" : text;
 				ConfigListWidget.this.update();
 			});
+		}
+
+		private static int parseInt(String str) {
+			try {
+				return Integer.parseInt(str);
+			} catch (NumberFormatException e) {
+				boolean negative = !str.isEmpty() && str.charAt(0) == '-';
+				return negative ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+			}
 		}
 
 		@Override

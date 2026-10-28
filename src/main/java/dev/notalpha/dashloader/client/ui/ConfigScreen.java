@@ -52,7 +52,7 @@ public class ConfigScreen extends Screen {
 		var config = ConfigHandler.INSTANCE.config;
 
 		list.addCategory("config.category.behaviour");
-		list.addIntSlider("config.compression", config.compression, 3, 0, 23, v -> config.compression = (byte) v);
+		list.addIntSlider("config.compression", config.compression, 3, 0, 22, v -> config.compression = (byte) v);
 		list.addIntField("config.max_caches", config.maxCaches, 5, v -> config.maxCaches = v);
 		list.addBoolToggle("config.single_threaded_reading", config.singleThreadedReading, false, v -> config.singleThreadedReading = v);
 

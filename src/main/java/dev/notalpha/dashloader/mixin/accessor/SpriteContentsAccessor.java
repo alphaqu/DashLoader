@@ -1,8 +1,9 @@
 package dev.notalpha.dashloader.mixin.accessor;
 
+import net.minecraft.client.texture.MipmapStrategy;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.resource.metadata.ResourceMetadata;
+import net.minecraft.resource.metadata.ResourceMetadataSerializer;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -41,6 +42,23 @@ public interface SpriteContentsAccessor {
 	void setHeight(int height);
 
 	@Accessor
+	java.util.List<ResourceMetadataSerializer.Value<?>> getAdditionalMetadata();
+
+	@Accessor
+	MipmapStrategy getStrategy();
+
+	@Accessor
+	float getCutoffBias();
+
+	@Accessor
 	@Mutable
-	void setMetadata(ResourceMetadata animation);
+	void setAdditionalMetadata(java.util.List<ResourceMetadataSerializer.Value<?>> additionalMetadata);
+
+	@Accessor
+	@Mutable
+	void setStrategy(MipmapStrategy strategy);
+
+	@Accessor
+	@Mutable
+	void setCutoffBias(float cutoffBias);
 }

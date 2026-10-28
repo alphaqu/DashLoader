@@ -4,8 +4,10 @@ import dev.notalpha.dashloader.DashLoader;
 import dev.notalpha.dashloader.api.collection.IntObjectList;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
+import dev.notalpha.dashloader.mixin.accessor.StitcherAccessor;
 import net.minecraft.client.texture.TextureStitcher;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -15,11 +17,13 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 	@Nullable
 	private ExportedData<T> data;
 	private int remainingSlots;
+	private final int padding;
 
-	public DashTextureStitcher(int maxWidth, int maxHeight, int mipLevel, @Nullable ExportedData<T> data) {
-		super(maxWidth, maxHeight, mipLevel);
+	public DashTextureStitcher(int maxWidth, int maxHeight, int mipLevel, int anisotropy, @Nullable ExportedData<T> data) {
+		super(maxWidth, maxHeight, mipLevel, anisotropy);
 		this.data = data;
 		this.remainingSlots = data == null ? 0 : data.slots.size();
+		this.padding = 1 << mipLevel << MathHelper.clamp(anisotropy - 1, 0, 4);
 	}
 
 	@Override
@@ -107,7 +111,7 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 		if (data == null) {
 			super.getStitchedSprites(consumer);
 		} else {
-			data.slots.forEach((identifier, dashTextureSlot) -> consumer.load(dashTextureSlot.contents, dashTextureSlot.x, dashTextureSlot.y));
+			data.slots.forEach((identifier, dashTextureSlot) -> consumer.load(dashTextureSlot.contents, dashTextureSlot.x, dashTextureSlot.y, this.padding));
 		}
 	}
 
@@ -115,18 +119,31 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 		public final IntObjectList<DashTextureSlot<T>> slots;
 		public final int width;
 		public final int height;
+		public final int maxWidth;
+		public final int maxHeight;
+		public final int mipLevel;
+		public final int padding;
 
-		public Data(IntObjectList<DashTextureSlot<T>> slots, int width, int height) {
+		public Data(IntObjectList<DashTextureSlot<T>> slots, int width, int height, int maxWidth, int maxHeight, int mipLevel, int padding) {
 			this.slots = slots;
 			this.width = width;
 			this.height = height;
+			this.maxWidth = maxWidth;
+			this.maxHeight = maxHeight;
+			this.mipLevel = mipLevel;
+			this.padding = padding;
 		}
 
 		public Data(RegistryWriter factory, TextureStitcher<T> stitcher) {
 			this.slots = new IntObjectList<>();
-			stitcher.getStitchedSprites((info, x, y) -> this.slots.put(factory.add(info.getId()), new DashTextureSlot<>(x, y, info.getWidth(), info.getHeight())));
+			stitcher.getStitchedSprites((info, x, y, padding) -> this.slots.put(factory.add(info.getId()), new DashTextureSlot<>(x, y, info.getWidth(), info.getHeight())));
 			this.width = stitcher.getWidth();
 			this.height = stitcher.getHeight();
+			StitcherAccessor access = (StitcherAccessor) stitcher;
+			this.maxWidth = access.getMaxWidth();
+			this.maxHeight = access.getMaxHeight();
+			this.mipLevel = access.getMipLevel();
+			this.padding = access.getPadding();
 		}
 
 		public ExportedData<T> export(RegistryReader reader) {
@@ -136,7 +153,11 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 			return new ExportedData<>(
 					output,
 					width,
-					height
+					height,
+					maxWidth,
+					maxHeight,
+					mipLevel,
+					padding
 			);
 		}
 	}
@@ -145,11 +166,30 @@ public class DashTextureStitcher<T extends TextureStitcher.Stitchable> extends T
 		public final Map<Identifier, DashTextureSlot<T>> slots;
 		public final int width;
 		public final int height;
+		public final int maxWidth;
+		public final int maxHeight;
+		public final int mipLevel;
+		public final int padding;
 
-		public ExportedData(Map<Identifier, DashTextureSlot<T>> slots, int width, int height) {
+		public ExportedData(Map<Identifier, DashTextureSlot<T>> slots, int width, int height, int maxWidth, int maxHeight, int mipLevel, int padding) {
 			this.slots = slots;
 			this.width = width;
 			this.height = height;
+			this.maxWidth = maxWidth;
+			this.maxHeight = maxHeight;
+			this.mipLevel = mipLevel;
+			this.padding = padding;
+		}
+
+		/**
+		 * Checks whether cached packing is reusable with current stitch parameters
+		 * (mip/anisotropy come from video settings and change padding).
+		 */
+		public boolean matches(int maxWidth, int maxHeight, int mipLevel, int anisotropy) {
+			return this.maxWidth == maxWidth
+					&& this.maxHeight == maxHeight
+					&& this.mipLevel == mipLevel
+					&& this.padding == (1 << mipLevel << MathHelper.clamp(anisotropy - 1, 0, 4));
 		}
 	}
 }
