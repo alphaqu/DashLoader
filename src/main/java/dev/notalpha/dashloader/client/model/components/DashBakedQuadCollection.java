@@ -4,11 +4,10 @@ import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.client.Dazy;
-import net.minecraft.client.model.SpriteGetter;
-import net.minecraft.client.render.model.BakedQuad;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.SpriteGetter;
 
 public class DashBakedQuadCollection implements DashObject<BakedQuadCollection, DashBakedQuadCollection.DazyImpl> {
 	public final List<Integer> quads;

@@ -1,18 +1,18 @@
 package dev.notalpha.dashloader.mixin.accessor;
 
-import net.minecraft.client.font.GlyphContainer;
-import net.minecraft.client.font.UnihexFont;
+import net.minecraft.client.gui.font.CodepointMap;
+import net.minecraft.client.gui.font.providers.UnihexProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(UnihexFont.class)
+@Mixin(UnihexProvider.class)
 public interface UnihexFontAccessor {
 	@Invoker("<init>")
-	static UnihexFont create(GlyphContainer<UnihexFont.UnicodeTextureGlyph> glyphs) {
+	static UnihexProvider create(CodepointMap<UnihexProvider.Glyph> glyphs) {
 		throw new AssertionError();
 	}
 
 	@Accessor
-	GlyphContainer<UnihexFont.UnicodeTextureGlyph> getGlyphs();
+	CodepointMap<UnihexProvider.Glyph> getGlyphs();
 }

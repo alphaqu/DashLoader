@@ -1,6 +1,6 @@
 package dev.notalpha.dashloader.mixin.accessor;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 

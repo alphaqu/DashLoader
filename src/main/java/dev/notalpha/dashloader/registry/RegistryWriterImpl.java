@@ -13,8 +13,10 @@ import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class RegistryWriterImpl implements RegistryWriter {
 	public final ChunkFactory<?, ?>[] chunks;
@@ -22,6 +24,12 @@ public final class RegistryWriterImpl implements RegistryWriter {
 	private final Object2ByteMap<Class<?>> target2chunkMappings;
 	private final Object2ByteMap<Class<?>> dash2chunkMappings;
 	private final List<MissingHandler<?>> missingHandlers;
+	/**
+	 * Cache for hierarchy lookups: runtime class to chunk for interface/abstract targets.
+	 * DashObjects may target interfaces (e.g. BlockStateModel) while vanilla passes
+	 * concrete implementations, so exact matching is not enough.
+	 */
+	private final Map<Class<?>, Byte> hierarchyCache = new HashMap<>();
 
 	private RegistryWriterImpl(ChunkFactory<?, ?>[] chunks, List<MissingHandler<?>> missingHandlers) {
 		this.target2chunkMappings = new Object2ByteOpenHashMap<>();
@@ -81,7 +89,7 @@ public final class RegistryWriterImpl implements RegistryWriter {
 		Integer pointer = null;
 		// If we have a dashObject supporting the target we create using its factory constructor
 		{
-			byte chunkPos = this.target2chunkMappings.getByte(targetClass);
+			byte chunkPos = this.findChunkFor(targetClass);
 			if (chunkPos != -1) {
 				var chunk = (ChunkFactory<R, D>) this.chunks[chunkPos];
 				var entry = TrackingRegistryWriterImpl.create(this, writer -> chunk.create(object, writer));
@@ -118,6 +126,44 @@ public final class RegistryWriterImpl implements RegistryWriter {
 
 	public <D> ChunkFactory.Entry<D> get(int id) {
 		return (ChunkFactory.Entry<D>) this.chunks[RegistryUtil.getChunkId(id)].list.get(RegistryUtil.getObjectId(id));
+	}
+
+	/**
+	 * Finds the chunk for a runtime class, walking superclasses and interfaces so
+	 * DashObjects with interface or abstract targets (e.g. {@code BlockStateModel})
+	 * match concrete vanilla implementations. Results are cached.
+	 */
+	private byte findChunkFor(Class<?> targetClass) {
+		byte direct = this.target2chunkMappings.getByte(targetClass);
+		if (direct != -1) {
+			return direct;
+		}
+		Byte cached = this.hierarchyCache.get(targetClass);
+		if (cached != null) {
+			return cached;
+		}
+		byte found = -1;
+		ArrayDeque<Class<?>> queue = new ArrayDeque<>();
+		if (targetClass.getSuperclass() != null) {
+			queue.add(targetClass.getSuperclass());
+		}
+		for (Class<?> iface : targetClass.getInterfaces()) {
+			queue.add(iface);
+		}
+		while (!queue.isEmpty() && found == -1) {
+			Class<?> current = queue.poll();
+			found = this.target2chunkMappings.getByte(current);
+			if (found == -1) {
+				if (current.getSuperclass() != null) {
+					queue.add(current.getSuperclass());
+				}
+				for (Class<?> iface : current.getInterfaces()) {
+					queue.add(iface);
+				}
+			}
+		}
+		this.hierarchyCache.put(targetClass, found);
+		return found;
 	}
 
 	public StageData[] export() {

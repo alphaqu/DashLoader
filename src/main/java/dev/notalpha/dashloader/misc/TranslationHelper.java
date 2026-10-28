@@ -1,22 +1,21 @@
 package dev.notalpha.dashloader.misc;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.Language;
-
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Objects;
+import net.minecraft.client.Minecraft;
+import net.minecraft.locale.Language;
 
 public class TranslationHelper {
 	private static final TranslationHelper INSTANCE = new TranslationHelper();
-	private final HashMap<String, String> translations;
+	private final ConcurrentHashMap<String, String> translations;
 	private String langCode;
 
 	private TranslationHelper() {
-		this.translations = new HashMap<>();
+		this.translations = new ConcurrentHashMap<>();
 	}
 
 	public static TranslationHelper getInstance() {
-		var langCode = MinecraftClient.getInstance().getLanguageManager().getLanguage();
+		var langCode = Minecraft.getInstance().getLanguageManager().getSelected();
 		if (!Objects.equals(INSTANCE.langCode, langCode)) {
 			INSTANCE.langCode = langCode;
 			INSTANCE.loadLang(langCode);
@@ -28,11 +27,11 @@ public class TranslationHelper {
 		this.langCode = langCode;
 		var stream = this.getClass().getClassLoader().getResourceAsStream("dashloader/lang/" + langCode + ".json");
 		if (stream != null) {
-			Language.load(stream, this.translations::put);
+			Language.loadFromJson(stream, this.translations::put);
 		} else {
 			stream = this.getClass().getClassLoader().getResourceAsStream("dashloader/lang/en_us.json");
 			if (stream != null) {
-				Language.load(stream, this.translations::put);
+				Language.loadFromJson(stream, this.translations::put);
 			}
 		}
 	}
@@ -45,3 +44,6 @@ public class TranslationHelper {
 		return this.translations.containsKey(key);
 	}
 }
+
+
+
