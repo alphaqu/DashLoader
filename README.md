@@ -2,8 +2,9 @@
 <h1 align="center">DashLoader</h1>
 
 <h1 align="center">
+<!--
 <a href="https://www.curseforge.com/minecraft/mc-mods/dashloader"><img alt="CurseForge" src="https://img.shields.io/badge/DashLoader-CurseForge?logo=curseforge&logoColor=%23F16436&label=CurseForge&color=%23F16436"></a>
-<a href="https://modrinth.com/mod/dashloader"><img alt="Modrinth" src="https://img.shields.io/badge/DashLoader-Modrinth?logo=modrinth&logoColor=%2300AF5C&label=Modrinth&color=%2300AF5C"></a>
+<a href="https://modrinth.com/mod/dashloader"><img alt="Modrinth" src="https://img.shields.io/badge/DashLoader-Modrinth?logo=modrinth&logoColor=%2300AF5C&label=Modrinth&color=%2300AF5C"></a>-->
 <a href="https://modrinth.com/mod/dashloader-unofficial-continuation"><img alt="Modrinth fork" src="https://img.shields.io/badge/DashLoader-Modrinth?logo=modrinth&logoColor=%2300AF5C&label=Modrinth%20(fork)&color=%2300AF5C"></a>
 </h1>
 
