@@ -1,36 +1,40 @@
 package dev.notalpha.dashloader.mixin.accessor;
 
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.resource.metadata.ResourceMetadata;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.platform.Transparency;
+import net.minecraft.client.renderer.texture.MipmapStrategy;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
+import java.util.List;
+
 @Mixin(SpriteContents.class)
 public interface SpriteContentsAccessor {
 	@Accessor
-	NativeImage getImage();
+	NativeImage getOriginalImage();
 
 	@Accessor
 	@Mutable
-	void setImage(NativeImage image);
+	void setOriginalImage(NativeImage image);
 
 	@Accessor
-	SpriteContents.Animation getAnimation();
-
-	@Accessor
-	@Mutable
-	void setAnimation(SpriteContents.Animation animation);
+	SpriteContents.AnimatedTexture getAnimatedTexture();
 
 	@Accessor
 	@Mutable
-	void setMipmapLevelsImages(NativeImage[] mipmapLevelsImages);
+	void setAnimatedTexture(SpriteContents.AnimatedTexture animation);
 
 	@Accessor
 	@Mutable
-	void setId(Identifier id);
+	void setByMipLevel(NativeImage[] mipmapLevelsImages);
+
+	@Accessor
+	@Mutable
+	void setName(Identifier id);
 
 	@Accessor
 	@Mutable
@@ -42,5 +46,26 @@ public interface SpriteContentsAccessor {
 
 	@Accessor
 	@Mutable
-	void setMetadata(ResourceMetadata animation);
+	void setTransparency(Transparency transparency);
+
+	@Accessor
+	List<MetadataSectionType.WithValue<?>> getAdditionalMetadata();
+
+	@Accessor
+	@Mutable
+	void setAdditionalMetadata(List<MetadataSectionType.WithValue<?>> metadata);
+
+	@Accessor
+	MipmapStrategy getMipmapStrategy();
+
+	@Accessor
+	@Mutable
+	void setMipmapStrategy(MipmapStrategy strategy);
+
+	@Accessor
+	float getAlphaCutoffBias();
+
+	@Accessor
+	@Mutable
+	void setAlphaCutoffBias(float bias);
 }

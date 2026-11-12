@@ -36,7 +36,7 @@ public abstract class Piece {
 					currentSize += piece.size;
 					elementPos += 1;
 				} else {
-					Fragment fragment = piece.fragment(sizeRemaining);
+					Fragment fragment = piece.fragment(sizeRemaining - currentSize);
 					innerOut.add(fragment);
 					currentSize += fragment.size;
 					if (piece.isDone()) {

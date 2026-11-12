@@ -1,13 +1,13 @@
 package dev.notalpha.dashloader.client.font;
 
+import com.mojang.blaze3d.font.SpaceProvider;
+import com.mojang.blaze3d.font.UnbakedGlyph;
 import dev.notalpha.dashloader.api.DashObject;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import it.unimi.dsi.fastutil.ints.Int2FloatArrayMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import net.minecraft.client.font.Glyph;
-import net.minecraft.client.font.SpaceFont;
 
-public final class DashSpaceFont implements DashObject<SpaceFont, SpaceFont> {
+public final class DashSpaceFont implements DashObject<SpaceProvider, SpaceProvider> {
 	public final int[] ints;
 	public final float[] floats;
 
@@ -16,22 +16,22 @@ public final class DashSpaceFont implements DashObject<SpaceFont, SpaceFont> {
 		this.floats = floats;
 	}
 
-	public DashSpaceFont(SpaceFont font) {
-		IntSet glyphs = font.getProvidedGlyphs();
+	public DashSpaceFont(SpaceProvider font) {
+		IntSet glyphs = font.getSupportedGlyphs();
 		this.ints = new int[glyphs.size()];
 		this.floats = new float[glyphs.size()];
 		int i = 0;
 		for (Integer providedGlyph : glyphs) {
-			Glyph glyph = font.getGlyph(providedGlyph);
+			UnbakedGlyph glyph = font.getGlyph(providedGlyph);
 			assert glyph != null;
 			this.ints[i] = providedGlyph;
-			this.floats[i] = glyph.getAdvance();
+			this.floats[i] = glyph.info().getAdvance();
 			i++;
 		}
 	}
 
 	@Override
-	public SpaceFont export(RegistryReader exportHandler) {
-		return new SpaceFont(new Int2FloatArrayMap(ints, floats));
+	public SpaceProvider export(RegistryReader exportHandler) {
+		return new SpaceProvider(new Int2FloatArrayMap(ints, floats));
 	}
 }

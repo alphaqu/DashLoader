@@ -5,44 +5,44 @@ import dev.notalpha.dashloader.api.collection.IntObjectList;
 import dev.notalpha.dashloader.api.registry.RegistryReader;
 import dev.notalpha.dashloader.api.registry.RegistryWriter;
 import dev.notalpha.dashloader.mixin.accessor.UnihexFontAccessor;
-import net.minecraft.client.font.GlyphContainer;
-import net.minecraft.client.font.UnihexFont;
+import net.minecraft.client.gui.font.CodepointMap;
+import net.minecraft.client.gui.font.providers.UnihexProvider;
 
-public final class DashUnihexFont implements DashObject<UnihexFont, UnihexFont> {
-	public final IntObjectList<UnihexFont.UnicodeTextureGlyph> glyphs;
+public final class DashUnihexFont implements DashObject<UnihexProvider, UnihexProvider> {
+	public final IntObjectList<UnihexProvider.Glyph> glyphs;
 
-	public DashUnihexFont(IntObjectList<UnihexFont.UnicodeTextureGlyph> glyphs) {
+	public DashUnihexFont(IntObjectList<UnihexProvider.Glyph> glyphs) {
 		this.glyphs = glyphs;
 	}
 
-	public DashUnihexFont(UnihexFont rawFont, RegistryWriter writer) {
+	public DashUnihexFont(UnihexProvider rawFont, RegistryWriter writer) {
 		this.glyphs = new IntObjectList<>();
 		var font = ((UnihexFontAccessor) rawFont);
 		var fontImages = font.getGlyphs();
-		fontImages.forEachGlyph(this.glyphs::put);
+		fontImages.forEach(this.glyphs::put);
 	}
 
-	public UnihexFont export(RegistryReader handler) {
-		GlyphContainer<UnihexFont.UnicodeTextureGlyph> container = new GlyphContainer<>(
-				UnihexFont.UnicodeTextureGlyph[]::new,
-				UnihexFont.UnicodeTextureGlyph[][]::new
+	public UnihexProvider export(RegistryReader handler) {
+		CodepointMap<UnihexProvider.Glyph> container = new CodepointMap<>(
+				UnihexProvider.Glyph[]::new,
+				UnihexProvider.Glyph[][]::new
 		);
 		this.glyphs.forEach(container::put);
 		return UnihexFontAccessor.create(container);
 	}
 
 	public static class DashUnicodeTextureGlyph {
-		public final UnihexFont.BitmapGlyph contents;
+		public final UnihexProvider.LineData contents;
 		public final int left;
 		public final int right;
 
-		public DashUnicodeTextureGlyph(UnihexFont.BitmapGlyph contents, int left, int right) {
+		public DashUnicodeTextureGlyph(UnihexProvider.LineData contents, int left, int right) {
 			this.contents = contents;
 			this.left = left;
 			this.right = right;
 		}
 
-		public DashUnicodeTextureGlyph(UnihexFont.UnicodeTextureGlyph glyph) {
+		public DashUnicodeTextureGlyph(UnihexProvider.Glyph glyph) {
 			this.contents = glyph.contents();
 			this.left = glyph.left();
 			this.right = glyph.right();
